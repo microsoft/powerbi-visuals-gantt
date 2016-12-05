@@ -213,28 +213,28 @@ module powerbi.extensibility.visual {
     }
 
     module Selectors {
-        export var ClassName: ClassAndSelector = CreateClassAndSelector("gantt");
-        export var Chart: ClassAndSelector = CreateClassAndSelector("chart");
-        export var ChartLine: ClassAndSelector = CreateClassAndSelector("chart-line");
-        export var Body: ClassAndSelector = CreateClassAndSelector("gantt-body");
-        export var AxisGroup: ClassAndSelector = CreateClassAndSelector("axis");
-        export var Domain: ClassAndSelector = CreateClassAndSelector("domain");
-        export var AxisTick: ClassAndSelector = CreateClassAndSelector("tick");
+        export var ClassName: ClassAndSelector = createClassAndSelector("gantt");
+        export var Chart: ClassAndSelector = createClassAndSelector("chart");
+        export var ChartLine: ClassAndSelector = createClassAndSelector("chart-line");
+        export var Body: ClassAndSelector = createClassAndSelector("gantt-body");
+        export var AxisGroup: ClassAndSelector = createClassAndSelector("axis");
+        export var Domain: ClassAndSelector = createClassAndSelector("domain");
+        export var AxisTick: ClassAndSelector = createClassAndSelector("tick");
 
-        export var Tasks: ClassAndSelector = CreateClassAndSelector("tasks");
-        export var TaskGroup: ClassAndSelector = CreateClassAndSelector("task-group");
-        export var SingleTask: ClassAndSelector = CreateClassAndSelector("task");
-        export var TaskRect: ClassAndSelector = CreateClassAndSelector("task-rect");
-        export var TaskProgress: ClassAndSelector = CreateClassAndSelector("task-progress");
-        export var TaskResource: ClassAndSelector = CreateClassAndSelector("task-resource");
-        export var SingleMilestone: ClassAndSelector = CreateClassAndSelector("milestone");
+        export var Tasks: ClassAndSelector = createClassAndSelector("tasks");
+        export var TaskGroup: ClassAndSelector = createClassAndSelector("task-group");
+        export var SingleTask: ClassAndSelector = createClassAndSelector("task");
+        export var TaskRect: ClassAndSelector = createClassAndSelector("task-rect");
+        export var TaskProgress: ClassAndSelector = createClassAndSelector("task-progress");
+        export var TaskResource: ClassAndSelector = createClassAndSelector("task-resource");
+        export var SingleMilestone: ClassAndSelector = createClassAndSelector("milestone");
 
-        export var TaskLabels: ClassAndSelector = CreateClassAndSelector("task-labels");
-        export var TaskLines: ClassAndSelector = CreateClassAndSelector("task-lines");
-        export var SingleTaskLine: ClassAndSelector = CreateClassAndSelector("task-line");
-        export var Label: ClassAndSelector = CreateClassAndSelector("label");
-        export var LegendItems: ClassAndSelector = CreateClassAndSelector("legendItem");
-        export var LegendTitle: ClassAndSelector = CreateClassAndSelector("legendTitle");
+        export var TaskLabels: ClassAndSelector = createClassAndSelector("task-labels");
+        export var TaskLines: ClassAndSelector = createClassAndSelector("task-lines");
+        export var SingleTaskLine: ClassAndSelector = createClassAndSelector("task-line");
+        export var Label: ClassAndSelector = createClassAndSelector("label");
+        export var LegendItems: ClassAndSelector = createClassAndSelector("legendItem");
+        export var LegendTitle: ClassAndSelector = createClassAndSelector("legendTitle");
     }
 
     export class Gantt implements IVisual {
