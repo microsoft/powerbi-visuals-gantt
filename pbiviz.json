@@ -1,0 +1,37 @@
+{
+  "visual": {
+    "name": "SankeyDiagram",
+    "displayName": "Sankey",
+    "guid": "SankeyDiagram1446463184954",
+    "visualClassName": "SankeyDiagram",
+    "version": "0.2.0",
+    "description": "Sankey is a type of flow diagram in which the width of the series is in proportion to the quantity of the flow.  Use it to find major contributions to an overall flow.",
+    "supportUrl": "http://community.powerbi.com",
+    "gitHubUrl": "https://github.com/Microsoft/powerbi-visuals-sankey"
+  },
+  "apiVersion": "1.3.0",
+  "author": {
+    "name": "Microsoft",
+    "email": "pbicvsupport@microsoft.com"
+  },
+  "assets": {
+    "icon": "assets/icon.png"
+  },
+  "externalJS": [
+    "node_modules/jquery/dist/jquery.min.js",
+    "node_modules/d3/d3.min.js",
+    "node_modules/lodash/lodash.min.js",
+    "node_modules/globalize/lib/globalize.js",
+    "node_modules/globalize/lib/cultures/globalize.culture.en-US.js",
+    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-typeutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-svgutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-formattingutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-tooltiputils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-colorutils/lib/index.js"
+  ],
+  "style": "style/gantt.less",
+  "capabilities": "capabilities.json",
+  "dependencies": "dependencies.json"
+}
