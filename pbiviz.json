@@ -29,7 +29,8 @@
     "node_modules/powerbi-visuals-utils-formattingutils/lib/index.js",
     "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.js",
     "node_modules/powerbi-visuals-utils-tooltiputils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-colorutils/lib/index.js"
+    "node_modules/powerbi-visuals-utils-colorutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-chartutils/lib/index.js"
   ],
   "style": "style/gantt.less",
   "capabilities": "capabilities.json",

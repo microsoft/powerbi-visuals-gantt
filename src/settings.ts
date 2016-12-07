@@ -25,106 +25,40 @@
  */
 
 module powerbi.extensibility.visual {
+    import DataViewObjects = powerbi.extensibility.utils.dataview.DataViewObjects;
+    import ColorHelper = powerbi.extensibility.utils.color.ColorHelper;
+    //import dataLabelUtils = powerbi.extensibility.utils.chart.dataLabel;
 
     export class GanttSettings {
         public static get Default() {
             return new this();
         }
 
-        public static parse(dataView: DataView, capabilities: VisualCapabilities) {
-            var settings = new this();
-            if (!dataView || !dataView.metadata || !dataView.metadata.objects) {
-                return settings;
+        public static parse(objects: DataViewObjects, colors: IColorPalette): IGanttSettings {
+            let axisSettings: IAxisSettings = this.axis;
+            let dataPointSettings: IDataPointSettings = this.dataPoint;
+            let labelSettings: ILabelsSettings = this.labels;
+
+            let defaultColor: string = dataPointSettings.defaultColor;
+            if (_.has(objects, 'dataPoint') &&
+                _.has(objects['dataPoint'], 'defaultColor')) {
+                defaultColor = this.getColor(objects, ganttProperties.dataPoint.defaultColor, dataPointSettings.defaultColor, colors);
             }
 
-            var properties = this.getProperties(capabilities);
-            for (var objectKey in capabilities.objects) {
-                for (var propKey in capabilities.objects[objectKey].properties) {
-                    if (!settings[objectKey] || !_.has(settings[objectKey], propKey)) {
-                        continue;
-                    }
-
-                    var type = capabilities.objects[objectKey].properties[propKey].type;
-                    var getValueFn = this.getValueFnByType(type);
-                    settings[objectKey][propKey] = getValueFn(
-                        dataView.metadata.objects,
-                        properties[objectKey][propKey],
-                        settings[objectKey][propKey]);
+            return {
+                dataPoint: {
+                    defaultColor: defaultColor,
+                    showAllDataPoints: DataViewObjects.getValue<boolean>(objects, ganttProperties.dataPoint.showAllDataPoints, dataPointSettings.showAllDataPoints),
+                },
+                axis: {
+                    show: DataViewObjects.getValue<boolean>(objects, ganttProperties.axis.show, axisSettings.show),
+                },
+                labels: {
+                    show: DataViewObjects.getValue<boolean>(objects, ganttProperties.labels.show, labelSettings.show),
+                    fontSize: DataViewObjects.getValue<number>(objects, ganttProperties.labels.fontSize, labelSettings.fontSize),
+                    color: this.getColor(objects, ganttProperties.labels.color, labelSettings.color, colors),
                 }
-            }
-
-            return settings;
-        }
-
-        public static getProperties(capabilities: VisualCapabilities):
-            { [i: string]: { [i: string]: DataViewObjectPropertyIdentifier } } & {
-                general: { formatString: DataViewObjectPropertyIdentifier },
-                dataPoint: { fill: DataViewObjectPropertyIdentifier }
-            } {
-            var objects = _.merge({
-                general: { properties: { formatString: {} } }
-            }, capabilities.objects);
-            var properties = <any>{};
-            for (var objectKey in objects) {
-                properties[objectKey] = {};
-                for (var propKey in objects[objectKey].properties) {
-                    properties[objectKey][propKey] = <DataViewObjectPropertyIdentifier>{
-                        objectName: objectKey,
-                        propertyName: propKey
-                    };
-                }
-            }
-
-            return properties;
-        }
-
-        public static createEnumTypeFromEnum(type: any): IEnumType {
-            var even: any = false;
-            return createEnumType(Object.keys(type)
-                .filter((key, i) => ((!!(i % 2)) === even && type[key] === key
-                    && !void (even = !even)) || (!!(i % 2)) !== even)
-                .map(x => <IEnumMember>{ value: x, displayName: x }));
-        }
-
-        private static getValueFnByType(type: powerbi.data.DataViewObjectPropertyTypeDescriptor) {
-            switch (_.keys(type)[0]) {
-                case "fill":
-                    return DataViewObjects.getFillColor;
-                default:
-                    return DataViewObjects.getValue;
-            }
-        }
-
-        public static enumerateObjectInstances(
-            settings = new this(),
-            options: EnumerateVisualObjectInstancesOptions,
-            capabilities: VisualCapabilities): ObjectEnumerationBuilder {
-
-            var enumeration = new ObjectEnumerationBuilder();
-            var object = settings && settings[options.objectName];
-            if (!object) {
-                return enumeration;
-            }
-
-            var instance = <VisualObjectInstance>{
-                objectName: options.objectName,
-                selector: null,
-                properties: {}
             };
-
-            for (var key in object) {
-                if (_.has(object, key)) {
-                    instance.properties[key] = object[key];
-                }
-            }
-
-            enumeration.pushInstance(instance);
-            return enumeration;
-        }
-
-        public originalSettings: GanttSettings;
-        public createOriginalSettings(): void {
-            this.originalSettings = _.cloneDeep(this);
         }
 
         //Default Settings

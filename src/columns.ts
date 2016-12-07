@@ -25,34 +25,33 @@
  */
 
 module powerbi.extensibility.visual {
+    import converterHelper = powerbi.extensibility.utils.dataview.converterHelper;
+    export type GanttCategoricalColumns = DataViewCategoryColumn & DataViewValueColumn[] & DataViewValueColumns;
 
     export class GanttColumns<T> {
-        public static Roles = Object.freeze(
-            _.mapValues(new GanttColumns<string>(), (x, i) => i));
-
-        public static getColumnSources(dataView: DataView) {
+        public static getColumnSources(dataView: DataView): GanttColumns<DataViewMetadataColumn> {
             return this.getColumnSourcesT<DataViewMetadataColumn>(dataView);
         }
 
-        public static getTableValues(dataView: DataView) {
-            var table = dataView && dataView.table;
-            var columns = this.getColumnSourcesT<any[]>(dataView);
+        public static getTableValues(dataView: DataView): GanttColumns<any> {
+            let table: DataViewTable = dataView && dataView.table;
+            let columns: GanttColumns<any> = this.getColumnSourcesT<any[]>(dataView);
             return columns && table && _.mapValues(
                 columns, (n: DataViewMetadataColumn, i) => n && table.rows.map(row => row[n.index]));
         }
 
-        public static getTableRows(dataView: DataView) {
-            var table = dataView && dataView.table;
-            var columns = this.getColumnSourcesT<any[]>(dataView);
+        public static getTableRows(dataView: DataView): GanttColumns<any>[] {
+            let table: DataViewTable = dataView && dataView.table;
+            let columns: GanttColumns<any> = this.getColumnSourcesT<any[]>(dataView);
             return columns && table && table.rows.map(row =>
                 _.mapValues(columns, (n: DataViewMetadataColumn, i) => n && row[n.index]));
         }
 
-        public static getCategoricalValues(dataView: DataView) {
-            var categorical = dataView && dataView.categorical;
-            var categories = categorical && categorical.categories || [];
-            var values = categorical && categorical.values || <DataViewValueColumns>[];
-            var series = categorical && values.source && this.getSeriesValues(dataView);
+        public static getCategoricalValues(dataView: DataView): GanttColumns<any> {
+            let categorical: DataViewCategorical = dataView && dataView.categorical;
+            let categories: DataViewCategoricalColumn[] = categorical && categorical.categories || [];
+            let values: DataViewValueColumns = categorical && categorical.values || <DataViewValueColumns>[];
+            let series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
             return categorical && _.mapValues(new this<any[]>(), (n, i) =>
                 (<DataViewCategoricalColumn[]>_.toArray(categories)).concat(_.toArray(values))
                     .filter(x => x.source.roles && x.source.roles[i]).map(x => x.values)[0]
@@ -64,24 +63,44 @@ module powerbi.extensibility.visual {
                 && dataView.categorical.values.map(x => converterHelper.getSeriesName(x.source));
         }
 
-        public static getCategoricalColumns(dataView: DataView) {
-            var categorical = dataView && dataView.categorical;
-            var categories = categorical && categorical.categories || [];
-            var values = categorical && categorical.values || <DataViewValueColumns>[];
+        public static getCategoricalColumns(dataView: DataView): GanttColumns<GanttCategoricalColumns> {
+            let categorical: DataViewCategorical = dataView && dataView.categorical;
+            let categories: DataViewCategoricalColumn[] = categorical && categorical.categories || [];
+            let values: DataViewValueColumns = categorical && categorical.values || <DataViewValueColumns>[];
             return categorical && _.mapValues(
-                new this<DataViewCategoryColumn & DataViewValueColumn[] & DataViewValueColumns>(),
-                (n, i) => categories.filter(x => x.source.roles && x.source.roles[i])[0]
-                    || values.source && values.source.roles && values.source.roles[i] && values
-                    || values.filter(x => x.source.roles && x.source.roles[i]));
+                new this<GanttCategoricalColumns>(),
+                (n, i) => {
+                    let result: any = categories.filter(x => x.source.roles && x.source.roles[i])[0];
+                    if (!result) {
+                        result = values.source && values.source.roles && values.source.roles[i] && values;
+                    }
+                    if (!result) {
+                        result = values.filter(x => x.source.roles && x.source.roles[i]);
+                        if (_.isEmpty(result)) {
+                            result = undefined;
+                        }
+                    }
+
+                    return result;
+                });
         }
 
-        private static getColumnSourcesT<T>(dataView: DataView) {
-            var columns = dataView && dataView.metadata && dataView.metadata.columns;
+        public static getGroupedValueColumns(dataView: DataView): GanttColumns<DataViewValueColumn>[] {
+            let categorical = dataView && dataView.categorical;
+            let values = categorical && categorical.values;
+            let grouped = values && values.grouped();
+            return grouped && grouped.map(g => _.mapValues(
+                new this<DataViewValueColumn>(),
+                (n, i) => g.values.filter(v => v.source.roles[i])[0]));
+        }
+
+        private static getColumnSourcesT<T>(dataView: DataView): GanttColumns<T> {
+            let columns = dataView && dataView.metadata && dataView.metadata.columns;
             return columns && _.mapValues(
                 new this<T>(), (n, i) => columns.filter(x => x.roles && x.roles[i])[0]);
         }
 
-        //Data Roles
+        // Data Roles
         public Legend: T = null;
         public Task: T = null;
         public StartDate: T = null;

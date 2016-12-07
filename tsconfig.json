@@ -19,9 +19,11 @@
     "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.d.ts",
     "node_modules/powerbi-visuals-utils-formattingutils/lib/index.d.ts",
     "node_modules/powerbi-visuals-utils-colorutils/lib/index.d.ts",
-    "src/settings.ts",
-    "src/columns.ts",
+    "node_modules/powerbi-visuals-utils-chartutils/lib/index.d.ts",
+    "src/properties.ts",
     "src/behavior.ts",
+    "src/columns.ts",
+    "src/settings.ts",
     "src/gantt.ts"
   ]
 }
