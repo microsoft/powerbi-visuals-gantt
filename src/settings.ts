@@ -97,65 +97,65 @@ module powerbi.extensibility.visual {
             const properties = ganttProperties.general;
             const defaultSettings: IGeneralSettings = this.general;
 
-            return  {
-                groupTasks: DataViewObjects.getValue<boolean>(objects, properties.groupTasks, defaultSettings.groupTasks),
-            }
+            return {
+                groupTasks: DataViewObjects.getValue<boolean>(objects, properties.groupTasks, defaultSettings.groupTasks)
+            };
         }
 
         private static parseLegendSettings(objects: DataViewObjects, colors: IColorPalette): ILegendSettings {
             const properties = ganttProperties.legend;
             const defaultSettings: ILegendSettings = this.legend;
 
-            return  {
+            return {
                 show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
                 position: DataViewObjects.getValue<number>(objects, properties.position, defaultSettings.position),
                 showTitle: DataViewObjects.getValue<boolean>(objects, properties.showTitle, defaultSettings.showTitle),
                 titleText: DataViewObjects.getValue<string>(objects, properties.titleText, defaultSettings.titleText),
                 labelColor: this.getColor(objects, properties.labelColor, defaultSettings.labelColor, colors),
-                fontSize: DataViewObjects.getValue<number>(objects, properties.fontSize, defaultSettings.fontSize),
-            }
+                fontSize: DataViewObjects.getValue<number>(objects, properties.fontSize, defaultSettings.fontSize)
+            };
         }
 
         private static parseTaskLabelsSettings(objects: DataViewObjects, colors: IColorPalette): ITaskLabelsSettings {
             const properties = ganttProperties.taskLabels;
             const defaultSettings: ITaskLabelsSettings = this.taskLabels;
 
-            return  {
+            return {
                 show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
                 fill: this.getColor(objects, properties.fill, defaultSettings.fill, colors),
                 fontSize: DataViewObjects.getValue<number>(objects, properties.fontSize, defaultSettings.fontSize),
-                width: DataViewObjects.getValue<number>(objects, properties.width, defaultSettings.width),
-            }
+                width: DataViewObjects.getValue<number>(objects, properties.width, defaultSettings.width)
+            };
         }
 
         private static parseTaskComplectionSettings(objects: DataViewObjects, colors: IColorPalette): ITaskCompletionSettings {
             const properties = ganttProperties.taskCompletion;
             const defaultSettings: ITaskCompletionSettings = this.taskCompletion;
 
-            return  {
+            return {
                 show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
-                fill: this.getColor(objects, properties.fill, defaultSettings.fill, colors),
-            }
+                fill: this.getColor(objects, properties.fill, defaultSettings.fill, colors)
+            };
         }
 
         private static parseTaskResourceSettings(objects: DataViewObjects, colors: IColorPalette): ITaskResourceSettings {
             const properties = ganttProperties.taskResource;
             const defaultSettings: ITaskResourceSettings = this.taskResource;
 
-            return  {
+            return {
                 show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
                 fill: this.getColor(objects, properties.fill, defaultSettings.fill, colors),
                 fontSize: DataViewObjects.getValue<number>(objects, properties.fontSize, defaultSettings.fontSize),
-            }
+            };
         }
 
         private static parseDateTypeSettings(objects: DataViewObjects): IDateTypeSettings {
             const properties = ganttProperties.dateType;
             const defaultSettings: IDateTypeSettings = this.dateType;
 
-            return  {
+            return {
                 type: DataViewObjects.getValue<GanttDateType>(objects, properties.type, defaultSettings.type)
-            }
+            };
         }
 
         private static getColor(objects: DataViewObjects, properties: any, defaultColor: string, colors: IColorPalette): string {
@@ -163,7 +163,7 @@ module powerbi.extensibility.visual {
             return colorHelper.getColorForMeasure(objects, '');
         }
 
-        //Default Settings
+        // Default Settings
         private static general: IGeneralSettings = {
             groupTasks: false
         };

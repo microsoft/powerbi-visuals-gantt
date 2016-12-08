@@ -9,7 +9,7 @@
         "kind": "Grouping"
     }, {
         "name": "StartDate",
-        "displayName": "StartDate",
+        "displayName": "Start Date",
         "kind": "Grouping"
     }, {
         "name": "Duration",
@@ -22,7 +22,7 @@
         }]
     }, {
         "name": "Completion",
-        "displayName": "Completion",
+        "displayName": "% Completion",
         "kind": "Measure",
         "requiredTypes": [{
             "numeric": true
