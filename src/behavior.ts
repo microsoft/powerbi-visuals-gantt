@@ -25,16 +25,21 @@
  */
 
 module powerbi.extensibility.visual {
+    // d3
+    import Selection = d3.Selection;
 
     import SelectableDataPoint = powerbi.extensibility.utils.interactivity.SelectableDataPoint;
     import IInteractiveBehavior = powerbi.extensibility.utils.interactivity.IInteractiveBehavior;
+    import ISelectionHandler = powerbi.extensibility.utils.interactivity.ISelectionHandler;
 
     export class GanttChartBehavior implements IInteractiveBehavior {
         private options: GanttBehaviorOptions;
+        private selectionHandler: ISelectionHandler;
 
         public bindEvents(options: GanttBehaviorOptions, selectionHandler: ISelectionHandler) {
             this.options = options;
-            let clearCatcher = options.clearCatcher;
+            let clearCatcher: Selection<any> = options.clearCatcher;
+            this.selectionHandler = selectionHandler;
 
             options.taskSelection.on('click', (d: SelectableDataPoint) => {
                 selectionHandler.handleSelection(d, (d3.event as MouseEvent).ctrlKey);

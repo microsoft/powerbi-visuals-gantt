@@ -53,6 +53,7 @@ module powerbi.extensibility.visual {
     import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 
     // powerbi.extensibility.utils.svg
+    import SVGUtil = powerbi.extensibility.utils.svg;
     import IMargin = powerbi.extensibility.utils.svg.IMargin;
     import translate = powerbi.extensibility.utils.svg.translate;
     import ClassAndSelector = powerbi.extensibility.utils.svg.CssConstants.ClassAndSelector;
@@ -60,6 +61,8 @@ module powerbi.extensibility.visual {
 
     // powerbi.extensibility.utils.type
     import PixelConverter = powerbi.extensibility.utils.type.PixelConverter;
+    import PrimitiveType = powerbi.extensibility.utils.type.PrimitiveType;
+    import ValueType = powerbi.extensibility.utils.type.ValueType;
 
     // powerbi.extensibility.utils.formatting
     import ValueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
@@ -83,55 +86,35 @@ module powerbi.extensibility.visual {
     // powerbi.extensibility.utils.color
     import ColorHelper = powerbi.extensibility.utils.color.ColorHelper;
 
+    // powerbi.extensibility.utils.chart
+    import AxisHelper = powerbi.extensibility.utils.chart.axis;
+    import axisScale = powerbi.extensibility.utils.chart.axis.scale;
+    import IAxisProperties = powerbi.extensibility.utils.chart.axis.IAxisProperties;
+
+    // powerbi.extensibility.utils.chart.legend
+    import createLegend = powerbi.extensibility.utils.chart.legend.createLegend;
+    import ILegend = powerbi.extensibility.utils.chart.legend.ILegend;
+    import Legend = powerbi.extensibility.utils.chart.legend;
+    import LegendData = powerbi.extensibility.utils.chart.legend.LegendData;
+    import LegendIcon = powerbi.extensibility.utils.chart.legend.LegendIcon;
+    import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
+
+    import VisualDataRoleKind = powerbi.VisualDataRoleKind;
+    import DataViewMetadataColumn = powerbi.DataViewMetadataColumn;
+    import DataViewTableRow = powerbi.DataViewTableRow;
     import IStringResourceProvider = jsCommon.IStringResourceProvider;
     import IEnumType = powerbi.IEnumType;
     import IEnumMember = powerbi.IEnumMember;
-    import TooltipDataItem = powerbi.visuals.TooltipDataItem;
-    import LegendData = powerbi.visuals.LegendData;
-    import IDataColorPalette = powerbi.IDataColorPalette;
-    import ILegend = powerbi.visuals.ILegend;
-    import legendPosition = powerbi.visuals.legendPosition;
-    import VisualCapabilities = powerbi.VisualCapabilities;
-    import VisualDataRoleKind = powerbi.VisualDataRoleKind;
-    import IVisualStyle = powerbi.IVisualStyle;
-    import IVisualHostServices = powerbi.IVisualHostServices;
-    import VisualInitOptions = powerbi.VisualInitOptions;
-    import createLegend = powerbi.visuals.createLegend;
-    import LegendPosition = powerbi.visuals.LegendPosition;
-    import DataViewMetadataColumn = powerbi.DataViewMetadataColumn;
-    import DataViewTableRow = powerbi.DataViewTableRow;
-    import SelectionId = powerbi.visuals.SelectionId;
-    import LegendIcon = powerbi.visuals.LegendIcon;
-    import Legend = powerbi.visuals.Legend;
-    import IAxisProperties = powerbi.visuals.IAxisProperties;
-    import ValueType = powerbi.ValueType;
-    import PrimitiveType = powerbi.PrimitiveType;
-    import NumberRange = powerbi.NumberRange;
-    import AxisHelper = powerbi.visuals.AxisHelper;
-    import TextMeasurementService = powerbi.TextMeasurementService;
-    import TooltipManager = powerbi.visuals.TooltipManager;
-    import TooltipEvent = powerbi.visuals.TooltipEvent;
-    import SVGUtil = powerbi.visuals.SVGUtil;
-    import ObjectEnumerationBuilder = powerbi.visuals.ObjectEnumerationBuilder;
-    import ISelectionHandler = powerbi.visuals.ISelectionHandler;
 
-    import IVisualErrorMessage = powerbi.IVisualErrorMessage;
-    import axisScale = powerbi.visuals.axisScale;
+    import timeScale = d3.time.Scale;
 
-    var PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
-    var MillisecondsInADay: number = 86400000;
-    var MillisecondsInWeek: number = 604800000;
-    var MillisecondsInAMonth: number = 2629746000;
-    var MillisecondsInAYear: number = 31556952000;
-    var ChartLineHeight: number = 40;
-    var PaddingTasks: number = 5;
-
-    export enum GanttDateType {
-        Day = <any>"Day",
-        Week = <any>"Week",
-        Month = <any>"Month",
-        Year = <any>"Year"
-    }
+    const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
+    const MillisecondsInADay: number = 24 * 60 * 60 * 1000;
+    const MillisecondsInWeek: number = 4 * MillisecondsInADay;
+    const MillisecondsInAMonth: number = 30 * MillisecondsInADay;
+    const MillisecondsInAYear: number = 365 * MillisecondsInADay;
+    const ChartLineHeight: number = 40;
+    const PaddingTasks: number = 5;
 
     export interface Task extends SelectableDataPoint {
         id: number;
@@ -144,7 +127,7 @@ module powerbi.extensibility.visual {
         taskType: string;
         description: string;
         color: string;
-        tooltipInfo: TooltipDataItem[];
+        tooltipInfo: VisualTooltipDataItem[];
     }
 
     export interface GroupedTask {
@@ -161,7 +144,7 @@ module powerbi.extensibility.visual {
 
     export interface GanttViewModel {
         dataView: DataView;
-        settings: GanttSettings;
+        settings: IGanttSettings;
         tasks: Task[];
         series: GanttSeries[];
         legendData: LegendData;
@@ -196,8 +179,8 @@ module powerbi.extensibility.visual {
         forcedTickCount?: number;
         forcedYDomain?: any[];
         forcedXDomain?: any[];
-        ensureXDomain?: NumberRange;
-        ensureYDomain?: NumberRange;
+        ensureXDomain?: any;
+        ensureYDomain?: any;
         categoryAxisDisplayUnits?: number;
         categoryAxisPrecision?: number;
         valueAxisDisplayUnits?: number;
@@ -209,37 +192,44 @@ module powerbi.extensibility.visual {
         y1: number;
         x2: number;
         y2: number;
-        tooltipInfo: TooltipDataItem[];
+        tooltipInfo: VisualTooltipDataItem[];
+    }
+
+    export interface GanttBehaviorOptions {
+        clearCatcher: Selection<any>;
+        taskSelection: Selection<any>;
+        legendSelection: Selection<any>;
+        interactivityService: IInteractivityService;
     }
 
     module Selectors {
-        export var ClassName: ClassAndSelector = createClassAndSelector("gantt");
-        export var Chart: ClassAndSelector = createClassAndSelector("chart");
-        export var ChartLine: ClassAndSelector = createClassAndSelector("chart-line");
-        export var Body: ClassAndSelector = createClassAndSelector("gantt-body");
-        export var AxisGroup: ClassAndSelector = createClassAndSelector("axis");
-        export var Domain: ClassAndSelector = createClassAndSelector("domain");
-        export var AxisTick: ClassAndSelector = createClassAndSelector("tick");
+        export const ClassName: ClassAndSelector = createClassAndSelector("gantt");
+        export const Chart: ClassAndSelector = createClassAndSelector("chart");
+        export const ChartLine: ClassAndSelector = createClassAndSelector("chart-line");
+        export const Body: ClassAndSelector = createClassAndSelector("gantt-body");
+        export const AxisGroup: ClassAndSelector = createClassAndSelector("axis");
+        export const Domain: ClassAndSelector = createClassAndSelector("domain");
+        export const AxisTick: ClassAndSelector = createClassAndSelector("tick");
 
-        export var Tasks: ClassAndSelector = createClassAndSelector("tasks");
-        export var TaskGroup: ClassAndSelector = createClassAndSelector("task-group");
-        export var SingleTask: ClassAndSelector = createClassAndSelector("task");
-        export var TaskRect: ClassAndSelector = createClassAndSelector("task-rect");
-        export var TaskProgress: ClassAndSelector = createClassAndSelector("task-progress");
-        export var TaskResource: ClassAndSelector = createClassAndSelector("task-resource");
-        export var SingleMilestone: ClassAndSelector = createClassAndSelector("milestone");
+        export const Tasks: ClassAndSelector = createClassAndSelector("tasks");
+        export const TaskGroup: ClassAndSelector = createClassAndSelector("task-group");
+        export const SingleTask: ClassAndSelector = createClassAndSelector("task");
+        export const TaskRect: ClassAndSelector = createClassAndSelector("task-rect");
+        export const TaskProgress: ClassAndSelector = createClassAndSelector("task-progress");
+        export const TaskResource: ClassAndSelector = createClassAndSelector("task-resource");
+        export const SingleMilestone: ClassAndSelector = createClassAndSelector("milestone");
 
-        export var TaskLabels: ClassAndSelector = createClassAndSelector("task-labels");
-        export var TaskLines: ClassAndSelector = createClassAndSelector("task-lines");
-        export var SingleTaskLine: ClassAndSelector = createClassAndSelector("task-line");
-        export var Label: ClassAndSelector = createClassAndSelector("label");
-        export var LegendItems: ClassAndSelector = createClassAndSelector("legendItem");
-        export var LegendTitle: ClassAndSelector = createClassAndSelector("legendTitle");
+        export const TaskLabels: ClassAndSelector = createClassAndSelector("task-labels");
+        export const TaskLines: ClassAndSelector = createClassAndSelector("task-lines");
+        export const SingleTaskLine: ClassAndSelector = createClassAndSelector("task-line");
+        export const Label: ClassAndSelector = createClassAndSelector("label");
+        export const LegendItems: ClassAndSelector = createClassAndSelector("legendItem");
+        export const LegendTitle: ClassAndSelector = createClassAndSelector("legendTitle");
     }
 
     export class Gantt implements IVisual {
         private viewport: IViewport;
-        private colors: IDataColorPalette;
+        private colors: IColorPalette;
         private legend: ILegend;
 
         private textProperties: TextProperties = {
@@ -255,7 +245,7 @@ module powerbi.extensibility.visual {
             ResourceWidth: 100,
             TaskColor: "#00B099",
             TaskLineWidth: 15,
-            DefaultDateType: <string>(<any>GanttDateType.Week),
+            DefaultDateType: "Week",
             DateFormatStrings: {
                 Day: "MMM dd",
                 Week: "MMM dd",
@@ -263,6 +253,17 @@ module powerbi.extensibility.visual {
                 Year: "yyyy"
             }
         };
+
+        private static DefaultTicksLength: number = 50;
+        private static DefaultDuration: number = 250;
+        private static TaskLineCoordinateX: number = 15;
+        private static AxisLabelClip: number = 20;
+        private static AxisLabelStrokeWidth: number = 1;
+        private static TaskResourcePadding: number = 4;
+        private static BarHeightMargin: number = 5;
+        private static ChartLineHeightDivider: number = 4;
+        private static ResourceWidthPadding: number = 10;
+        private static TaskLabelsMarginTop: number = 15;
 
         private static get DefaultMargin(): IMargin {
             return {
@@ -275,11 +276,10 @@ module powerbi.extensibility.visual {
 
         private margin: IMargin = Gantt.DefaultMargin;
 
-        private style: IVisualStyle;
         private body: Selection<any>;
         private ganttSvg: Selection<any>;
         private viewModel: GanttViewModel;
-        private timeScale: D3.Scale.TimeScale;
+        private timeScale: timeScale<any, any>;
         private axisGroup: Selection<any>;
 
         private chartGroup: Selection<any>;
@@ -288,65 +288,70 @@ module powerbi.extensibility.visual {
 
         private clearCatcher: Selection<any>;
         private ganttDiv: Selection<any>;
-        private selectionManager: SelectionManager;
+        private selectionManager: ISelectionManager;
         private behavior: GanttChartBehavior;
         private interactivityService: IInteractivityService;
-        private hostServices: IVisualHostServices;
-        private isInteractiveChart: boolean;
+        private tooltipServiceWrapper: ITooltipServiceWrapper;
+        private host: IVisualHost;
+        private isInteractiveChart: boolean = false;
 
-        public init(options: VisualInitOptions): void {
-            this.viewport = _.clone(options.viewport);
-            this.style = options.style;
-            this.body = d3.select(options.element.get(0));
+        constructor(options: VisualConstructorOptions) {
+            this.init(options);
+        }
 
-            this.hostServices = options.host;
-            this.selectionManager = new SelectionManager({ hostServices: options.host });
+        private init(options: VisualConstructorOptions): void {
+            this.host = options.host;
+            this.colors = options.host.colorPalette;
+            this.selectionManager = options.host.createSelectionManager();
+            this.body = d3.select(options.element);
 
-            this.isInteractiveChart = options.interactivity && options.interactivity.isInteractiveLegend;
-            this.interactivityService = createInteractivityService(this.hostServices);
-            this.createViewport(options.element);
-            this.updateChartSize();
+            this.tooltipServiceWrapper = createTooltipServiceWrapper(
+                this.host.tooltipService,
+                options.element);
+
+
             this.behavior = new GanttChartBehavior();
-            this.colors = options.style.colorPalette.dataColors;
+            this.interactivityService = createInteractivityService(this.host);
+            this.createViewport($(options.element));
         }
 
         /**
          * Create the vieport area of the gantt chart
          */
         private createViewport(element: JQuery): void {
-            //create div container to the whole viewport area
+            // create div container to the whole viewport area
             this.ganttDiv = this.body.append("div")
                 .classed(Selectors.Body.class, true);
 
-            //create container to the svg area
+            // create container to the svg area
             this.ganttSvg = this.ganttDiv
                 .append("svg")
                 .classed(Selectors.ClassName.class, true);
 
-            //create clear catcher
+            // create clear catcher
             this.clearCatcher = appendClearCatcher(this.ganttSvg);
 
-            //create axis container
+            // create axis container
             this.axisGroup = this.ganttSvg
                 .append("g")
                 .classed(Selectors.AxisGroup.class, true);
 
-            //create task lines container
+            // create task lines container
             this.lineGroup = this.ganttSvg
                 .append("g")
                 .classed(Selectors.TaskLines.class, true);
 
-            //create chart container
+            // create chart container
             this.chartGroup = this.ganttSvg
                 .append("g")
                 .classed(Selectors.Chart.class, true);
 
-            //create tasks container
+            // create tasks container
             this.taskGroup = this.chartGroup
                 .append("g")
                 .classed(Selectors.Tasks.class, true);
 
-            //create legend container
+            // create legend container
             this.legend = createLegend(element,
                 this.isInteractiveChart,
                 this.interactivityService,
@@ -392,7 +397,7 @@ module powerbi.extensibility.visual {
                 !columnSource[0].roles)
                 return null;
 
-            var index = columnSource.indexOf(columnSource.filter(x => x.roles[propertyName])[0]);
+            const index = columnSource.indexOf(columnSource.filter(x => x.roles[propertyName])[0]);
             return index !== -1 ? <T><any>child[index] : null;
         }
 
@@ -402,7 +407,7 @@ module powerbi.extensibility.visual {
          * @param name The role to find
          */
         private static hasRole(column: DataViewMetadataColumn, name: string) {
-            var roles = column.roles;
+            const roles = column.roles;
             return roles && roles[name];
         }
 
@@ -411,21 +416,25 @@ module powerbi.extensibility.visual {
         * @param task All task attributes.
         * @param formatters Formatting options for gantt attributes.
         */
-        private static getTooltipInfo(task: Task, formatters: GanttChartFormatters, timeInterval: string = "Days") {
-            var tooltipDataArray: TooltipDataItem[] = [];
+        private static getTooltipInfo(task: Task, formatters: GanttChartFormatters, timeInterval: string = "Days"): VisualTooltipDataItem[] {
+            let tooltipDataArray: VisualTooltipDataItem[] = [];
 
-            if (task.taskType)
+            if (task.taskType) {
                 tooltipDataArray.push({ displayName: Gantt.capabilities.dataRoles[0].name, value: task.taskType });
+            }
 
             tooltipDataArray.push({ displayName: Gantt.capabilities.dataRoles[1].name, value: task.name });
-            if (!isNaN(task.start.getDate()))
+            if (!isNaN(task.start.getDate())) {
                 tooltipDataArray.push({ displayName: Gantt.capabilities.dataRoles[2].name, value: formatters.startDateFormatter.format(task.start.toLocaleDateString()) });
+            }
 
             tooltipDataArray.push({ displayName: Gantt.capabilities.dataRoles[3].name, value: formatters.durationFormatter.format(task.duration) + " " + timeInterval });
             tooltipDataArray.push({ displayName: Gantt.capabilities.dataRoles[4].name, value: formatters.completionFormatter.format(task.completion) });
 
-            if (task.resource)
+            if (task.resource) {
                 tooltipDataArray.push({ displayName: Gantt.capabilities.dataRoles[5].name, value: task.resource });
+            }
+
 
             return tooltipDataArray;
         }
@@ -437,7 +446,7 @@ module powerbi.extensibility.visual {
         private static isChartHasTask(dataView: DataView): boolean {
             if (dataView.table &&
                 dataView.table.columns) {
-                for (var column of dataView.table.columns) {
+                for (let column of dataView.table.columns) {
                     if (Gantt.hasRole(column, "Task")) {
                         return true;
                     }
@@ -453,15 +462,16 @@ module powerbi.extensibility.visual {
         private static getFormatters(dataView: DataView): GanttChartFormatters {
             if (!dataView ||
                 !dataView.metadata ||
-                !dataView.metadata.columns)
+                !dataView.metadata.columns) {
                 return null;
+            }
 
-            var dateFormat = "d";
-            var numberFormat = "#";
+            let dateFormat = "d";
+            const numberFormat = "#";
 
-            for (var dvColumn of dataView.metadata.columns) {
+            for (let dvColumn of dataView.metadata.columns) {
                 if (!!dataView.categorical.categories) {
-                    for (var dvCategory of dataView.categorical.categories) {
+                    for (let dvCategory of dataView.categorical.categories) {
                         if (Gantt.hasRole(dvCategory.source, "StartDate"))
                             dateFormat = dvColumn.format;
                     }
@@ -469,9 +479,9 @@ module powerbi.extensibility.visual {
             }
 
             return <GanttChartFormatters>{
-                startDateFormatter: valueFormatter.create({ format: dateFormat }),
-                durationFormatter: valueFormatter.create({ format: numberFormat }),
-                completionFormatter: valueFormatter.create({ format: PercentFormat, value: 1, allowFormatBeautification: true })
+                startDateFormatter: ValueFormatter.create({ format: dateFormat }),
+                durationFormatter: ValueFormatter.create({ format: numberFormat }),
+                completionFormatter: ValueFormatter.create({ format: PercentFormat, value: 1, allowFormatBeautification: true })
             };
         }
 
@@ -481,32 +491,38 @@ module powerbi.extensibility.visual {
         * @param formatters task attributes represented format.
         * @param series An array that holds the color data of different task groups.
         */
-        private static createTasks(dataView: DataView, formatters: GanttChartFormatters, colors: IDataColorPalette): Task[] {
-            var metadataColumns = GanttColumns.getColumnSources(dataView);
+        private static createTasks(dataView: DataView, host: IVisualHost, formatters: GanttChartFormatters, colors: IColorPalette): Task[] {
+            const metadataColumns: GanttColumns<DataViewMetadataColumn> = GanttColumns.getColumnSources(dataView);
 
-            var columnSource = dataView.table.columns;
-            var colorHelper = new ColorHelper(colors, undefined);
+            const columnSource = dataView.table.columns;
+            const colorHelper = new ColorHelper(colors, undefined);
 
             return dataView.table.rows.map((child: DataViewTableRow, index: number) => {
-                var dateString = Gantt.getTaskProperty<Date>(columnSource, child, "StartDate");
+                let dateString: Date = Gantt.getTaskProperty<Date>(columnSource, child, "StartDate");
 
                 dateString = Gantt.isValidDate(dateString) ? dateString : new Date(Date.now());
 
-                var duration = Gantt.getTaskProperty<number>(columnSource, child, "Duration");
+                let duration: number = Gantt.getTaskProperty<number>(columnSource, child, "Duration");
 
-                var completionValue = Gantt.getTaskProperty<number>(columnSource, child, "Completion");
-                var completion = Gantt.convertToDecimal(completionValue);
+                let completionValue: number = Gantt.getTaskProperty<number>(columnSource, child, "Completion");
+                let completion: number = Gantt.convertToDecimal(completionValue);
                 completion = completion <= 1 ? completion : 1;
 
-                var taskType = Gantt.getTaskProperty<string>(columnSource, child, "Legend");
-                var tasksTypeColor: string = colorHelper.getColorForMeasure(dataView.metadata.objects, taskType);
+                let taskType: string = Gantt.getTaskProperty<string>(columnSource, child, "Legend");
+                let tasksTypeColor: string = colorHelper.getColorForMeasure(dataView.metadata.objects, taskType);
 
-                var identity =  SelectionId.createWithIdAndMeasureAndCategory(
+                const identity: ISelectionId = host.createSelectionIdBuilder()
+                    .withCategory(dataView.categorical.categories[0], index)
+                    .withMeasure(taskType)
+                    .createSelectionId()
+                /*
+                 var identity = SelectionId.createWithIdAndMeasureAndCategory(
                     dataView.categorical.categories[0].identity[index],
                     taskType,
                     metadataColumns.Task.queryName);
+                */
 
-                var task: Task = {
+                let task: Task = {
                     id: index,
                     name: Gantt.getTaskProperty<string>(columnSource, child, "Task"),
                     start: dateString ? dateString : new Date(Date.now()),
@@ -524,6 +540,7 @@ module powerbi.extensibility.visual {
 
                 task.end = d3.time.day.offset(task.start, task.duration);
                 task.tooltipInfo = Gantt.getTooltipInfo(task, formatters);
+
                 return task;
             });
         }
@@ -532,17 +549,20 @@ module powerbi.extensibility.visual {
        * Create the gantt tasks series based on all task types
        * @param taskTypes All unique types from the tasks array.
        */
-        private static createSeries(objects: DataViewObjects, tasks: Task[], dataView: DataView, colors: IDataColorPalette): GanttSeries[] {
-            var colorHelper = new ColorHelper(colors, undefined /*Gantt.Properties.dataPoint.fill*/);
-            var taskGroup: _.Dictionary<Task[]> = _.groupBy(tasks, t => t.taskType);
-            var taskTypes = Gantt.getAllTasksTypes(dataView);
+        private static createSeries(dataView: DataView, host: IVisualHost, tasks: Task[], colors: IColorPalette): GanttSeries[] {
+            let colorHelper: ColorHelper = new ColorHelper(colors, undefined);
+            let taskGroup: _.Dictionary<Task[]> = _.groupBy(tasks, t => t.taskType);
+            let taskTypes = Gantt.getAllTasksTypes(dataView);
 
-            var series: GanttSeries[] = _.map(taskTypes.types, type => {
+            let series: GanttSeries[] = _.map(taskTypes.types, type => {
                 return {
                     tasks: taskGroup[type],
-                    fill: colorHelper.getColorForMeasure(objects, type),
+                    fill: colorHelper.getColorForMeasure(dataView.metadata.objects, type),
                     name: type,
-                    identity: SelectionId.createWithMeasure(type),
+                    identity: host
+                                .createSelectionIdBuilder()
+                                .withMeasure(type)
+                                .createSelectionId(),
                     selected: false
                 };
             });
@@ -554,7 +574,7 @@ module powerbi.extensibility.visual {
         * Convert the dataView to view model
         * @param dataView The data Model
         */
-        public static converter(dataView: DataView, colors: IDataColorPalette): GanttViewModel {
+        public static converter(dataView: DataView, host: IVisualHost, colors: IColorPalette): GanttViewModel {
             if (!dataView
                 || !dataView.categorical
                 || !Gantt.isChartHasTask(dataView)
@@ -562,32 +582,34 @@ module powerbi.extensibility.visual {
                 return null;
             }
 
-            var settings = Gantt.parseSettings(dataView, colors);
-            var taskTypes = Gantt.getAllTasksTypes(dataView);
+            const settings: IGanttSettings = GanttSettings.parse(dataView.metadata.objects, colors);
+            const taskTypes: TaskTypes = Gantt.getAllTasksTypes(dataView);
 
-            var legendData: LegendData = {
+            const legendData: LegendData = {
                 fontSize: settings.legend.fontSize,
                 dataPoints: [],
                 title: taskTypes.typeName
             };
 
-            var colorHelper = new ColorHelper(colors, undefined /*Gantt.Properties.dataPoint.fill*/);
-            legendData.dataPoints = _.map(taskTypes.types, type => {
+            let colorHelper = new ColorHelper(colors, undefined);
+            legendData.dataPoints = _.map(taskTypes.types, (type: string) => {
                 return {
                     label: type,
                     color: colorHelper.getColorForMeasure(dataView.metadata.objects, type),
                     icon: LegendIcon.Circle,
                     selected: false,
-                    identity: SelectionId.createWithMeasure(type)
+                    identity: host.createSelectionIdBuilder()
+                        .withMeasure(type)
+                        .createSelectionId()
                 };
             });
 
-            var formatters: GanttChartFormatters = this.getFormatters(dataView);
+            const formatters: GanttChartFormatters = this.getFormatters(dataView);
 
-            var tasks: Task[] = Gantt.createTasks(dataView, formatters, colors);
-            var series = Gantt.createSeries(dataView.metadata.objects, tasks, dataView, colors);
+            const tasks: Task[] = Gantt.createTasks(dataView, host, formatters, colors);
+            const series: GanttSeries[] = Gantt.createSeries(dataView, host, tasks, colors);
 
-            var viewModel: GanttViewModel = {
+            const viewModel: GanttViewModel = {
                 dataView: dataView,
                 settings: settings,
                 tasks: tasks,
@@ -599,13 +621,14 @@ module powerbi.extensibility.visual {
             return viewModel;
         }
 
-        private static isValidDate(date: Date) {
-            if (Object.prototype.toString.call(date) !== "[object Date]")
+        private static isValidDate(date: Date): boolean {
+            if (Object.prototype.toString.call(date) !== "[object Date]") {
                 return false;
+            }
             return !isNaN(date.getTime());
         }
 
-        private static convertToDecimal(number) {
+        private static convertToDecimal(number): number {
             if (!(number >= 0 && number <= 1)) {
                 return (number / 100);
             }
@@ -618,18 +641,17 @@ module powerbi.extensibility.visual {
         * @param dataView The data model.
         */
         private static getAllTasksTypes(dataView: DataView): TaskTypes {
-            var types: string[] = [];
-            var groupName: string = "";
-            var taskTypes: TaskTypes;
-            var data = dataView.table.rows;
-            var index = _.findIndex(dataView.table.columns, col => col.roles.hasOwnProperty("Legend"));
+            let types: string[] = [];
+            let groupName: string = "";
+            let data: DataViewTableRow[] = dataView.table.rows;
+            let index: number = _.findIndex(dataView.table.columns, col => col.roles.hasOwnProperty("Legend"));
 
             if (index !== -1) {
                 groupName = dataView.table.columns[index].displayName;
-                types = <string[]>_.unique(data, (d) => d[index]).map((d) => d[index]);
+                types = <string[]>_.uniqBy(data, (d: DataViewTableRow) => d[index]).map((d) => d[index]);
             }
 
-            taskTypes = {
+            let taskTypes: TaskTypes = {
                 typeName: groupName,
                 types: types
             };
@@ -645,11 +667,11 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            LegendData.update(this.viewModel.legendData,
-                DataViewObjects.getObject(this.viewModel.dataView.metadata.objects, "legend", {}));
+            // Legend.data.update(this.viewModel.settings.legend);
+            //LegendData.update(this.viewModel.settings.legend);
 
-            var position = this.viewModel.settings.legend.show
-                ? LegendPosition[<string>this.viewModel.settings.legend.position]
+            let position: LegendPosition = this.viewModel.settings.legend.show
+                ? this.viewModel.settings.legend.position
                 : LegendPosition.None;
 
             this.legend.changeOrientation(position);
@@ -677,12 +699,13 @@ module powerbi.extensibility.visual {
         * Called on data change or resizing
         * @param options The visual option that contains the dataview and the viewport
         */
-        public update(options: VisualUpdateOptions) {
+        public update(options: VisualUpdateOptions): void {
             if (!options.dataViews || !options.dataViews[0]) {
+                this.clearViewport();
                 return;
             }
 
-            this.viewModel = Gantt.converter(options.dataViews[0], this.colors);
+            this.viewModel = Gantt.converter(options.dataViews[0], this.host, this.colors);
             if (!this.viewModel) {
                 this.clearViewport();
                 return;
@@ -694,81 +717,78 @@ module powerbi.extensibility.visual {
             this.renderLegend();
             this.updateChartSize();
 
-            var tasks = this.viewModel.tasks;
+            let tasks: Task[] = this.viewModel.tasks;
 
             if (this.interactivityService) {
                 this.interactivityService.applySelectionStateToData(tasks);
                 this.interactivityService.applySelectionStateToData(this.viewModel.series);
             }
 
-            if (tasks.length > 0) {
-                var tasksSortedByStartDate: Task[] = _.sortBy(tasks, (t) => t.start);
-                var tasksSortedByEndDate: Task[] = _.sortBy(tasks, (t) => t.end);
-                var dateTypeMilliseconds = this.getDateType();
+            if (tasks.length < 1) {
+                return;
+            }
 
-                var startDate: Date = tasksSortedByStartDate[0].start,
-                    endDate: Date = tasksSortedByEndDate[tasks.length - 1].end,
-                    ticks = Math.ceil(Math.round(endDate.valueOf() - startDate.valueOf()) / dateTypeMilliseconds);
+            let tasksSortedByStartDate: Task[] = _.sortBy(tasks, (t) => t.start);
+            let tasksSortedByEndDate: Task[] = _.sortBy(tasks, (t) => t.end);
+            let dateTypeMilliseconds: number = Gantt.getDateType(this.viewModel.settings.dateType.type);
 
-                var groupedTasks: GroupedTask[] = this.groupTasks(tasks);
+            let startDate: Date = tasksSortedByStartDate[0].start,
+                endDate: Date = tasksSortedByEndDate[tasks.length - 1].end,
+                ticks = Math.ceil(Math.round(endDate.valueOf() - startDate.valueOf()) / dateTypeMilliseconds);
 
-                ticks = ticks === 0 || ticks === 1 ? 2 : ticks;
-                var axisLength = ticks * 50;
-                this.ganttSvg
-                    .attr({
-                        height: PixelConverter.toString(groupedTasks.length * ChartLineHeight + this.margin.top),
-                        width: PixelConverter.toString(this.margin.left + this.viewModel.settings.taskLabels.width + axisLength + Gantt.DefaultValues.ResourceWidth)
-                    });
+            let groupedTasks: GroupedTask[] = this.groupTasks(tasks);
 
-                var viewportIn: IViewport = {
-                    height: this.viewport.height,
-                    width: axisLength
+            ticks = (ticks === 0 || ticks === 1) ? 2 : ticks;
+            let axisLength: number = ticks * Gantt.DefaultTicksLength;
+            this.ganttSvg
+                .attr({
+                    height: PixelConverter.toString(groupedTasks.length * ChartLineHeight + this.margin.top),
+                    width: PixelConverter.toString(this.margin.left + this.viewModel.settings.taskLabels.width + axisLength + Gantt.DefaultValues.ResourceWidth)
+                });
+
+            let viewportIn: IViewport = {
+                height: this.viewport.height,
+                width: axisLength
+            };
+
+            let xAxisProperties: IAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, axisLength, ticks, false);
+            this.timeScale = <timeScale<Date, Date>>xAxisProperties.scale;
+
+            this.renderAxis(xAxisProperties);
+            this.renderTasks(groupedTasks);
+
+            this.createMilestoneLine(groupedTasks);
+            this.updateTaskLabels(groupedTasks, this.viewModel.settings.taskLabels.width);
+            this.updateElementsPositions(this.viewport, this.margin);
+
+            if (this.interactivityService) {
+                let behaviorOptions: GanttBehaviorOptions = {
+                    clearCatcher: this.clearCatcher,
+                    taskSelection: this.taskGroup.selectAll(Selectors.SingleTask.selector),
+                    legendSelection: this.body.selectAll(Selectors.LegendItems.selector),
+                    interactivityService: this.interactivityService
                 };
-
-                var xAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, axisLength, ticks, false);
-                this.timeScale = <D3.Scale.TimeScale>xAxisProperties.scale;
-
-                this.renderAxis(xAxisProperties, 200);
-                this.renderTasks(groupedTasks);
-
-                this.createMilestoneLine(groupedTasks);
-                this.updateTaskLabels(groupedTasks, this.viewModel.settings.taskLabels.width);
-                this.updateElementsPositions(this.viewport, this.margin);
-
-                if (this.interactivityService) {
-                    var behaviorOptions: GanttBehaviorOptions = {
-                        clearCatcher: this.clearCatcher,
-                        taskSelection: this.taskGroup.selectAll(Selectors.SingleTask.selector),
-                        legendSelection: this.body.selectAll(Selectors.LegendItems.selector),
-                        interactivityService: this.interactivityService
-                    };
-                    this.interactivityService.bind(tasks, this.behavior, behaviorOptions);
-                }
+                this.interactivityService.bind(tasks, this.behavior, behaviorOptions);
             }
         }
 
-        private getDateType(): number {
-            var milliSeconds: number = MillisecondsInWeek;
+        private static getDateType(type: string): number {
+            switch (type) {
+                case "Day":
+                    return MillisecondsInADay;
 
-            switch (this.viewModel.settings.dateType.type) {
-                case GanttDateType.Day:
-                    milliSeconds = MillisecondsInADay;
-                    break;
+                case "Week":
+                    return MillisecondsInWeek;
 
-                case GanttDateType.Week:
-                    milliSeconds = MillisecondsInWeek;
-                    break;
+                case "Month":
+                    return MillisecondsInAMonth;
 
-                case GanttDateType.Month:
-                    milliSeconds = MillisecondsInAMonth;
-                    break;
+                case "Year":
+                    return MillisecondsInAYear;
 
-                case GanttDateType.Year:
-                    milliSeconds = MillisecondsInAYear;
-                    break;
+                default:
+                    return MillisecondsInWeek;
             }
-
-            return milliSeconds;
         }
 
         private calculateAxes(
@@ -780,9 +800,15 @@ module powerbi.extensibility.visual {
             ticksCount: number,
             scrollbarVisible: boolean): IAxisProperties {
 
-            var dataTypeDatetime = ValueType.fromPrimitiveTypeAndCategory(PrimitiveType.Date);
-            var category: DataViewMetadataColumn = { displayName: "StartDate", queryName: "StartDate", type: dataTypeDatetime, index: 0 };
-            var visualOptions: GanttCalculateScaleAndDomainOptions = {
+            let dataTypeDatetime: ValueType = ValueType.fromPrimitiveTypeAndCategory(PrimitiveType.Date);
+            let category: DataViewMetadataColumn = {
+                displayName: "StartDate",
+                queryName: "StartDate",
+                type: dataTypeDatetime,
+                index: 0
+            };
+
+            let visualOptions: GanttCalculateScaleAndDomainOptions = {
                 viewport: viewportIn,
                 margin: this.margin,
                 forcedXDomain: [startDate, endDate],
@@ -797,25 +823,25 @@ module powerbi.extensibility.visual {
                 forcedTickCount: ticksCount
             };
 
-            var width = viewportIn.width;
-            var axes = this.calculateAxesProperties(viewportIn, visualOptions, axisLength, category);
+            const width: number = viewportIn.width;
+            let axes: IAxisProperties = this.calculateAxesProperties(viewportIn, visualOptions, axisLength, category);
             axes.willLabelsFit = AxisHelper.LabelLayoutStrategy.willLabelsFit(
                 axes,
                 width,
-                TextMeasurementService.measureSvgTextWidth,
+                textMeasurementService.measureSvgTextWidth,
                 textProperties);
 
             // If labels do not fit and we are not scrolling, try word breaking
             axes.willLabelsWordBreak = (!axes.willLabelsFit && !scrollbarVisible) && AxisHelper.LabelLayoutStrategy.willLabelsWordBreak(
-                axes, this.margin, width, TextMeasurementService.measureSvgTextWidth,
-                TextMeasurementService.estimateSvgTextHeight, TextMeasurementService.getTailoredTextOrDefault,
+                axes, this.margin, width, textMeasurementService.measureSvgTextWidth,
+                textMeasurementService.estimateSvgTextHeight, textMeasurementService.getTailoredTextOrDefault,
                 textProperties);
 
             return axes;
         }
 
         private calculateAxesProperties(viewportIn: IViewport, options: GanttCalculateScaleAndDomainOptions, axisLength: number, metaDataColumn: DataViewMetadataColumn): IAxisProperties {
-            var xAxisProperties = AxisHelper.createAxis({
+            let xAxisProperties: IAxisProperties = AxisHelper.createAxis({
                 pixelSpan: viewportIn.width,
                 dataDomain: options.forcedXDomain,
                 metaDataColumn: metaDataColumn,
@@ -827,7 +853,7 @@ module powerbi.extensibility.visual {
                 useTickIntervalForDisplayUnits: true,
                 isCategoryAxis: true,
                 getValueFn: (index, type) => {
-                    return valueFormatter.format(new Date(index),
+                    return ValueFormatter.format(new Date(index),
                         Gantt.DefaultValues.DateFormatStrings[this.viewModel.settings.dateType.type]);
                 },
                 scaleType: options.categoryAxisScaleType,
@@ -840,8 +866,8 @@ module powerbi.extensibility.visual {
 
         private groupTasks(tasks: Task[]): GroupedTask[] {
             if (this.viewModel.settings.general.groupTasks) {
-                var groupedTasks = _.groupBy(tasks, x => x.name);
-                var result: GroupedTask[] = _.map(groupedTasks, (x, i) => <GroupedTask>{
+                let groupedTasks: _.Dictionary<Task[]> = _.groupBy(tasks, x => x.name);
+                let result: GroupedTask[] = _.map(groupedTasks, (x, i) => <GroupedTask>{
                     name: i,
                     tasks: groupedTasks[i]
                 });
@@ -861,37 +887,40 @@ module powerbi.extensibility.visual {
             });
         }
 
-        private renderAxis(xAxisProperties: IAxisProperties, duration: number): void {
-            var xAxis = xAxisProperties.axis;
+        private renderAxis(xAxisProperties: IAxisProperties, duration: number = Gantt.DefaultDuration): void {
+            let xAxis = xAxisProperties.axis;
             xAxis.orient('bottom');
 
-            this.axisGroup.transition().duration(duration).call(xAxis);
+            this.axisGroup
+                .transition()
+                .duration(duration)
+                .call(xAxis);
         }
+
         /**
         * Update task labels and add its tooltips
         * @param tasks All tasks array
         * @param width The task label width
         */
         private updateTaskLabels(tasks: GroupedTask[], width: number): void {
-            var axisLabel: UpdateSelection<any>;
-            var taskLineCoordinateX: number = 15;
-            var taskLabelsShow = this.viewModel ? this.viewModel.settings.taskLabels.show : true;
-            var taskLabelsColor = this.viewModel ? this.viewModel.settings.taskLabels.fill : GanttSettings.Default.taskLabels.fill;
-            var taskLabelsFontSize = this.viewModel ? this.viewModel.settings.taskLabels.fontSize : GanttSettings.Default.taskLabels.fontSize;
+            let axisLabel: UpdateSelection<any>;
+            let taskLabelsShow: boolean = this.viewModel.settings.taskLabels.show;
+            let taskLabelsColor: string = this.viewModel.settings.taskLabels.fill;
+            let taskLabelsFontSize: number = this.viewModel.settings.taskLabels.fontSize;
 
             if (taskLabelsShow) {
                 axisLabel = this.lineGroup.selectAll(Selectors.Label.selector).data(tasks);
                 axisLabel.enter().append("text").classed(Selectors.Label.class, true);
                 axisLabel.attr({
-                    x: taskLineCoordinateX,
+                    x: Gantt.TaskLineCoordinateX,
                     y: (task: GroupedTask, i: number) => this.getTaskLabelCoordinateY(task.id),
                     fill: taskLabelsColor,
-                    "stroke-width": 1
+                    "stroke-width": Gantt.AxisLabelStrokeWidth
                 })
                     .style("font-size", PixelConverter.fromPoint(taskLabelsFontSize))
                     .text((task: GroupedTask) => { return task.name; });
 
-                axisLabel.call(AxisHelper.LabelLayoutStrategy.clip, width - 20, TextMeasurementService.svgEllipsis);
+                axisLabel.call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis);
                 axisLabel.append("title").text((task: GroupedTask) => { return task.name; });
                 axisLabel.exit().remove();
             }
@@ -900,57 +929,75 @@ module powerbi.extensibility.visual {
             }
         }
 
-        private renderTasks(groupedTasks: GroupedTask[]) {
-            var taskGroupSelection: UpdateSelection<any> = this.taskGroup.selectAll(Selectors.TaskGroup.selector).data(groupedTasks);
-            var taskProgressColor = this.viewModel ? this.viewModel.settings.taskCompletion.fill : GanttSettings.Default.taskCompletion.fill;
-            var taskResourceShow = this.viewModel ? this.viewModel.settings.taskResource.show : true;
-            var padding: number = 4;
-            var taskResourceColor = this.viewModel ? this.viewModel.settings.taskResource.fill : GanttSettings.Default.taskResource.fill;
-            var taskResourceFontSize: number = this.viewModel ? this.viewModel.settings.taskResource.fontSize : GanttSettings.Default.taskResource.fontSize;
+        private renderTasks(groupedTasks: GroupedTask[]): void {
+            let taskGroupSelection: UpdateSelection<any> = this.taskGroup.selectAll(Selectors.TaskGroup.selector).data(groupedTasks);
+            let taskProgressColor: string = this.viewModel.settings.taskCompletion.fill;
+            let taskResourceShow: boolean = this.viewModel.settings.taskResource.show;
+            let taskResourceColor: string = this.viewModel.settings.taskResource.fill;
+            let taskResourceFontSize: number = this.viewModel.settings.taskResource.fontSize;
 
             //render task group container
             taskGroupSelection.enter().append("g").classed(Selectors.TaskGroup.class, true);
 
-            var taskSelection = taskGroupSelection.selectAll(Selectors.SingleTask.selector).data((d: GroupedTask) => d.tasks);
+            let taskSelection: UpdateSelection<Task> = taskGroupSelection.selectAll(Selectors.SingleTask.selector).data((d: GroupedTask) => d.tasks);
             taskSelection.enter().append("g").classed(Selectors.SingleTask.class, true);
 
             //render task main rect
-            var taskRect = taskSelection.selectAll(Selectors.TaskRect.selector).data((d: Task) => [d]);
-            taskRect.enter().append("rect").classed(Selectors.TaskRect.class, true);
-            taskRect.classed(Selectors.TaskRect.class, true).attr({
-                x: (task: Task) => this.timeScale(task.start),
-                y: (task: Task) => this.getBarYCoordinate(task.id),
-                width: (task: Task) => this.taskDurationToWidth(task),
-                height: () => this.getBarHeight()
-            }).style("fill", (task: Task) => task.color);
+            let taskRect: UpdateSelection<Task> = taskSelection.selectAll(Selectors.TaskRect.selector).data((d: Task) => [d]);
+            taskRect
+                .enter()
+                .append("rect")
+                .classed(Selectors.TaskRect.class, true);
+
+            taskRect
+                .classed(Selectors.TaskRect.class, true)
+                .attr({
+                    x: (task: Task) => this.timeScale(task.start),
+                    y: (task: Task) => Gantt.getBarYCoordinate(task.id),
+                    width: (task: Task) => this.taskDurationToWidth(task),
+                    height: () => Gantt.getBarHeight()
+                }).style("fill", (task: Task) => task.color);
+
             taskRect.exit().remove();
 
             //render task progress rect
-            var taskProgress = taskSelection.selectAll(Selectors.TaskProgress.selector).data((d: Task) => [d]);
-            taskProgress.enter().append("rect").classed(Selectors.TaskProgress.class, true);
-            taskProgress.attr({
-                x: (task: Task) => this.timeScale(task.start),
-                y: (task: Task) => this.getBarYCoordinate(task.id) + this.getBarHeight() / 2 - Gantt.DefaultValues.ProgressBarHeight / 2,
-                width: (task: Task) => this.setTaskProgress(task),
-                height: Gantt.DefaultValues.ProgressBarHeight
-            }).style("fill", taskProgressColor);
+            let taskProgress: UpdateSelection<Task> = taskSelection.selectAll(Selectors.TaskProgress.selector).data((d: Task) => [d]);
+            taskProgress
+                .enter()
+                .append("rect")
+                .classed(Selectors.TaskProgress.class, true);
+
+            taskProgress
+                .attr({
+                    x: (task: Task) => this.timeScale(task.start),
+                    y: (task: Task) => Gantt.getBarYCoordinate(task.id) + Gantt.getBarHeight() / 2 - Gantt.DefaultValues.ProgressBarHeight / 2,
+                    width: (task: Task) => this.setTaskProgress(task),
+                    height: Gantt.DefaultValues.ProgressBarHeight
+                })
+                .style("fill", taskProgressColor);
+
             taskProgress.exit().remove();
 
             if (taskResourceShow) {
                 //render task resource labels
-                var taskResource = taskSelection.selectAll(Selectors.TaskResource.selector).data((d: Task) => [d]);
-                taskResource.enter().append("text").classed(Selectors.TaskResource.class, true);
-                taskResource.attr({
-                    x: (task: Task) => this.timeScale(task.end) + padding,
-                    y: (task: Task) => (this.getBarYCoordinate(task.id) + (this.getBarHeight() / 2) + padding)
-                })
+                let taskResource: UpdateSelection<Task> = taskSelection.selectAll(Selectors.TaskResource.selector).data((d: Task) => [d]);
+                taskResource
+                    .enter()
+                    .append("text")
+                    .classed(Selectors.TaskResource.class, true);
+
+                taskResource
+                    .attr({
+                        x: (task: Task) => this.timeScale(task.end) + Gantt.TaskResourcePadding,
+                        y: (task: Task) => (Gantt.getBarYCoordinate(task.id) + (Gantt.getBarHeight() / 2) + Gantt.TaskResourcePadding)
+                    })
                     .text((task: Task) => task.resource)
                     .style({
                         fill: taskResourceColor,
                         "font-size": PixelConverter.fromPoint(taskResourceFontSize)
                     }).call(AxisHelper.LabelLayoutStrategy.clip,
-                    Gantt.DefaultValues.ResourceWidth - 10,
-                    TextMeasurementService.svgEllipsis);
+                    Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding,
+                    textMeasurementService.svgEllipsis);
 
                 taskResource.exit().remove();
             }
@@ -958,12 +1005,12 @@ module powerbi.extensibility.visual {
                 taskSelection.selectAll(Selectors.TaskResource.selector).remove();
             }
 
-            TooltipManager.addTooltip(taskSelection, (tooltipEvent: TooltipEvent) => (<Task>tooltipEvent.data).tooltipInfo);
+            this.renderTooltip(taskSelection);
             taskSelection.exit().remove();
             taskGroupSelection.exit().remove();
         }
 
-        public onClearSelection() {
+        public onClearSelection(): void {
             this.selectionManager.clear();
         }
 
@@ -972,8 +1019,8 @@ module powerbi.extensibility.visual {
          * @param taskIndex Task Number
          */
         private getTaskLabelCoordinateY(taskIndex: number): number {
-            var fontSize: number = + this.viewModel.settings.taskLabels.fontSize;
-            return (ChartLineHeight * taskIndex) + (this.getBarHeight() + 5 - (40 - fontSize) / 4);
+            const fontSize: number = + this.viewModel.settings.taskLabels.fontSize;
+            return (ChartLineHeight * taskIndex) + (Gantt.getBarHeight() + Gantt.BarHeightMargin - (ChartLineHeight - fontSize) / Gantt.ChartLineHeightDivider);
         }
 
         /**
@@ -981,9 +1028,8 @@ module powerbi.extensibility.visual {
          * @param task All task attributes
          */
         private setTaskProgress(task: Task): number {
-            var fraction = task.completion / 1.0,
-                y = this.timeScale,
-                progress = (y(task.end) - y(task.start)) * fraction;
+            let fraction: number = task.completion / 1.0,
+                progress = (this.timeScale(task.end) - this.timeScale(task.start)) * fraction;
 
             return progress;
         }
@@ -992,11 +1038,11 @@ module powerbi.extensibility.visual {
          * Set the task progress bar in the gantt
          * @param lineNumber Line number that represents the task number
          */
-        private getBarYCoordinate(lineNumber: number): number {
+        private static getBarYCoordinate(lineNumber: number): number {
             return (ChartLineHeight * lineNumber) + (PaddingTasks);
         }
 
-        private getBarHeight(): number {
+        private static getBarHeight(): number {
             return ChartLineHeight / 1.5;
         }
 
@@ -1008,9 +1054,9 @@ module powerbi.extensibility.visual {
             return this.timeScale(task.end) - this.timeScale(task.start);
         }
 
-        private getTooltipForMilstoneLine(timestamp: number, milestoneTitle: string): TooltipDataItem[] {
-            var stringDate = new Date(timestamp).toDateString();
-            var tooltip: TooltipDataItem[] = [{ displayName: milestoneTitle, value: stringDate }];
+        private getTooltipForMilstoneLine(timestamp: number, milestoneTitle: string): VisualTooltipDataItem[] {
+            let stringDate: string = new Date(timestamp).toDateString();
+            let tooltip: VisualTooltipDataItem[] = [{ displayName: milestoneTitle, value: stringDate }];
             return tooltip;
         }
 
@@ -1020,30 +1066,38 @@ module powerbi.extensibility.visual {
         * @param timestamp the milestone to be shown in the time axis (default Date.now())
         */
         private createMilestoneLine(tasks: GroupedTask[], milestoneTitle: string = "Today", timestamp: number = Date.now()): void {
-            var line: Line[] = [{
-                x1: this.timeScale(timestamp),
+            let line: Line[] = [{
+                x1: this.timeScale(new Date(timestamp)),
                 y1: 0,
-                x2: this.timeScale(timestamp),
+                x2: this.timeScale(new Date(timestamp)),
                 y2: this.getMilestoneLineLength(tasks.length),
                 tooltipInfo: this.getTooltipForMilstoneLine(timestamp, milestoneTitle)
             }];
 
-            var chartLineSelection: UpdateSelection<any> = this.chartGroup.selectAll(Selectors.ChartLine.selector).data(line);
+            let chartLineSelection: UpdateSelection<Line> = this.chartGroup.selectAll(Selectors.ChartLine.selector).data(line);
             chartLineSelection.enter().append("line").classed(Selectors.ChartLine.class, true);
             chartLineSelection.attr({
                 x1: (line: Line) => line.x1,
                 y1: (line: Line) => line.y1,
                 x2: (line: Line) => line.x2,
-                y2: (line: Line) => line.y2,
-                tooltipInfo: (line: Line) => line.tooltipInfo
+                y2: (line: Line) => line.y2
+               // tooltipInfo: (line: Line) => line.tooltipInfo
             });
 
-            TooltipManager.addTooltip(chartLineSelection, (tooltipEvent: TooltipEvent) => (<Line>tooltipEvent.data).tooltipInfo);
+            this.renderTooltip(chartLineSelection);
             chartLineSelection.exit().remove();
         }
 
+        private renderTooltip(selection: Selection<Line | Task>): void {
+            this.tooltipServiceWrapper.addTooltip(
+                selection,
+                (tooltipEvent: TooltipEventArgs<TooltipEnabledDataPoint>) => {
+                    return tooltipEvent.data.tooltipInfo;
+                });
+        }
+
         private updateElementsPositions(viewport: IViewport, margin: IMargin): void {
-            this.axisGroup.attr("transform", SVGUtil.translate(this.viewModel.settings.taskLabels.width + margin.left, 15));
+            this.axisGroup.attr("transform", SVGUtil.translate(this.viewModel.settings.taskLabels.width + margin.left, Gantt.TaskLabelsMarginTop));
             this.chartGroup.attr("transform", SVGUtil.translate(this.viewModel.settings.taskLabels.width + margin.left, margin.top));
             this.lineGroup.attr("transform", SVGUtil.translate(0, margin.top));
         }
@@ -1053,26 +1107,126 @@ module powerbi.extensibility.visual {
         }
 
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
-            var settings = this.viewModel && this.viewModel.settings;
-            if(_.isEmpty(settings)) {
+            if (!this.viewModel ||
+                !this.viewModel.settings) {
                 return [];
             }
 
-            var result = GanttSettings.enumerateObjectInstances(settings.originalSettings, options, Gantt.capabilities);
+            let settings: IGanttSettings = this.viewModel.settings;
 
             switch (options.objectName) {
-                case 'general':
+                case 'general': {
+                    return Gantt.enumerateGeneral(settings);
+                }
+                case 'legend': {
+                    return Gantt.enumerateLegend(settings);
+                }
+                case 'taskLabels': {
+                    return Gantt.enumerateTaskLabels(settings);
+                }
+                case 'taskCompletion': {
+                    return Gantt.enumerateTaskCompletion(settings);
+                }
+                case 'taskResource': {
+                    return Gantt.enumerateTaskResource(settings);
+                }
+                case 'dateType': {
+                    return Gantt.enumerateDateType(settings);
+                }
+                default: {
                     return [];
+                }
             }
-
-            return result.complete();
         }
-    }
 
-    export interface GanttBehaviorOptions {
-        clearCatcher: Selection<any>;
-        taskSelection: Selection<any>;
-        legendSelection: Selection<any>;
-        interactivityService: IInteractivityService;
+        private static enumerateGeneral(settings: IGanttSettings): VisualObjectInstance[] {
+            const generalSettings: IGeneralSettings = settings.general,
+                instances: VisualObjectInstance[] = [{
+                    objectName: 'general',
+                    displayName: 'General',
+                    selector: null,
+                    properties: {
+                        groupTasks: generalSettings.groupTasks
+                    }
+                }];
+            return instances;
+        }
+
+        private static enumerateLegend(settings: IGanttSettings): VisualObjectInstance[] {
+            const legendSettings: ILegendSettings = settings.legend,
+                instances: VisualObjectInstance[] = [{
+                    objectName: 'legend',
+                    displayName: 'Legend',
+                    selector: null,
+                    properties: {
+                        show: legendSettings.show,
+                        position: legendSettings.position,
+                        showTitle: legendSettings.showTitle,
+                        titleText: legendSettings.titleText,
+                        labelColor: legendSettings.labelColor,
+                        fontSize: legendSettings.fontSize
+                    }
+                }];
+            return instances;
+        }
+
+        private static enumerateTaskLabels(settings: IGanttSettings): VisualObjectInstance[] {
+            const taskLabelsSettings: ITaskLabelsSettings = settings.taskLabels,
+                instances: VisualObjectInstance[] = [{
+                    objectName: 'taskLabels',
+                    displayName: 'Category Labels',
+                    selector: null,
+                    properties: {
+                        show: taskLabelsSettings.show,
+                        fill: taskLabelsSettings.fill,
+                        fontSize: taskLabelsSettings.fontSize,
+                        width: taskLabelsSettings.width
+                    }
+                }];
+            return instances;
+        }
+
+        private static enumerateTaskCompletion(settings: IGanttSettings): VisualObjectInstance[] {
+            const taskCompletionSettings: ITaskCompletionSettings = settings.taskCompletion,
+                instances: VisualObjectInstance[] = [{
+                    objectName: 'taskCompletion',
+                    displayName: 'Task Completion',
+                    selector: null,
+                    properties: {
+                        show: taskCompletionSettings.show,
+                        fill: taskCompletionSettings.fill
+                    }
+                }];
+            return instances;
+        }
+
+        private static enumerateTaskResource(settings: IGanttSettings): VisualObjectInstance[] {
+            const taskResourceSettings: ITaskResourceSettings = settings.taskResource,
+                instances: VisualObjectInstance[] = [{
+                    objectName: 'taskResource',
+                    displayName: 'Data Labels',
+                    selector: null,
+                    properties: {
+                        show: taskResourceSettings.show,
+                        fill: taskResourceSettings.fill,
+                        fontSize: taskResourceSettings.fontSize
+                    }
+                }];
+            return instances;
+        }
+
+        private static enumerateDateType(settings: IGanttSettings): VisualObjectInstance[] {
+            const dateTypeSettings: IDateTypeSettings = settings.dateType,
+                instances: VisualObjectInstance[] = [{
+                    objectName: 'dateType',
+                    displayName: 'Gantt Date Type',
+                    selector: null,
+                    properties: {
+                        type: dateTypeSettings.type
+                    }
+                }];
+            return instances;
+        }
+
     }
 }

@@ -27,6 +27,9 @@
 module powerbi.extensibility.visual {
     import DataViewObjects = powerbi.extensibility.utils.dataview.DataViewObjects;
     import ColorHelper = powerbi.extensibility.utils.color.ColorHelper;
+    import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
+
+    export type GanttDateType = "Day" | "Week" | "Month" | "Year";
 
     export interface IGeneralSettings {
         groupTasks: boolean;
@@ -34,7 +37,7 @@ module powerbi.extensibility.visual {
 
     export interface ILegendSettings {
         show: boolean;
-        position: string;
+        position: number;
         showTitle: boolean;
         titleText: string;
         labelColor: string;
@@ -59,8 +62,8 @@ module powerbi.extensibility.visual {
         fontSize: number;
     }
 
-    export interface IDataTypeSettings {
-        type: string;
+    export interface IDateTypeSettings {
+        type: GanttDateType;
     }
 
     export interface IGanttSettings {
@@ -69,7 +72,7 @@ module powerbi.extensibility.visual {
         taskLabels: ITaskLabelsSettings;
         taskCompletion: ITaskCompletionSettings;
         taskResource: ITaskResourceSettings;
-        dateType: IDataTypeSettings;
+        dateType: IDateTypeSettings;
     }
 
     export class GanttSettings {
@@ -86,7 +89,7 @@ module powerbi.extensibility.visual {
                 taskLabels: this.parseTaskLabelsSettings(objects, colors),
                 taskCompletion: this.parseTaskComplectionSettings(objects, colors),
                 taskResource: this.parseTaskResourceSettings(objects, colors),
-                dateType: this.parseDataTypeSettings(objects)
+                dateType: this.parseDateTypeSettings(objects)
             };
         }
 
@@ -105,7 +108,7 @@ module powerbi.extensibility.visual {
 
             return  {
                 show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
-                position: DataViewObjects.getValue<string>(objects, properties.position, defaultSettings.position),
+                position: DataViewObjects.getValue<number>(objects, properties.position, defaultSettings.position),
                 showTitle: DataViewObjects.getValue<boolean>(objects, properties.showTitle, defaultSettings.showTitle),
                 titleText: DataViewObjects.getValue<string>(objects, properties.titleText, defaultSettings.titleText),
                 labelColor: this.getColor(objects, properties.labelColor, defaultSettings.labelColor, colors),
@@ -146,12 +149,12 @@ module powerbi.extensibility.visual {
             }
         }
 
-        private static parseDataTypeSettings(objects: DataViewObjects): IDataTypeSettings {
+        private static parseDateTypeSettings(objects: DataViewObjects): IDateTypeSettings {
             const properties = ganttProperties.dateType;
-            const defaultSettings: IDataTypeSettings = this.dateType;
+            const defaultSettings: IDateTypeSettings = this.dateType;
 
             return  {
-                type: DataViewObjects.getValue<string>(objects, properties.type, defaultSettings.type)
+                type: DataViewObjects.getValue<GanttDateType>(objects, properties.type, defaultSettings.type)
             }
         }
 
@@ -167,7 +170,7 @@ module powerbi.extensibility.visual {
 
         private static legend: ILegendSettings = {
             show: true,
-            position: legendPosition.right,
+            position: LegendPosition.Right,
             showTitle: true,
             titleText: "",
             labelColor: "#000000",
@@ -192,8 +195,8 @@ module powerbi.extensibility.visual {
             fontSize: 9,
         };
 
-        private static dateType: IDataTypeSettings = {
-            type: GanttDateType.Week
+        private static dateType: IDateTypeSettings = {
+            type: "Week"
         };
     }
 }

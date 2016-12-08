@@ -31,13 +31,11 @@ module powerbi.extensibility.visual.test {
     import DataView = powerbi.DataView;
 
     // powerbi.extensibility.visual.test
-    import SankeyDiagramData = powerbi.extensibility.visual.test.SankeyDiagramData;
-    import SankeyDiagramBuilder = powerbi.extensibility.visual.test.SankeyDiagramBuilder;
+    import GanttData = powerbi.extensibility.visual.test.GanttData;
+    import GanttBuilder = powerbi.extensibility.visual.test.GanttBuilder;
 
-    // powerbi.extensibility.visual.SankeyDiagram1446463184954
-    import VisualClass = powerbi.extensibility.visual.SankeyDiagram1446463184954.SankeyDiagram;
-    import SankeyDiagramNode = powerbi.extensibility.visual.SankeyDiagram1446463184954.SankeyDiagramNode;
-    import SankeyDiagramColumn = powerbi.extensibility.visual.SankeyDiagram1446463184954.SankeyDiagramColumn;
+    // powerbi.extensibility.visual.Gantt1448688115699
+    import VisualClass = powerbi.extensibility.visual.Gantt1448688115699.Gantt;
 
     // powerbi.extensibility.utils.test
     import clickElement = powerbi.extensibility.utils.test.helpers.clickElement;
@@ -45,22 +43,22 @@ module powerbi.extensibility.visual.test {
     import getRandomNumbers = powerbi.extensibility.utils.test.helpers.getRandomNumbers;
     import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
 
-    interface SankeyDiagramTestsNode {
+    interface GanttTestsNode {
         x: number;
         inputWeight: number;
         outputWeight: number;
     }
 
-    describe("SankeyDiagram", () => {
-        let visualBuilder: SankeyDiagramBuilder,
+    describe("Gantt", () => {
+        let visualBuilder: GanttBuilder,
             visualInstance: VisualClass,
-            defaultDataViewBuilder: SankeyDiagramData,
+            defaultDataViewBuilder: GanttData,
             dataView: DataView;
 
         beforeEach(() => {
-            visualBuilder = new SankeyDiagramBuilder(1000, 500);
+            visualBuilder = new GanttBuilder(1000, 500);
 
-            defaultDataViewBuilder = new SankeyDiagramData();
+            defaultDataViewBuilder = new GanttData();
             dataView = defaultDataViewBuilder.getDataView();
 
             visualInstance = visualBuilder.instance;
@@ -101,7 +99,7 @@ module powerbi.extensibility.visual.test {
         describe("sortNodesByX", () => {
             it("nodes should be sorted correctly", () => {
                 let xValues: number[],
-                    nodes: SankeyDiagramNode[];
+                    nodes: GanttNode[];
 
                 xValues = [42, 13, 52, 182, 1e25, 1, 6, 3, 4];
 
@@ -111,12 +109,12 @@ module powerbi.extensibility.visual.test {
                     return x - y;
                 });
 
-                visualInstance.sortNodesByX(nodes).forEach((node: SankeyDiagramNode, index: number) => {
+                visualInstance.sortNodesByX(nodes).forEach((node: GanttNode, index: number) => {
                     expect(node.x).toBe(xValues[index]);
                 });
             });
 
-            function createNodes(xValues: number[]): SankeyDiagramNode[] {
+            function createNodes(xValues: number[]): GanttNode[] {
                 return xValues.map((xValue: number) => {
                     return {
                         label: {
@@ -143,7 +141,7 @@ module powerbi.extensibility.visual.test {
 
         describe("getColumns", () => {
             it("getColumns", () => {
-                let testNodes: SankeyDiagramTestsNode[];
+                let testNodes: GanttTestsNode[];
 
                 testNodes = [
                     { x: 0, inputWeight: 15, outputWeight: 14 },
@@ -153,15 +151,15 @@ module powerbi.extensibility.visual.test {
                 ];
 
                 visualInstance.getColumns(createNodes(testNodes))
-                    .forEach((column: SankeyDiagramColumn, index: number) => {
+                    .forEach((column: GanttColumn, index: number) => {
                         expect(column.countOfNodes).toBe(1);
 
                         expect(column.sumValueOfNodes).toBe(testNodes[index].inputWeight);
                     });
             });
 
-            function createNodes(testNodes: SankeyDiagramTestsNode[]): SankeyDiagramNode[] {
-                return testNodes.map((testNode: SankeyDiagramTestsNode) => {
+            function createNodes(testNodes: GanttTestsNode[]): GanttNode[] {
+                return testNodes.map((testNode: GanttTestsNode) => {
                     return {
                         label: {
                             name: "",
@@ -187,7 +185,7 @@ module powerbi.extensibility.visual.test {
 
         describe("getMaxColumn", () => {
             it("getMaxColumn should return { sumValueOfNodes: 0, countOfNodes: 0 }", () => {
-                let maxColumn: SankeyDiagramColumn;
+                let maxColumn: GanttColumn;
 
                 maxColumn = visualInstance.getMaxColumn([]);
 
@@ -196,7 +194,7 @@ module powerbi.extensibility.visual.test {
             });
 
             it("getMaxColumn should return { sumValueOfNodes: 0, countOfNodes: 0 } when columns are null", () => {
-                let maxColumn: SankeyDiagramColumn;
+                let maxColumn: GanttColumn;
 
                 maxColumn = visualInstance.getMaxColumn([
                     undefined,
@@ -208,8 +206,8 @@ module powerbi.extensibility.visual.test {
             });
 
             it("getMaxColumn should return max column", () => {
-                let maxColumn: SankeyDiagramColumn,
-                    columns: SankeyDiagramColumn[];
+                let maxColumn: GanttColumn,
+                    columns: GanttColumn[];
 
                 maxColumn = { countOfNodes: 35, sumValueOfNodes: 21321 };
 

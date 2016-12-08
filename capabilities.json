@@ -166,180 +166,179 @@
                 "position": {
                     "displayName": "Position",
                     "description": "Select the location for the legend",
-                        "type": {
-                            "enumeration": [{
-                                "value": "Top",
-                                "displayName": "Top"
-                            }, {
-                                "value": "Bottom",
-                                "displayName": "Bottom"
-                            }, {
-                                "value": "Left",
-                                "displayName": "Left"
-                            }, {
-                                "value": "Right",
-                                "displayName": "Right"
-                            }, {
-                                "value": "TopCenter",
-                                "displayName": "Top Center"
-                            }, {
-                                "value": "BottomCenter",
-                                "displayName": "Bottom Center"
-                            }, {
-                                "value": "LeftCenter",
-                                "displayName": "Left Center"
-                            }, {
-                                "value": "RightCenter",
-                                "displayName": "Right Center"
-                            }]
-                        }
-                    },
-                    "showTitle": {
-                        "displayName": "Title",
-                        "description": "Display a title for legend symbols",
-                        "type": {
-                            "bool": true
-                        }
-                    },
-                    "titleText": {
-                        "displayName": "Legend Name",
-                        "description": "Title text",
-                        "type": {
-                            "text": true
-                        },
-                        "suppressFormatPainterCopy": true
-                    },
-                    "labelColor": {
-                        "displayName": "color",
-                        "type": {
-                            "fill": {
-                                "solid": {
-                                    "color": true
-                                }
-                            }
-                        }
-                    },
-                    "fontSize": {
-                        "displayName": "text Size",
-                        "type": {
-                            "formatting": {
-                                "fontSize": true
-                            }
-
-                        }
-                    }
-                }
-            },
-            "taskLabels": {
-                "displayName": "Category Labels",
-                "properties": {
-                    "show": {
-                        "displayName": "Show",
-                        "type": {
-                            "bool": true
-                        }
-                    },
-                    "fill": {
-                        "displayName": "fill",
-                        "type": {
-                            "fill": {
-                                "solid": {
-                                    "color": true
-                                }
-                            }
-                        }
-                    },
-                    "fontSize": {
-                        "displayName": "Font Size",
-                        "type": {
-                            "formatting": {
-                                "fontSize": true
-                            }
-                        }
-                    },
-                    "width": {
-                        "displayName": "Width",
-                        "type": {
-                            "numeric": true
-                        }
-                    }
-                }
-            },
-            "taskCompletion": {
-                "displayName": "Task Completion",
-                "properties": {
-                    "show": {
-                        "type": {
-                            "bool": true
-                        }
-                    },
-                    "fill": {
-                        "displayName": "Completion color",
-                        "type": {
-                            "fill": {
-                                "solid": {
-                                    "color": true
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "taskResource": {
-                "displayName": "Data Labels",
-                "properties": {
-                    "show": {
-                        "displayName": "Show",
-                        "type": {
-                            "bool": true
-                        }
-                    },
-                    "fill": {
-                        "displayName": "color",
-                        "type": {
-                            "fill": {
-                                "solid": {
-                                    "color": true
-                                }
-                            }
-                        }
-                    },
-                    "fontSize": {
-                        "displayName": "Font Size",
-                        "type": {
-                            "formatting": {
-                                "fontSize": true
-                            }
-                        }
-                    }
-                }
-            },
-            "dateType": {
-                "displayName": "Gantt Date type",
-                "properties": {
                     "type": {
-                        "displayName": "type",
-                        "type": {
-                            "enumeration": [{
-                                "value": "Day",
-                                "displayName": "Day"
-                            }, {
-                                "value": "Week",
-                                "displayName": "Week"
-                            }, {
-                                "value": "Month",
-                                "displayName": "Month"
-                            }, {
-                                "value": "Year",
-                                "displayName": "Year"
-                            }]
+                        "enumeration": [{
+                            "value": "Top",
+                            "displayName": "Top"
+                        }, {
+                            "value": "Bottom",
+                            "displayName": "Bottom"
+                        }, {
+                            "value": "Left",
+                            "displayName": "Left"
+                        }, {
+                            "value": "Right",
+                            "displayName": "Right"
+                        }, {
+                            "value": "TopCenter",
+                            "displayName": "Top Center"
+                        }, {
+                            "value": "BottomCenter",
+                            "displayName": "Bottom Center"
+                        }, {
+                            "value": "LeftCenter",
+                            "displayName": "Left Center"
+                        }, {
+                            "value": "RightCenter",
+                            "displayName": "Right Center"
+                        }]
+                    }
+                },
+                "showTitle": {
+                    "displayName": "Title",
+                    "description": "Display a title for legend symbols",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "titleText": {
+                    "displayName": "Legend Name",
+                    "description": "Title text",
+                    "type": {
+                        "text": true
+                    },
+                    "suppressFormatPainterCopy": true
+                },
+                "labelColor": {
+                    "displayName": "color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontSize": {
+                    "displayName": "text Size",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+
+                    }
+                }
+            }
+        },
+        "taskLabels": {
+            "displayName": "Category Labels",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "fill": {
+                    "displayName": "fill",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontSize": {
+                    "displayName": "Font Size",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "width": {
+                    "displayName": "Width",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
+        "taskCompletion": {
+            "displayName": "Task Completion",
+            "properties": {
+                "show": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "fill": {
+                    "displayName": "Completion color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
                         }
                     }
                 }
             }
         },
-        "sorting": {
-            "default": {}
+        "taskResource": {
+            "displayName": "Data Labels",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "fill": {
+                    "displayName": "Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontSize": {
+                    "displayName": "Font Size",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                }
+            }
+        },
+        "dateType": {
+            "displayName": "Gantt Date type",
+            "properties": {
+                "type": {
+                    "displayName": "Type",
+                    "type": {
+                        "enumeration": [{
+                            "value": "Day",
+                            "displayName": "Day"
+                        }, {
+                            "value": "Week",
+                            "displayName": "Week"
+                        }, {
+                            "value": "Month",
+                            "displayName": "Month"
+                        }, {
+                            "value": "Year",
+                            "displayName": "Year"
+                        }]
+                    }
+                }
+            }
         }
+    },
+    "sorting": {
+        "default": {}
     }
 }

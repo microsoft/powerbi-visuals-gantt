@@ -58,7 +58,7 @@ module powerbi.extensibility.visual {
                 || values.source && values.source.roles && values.source.roles[i] && series);
         }
 
-        public static getSeriesValues(dataView: DataView) {
+        public static getSeriesValues(dataView: DataView): PrimitiveValue[] {
             return dataView && dataView.categorical && dataView.categorical.values
                 && dataView.categorical.values.map(x => converterHelper.getSeriesName(x.source));
         }
@@ -86,16 +86,16 @@ module powerbi.extensibility.visual {
         }
 
         public static getGroupedValueColumns(dataView: DataView): GanttColumns<DataViewValueColumn>[] {
-            let categorical = dataView && dataView.categorical;
-            let values = categorical && categorical.values;
-            let grouped = values && values.grouped();
+            let categorical: DataViewCategorical = dataView && dataView.categorical;
+            let values: DataViewValueColumns = categorical && categorical.values;
+            let grouped: DataViewValueColumnGroup[] = values && values.grouped();
             return grouped && grouped.map(g => _.mapValues(
                 new this<DataViewValueColumn>(),
                 (n, i) => g.values.filter(v => v.source.roles[i])[0]));
         }
 
         private static getColumnSourcesT<T>(dataView: DataView): GanttColumns<T> {
-            let columns = dataView && dataView.metadata && dataView.metadata.columns;
+            let columns: DataViewMetadataColumn[] = dataView && dataView.metadata && dataView.metadata.columns;
             return columns && _.mapValues(
                 new this<T>(), (n, i) => columns.filter(x => x.roles && x.roles[i])[0]);
         }

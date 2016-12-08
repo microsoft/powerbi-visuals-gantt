@@ -30,11 +30,11 @@ module powerbi.extensibility.visual.test {
     // powerbi.extensibility.utils.test
     import VisualBuilderBase = powerbi.extensibility.utils.test.VisualBuilderBase;
 
-    // SankeyDiagram1446463184954
-    import VisualClass = powerbi.extensibility.visual.SankeyDiagram1446463184954.SankeyDiagram;
-    import VisualPlugin = powerbi.visuals.plugins.SankeyDiagram1446463184954;
+    // Gantt1448688115699
+    import VisualClass = powerbi.extensibility.visual.Gantt1448688115699.Gantt;
+    import VisualPlugin = powerbi.visuals.plugins.Gantt1448688115699;
 
-    export class SankeyDiagramBuilder extends VisualBuilderBase<VisualClass> {
+    export class GanttBuilder extends VisualBuilderBase<VisualClass> {
         constructor(width: number, height: number) {
             super(width, height, VisualPlugin.name);
         }
@@ -48,7 +48,7 @@ module powerbi.extensibility.visual.test {
         }
 
         public get mainElement(): JQuery {
-            return this.element.children("svg.sankeyDiagram");
+            return this.element.children("svg.gantt");
         }
 
         public get nodesElement(): JQuery {

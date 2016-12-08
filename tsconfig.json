@@ -18,6 +18,7 @@
     "node_modules/powerbi-visuals-utils-tooltiputils/lib/index.d.ts",
     "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.d.ts",
     "node_modules/powerbi-visuals-utils-formattingutils/lib/index.d.ts",
+    "node_modules/powerbi-visuals-utils-tooltiputils/lib/index.d.ts",
     "node_modules/powerbi-visuals-utils-colorutils/lib/index.d.ts",
     "node_modules/powerbi-visuals-utils-chartutils/lib/index.d.ts",
     "src/properties.ts",
