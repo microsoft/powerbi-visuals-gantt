@@ -26,30 +26,35 @@
 
 module powerbi.extensibility.visual {
 
-    export let ganttProperties = {
+    export const ganttProperties = {
         general: {
-             formatString: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'groupTasks' },
+             groupTasks: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'groupTasks' },
         },
         legend: {
             show: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'show' },
             position: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'position' },
             showTitle: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'showTitle' },
-            titletext: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'titletext' },
-            labelcolor: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'labelcolor' },
+            titleText: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'titleText' },
+            labelColor: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'labelColor' },
             fontSize: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'fontSize' },
         },
-        dataPoint: {
-            defaultColor: <DataViewObjectPropertyIdentifier>{ objectName: 'dataPoint', propertyName: 'defaultColor' },
-            showAllDataPoints: <DataViewObjectPropertyIdentifier>{ objectName: 'dataPoint', propertyName: 'showAllDataPoints' },
-            fill: <DataViewObjectPropertyIdentifier>{ objectName: 'dataPoint', propertyName: 'fill' }
+        taskLabels: {
+            show: <DataViewObjectPropertyIdentifier>{ objectName: 'taskLabels', propertyName: 'show' },
+            fill: <DataViewObjectPropertyIdentifier>{ objectName: 'taskLabels', propertyName: 'fill' },
+            fontSize: <DataViewObjectPropertyIdentifier>{ objectName: 'taskLabels', propertyName: 'fontSize' },
+            width: <DataViewObjectPropertyIdentifier>{ objectName: 'taskLabels', propertyName: 'width' }
         },
-        axis: {
-            show: <DataViewObjectPropertyIdentifier>{ objectName: 'axis', propertyName: 'show' }
+        taskCompletion: {
+            show: <DataViewObjectPropertyIdentifier>{ objectName: 'taskCompletion', propertyName: 'show' },
+            fill: <DataViewObjectPropertyIdentifier>{ objectName: 'taskCompletion', propertyName: 'fill' }
         },
-        labels: {
-            show: <DataViewObjectPropertyIdentifier>{ objectName: 'labels', propertyName: 'show' },
-            color: <DataViewObjectPropertyIdentifier>{ objectName: 'labels', propertyName: 'color' },
-            fontSize: <DataViewObjectPropertyIdentifier>{ objectName: 'labels', propertyName: 'fontSize' }
+        taskResource: {
+            show: <DataViewObjectPropertyIdentifier>{ objectName: 'taskResource', propertyName: 'show' },
+            fill: <DataViewObjectPropertyIdentifier>{ objectName: 'taskResource', propertyName: 'fill' },
+            fontSize: <DataViewObjectPropertyIdentifier>{ objectName: 'taskResource', propertyName: 'fontSize' }
+        },
+        dateType: {
+            type: <DataViewObjectPropertyIdentifier>{ objectName: 'dateType', propertyName: 'type' }
         }
     };
 }

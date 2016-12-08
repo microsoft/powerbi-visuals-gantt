@@ -166,7 +166,6 @@
                 "position": {
                     "displayName": "Position",
                     "description": "Select the location for the legend",
-                    "position": {
                         "type": {
                             "enumeration": [{
                                 "value": "Top",
@@ -202,7 +201,7 @@
                             "bool": true
                         }
                     },
-                    "titletext": {
+                    "titleText": {
                         "displayName": "Legend Name",
                         "description": "Title text",
                         "type": {
@@ -210,7 +209,7 @@
                         },
                         "suppressFormatPainterCopy": true
                     },
-                    "labelcolor": {
+                    "labelColor": {
                         "displayName": "color",
                         "type": {
                             "fill": {
@@ -226,6 +225,7 @@
                             "formatting": {
                                 "fontSize": true
                             }
+
                         }
                     }
                 }
@@ -314,7 +314,7 @@
                     }
                 }
             },
-            "datetype": {
+            "dateType": {
                 "displayName": "Gantt Date type",
                 "properties": {
                     "type": {

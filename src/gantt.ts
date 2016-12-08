@@ -599,13 +599,6 @@ module powerbi.extensibility.visual {
             return viewModel;
         }
 
-        private static parseSettings(dataView: DataView, colors: IDataColorPalette): GanttSettings {
-            var settings = GanttSettings.parse(dataView, Gantt.capabilities);
-            delete settings.taskCompletion.show;
-            settings.createOriginalSettings();
-            return settings;
-        }
-
         private static isValidDate(date: Date) {
             if (Object.prototype.toString.call(date) !== "[object Date]")
                 return false;
@@ -613,8 +606,10 @@ module powerbi.extensibility.visual {
         }
 
         private static convertToDecimal(number) {
-            if (!(number >= 0 && number <= 1))
+            if (!(number >= 0 && number <= 1)) {
                 return (number / 100);
+            }
+
             return number;
         }
 
