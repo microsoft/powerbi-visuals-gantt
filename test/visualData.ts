@@ -34,7 +34,7 @@ module powerbi.extensibility.visual.test {
     import TestDataViewBuilder = powerbi.extensibility.utils.test.dataViewBuilder.TestDataViewBuilder;
     import getRandomNumbers = powerbi.extensibility.utils.test.helpers.getRandomNumbers;
 
-    export class SankeyDiagramData extends TestDataViewBuilder {
+    export class GanttData extends TestDataViewBuilder {
         public static ColumnSource: string = "Source";
         public static ColumnDestination: string = "Destination";
         public static ColumnValue: string = "Value";
@@ -66,16 +66,16 @@ module powerbi.extensibility.visual.test {
             return this.createCategoricalDataViewBuilder([
                 {
                     source: {
-                        displayName: SankeyDiagramData.ColumnSource,
-                        roles: { [SankeyDiagramData.ColumnSource]: true },
+                        displayName: GanttData.ColumnSource,
+                        roles: { [GanttData.ColumnSource]: true },
                         type: ValueType.fromDescriptor({ text: true })
                     },
                     values: this.valuesSourceDestination.map(x => x[0])
                 },
                 {
                     source: {
-                        displayName: SankeyDiagramData.ColumnDestination,
-                        roles: { [SankeyDiagramData.ColumnDestination]: true },
+                        displayName: GanttData.ColumnDestination,
+                        roles: { [GanttData.ColumnDestination]: true },
                         type: ValueType.fromDescriptor({ text: true }),
                     },
                     values: this.valuesSourceDestination.map(x => x[1])
@@ -83,8 +83,8 @@ module powerbi.extensibility.visual.test {
             ], [
                     {
                         source: {
-                            displayName: SankeyDiagramData.ColumnValue,
-                            roles: { [SankeyDiagramData.ColumnValue]: true },
+                            displayName: GanttData.ColumnValue,
+                            roles: { [GanttData.ColumnValue]: true },
                             isMeasure: true,
                             type: ValueType.fromDescriptor({ numeric: true }),
                         },

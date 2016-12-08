@@ -1,10 +1,10 @@
 {
-  "name": "powerbi-visuals-sankey",
-  "version": "0.2.0",
-  "description": "Sankey is a type of flow diagram in which the width of the series is in proportion to the quantity of the flow.  Use it to find major contributions to an overall flow.",
+  "name": "powerbi-visuals-gantt",
+  "version": "0.5.0",
+  "description": "A Gantt chart is a type of bar chart which illustrates a project timeline or schedule. The Gantt Chart visual shows the Tasks, Start Dates, Durations, % Complete, and Resources for a project. The Gantt Chart visual can be used to show current schedule status using percent-complete shadings and a vertical \"TODAY\" line. The Legend may be used to group or filter tasks based upon data values.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Microsoft/powerbi-visuals-sankey.git"
+    "url": "git+https://github.com/Microsoft/powerbi-visuals-gantt.git"
   },
   "keywords": [
     "powerbi-visuals"
@@ -25,9 +25,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Microsoft/powerbi-visuals-sankey/issues"
+    "url": "https://github.com/Microsoft/powerbi-visuals-gantt/issues"
   },
-  "homepage": "https://github.com/Microsoft/powerbi-visuals-sankey#readme",
+  "homepage": "https://github.com/Microsoft/powerbi-visuals-gantt#readme",
   "devDependencies": {
     "@types/jasmine": "2.5.37",
     "@types/jasmine-jquery": "1.5.28",
