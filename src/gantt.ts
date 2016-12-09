@@ -510,10 +510,19 @@ module powerbi.extensibility.visual {
 
                 let taskType: string = Gantt.getTaskProperty<string>(columnSource, child, "Legend");
                 let tasksTypeColor: string = colorHelper.getColorForMeasure(dataView.metadata.objects, taskType);
-                debugger;
+
+                let indetity: DataViewScopeIdentity = dataView.categorical.categories[0].identity[index],
+                    categoryColumn: DataViewCategoryColumn = {
+                        source: {
+                            displayName: null,
+                            queryName: metadataColumns.Task.queryName
+                        },
+                        values: null,
+                        identity: [indetity]
+                    };
 
                 const identity: ISelectionId = host.createSelectionIdBuilder()
-                    .withCategory(columns.Task, index)
+                    .withCategory(categoryColumn, 0)
                     .withMeasure(taskType)
                     .createSelectionId();
 
@@ -555,9 +564,9 @@ module powerbi.extensibility.visual {
                     fill: colorHelper.getColorForMeasure(dataView.metadata.objects, type),
                     name: type,
                     identity: host
-                                .createSelectionIdBuilder()
-                                .withMeasure(type)
-                                .createSelectionId(),
+                        .createSelectionIdBuilder()
+                        .withMeasure(type)
+                        .createSelectionId(),
                     selected: false
                 };
             });
@@ -1076,7 +1085,7 @@ module powerbi.extensibility.visual {
                 y1: (line: Line) => line.y1,
                 x2: (line: Line) => line.x2,
                 y2: (line: Line) => line.y2
-               // tooltipInfo: (line: Line) => line.tooltipInfo
+                // tooltipInfo: (line: Line) => line.tooltipInfo
             });
 
             this.renderTooltip(chartLineSelection);
