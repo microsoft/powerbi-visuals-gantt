@@ -511,14 +511,14 @@ module powerbi.extensibility.visual {
                 let taskType: string = Gantt.getTaskProperty<string>(columnSource, child, "Legend");
                 let tasksTypeColor: string = colorHelper.getColorForMeasure(dataView.metadata.objects, taskType);
 
-                let indetity: DataViewScopeIdentity = dataView.categorical.categories[0].identity[index],
+                let identityIndex: DataViewScopeIdentity = dataView.categorical.categories[0].identity[index],
                     categoryColumn: DataViewCategoryColumn = {
                         source: {
                             displayName: null,
                             queryName: metadataColumns.Task.queryName
                         },
                         values: null,
-                        identity: [indetity]
+                        identity: [identityIndex]
                     };
 
                 const identity: ISelectionId = host.createSelectionIdBuilder()

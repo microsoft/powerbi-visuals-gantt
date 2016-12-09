@@ -42,7 +42,6 @@ module powerbi.extensibility.visual {
             this.selectionHandler = selectionHandler;
 
             options.taskSelection.on('click', (d: SelectableDataPoint) => {
-                debugger;
                 selectionHandler.handleSelection(d, (d3.event as MouseEvent).ctrlKey);
                 (d3.event as MouseEvent).stopPropagation();
             });
