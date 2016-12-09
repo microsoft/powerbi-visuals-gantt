@@ -41,12 +41,12 @@ module powerbi.extensibility.visual {
             let clearCatcher: Selection<any> = options.clearCatcher;
             this.selectionHandler = selectionHandler;
 
-            options.taskSelection.on('click', (d: SelectableDataPoint) => {
+            options.taskSelection.on("click", (d: SelectableDataPoint) => {
                 selectionHandler.handleSelection(d, (d3.event as MouseEvent).ctrlKey);
                 (d3.event as MouseEvent).stopPropagation();
             });
 
-            clearCatcher.on('click', () => {
+            clearCatcher.on("click", () => {
                 selectionHandler.handleClearSelection();
             });
         }

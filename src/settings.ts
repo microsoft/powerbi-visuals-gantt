@@ -160,7 +160,7 @@ module powerbi.extensibility.visual {
 
         private static getColor(objects: DataViewObjects, properties: any, defaultColor: string, colors: IColorPalette): string {
             let colorHelper: ColorHelper = new ColorHelper(colors, properties, defaultColor);
-            return colorHelper.getColorForMeasure(objects, '');
+            return colorHelper.getColorForMeasure(objects, "");
         }
 
         // Default Settings

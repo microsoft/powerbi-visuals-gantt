@@ -49,10 +49,8 @@
     "powerbi-visuals-utils-svgutils": "^0.2.1",
     "powerbi-visuals-utils-tooltiputils": "^0.3.0",
     "powerbi-visuals-utils-typeutils": "^0.2.0",
+    "powerbi-visuals-utils-chartutils": "^0.2.1",
     "tslint": "4.0.2",
     "typings": "2.0.0"
-  },
-  "dependencies": {
-    "powerbi-visuals-utils-chartutils": "^0.2.1"
   }
 }

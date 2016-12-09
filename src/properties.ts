@@ -28,33 +28,33 @@ module powerbi.extensibility.visual {
 
     export const ganttProperties = {
         general: {
-             groupTasks: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'groupTasks' },
+             groupTasks: <DataViewObjectPropertyIdentifier>{ objectName: "general", propertyName: "groupTasks" },
         },
         legend: {
-            show: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'show' },
-            position: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'position' },
-            showTitle: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'showTitle' },
-            titleText: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'titleText' },
-            labelColor: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'labelColor' },
-            fontSize: <DataViewObjectPropertyIdentifier>{ objectName: 'legend', propertyName: 'fontSize' },
+            show: <DataViewObjectPropertyIdentifier>{ objectName: "legend", propertyName: "show" },
+            position: <DataViewObjectPropertyIdentifier>{ objectName: "legend", propertyName: "position" },
+            showTitle: <DataViewObjectPropertyIdentifier>{ objectName: "legend", propertyName: "showTitle" },
+            titleText: <DataViewObjectPropertyIdentifier>{ objectName: "legend", propertyName: "titleText" },
+            labelColor: <DataViewObjectPropertyIdentifier>{ objectName: "legend", propertyName: "labelColor" },
+            fontSize: <DataViewObjectPropertyIdentifier>{ objectName: "legend", propertyName: "fontSize" },
         },
         taskLabels: {
-            show: <DataViewObjectPropertyIdentifier>{ objectName: 'taskLabels', propertyName: 'show' },
-            fill: <DataViewObjectPropertyIdentifier>{ objectName: 'taskLabels', propertyName: 'fill' },
-            fontSize: <DataViewObjectPropertyIdentifier>{ objectName: 'taskLabels', propertyName: 'fontSize' },
-            width: <DataViewObjectPropertyIdentifier>{ objectName: 'taskLabels', propertyName: 'width' }
+            show: <DataViewObjectPropertyIdentifier>{ objectName: "taskLabels", propertyName: "show" },
+            fill: <DataViewObjectPropertyIdentifier>{ objectName: "taskLabels", propertyName: "fill" },
+            fontSize: <DataViewObjectPropertyIdentifier>{ objectName: "taskLabels", propertyName: "fontSize" },
+            width: <DataViewObjectPropertyIdentifier>{ objectName: "taskLabels", propertyName: "width" }
         },
         taskCompletion: {
-            show: <DataViewObjectPropertyIdentifier>{ objectName: 'taskCompletion', propertyName: 'show' },
-            fill: <DataViewObjectPropertyIdentifier>{ objectName: 'taskCompletion', propertyName: 'fill' }
+            show: <DataViewObjectPropertyIdentifier>{ objectName: "taskCompletion", propertyName: "show" },
+            fill: <DataViewObjectPropertyIdentifier>{ objectName: "taskCompletion", propertyName: "fill" }
         },
         taskResource: {
-            show: <DataViewObjectPropertyIdentifier>{ objectName: 'taskResource', propertyName: 'show' },
-            fill: <DataViewObjectPropertyIdentifier>{ objectName: 'taskResource', propertyName: 'fill' },
-            fontSize: <DataViewObjectPropertyIdentifier>{ objectName: 'taskResource', propertyName: 'fontSize' }
+            show: <DataViewObjectPropertyIdentifier>{ objectName: "taskResource", propertyName: "show" },
+            fill: <DataViewObjectPropertyIdentifier>{ objectName: "taskResource", propertyName: "fill" },
+            fontSize: <DataViewObjectPropertyIdentifier>{ objectName: "taskResource", propertyName: "fontSize" }
         },
         dateType: {
-            type: <DataViewObjectPropertyIdentifier>{ objectName: 'dateType', propertyName: 'type' }
+            type: <DataViewObjectPropertyIdentifier>{ objectName: "dateType", propertyName: "type" }
         }
     };
 }
