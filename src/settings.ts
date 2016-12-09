@@ -37,7 +37,7 @@ module powerbi.extensibility.visual {
 
     export interface ILegendSettings {
         show: boolean;
-        position: number;
+        position: string;
         showTitle: boolean;
         titleText: string;
         labelColor: string;
@@ -108,7 +108,7 @@ module powerbi.extensibility.visual {
 
             return {
                 show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
-                position: DataViewObjects.getValue<number>(objects, properties.position, defaultSettings.position),
+                position: DataViewObjects.getValue<string>(objects, properties.position, defaultSettings.position),
                 showTitle: DataViewObjects.getValue<boolean>(objects, properties.showTitle, defaultSettings.showTitle),
                 titleText: DataViewObjects.getValue<string>(objects, properties.titleText, defaultSettings.titleText),
                 labelColor: this.getColor(objects, properties.labelColor, defaultSettings.labelColor, colors),
@@ -170,7 +170,7 @@ module powerbi.extensibility.visual {
 
         private static legend: ILegendSettings = {
             show: true,
-            position: LegendPosition.Right,
+            position: "Right",
             showTitle: true,
             titleText: "",
             labelColor: "#000000",

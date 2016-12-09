@@ -495,7 +495,7 @@ module powerbi.extensibility.visual {
             let columns: GanttColumns<GanttCategoricalColumns> = GanttColumns.getCategoricalColumns(dataView);
 
             const columnSource = dataView.table.columns;
-            const colorHelper = new ColorHelper(colors, undefined, Gantt.DefaultValues.TaskColor);
+            const colorHelper = new ColorHelper(colors, undefined);
 
             return dataView.table.rows.map((child: DataViewTableRow, index: number) => {
                 let dateString: Date = Gantt.getTaskProperty<Date>(columnSource, child, "StartDate");
@@ -670,12 +670,8 @@ module powerbi.extensibility.visual {
             if (!this.viewModel.legendData) {
                 return;
             }
-
-            // Legend.data.update(this.viewModel.settings.legend);
-            // LegendData.update(this.viewModel.settings.legend);
-
             let position: LegendPosition = this.viewModel.settings.legend.show
-                ? this.viewModel.settings.legend.position
+                ? LegendPosition[this.viewModel.settings.legend.position]
                 : LegendPosition.None;
 
             this.legend.changeOrientation(position);
