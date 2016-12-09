@@ -210,7 +210,7 @@
                     "suppressFormatPainterCopy": true
                 },
                 "labelColor": {
-                    "displayName": "color",
+                    "displayName": "Color",
                     "type": {
                         "fill": {
                             "solid": {
@@ -220,7 +220,7 @@
                     }
                 },
                 "fontSize": {
-                    "displayName": "text Size",
+                    "displayName": "Text Size",
                     "type": {
                         "formatting": {
                             "fontSize": true
@@ -240,7 +240,7 @@
                     }
                 },
                 "fill": {
-                    "displayName": "fill",
+                    "displayName": "Fill",
                     "type": {
                         "fill": {
                             "solid": {

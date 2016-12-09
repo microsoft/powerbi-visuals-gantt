@@ -592,7 +592,8 @@ module powerbi.extensibility.visual {
             const legendData: LegendData = {
                 fontSize: settings.legend.fontSize,
                 dataPoints: [],
-                title: taskTypes.typeName
+                title: settings.legend.showTitle ? (settings.legend.titleText || taskTypes.typeName) : null,
+                labelColor: settings.legend.labelColor
             };
 
             let colorHelper = new ColorHelper(colors, undefined);
@@ -932,6 +933,7 @@ module powerbi.extensibility.visual {
         private renderTasks(groupedTasks: GroupedTask[]): void {
             let taskGroupSelection: UpdateSelection<any> = this.taskGroup.selectAll(Selectors.TaskGroup.selector).data(groupedTasks);
             let taskProgressColor: string = this.viewModel.settings.taskCompletion.fill;
+            let taskProgressShow: boolean = this.viewModel.settings.taskCompletion.show;
             let taskResourceShow: boolean = this.viewModel.settings.taskResource.show;
             let taskResourceColor: string = this.viewModel.settings.taskResource.fill;
             let taskResourceFontSize: number = this.viewModel.settings.taskResource.fontSize;
@@ -961,22 +963,27 @@ module powerbi.extensibility.visual {
             taskRect.exit().remove();
 
             // render task progress rect
-            let taskProgress: UpdateSelection<Task> = taskSelection.selectAll(Selectors.TaskProgress.selector).data((d: Task) => [d]);
-            taskProgress
-                .enter()
-                .append("rect")
-                .classed(Selectors.TaskProgress.class, true);
+            if (taskProgressShow) {
+                let taskProgress: UpdateSelection<Task> = taskSelection.selectAll(Selectors.TaskProgress.selector).data((d: Task) => [d]);
+                taskProgress
+                    .enter()
+                    .append("rect")
+                    .classed(Selectors.TaskProgress.class, true);
 
-            taskProgress
-                .attr({
-                    x: (task: Task) => this.timeScale(task.start),
-                    y: (task: Task) => Gantt.getBarYCoordinate(task.id) + Gantt.getBarHeight() / 2 - Gantt.DefaultValues.ProgressBarHeight / 2,
-                    width: (task: Task) => this.setTaskProgress(task),
-                    height: Gantt.DefaultValues.ProgressBarHeight
-                })
-                .style("fill", taskProgressColor);
+                taskProgress
+                    .attr({
+                        x: (task: Task) => this.timeScale(task.start),
+                        y: (task: Task) => Gantt.getBarYCoordinate(task.id) + Gantt.getBarHeight() / 2 - Gantt.DefaultValues.ProgressBarHeight / 2,
+                        width: (task: Task) => this.setTaskProgress(task),
+                        height: Gantt.DefaultValues.ProgressBarHeight
+                    })
+                    .style("fill", taskProgressColor);
 
-            taskProgress.exit().remove();
+                taskProgress.exit().remove();
+            }
+            else {
+                taskSelection.selectAll(Selectors.TaskProgress.selector).remove();
+            }
 
             if (taskResourceShow) {
                 // render task resource labels
@@ -1097,8 +1104,10 @@ module powerbi.extensibility.visual {
         }
 
         private updateElementsPositions(viewport: IViewport, margin: IMargin): void {
-            this.axisGroup.attr("transform", SVGUtil.translate(this.viewModel.settings.taskLabels.width + margin.left, Gantt.TaskLabelsMarginTop));
-            this.chartGroup.attr("transform", SVGUtil.translate(this.viewModel.settings.taskLabels.width + margin.left, margin.top));
+            const taskLabelsWidth: number = this.viewModel.settings.taskLabels.show ? this.viewModel.settings.taskLabels.width : 0;
+
+            this.axisGroup.attr("transform", SVGUtil.translate(taskLabelsWidth + margin.left, Gantt.TaskLabelsMarginTop));
+            this.chartGroup.attr("transform", SVGUtil.translate(taskLabelsWidth + margin.left, margin.top));
             this.lineGroup.attr("transform", SVGUtil.translate(0, margin.top));
         }
 
