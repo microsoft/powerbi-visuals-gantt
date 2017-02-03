@@ -6,6 +6,7 @@
     "target": "ES5",
     "sourceMap": true,
     "out": "./.tmp/build/visual.js",
+    "sourceRoot": "../../src/",
     "declaration": true
   },
   "files": [
