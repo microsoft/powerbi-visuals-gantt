@@ -33,11 +33,10 @@ module powerbi.extensibility.visual.test {
 
     // Gantt1448688115699
     import VisualClass = powerbi.extensibility.visual.Gantt1448688115699.Gantt;
-    import VisualPlugin = powerbi.visuals.plugins.Gantt1448688115699;
 
     export class GanttBuilder extends VisualBuilderBase<VisualClass> {
         constructor(width: number, height: number) {
-            super(width, height, VisualPlugin.name);
+            super(width, height, "Gantt1448688115699");
         }
 
         protected build(options: VisualConstructorOptions) {
