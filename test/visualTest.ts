@@ -35,7 +35,7 @@ module powerbi.extensibility.visual.test {
     import GanttBuilder = powerbi.extensibility.visual.test.GanttBuilder;
 
     // powerbi.extensibility.visual.Gantt1448688115699
-    import VisualClass = powerbi.extensibility.visual.Gantt1448688115699.Gantt;
+    import VisualClass = powerbi.extensibility.visual.Gantt1448688115736.Gantt;
 
     // powerbi.extensibility.utils.test
     import clickElement = powerbi.extensibility.utils.test.helpers.clickElement;

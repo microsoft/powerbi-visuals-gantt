@@ -32,7 +32,7 @@ module powerbi.extensibility.visual.test {
     import getRandomNumber = powerbi.extensibility.utils.test.helpers.getRandomNumber;
 
     // Gantt1448688115699
-    import VisualClass = powerbi.extensibility.visual.Gantt1448688115699.Gantt;
+    import VisualClass = powerbi.extensibility.visual.Gantt1448688115736.Gantt;
 
     export class GanttBuilder extends VisualBuilderBase<VisualClass> {
         constructor(width: number, height: number) {
