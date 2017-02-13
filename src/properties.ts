@@ -48,6 +48,10 @@ module powerbi.extensibility.visual {
             show: <DataViewObjectPropertyIdentifier>{ objectName: "taskCompletion", propertyName: "show" },
             fill: <DataViewObjectPropertyIdentifier>{ objectName: "taskCompletion", propertyName: "fill" }
         },
+        taskConfig: {
+            fill: <DataViewObjectPropertyIdentifier>{ objectName: "taskConfig", propertyName: "fill" },
+            height: <DataViewObjectPropertyIdentifier>{ objectName: "taskConfig", propertyName: "height" }
+        },
         taskResource: {
             show: <DataViewObjectPropertyIdentifier>{ objectName: "taskResource", propertyName: "show" },
             fill: <DataViewObjectPropertyIdentifier>{ objectName: "taskResource", propertyName: "fill" },

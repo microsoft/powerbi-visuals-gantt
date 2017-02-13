@@ -56,6 +56,11 @@ module powerbi.extensibility.visual {
         fill: string;
     }
 
+    export interface ITaskConfigSettings {
+        fill: string;
+        height: number;
+    }
+
     export interface ITaskResourceSettings {
         show: boolean;
         fill: string;
@@ -74,6 +79,7 @@ module powerbi.extensibility.visual {
         legend: ILegendSettings;
         taskLabels: ITaskLabelsSettings;
         taskCompletion: ITaskCompletionSettings;
+        taskConfig: ITaskConfigSettings;
         taskResource: ITaskResourceSettings;
         dateType: IDateTypeSettings;
     }
@@ -91,6 +97,7 @@ module powerbi.extensibility.visual {
                 legend: this.parseLegendSettings(objects, colors),
                 taskLabels: this.parseTaskLabelsSettings(objects, colors),
                 taskCompletion: this.parseTaskComplectionSettings(objects, colors),
+                taskConfig: this.parseTaskConfigSettings(objects, colors),
                 taskResource: this.parseTaskResourceSettings(objects, colors),
                 dateType: this.parseDateTypeSettings(objects, colors)
             };
@@ -137,6 +144,15 @@ module powerbi.extensibility.visual {
             return {
                 show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
                 fill: this.getColor(objects, properties.fill, defaultSettings.fill, colors)
+            };
+        }
+
+        private static parseTaskConfigSettings(objects: DataViewObjects, colors: IColorPalette): ITaskConfigSettings {
+            const properties = ganttProperties.taskConfig;
+            const defaultSettings: ITaskConfigSettings = this.taskConfig;
+            return {
+                fill : this.getColor(objects, properties.fill, defaultSettings.fill, colors),
+                height : DataViewObjects.getValue<number>(objects, properties.height, defaultSettings.height)
             };
         }
 
@@ -192,6 +208,11 @@ module powerbi.extensibility.visual {
         private static taskCompletion: ITaskCompletionSettings = {
             show: true,
             fill: "#000000",
+        };
+
+        private static taskConfig: ITaskConfigSettings = {
+            fill: "#00B099",
+            height: 40
         };
 
         private static taskResource: ITaskResourceSettings = {

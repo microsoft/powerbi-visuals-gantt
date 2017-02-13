@@ -285,6 +285,28 @@
                 }
             }
         },
+        "taskConfig": {
+            "displayName": "Task Settings",
+            "properties": {
+                "fill": {
+                    "displayName": "Task color",
+                    "description": "This ONLY takes effect when you have no legend specified",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "height": {
+                    "displayName": "Height",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
         "taskResource": {
             "displayName": "Data Labels",
             "properties": {
