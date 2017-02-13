@@ -285,6 +285,28 @@
                 }
             }
         },
+        "taskConfig": {
+            "displayName": "Task Settings",
+            "properties": {
+                "fill": {
+                    "displayName": "Task color",
+                    "description": "This ONLY takes effect when you have no legend specified",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "height": {
+                    "displayName": "Height",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
         "taskResource": {
             "displayName": "Data Labels",
             "properties": {
@@ -333,6 +355,36 @@
                             "value": "Year",
                             "displayName": "Year"
                         }]
+                    }
+                },
+                "todayColor": {
+                    "displayName": "Today Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "axisColor": {
+                    "displayName": "Axis Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "axisTextColor": {
+                    "displayName": "Axis Text Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
                     }
                 }
             }

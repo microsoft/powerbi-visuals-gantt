@@ -48,13 +48,20 @@ module powerbi.extensibility.visual {
             show: <DataViewObjectPropertyIdentifier>{ objectName: "taskCompletion", propertyName: "show" },
             fill: <DataViewObjectPropertyIdentifier>{ objectName: "taskCompletion", propertyName: "fill" }
         },
+        taskConfig: {
+            fill: <DataViewObjectPropertyIdentifier>{ objectName: "taskConfig", propertyName: "fill" },
+            height: <DataViewObjectPropertyIdentifier>{ objectName: "taskConfig", propertyName: "height" }
+        },
         taskResource: {
             show: <DataViewObjectPropertyIdentifier>{ objectName: "taskResource", propertyName: "show" },
             fill: <DataViewObjectPropertyIdentifier>{ objectName: "taskResource", propertyName: "fill" },
             fontSize: <DataViewObjectPropertyIdentifier>{ objectName: "taskResource", propertyName: "fontSize" }
         },
         dateType: {
-            type: <DataViewObjectPropertyIdentifier>{ objectName: "dateType", propertyName: "type" }
+            type: <DataViewObjectPropertyIdentifier>{ objectName: "dateType", propertyName: "type" },
+            todayColor: <DataViewObjectPropertyIdentifier>{ objectName: "dateType", propertyName: "todayColor" },
+            axisColor: <DataViewObjectPropertyIdentifier>{ objectName: "dateType", propertyName: "axisColor" },
+            axisTextColor: <DataViewObjectPropertyIdentifier>{ objectName: "dateType", propertyName: "axisTextColor" }
         }
     };
 }
