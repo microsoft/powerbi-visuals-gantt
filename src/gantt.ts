@@ -898,10 +898,17 @@ module powerbi.extensibility.visual {
             let xAxis: d3.svg.Axis = xAxisProperties.axis;
             xAxis.orient("bottom");
 
+
             this.axisGroup
                 .transition()
                 .duration(duration)
                 .call(xAxis);
+
+            let axisColor: string = this.viewModel.settings.dateType.axisColor;
+            let axisTextColor: string = this.viewModel.settings.dateType.axisTextColor;
+            this.axisGroup.selectAll("path").style("stroke", axisColor); // Line
+            this.axisGroup.selectAll(".tick line").style("stroke", axisColor); // ticks
+            this.axisGroup.selectAll(".tick text").style("stroke", axisTextColor); // text
         }
 
         /**
@@ -1090,6 +1097,7 @@ module powerbi.extensibility.visual {
         * @param timestamp the milestone to be shown in the time axis (default Date.now())
         */
         private createMilestoneLine(tasks: GroupedTask[], milestoneTitle: string = "Today", timestamp: number = Date.now()): void {
+            let todayColor: string = this.viewModel.settings.dateType.todayColor;
             let line: Line[] = [{
                 x1: this.timeScale(new Date(timestamp)),
                 y1: Gantt.MilestoneTop,
@@ -1109,7 +1117,8 @@ module powerbi.extensibility.visual {
                 y1: (line: Line) => line.y1,
                 x2: (line: Line) => line.x2,
                 y2: (line: Line) => line.y2
-            });
+            })
+            .style("stroke", todayColor);
 
             this.renderTooltip(chartLineSelection);
             chartLineSelection.exit().remove();
@@ -1256,7 +1265,10 @@ module powerbi.extensibility.visual {
                     displayName: "Gantt Date Type",
                     selector: null,
                     properties: {
-                        type: dateTypeSettings.type
+                        type: dateTypeSettings.type,
+                        todayColor: dateTypeSettings.todayColor,
+                        axisColor: dateTypeSettings.axisColor,
+                        axisTextColor: dateTypeSettings.axisTextColor
                     }
                 }];
 

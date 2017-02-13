@@ -334,6 +334,36 @@
                             "displayName": "Year"
                         }]
                     }
+                },
+                "todayColor": {
+                    "displayName": "Today Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "axisColor": {
+                    "displayName": "Axis Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "axisTextColor": {
+                    "displayName": "Axis Text Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -64,6 +64,9 @@ module powerbi.extensibility.visual {
 
     export interface IDateTypeSettings {
         type: GanttDateType;
+        todayColor: string;
+        axisColor: string;
+        axisTextColor: string;
     }
 
     export interface IGanttSettings {
@@ -89,7 +92,7 @@ module powerbi.extensibility.visual {
                 taskLabels: this.parseTaskLabelsSettings(objects, colors),
                 taskCompletion: this.parseTaskComplectionSettings(objects, colors),
                 taskResource: this.parseTaskResourceSettings(objects, colors),
-                dateType: this.parseDateTypeSettings(objects)
+                dateType: this.parseDateTypeSettings(objects, colors)
             };
         }
 
@@ -131,7 +134,6 @@ module powerbi.extensibility.visual {
         private static parseTaskComplectionSettings(objects: DataViewObjects, colors: IColorPalette): ITaskCompletionSettings {
             const properties = ganttProperties.taskCompletion;
             const defaultSettings: ITaskCompletionSettings = this.taskCompletion;
-
             return {
                 show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
                 fill: this.getColor(objects, properties.fill, defaultSettings.fill, colors)
@@ -149,12 +151,15 @@ module powerbi.extensibility.visual {
             };
         }
 
-        private static parseDateTypeSettings(objects: DataViewObjects): IDateTypeSettings {
+        private static parseDateTypeSettings(objects: DataViewObjects, colors: IColorPalette): IDateTypeSettings {
             const properties = ganttProperties.dateType;
             const defaultSettings: IDateTypeSettings = this.dateType;
 
             return {
-                type: DataViewObjects.getValue<GanttDateType>(objects, properties.type, defaultSettings.type)
+                type: DataViewObjects.getValue<GanttDateType>(objects, properties.type, defaultSettings.type),
+                todayColor: this.getColor(objects, properties.todayColor, defaultSettings.todayColor, colors),
+                axisColor: this.getColor(objects, properties.axisColor, defaultSettings.todayColor, colors),
+                axisTextColor: this.getColor(objects, properties.axisTextColor, defaultSettings.todayColor, colors)
             };
         }
 
@@ -196,7 +201,10 @@ module powerbi.extensibility.visual {
         };
 
         private static dateType: IDateTypeSettings = {
-            type: "Week"
+            type: "Week",
+            todayColor: "#000000",
+            axisColor: "#000000",
+            axisTextColor: "#000000"
         };
     }
 }
