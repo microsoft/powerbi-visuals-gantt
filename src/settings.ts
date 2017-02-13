@@ -70,8 +70,12 @@ module powerbi.extensibility.visual {
         fill: string = "#000000";
         fontSize: number = 9;
     }
+
     export class DateTypeSettings {
         // tslint:disable-next-line:no-reserved-keywords
         type: GanttDateType = "Week";
+        todayColor: string = "#000000";
+        axisColor: string = "#000000";
+        axisTextColor: string = "#000000";
     }
 }
