@@ -106,7 +106,7 @@ module powerbi.extensibility.visual {
 
     const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
     const MillisecondsInADay: number = 24 * 60 * 60 * 1000;
-    const MillisecondsInWeek: number = 4 * MillisecondsInADay;
+    const MillisecondsInWeek: number = 7 * MillisecondsInADay;
     const MillisecondsInAMonth: number = 30 * MillisecondsInADay;
     const MillisecondsInAYear: number = 365 * MillisecondsInADay;
     const ChartLineHeight: number = 40;
