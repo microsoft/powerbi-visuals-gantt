@@ -439,7 +439,7 @@ module powerbi.extensibility.visual {
 
             tooltipDataArray.push({ displayName: "Task", value: task.name });
             if (!isNaN(task.start.getDate())) {
-                tooltipDataArray.push({ displayName: "Start Date", value: formatters.startDateFormatter.format(task.start.toLocaleDateString()) });
+                tooltipDataArray.push({ displayName: "Start Date", value: formatters.startDateFormatter.format(task.start) });
             }
 
             tooltipDataArray.push({ displayName: "Duration", value: `${formatters.durationFormatter.format(task.duration)} ${timeInterval}` });
