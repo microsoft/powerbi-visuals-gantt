@@ -430,7 +430,7 @@ module powerbi.extensibility.visual {
         * @param task All task attributes.
         * @param formatters Formatting options for gantt attributes.
         */
-        private static getTooltipInfo(task: Task, formatters: GanttChartFormatters, timeInterval: string = "Days"): VisualTooltipDataItem[] {
+        private static getTooltipInfo(task: Task, locale: string, formatters: GanttChartFormatters, timeInterval: string = "Days"): VisualTooltipDataItem[] {
             let tooltipDataArray: VisualTooltipDataItem[] = [];
 
             if (task.taskType) {
@@ -471,8 +471,9 @@ module powerbi.extensibility.visual {
         /**
          * Returns the chart formatters
          * @param dataView The data Model
+         * @param cultureSelector The current user culture
          */
-        private static getFormatters(dataView: DataView): GanttChartFormatters {
+        private static getFormatters(dataView: DataView, cultureSelector: string): GanttChartFormatters {
             if (!dataView ||
                 !dataView.metadata ||
                 !dataView.metadata.columns) {
@@ -491,7 +492,7 @@ module powerbi.extensibility.visual {
             }
 
             return <GanttChartFormatters>{
-                startDateFormatter: ValueFormatter.create({ format: dateFormat }),
+                startDateFormatter: ValueFormatter.create({ format: dateFormat, cultureSelector }),
                 durationFormatter: ValueFormatter.create({ format: numberFormat }),
                 completionFormatter: ValueFormatter.create({ format: PercentFormat, value: 1, allowFormatBeautification: true })
             };
@@ -556,7 +557,7 @@ module powerbi.extensibility.visual {
                 };
 
                 task.end = d3.time.day.offset(task.start, task.duration);
-                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters);
+                task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters);
 
                 return task;
             });
@@ -620,7 +621,7 @@ module powerbi.extensibility.visual {
                 };
             });
 
-            const formatters: GanttChartFormatters = this.getFormatters(dataView);
+            const formatters: GanttChartFormatters = this.getFormatters(dataView,host.locale || null);
 
             const tasks: Task[] = Gantt.createTasks(dataView, host, formatters, colors);
             const series: GanttSeries[] = Gantt.createSeries(dataView, host, tasks, colors);

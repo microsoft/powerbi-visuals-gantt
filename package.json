@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-gantt",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A Gantt chart is a type of bar chart which illustrates a project timeline or schedule. The Gantt Chart visual shows the Tasks, Start Dates, Durations, % Complete, and Resources for a project. The Gantt Chart visual can be used to show current schedule status using percent-complete shadings and a vertical \"TODAY\" line. The Legend may be used to group or filter tasks based upon data values.",
   "repository": {
     "type": "git",
@@ -10,8 +10,7 @@
     "powerbi-visuals"
   ],
   "scripts": {
-    "postinstall": "typings install && pbiviz update 1.3.0",
-    "typings": "typings",
+    "postinstall": "pbiviz update 1.5.0",
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "package": "pbiviz package",
@@ -29,8 +28,11 @@
   },
   "homepage": "https://github.com/Microsoft/powerbi-visuals-gantt#readme",
   "devDependencies": {
+    "@types/d3": "^3.5.36",
     "@types/jasmine": "2.5.37",
     "@types/jasmine-jquery": "1.5.28",
+    "@types/jquery": "^2.0.40",
+    "@types/lodash": "^4.14.54",
     "coveralls": "2.11.15",
     "d3": "3.5.5",
     "globalize": "0.1.0-a2",
@@ -45,17 +47,17 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript-preprocessor": "0.3.0",
     "lodash": "4.16.2",
-    "powerbi-visuals-tools": "1.4.3",
+    "powerbi-visuals-tools": "1.6.1",
+    "powerbi-visuals-utils-chartutils": "^0.3.0",
     "powerbi-visuals-utils-colorutils": "^0.2.1",
-    "powerbi-visuals-utils-dataviewutils": "^0.3.0",
-    "powerbi-visuals-utils-formattingutils": "^0.2.2",
-    "powerbi-visuals-utils-interactivityutils": "^0.2.1",
+    "powerbi-visuals-utils-dataviewutils": "^1.0.1",
+    "powerbi-visuals-utils-formattingutils": "^0.4.0",
+    "powerbi-visuals-utils-interactivityutils": "^0.3.0",
     "powerbi-visuals-utils-svgutils": "^0.2.1",
+    "powerbi-visuals-utils-testutils": "^0.2.2",
     "powerbi-visuals-utils-tooltiputils": "^0.3.0",
-    "powerbi-visuals-utils-typeutils": "^0.2.0",
-    "powerbi-visuals-utils-chartutils": "^0.2.1",
-    "powerbi-visuals-utils-testutils": "^0.2.1",
+    "powerbi-visuals-utils-typeutils": "^0.2.1",
     "tslint": "4.0.2",
-    "typings": "2.0.0"
+    "typescript": "2.1.5"
   }
 }

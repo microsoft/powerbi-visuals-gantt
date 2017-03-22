@@ -1,7 +1,0 @@
-{
-  "globalDependencies": {
-    "d3": "registry:dt/d3#0.0.0+20160907005744",
-    "jquery": "registry:dt/jquery#1.10.0+20160929162922",
-    "lodash": "registry:dt/lodash#4.14.0+20161110215204"
-  }
-}
