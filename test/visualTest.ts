@@ -245,9 +245,8 @@ module powerbi.extensibility.visual.test {
 
             it("Verify date format for culture which user have chosen", (done) => {
                 let host = mocks.createVisualHost();
-                console.log(host)
                 host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
-                let dateFormatter = valueFormatter.create({format:"d",cultureSelector: host.locale});
+                let dateFormatter = valueFormatter.create({format: "d", cultureSelector: host.locale});
 
                 let formattedDates: Date[] = [];
                 for (let date of defaultDataViewBuilder.valuesStartDate) {
@@ -279,7 +278,7 @@ module powerbi.extensibility.visual.test {
                                 let idx = formattedDates.indexOf(value);
 
                                 expect(value).toEqual(formattedDates[idx]);
-                                formattedDates.splice(idx,1);
+                                formattedDates.splice(idx, 1);
                             }
                         }
                     }

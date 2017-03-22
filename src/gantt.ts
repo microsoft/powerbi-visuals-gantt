@@ -621,7 +621,7 @@ module powerbi.extensibility.visual {
                 };
             });
 
-            const formatters: GanttChartFormatters = this.getFormatters(dataView,host.locale || null);
+            const formatters: GanttChartFormatters = this.getFormatters(dataView, host.locale || null);
 
             const tasks: Task[] = Gantt.createTasks(dataView, host, formatters, colors);
             const series: GanttSeries[] = Gantt.createSeries(dataView, host, tasks, colors);
