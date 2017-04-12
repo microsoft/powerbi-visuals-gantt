@@ -39,8 +39,6 @@ module powerbi.extensibility.visual.test {
 
     // powerbi.extensibility.utils.test
     import clickElement = powerbi.extensibility.utils.test.helpers.clickElement;
-    import renderTimeout = powerbi.extensibility.utils.test.helpers.renderTimeout;
-    import getRandomNumbers = powerbi.extensibility.utils.test.helpers.getRandomNumbers;
     import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
 
     // powerbi.extensibility.utils.formatting
