@@ -28,8 +28,14 @@ module powerbi.extensibility.visual {
     import converterHelper = powerbi.extensibility.utils.dataview.converterHelper;
 
     export class GanttColumns<T> {
-        public static getColumnSources(dataView: DataView): GanttColumns<DataViewMetadataColumn> {
-            return this.getColumnSourcesT<DataViewMetadataColumn>(dataView);
+
+        public static getGroupedValueColumns(dataView: DataView): GanttColumns<DataViewValueColumn>[] {
+            let categorical: DataViewCategorical = dataView && dataView.categorical;
+            let values: DataViewValueColumns = categorical && categorical.values;
+            let grouped: DataViewValueColumnGroup[] = values && values.grouped();
+            return grouped && grouped.map(g => _.mapValues(
+                new this<DataViewValueColumn>(),
+                (n, i) => g.values.filter(v => v.source.roles[i])[0]));
         }
 
         public static getCategoricalValues(dataView: DataView): GanttColumns<any> {
@@ -46,12 +52,6 @@ module powerbi.extensibility.visual {
         public static getSeriesValues(dataView: DataView): PrimitiveValue[] {
             return dataView && dataView.categorical && dataView.categorical.values
                 && dataView.categorical.values.map(x => converterHelper.getSeriesName(x.source));
-        }
-
-        private static getColumnSourcesT<T>(dataView: DataView): GanttColumns<T> {
-            let columns: DataViewMetadataColumn[] = dataView && dataView.metadata && dataView.metadata.columns;
-            return columns && _.mapValues(
-                new this<T>(), (n, i) => columns.filter(x => x.roles && x.roles[i])[0]);
         }
 
         // Data Roles

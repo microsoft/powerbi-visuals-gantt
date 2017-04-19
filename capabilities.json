@@ -133,18 +133,18 @@
                 "categories": {
                     "select": [
                         {
-                            "bind": {
-                                "to": "Task"
+                            "for": {
+                                "in": "Task"
                             }
                         },
                         {
-                            "bind": {
-                                "to": "StartDate"
+                            "for": {
+                                "in": "StartDate"
                             }
                         },
                         {
-                            "bind": {
-                                "to": "Resource"
+                            "for": {
+                                "in": "Resource"
                             }
                         }
                     ]
@@ -154,13 +154,13 @@
                         "by": "Legend",
                         "select": [
                             {
-                                "bind": {
-                                    "to": "Duration"
+                                "for": {
+                                    "in": "Duration"
                                 }
                             },
                             {
-                                "bind": {
-                                    "to": "Completion"
+                                "for": {
+                                    "in": "Completion"
                                 }
                             }
                         ]
