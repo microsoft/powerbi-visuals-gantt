@@ -151,7 +151,6 @@ module powerbi.extensibility.visual {
         name: string;
         columnGroup: DataViewValueColumnGroup;
         selectionColumn: DataViewCategoryColumn;
-
     }
 
     export interface GanttCalculateScaleAndDomainOptions {
@@ -284,7 +283,6 @@ module powerbi.extensibility.visual {
         private viewModel: GanttViewModel;
         private timeScale: timeScale<any, any>;
         private axisGroup: Selection<any>;
-
         private chartGroup: Selection<any>;
         private taskGroup: Selection<any>;
         private lineGroup: Selection<any>;
@@ -554,7 +552,7 @@ module powerbi.extensibility.visual {
                                 .withCategory(taskType.selectionColumn, 0);
                             color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
                         }
-                        const selectionId = selectoinBuider.createSelectionId();
+                        const selectionId: powerbi.extensibility.ISelectionId = selectoinBuider.createSelectionId();
 
                         const startDate: Date = (values.StartDate
                             && Gantt.isValidDate(values.StartDate[index] as Date) && values.StartDate[index] as Date)
@@ -582,7 +580,7 @@ module powerbi.extensibility.visual {
                             start: startDate,
                             end: null,
                             duration: duration,
-                            taskType: taskType.name as string || "",
+                            taskType: taskType ? taskType.name : "",
                             description: categoryValue as string,
                             tooltipInfo: [],
                             selected: false,
@@ -616,7 +614,7 @@ module powerbi.extensibility.visual {
 
             const taskTypes: TaskTypes = Gantt.getAllTasksTypes(dataView)
                 , formatters: GanttChartFormatters = this.getFormatters(dataView)
-                , tasks = Gantt.createTasks(dataView, taskTypes, host, formatters, colors);
+                , tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors);
 
             return {
                 dataView,
@@ -754,7 +752,6 @@ module powerbi.extensibility.visual {
                     height: PixelConverter.toString(groupedTasks.length * ChartLineHeight + this.margin.top),
                     width: PixelConverter.toString(this.margin.left + this.viewModel.settings.taskLabels.width + axisLength + Gantt.DefaultValues.ResourceWidth)
                 });
-
             let viewportIn: IViewport = {
                 height: this.viewport.height,
                 width: axisLength
