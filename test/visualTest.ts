@@ -46,13 +46,6 @@ module powerbi.extensibility.visual.test {
 
     import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
 
-
-    interface GanttTestsNode {
-        x: number;
-        inputWeight: number;
-        outputWeight: number;
-    }
-
     export enum GanttDateType {
         Day = <any>"Day",
         Week = <any>"Week",
@@ -117,8 +110,8 @@ module powerbi.extensibility.visual.test {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let body = d3.select(visualBuilder.element.get(0));
 
-                    expect(body.select(".axis").selectAll("*")[0].length).toEqual(0);
-                    expect(body.select(".task-lines").selectAll("*")[0].length).toEqual(0);
+                    expect(body.select(".axis").selectAll("*")[0].length).toEqual(1);
+                    expect(body.select(".task-lines").selectAll("task-labels")[0].length).toEqual(0);
                     expect(body.select(".chart .tasks").selectAll("*")[0].length).toEqual(0);
                     done();
                 });

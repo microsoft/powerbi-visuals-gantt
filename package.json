@@ -61,6 +61,6 @@
     "powerbi-visuals-utils-testutils": "1.0.0",
     "tslint": "4.5.1",
     "tslint-microsoft-contrib": "4.0.1",
-    "typescript": "2.2.2"
+    "typescript": "2.1.4"
   }
 }

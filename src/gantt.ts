@@ -263,8 +263,7 @@ module powerbi.extensibility.visual {
         private static ComplectionMax: number = 1;
         private static ComplectionMin: number = 0;
         private static ComplectionTotal: number = 100;
-        private static DurationMax: number = 1;
-        private static DurationMin: number = 0;
+        private static DurationMin: number = 1;
         private static MinTasks: number = 1;
         private static ChartLineProportion: number = 1.5;
         private static MilestoneTop: number = 0;
@@ -538,10 +537,13 @@ module powerbi.extensibility.visual {
                 colors,
                 Gantt.LegendPropertyIdentifier);
             const values: GanttColumns<any> = GanttColumns.getCategoricalValues(dataView);
+            if (!values.Task) {
+                return tasks;
+            }
             const groupValues: GanttColumns<DataViewValueColumn>[] = GanttColumns.getGroupedValueColumns(dataView);
             groupValues.forEach((group: GanttColumns<DataViewValueColumn>) => {
                 values.Task.forEach((categoryValue: PrimitiveValue, index: number) => {
-                    if (group.Duration.values[index] !== null) {
+                    if (group.Duration && group.Duration.values[index] !== null) {
                         const selectoinBuider: ISelectionIdBuilder = host
                             .createSelectionIdBuilder()
                             .withCategory(dataView.categorical.categories[0], index);
