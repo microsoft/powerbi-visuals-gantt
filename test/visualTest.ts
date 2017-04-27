@@ -39,21 +39,12 @@ module powerbi.extensibility.visual.test {
 
     // powerbi.extensibility.utils.test
     import clickElement = powerbi.extensibility.utils.test.helpers.clickElement;
-    import renderTimeout = powerbi.extensibility.utils.test.helpers.renderTimeout;
-    import getRandomNumbers = powerbi.extensibility.utils.test.helpers.getRandomNumbers;
     import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
 
     // powerbi.extensibility.utils.formatting
     import valueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
 
     import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
-
-
-    interface GanttTestsNode {
-        x: number;
-        inputWeight: number;
-        outputWeight: number;
-    }
 
     export enum GanttDateType {
         Day = <any>"Day",
@@ -119,8 +110,8 @@ module powerbi.extensibility.visual.test {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let body = d3.select(visualBuilder.element.get(0));
 
-                    expect(body.select(".axis").selectAll("*")[0].length).toEqual(0);
-                    expect(body.select(".task-lines").selectAll("*")[0].length).toEqual(0);
+                    expect(body.select(".axis").selectAll("*")[0].length).toEqual(1);
+                    expect(body.select(".task-lines").selectAll("task-labels")[0].length).toEqual(0);
                     expect(body.select(".chart .tasks").selectAll("*")[0].length).toEqual(0);
                     done();
                 });
