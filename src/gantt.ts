@@ -541,7 +541,6 @@ module powerbi.extensibility.visual {
             const groupValues: GanttColumns<DataViewValueColumn>[] = GanttColumns.getGroupedValueColumns(dataView);
             groupValues.forEach((group: GanttColumns<DataViewValueColumn>) => {
                 values.Task.forEach((categoryValue: PrimitiveValue, index: number) => {
-                    debugger;
                     if (group.Duration && group.Duration.values[index] !== null) {
                         const selectoinBuider: ISelectionIdBuilder = host
                             .createSelectionIdBuilder()
