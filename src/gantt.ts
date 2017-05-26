@@ -541,6 +541,7 @@ module powerbi.extensibility.visual {
             const groupValues: GanttColumns<DataViewValueColumn>[] = GanttColumns.getGroupedValueColumns(dataView);
             groupValues.forEach((group: GanttColumns<DataViewValueColumn>) => {
                 values.Task.forEach((categoryValue: PrimitiveValue, index: number) => {
+                    debugger;
                     if (group.Duration && group.Duration.values[index] !== null) {
                         const selectoinBuider: ISelectionIdBuilder = host
                             .createSelectionIdBuilder()
@@ -738,7 +739,7 @@ module powerbi.extensibility.visual {
             if (tasks.length < Gantt.MinTasks) {
                 return;
             }
-            let startDate: Date = tasks[0].start;
+            let startDate: Date = _.minBy(tasks, (t) => t.start).start;
             let endDate: Date = _.maxBy(tasks, (t) => t.end).end;
             let dateTypeMilliseconds: number = Gantt.getDateType(this.viewModel.settings.dateType.type);
             let ticks: number = Math.ceil(Math.round(endDate.valueOf() - startDate.valueOf()) / dateTypeMilliseconds);
