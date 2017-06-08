@@ -738,7 +738,7 @@ module powerbi.extensibility.visual {
             if (tasks.length < Gantt.MinTasks) {
                 return;
             }
-            let startDate: Date = tasks[0].start;
+            let startDate: Date = _.minBy(tasks, (t) => t.start).start;
             let endDate: Date = _.maxBy(tasks, (t) => t.end).end;
             let dateTypeMilliseconds: number = Gantt.getDateType(this.viewModel.settings.dateType.type);
             let ticks: number = Math.ceil(Math.round(endDate.valueOf() - startDate.valueOf()) / dateTypeMilliseconds);
