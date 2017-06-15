@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-gantt",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Gantt chart is a type of bar chart which illustrates a project timeline or schedule. The Gantt Chart visual shows the Tasks, Start Dates, Durations, % Complete, and Resources for a project. The Gantt Chart visual can be used to show current schedule status using percent-complete shadings and a vertical \"TODAY\" line. The Legend may be used to group or filter tasks based upon data values.",
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
     "powerbi-visuals-utils-chartutils": "0.2.1",
     "powerbi-visuals-utils-colorutils": "0.2.2",
     "powerbi-visuals-utils-dataviewutils": "1.1.1",
-    "powerbi-visuals-utils-formattingutils": "1.0.0",
+    "powerbi-visuals-utils-formattingutils": "2.1.0",
     "powerbi-visuals-utils-interactivityutils": "0.3.1",
     "powerbi-visuals-utils-svgutils": "0.2.1",
     "powerbi-visuals-utils-tooltiputils": "0.3.2",

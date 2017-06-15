@@ -73,7 +73,7 @@ module powerbi.extensibility.visual.test {
             ["Dev", "Development", "Shay"],
             ["Dev", "Desktop", "Ehren"],
             ["Dev", "Service Fixup", "James"],
-            ["Dev", "BugFixing", "Last Name"],
+            ["Dev", "BugFixing", "Last Name"]
         ];
         public valuesStartDate = GanttData.getRandomUniqueDates(this.valuesTaskTypeResource.length, new Date(2015, 7, 0), new Date(2017, 7, 0));
         public valuesDuration = GanttData.getRandomUniqueNumbers(this.valuesTaskTypeResource.length, 3, 40);
@@ -117,16 +117,16 @@ module powerbi.extensibility.visual.test {
                         roles: { "Resource": true }
                     },
                     values: this.valuesTaskTypeResource.map(x => x[2])
+                },
+                {
+                    source: {
+                        displayName: GanttData.ColumnStartDate,
+                        type: ValueType.fromDescriptor({ dateTime: true }),
+                        roles: { "StartDate": true }
+                    },
+                    values: this.valuesStartDate
                 }
             ], [
-                    {
-                        source: {
-                            displayName: GanttData.ColumnStartDate,
-                            type: ValueType.fromDescriptor({ dateTime: true }),
-                            roles: { "StartDate": true }
-                        },
-                        values: this.valuesStartDate
-                    },
                     {
                         source: {
                             displayName: GanttData.ColumnDuration,

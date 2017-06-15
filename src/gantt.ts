@@ -428,7 +428,7 @@ module powerbi.extensibility.visual {
         * @param task All task attributes.
         * @param formatters Formatting options for gantt attributes.
         */
-        private static getTooltipInfo(task: Task, formatters: GanttChartFormatters, timeInterval: string = "Days"): VisualTooltipDataItem[] {
+        private static getTooltipInfo(task: Task, locale: string, formatters: GanttChartFormatters, timeInterval: string = "Days"): VisualTooltipDataItem[] {
             let tooltipDataArray: VisualTooltipDataItem[] = [];
 
             if (task.taskType) {
@@ -437,7 +437,7 @@ module powerbi.extensibility.visual {
 
             tooltipDataArray.push({ displayName: "Task", value: task.name });
             if (!isNaN(task.start.getDate())) {
-                tooltipDataArray.push({ displayName: "Start Date", value: formatters.startDateFormatter.format(task.start.toLocaleDateString()) });
+                tooltipDataArray.push({ displayName: "Start Date", value: formatters.startDateFormatter.format(task.start) });
             }
 
             tooltipDataArray.push({ displayName: "Duration", value: `${formatters.durationFormatter.format(task.duration)} ${timeInterval}` });
@@ -469,8 +469,9 @@ module powerbi.extensibility.visual {
         /**
          * Returns the chart formatters
          * @param dataView The data Model
+         * @param cultureSelector The current user culture
          */
-        private static getFormatters(dataView: DataView): GanttChartFormatters {
+        private static getFormatters(dataView: DataView, cultureSelector: string): GanttChartFormatters {
             if (!dataView ||
                 !dataView.metadata ||
                 !dataView.metadata.columns) {
@@ -489,7 +490,7 @@ module powerbi.extensibility.visual {
             }
 
             return <GanttChartFormatters>{
-                startDateFormatter: ValueFormatter.create({ format: dateFormat }),
+                startDateFormatter: ValueFormatter.create({ format: dateFormat, cultureSelector }),
                 durationFormatter: ValueFormatter.create({ format: numberFormat }),
                 completionFormatter: ValueFormatter.create({ format: PercentFormat, value: 1, allowFormatBeautification: true })
             };
@@ -523,6 +524,7 @@ module powerbi.extensibility.visual {
         * @param dataView The data Model.
         * @param formatters task attributes represented format.
         */
+
         private static createTasks(
             dataView: DataView,
             taskTypes: TaskTypes,
@@ -588,11 +590,12 @@ module powerbi.extensibility.visual {
                         };
 
                         task.end = d3.time.day.offset(task.start, task.duration);
-                        task.tooltipInfo = Gantt.getTooltipInfo(task, formatters);
+                        task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters);
 
                         tasks.push(task);
                     }
                 });
+
             });
 
             return tasks;
@@ -613,7 +616,7 @@ module powerbi.extensibility.visual {
             const settings: GanttSettings = GanttSettings.parse<GanttSettings>(dataView);
 
             const taskTypes: TaskTypes = Gantt.getAllTasksTypes(dataView)
-                , formatters: GanttChartFormatters = this.getFormatters(dataView)
+                , formatters: GanttChartFormatters = this.getFormatters(dataView,  host.locale || null)
                 , tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors);
 
             return {

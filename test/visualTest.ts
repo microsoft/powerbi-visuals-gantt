@@ -40,9 +40,11 @@ module powerbi.extensibility.visual.test {
     // powerbi.extensibility.utils.test
     import clickElement = powerbi.extensibility.utils.test.helpers.clickElement;
     import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
+    import mocks = powerbi.extensibility.utils.test.mocks;
 
     // powerbi.extensibility.utils.formatting
     import valueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
+    import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
 
     import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
 
@@ -126,7 +128,7 @@ module powerbi.extensibility.visual.test {
                     GanttData.ColumnCompletePrecntege]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
 
                     for (let task of tasks) {
                         expect(task.duration).toEqual(defaultTaskDuration);
@@ -232,6 +234,49 @@ module powerbi.extensibility.visual.test {
                     });
                 })(dateType));
             }
+
+            it("Verify date format for culture which user have chosen", (done) => {
+                let host: IVisualHost = mocks.createVisualHost();
+                host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
+                let dateFormatter: IValueFormatter  = valueFormatter.create({format: "d", cultureSelector: host.locale});
+
+                let formattedDates: Date[] = [];
+                for (let date of defaultDataViewBuilder.valuesStartDate) {
+                    formattedDates.push(dateFormatter.format(date));
+                }
+
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration]);
+
+                for (let dvColumn of dataView.metadata.columns) {
+                    if (dataView.categorical.categories) {
+                        for (let dvCategory of dataView.categorical.categories) {
+                            if (dvCategory.source.roles && dvCategory.source.roles[GanttData.ColumnStartDate]) {
+                                dvColumn.format = "d";
+                            }
+                        }
+                    }
+                }
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    for (let task of tasks) {
+                        for (let tooltipInfo of task.tooltipInfo) {
+                            if (tooltipInfo.displayName === "Start Date") {
+                                let value: VisualTooltipDataItem  = tooltipInfo.value;
+                                let idx: number = formattedDates.indexOf(value);
+
+                                expect(value).toEqual(formattedDates[idx]);
+                                formattedDates.splice(idx, 1);
+                            }
+                        }
+                    }
+
+                    done();
+                });
+            });
 
             it("Verify group tasks enabled", (done) => {
                 dataView.metadata.objects = { general: { groupTasks: true } };
