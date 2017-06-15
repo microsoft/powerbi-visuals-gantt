@@ -25,178 +25,51 @@
  */
 
 module powerbi.extensibility.visual {
-    import DataViewObjects = powerbi.extensibility.utils.dataview.DataViewObjects;
-    import ColorHelper = powerbi.extensibility.utils.color.ColorHelper;
-    import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
-
+    // powerbi.extensibility.utils.dataview
+    import DataViewObjectsParser = utils.dataview.DataViewObjectsParser;
     export type GanttDateType = "Day" | "Week" | "Month" | "Year";
 
-    export interface IGeneralSettings {
-        groupTasks: boolean;
+    export class GanttSettings extends DataViewObjectsParser {
+        general: GeneralSettings = new GeneralSettings();
+        legend: LegendSettings = new LegendSettings();
+        taskLabels: TaskLabelsSettings = new TaskLabelsSettings();
+        taskCompletion: TaskCompletionSettings = new TaskCompletionSettings();
+        taskResource: TaskResourceSettings = new TaskResourceSettings();
+        dateType: DateTypeSettings = new DateTypeSettings();
     }
 
-    export interface ILegendSettings {
-        show: boolean;
-        position: string;
-        showTitle: boolean;
-        titleText: string;
-        labelColor: string;
-        fontSize: number;
+    export class GeneralSettings {
+        groupTasks: boolean = false;
     }
 
-    export interface ITaskLabelsSettings {
-        show: boolean;
-        fill: string;
-        fontSize: number;
-        width: number;
+    export class LegendSettings {
+        show: boolean = true;
+        position: string = "Right";
+        showTitle: boolean = true;
+        titleText: string = "";
+        labelColor: string = "#000000";
+        fontSize: number = 8;
     }
 
-    export interface ITaskCompletionSettings {
-        show: boolean;
-        fill: string;
+    export class TaskLabelsSettings {
+        show: boolean = true;
+        fill: string = "#000000";
+        fontSize: number = 9;
+        width: number = 110;
     }
 
-    export interface ITaskResourceSettings {
-        show: boolean;
-        fill: string;
-        fontSize: number;
+    export class TaskCompletionSettings {
+        show: boolean = true;
+        fill: string = "#000000";
     }
 
-    export interface IDateTypeSettings {
-        type: GanttDateType;
+    export class TaskResourceSettings {
+        show: boolean = true;
+        fill: string = "#000000";
+        fontSize: number = 9;
     }
-
-    export interface IGanttSettings {
-        general: IGeneralSettings;
-        legend: ILegendSettings;
-        taskLabels: ITaskLabelsSettings;
-        taskCompletion: ITaskCompletionSettings;
-        taskResource: ITaskResourceSettings;
-        dateType: IDateTypeSettings;
-    }
-
-    export class GanttSettings {
-        public static get Default() {
-            return new this();
-        }
-
-        public static parse(objects: DataViewObjects, colors: IColorPalette): IGanttSettings {
-            const properties = ganttProperties;
-
-            return {
-                general: this.parseGeneralSettings(objects),
-                legend: this.parseLegendSettings(objects, colors),
-                taskLabels: this.parseTaskLabelsSettings(objects, colors),
-                taskCompletion: this.parseTaskComplectionSettings(objects, colors),
-                taskResource: this.parseTaskResourceSettings(objects, colors),
-                dateType: this.parseDateTypeSettings(objects)
-            };
-        }
-
-        private static parseGeneralSettings(objects: DataViewObjects): IGeneralSettings {
-            const properties = ganttProperties.general;
-            const defaultSettings: IGeneralSettings = this.general;
-
-            return {
-                groupTasks: DataViewObjects.getValue<boolean>(objects, properties.groupTasks, defaultSettings.groupTasks)
-            };
-        }
-
-        private static parseLegendSettings(objects: DataViewObjects, colors: IColorPalette): ILegendSettings {
-            const properties = ganttProperties.legend;
-            const defaultSettings: ILegendSettings = this.legend;
-
-            return {
-                show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
-                position: DataViewObjects.getValue<string>(objects, properties.position, defaultSettings.position),
-                showTitle: DataViewObjects.getValue<boolean>(objects, properties.showTitle, defaultSettings.showTitle),
-                titleText: DataViewObjects.getValue<string>(objects, properties.titleText, defaultSettings.titleText),
-                labelColor: this.getColor(objects, properties.labelColor, defaultSettings.labelColor, colors),
-                fontSize: DataViewObjects.getValue<number>(objects, properties.fontSize, defaultSettings.fontSize)
-            };
-        }
-
-        private static parseTaskLabelsSettings(objects: DataViewObjects, colors: IColorPalette): ITaskLabelsSettings {
-            const properties = ganttProperties.taskLabels;
-            const defaultSettings: ITaskLabelsSettings = this.taskLabels;
-
-            return {
-                show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
-                fill: this.getColor(objects, properties.fill, defaultSettings.fill, colors),
-                fontSize: DataViewObjects.getValue<number>(objects, properties.fontSize, defaultSettings.fontSize),
-                width: DataViewObjects.getValue<number>(objects, properties.width, defaultSettings.width)
-            };
-        }
-
-        private static parseTaskComplectionSettings(objects: DataViewObjects, colors: IColorPalette): ITaskCompletionSettings {
-            const properties = ganttProperties.taskCompletion;
-            const defaultSettings: ITaskCompletionSettings = this.taskCompletion;
-
-            return {
-                show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
-                fill: this.getColor(objects, properties.fill, defaultSettings.fill, colors)
-            };
-        }
-
-        private static parseTaskResourceSettings(objects: DataViewObjects, colors: IColorPalette): ITaskResourceSettings {
-            const properties = ganttProperties.taskResource;
-            const defaultSettings: ITaskResourceSettings = this.taskResource;
-
-            return {
-                show: DataViewObjects.getValue<boolean>(objects, properties.show, defaultSettings.show),
-                fill: this.getColor(objects, properties.fill, defaultSettings.fill, colors),
-                fontSize: DataViewObjects.getValue<number>(objects, properties.fontSize, defaultSettings.fontSize),
-            };
-        }
-
-        private static parseDateTypeSettings(objects: DataViewObjects): IDateTypeSettings {
-            const properties = ganttProperties.dateType;
-            const defaultSettings: IDateTypeSettings = this.dateType;
-
-            return {
-                type: DataViewObjects.getValue<GanttDateType>(objects, properties.type, defaultSettings.type)
-            };
-        }
-
-        private static getColor(objects: DataViewObjects, properties: any, defaultColor: string, colors: IColorPalette): string {
-            let colorHelper: ColorHelper = new ColorHelper(colors, properties, defaultColor);
-            return colorHelper.getColorForMeasure(objects, "");
-        }
-
-        // Default Settings
-        private static general: IGeneralSettings = {
-            groupTasks: false
-        };
-
-        private static legend: ILegendSettings = {
-            show: true,
-            position: "Right",
-            showTitle: true,
-            titleText: "",
-            labelColor: "#000000",
-            fontSize: 8,
-        };
-
-        private static taskLabels: ITaskLabelsSettings = {
-            show: true,
-            fill: "#000000",
-            fontSize: 9,
-            width: 110,
-        };
-
-        private static taskCompletion: ITaskCompletionSettings = {
-            show: true,
-            fill: "#000000",
-        };
-
-        private static taskResource: ITaskResourceSettings = {
-            show: true,
-            fill: "#000000",
-            fontSize: 9,
-        };
-
-        private static dateType: IDateTypeSettings = {
-            type: "Week"
-        };
+    export class DateTypeSettings {
+        // tslint:disable-next-line:no-reserved-keywords
+        type: GanttDateType = "Week";
     }
 }
