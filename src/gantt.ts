@@ -614,11 +614,11 @@ module powerbi.extensibility.visual {
             }
 
             const settings: GanttSettings = GanttSettings.parse<GanttSettings>(dataView);
-          
+
             const taskTypes: TaskTypes = Gantt.getAllTasksTypes(dataView)
                 , formatters: GanttChartFormatters = this.getFormatters(dataView,  host.locale || null)
                 , tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors);
-          
+
             return {
                 dataView,
                 settings,
