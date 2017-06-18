@@ -589,7 +589,7 @@ module powerbi.extensibility.visual {
                             identity: selectionId
                         };
 
-                        task.end = d3.time.day.offset(task.start, task.duration);
+                        task.end = d3.time.second.offset(task.start, task.duration);
                         task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters);
 
                         tasks.push(task);
