@@ -1,5 +1,29 @@
 {
     "rules": {
+        "insecure-random": true,
+        "no-banned-terms": true,
+        "no-cookies": true,
+        "no-delete-expression": true,
+        "no-disable-auto-sanitization": true,
+        "no-document-domain": true,
+        "no-document-write": true,
+        "no-exec-script": true,
+        "no-function-constructor-with-string-args": true,
+        "no-http-string": [
+            true
+        ],
+        "no-inner-html": true,
+        "no-octal-literal": true,
+        "no-reserved-keywords": true,
+        "no-string-based-set-immediate": true,
+        "no-string-based-set-interval": true,
+        "no-string-based-set-timeout": true,
+        "non-literal-require": true,
+        "possible-timing-attack": true,
+        "react-anchor-blank-noopener": true,
+        "react-iframe-missing-sandbox": true,
+        "react-no-dangerous-html": true,
+        "no-eval": true,
         "class-name": true,
         "comment-format": [
             true,
@@ -10,11 +34,13 @@
             "spaces"
         ],
         "no-duplicate-variable": true,
-        "no-eval": true,
         "no-internal-module": false,
         "no-trailing-whitespace": true,
         "no-unsafe-finally": true,
         "no-var-keyword": true,
+        "no-unused-variable": true,
+        "no-unused-new": true,
+        "no-unused-expression": true,
         "one-line": [
             true,
             "check-open-brace",

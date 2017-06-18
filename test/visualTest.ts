@@ -39,21 +39,14 @@ module powerbi.extensibility.visual.test {
 
     // powerbi.extensibility.utils.test
     import clickElement = powerbi.extensibility.utils.test.helpers.clickElement;
-    import renderTimeout = powerbi.extensibility.utils.test.helpers.renderTimeout;
-    import getRandomNumbers = powerbi.extensibility.utils.test.helpers.getRandomNumbers;
     import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
+    import mocks = powerbi.extensibility.utils.test.mocks;
 
     // powerbi.extensibility.utils.formatting
     import valueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
+    import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
 
     import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
-
-
-    interface GanttTestsNode {
-        x: number;
-        inputWeight: number;
-        outputWeight: number;
-    }
 
     export enum GanttDateType {
         Day = <any>"Day",
@@ -119,8 +112,8 @@ module powerbi.extensibility.visual.test {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let body = d3.select(visualBuilder.element.get(0));
 
-                    expect(body.select(".axis").selectAll("*")[0].length).toEqual(0);
-                    expect(body.select(".task-lines").selectAll("*")[0].length).toEqual(0);
+                    expect(body.select(".axis").selectAll("*")[0].length).toEqual(1);
+                    expect(body.select(".task-lines").selectAll("task-labels")[0].length).toEqual(0);
                     expect(body.select(".chart .tasks").selectAll("*")[0].length).toEqual(0);
                     done();
                 });
@@ -135,7 +128,7 @@ module powerbi.extensibility.visual.test {
                     GanttData.ColumnCompletePrecntege]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
 
                     for (let task of tasks) {
                         expect(task.duration).toEqual(defaultTaskDuration);
@@ -241,6 +234,49 @@ module powerbi.extensibility.visual.test {
                     });
                 })(dateType));
             }
+
+            it("Verify date format for culture which user have chosen", (done) => {
+                let host: IVisualHost = mocks.createVisualHost();
+                host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
+                let dateFormatter: IValueFormatter  = valueFormatter.create({format: "d", cultureSelector: host.locale});
+
+                let formattedDates: Date[] = [];
+                for (let date of defaultDataViewBuilder.valuesStartDate) {
+                    formattedDates.push(dateFormatter.format(date));
+                }
+
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration]);
+
+                for (let dvColumn of dataView.metadata.columns) {
+                    if (dataView.categorical.categories) {
+                        for (let dvCategory of dataView.categorical.categories) {
+                            if (dvCategory.source.roles && dvCategory.source.roles[GanttData.ColumnStartDate]) {
+                                dvColumn.format = "d";
+                            }
+                        }
+                    }
+                }
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    for (let task of tasks) {
+                        for (let tooltipInfo of task.tooltipInfo) {
+                            if (tooltipInfo.displayName === "Start Date") {
+                                let value: VisualTooltipDataItem  = tooltipInfo.value;
+                                let idx: number = formattedDates.indexOf(value);
+
+                                expect(value).toEqual(formattedDates[idx]);
+                                formattedDates.splice(idx, 1);
+                            }
+                        }
+                    }
+
+                    done();
+                });
+            });
 
             it("Verify group tasks enabled", (done) => {
                 dataView.metadata.objects = { general: { groupTasks: true } };
