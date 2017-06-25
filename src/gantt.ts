@@ -100,7 +100,11 @@ module powerbi.extensibility.visual {
     import timeScale = d3.time.Scale;
 
     const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
-    const MillisecondsInADay: number = 24 * 60 * 60 * 1000;
+    const MillisecondsInASecond: number = 1000;
+    const MillisecondsInAMinute: number = 60 * MillisecondsInASecond;
+    const MillisecondsInAHour: number = 60 * MillisecondsInAMinute;
+    const MillisecondsInADay: number = 24 * MillisecondsInAHour;
+    const SecondsInADay: number = MillisecondsInADay/MillisecondsInASecond;
     const MillisecondsInWeek: number = 7 * MillisecondsInADay;
     const MillisecondsInAMonth: number = 30 * MillisecondsInADay;
     const MillisecondsInAYear: number = 365 * MillisecondsInADay;
@@ -242,6 +246,9 @@ module powerbi.extensibility.visual {
             TaskLineWidth: 15,
             DefaultDateType: "Week",
             DateFormatStrings: {
+                Second: "HH:mm:ss",
+                Minute: "HH:mm:ss",
+                Hour: "(dd) HH:mm",
                 Day: "MMM dd",
                 Week: "MMM dd",
                 Month: "MMM yyyy",
@@ -262,7 +269,7 @@ module powerbi.extensibility.visual {
         private static ComplectionMax: number = 1;
         private static ComplectionMin: number = 0;
         private static ComplectionTotal: number = 100;
-        private static DurationMin: number = 1;
+        private static DurationMin: number = 1/SecondsInADay; //The min duration is a 1 second fraction of a day
         private static MinTasks: number = 1;
         private static ChartLineProportion: number = 1.5;
         private static MilestoneTop: number = 0;
@@ -589,7 +596,7 @@ module powerbi.extensibility.visual {
                             identity: selectionId
                         };
 
-                        task.end = d3.time.second.offset(task.start, task.duration);
+                        task.end = d3.time.second.offset(task.start, task.duration*SecondsInADay); //task.duration is a float in days
                         task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters);
 
                         tasks.push(task);
@@ -783,6 +790,15 @@ module powerbi.extensibility.visual {
 
         private static getDateType(dateType: string): number {
             switch (dateType) {
+                case "Second":
+                    return MillisecondsInASecond;
+
+                case "Minute":
+                    return MillisecondsInAMinute;
+
+                case "Hour":
+                    return MillisecondsInAHour;
+
                 case "Day":
                     return MillisecondsInADay;
 
