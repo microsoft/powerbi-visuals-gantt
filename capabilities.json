@@ -1,13 +1,13 @@
 {
     "dataRoles": [
         {
-            "name": "Legend",
-            "displayName": "Legend",
+            "name": "Task",
+            "displayName": "Task",
             "kind": "Grouping"
         },
         {
-            "name": "Task",
-            "displayName": "Task",
+            "name": "Legend",
+            "displayName": "Legend",
             "kind": "Grouping"
         },
         {
@@ -367,6 +367,18 @@
                     "displayName": "Type",
                     "type": {
                         "enumeration": [
+                            {
+                                "value": "Second",
+                                "displayName": "Second"
+                            },
+                            {
+                                "value": "Minute",
+                                "displayName": "Minute"
+                            },
+                            {
+                                "value": "Hour",
+                                "displayName": "Hour"
+                            },
                             {
                                 "value": "Day",
                                 "displayName": "Day"
