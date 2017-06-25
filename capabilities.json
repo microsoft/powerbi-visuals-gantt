@@ -368,6 +368,18 @@
                     "type": {
                         "enumeration": [
                             {
+                                "value": "Second",
+                                "displayName": "Second"
+                            },
+                            {
+                                "value": "Minute",
+                                "displayName": "Minute"
+                            },
+                            {
+                                "value": "Hour",
+                                "displayName": "Hour"
+                            },
+                            {
                                 "value": "Day",
                                 "displayName": "Day"
                             },
