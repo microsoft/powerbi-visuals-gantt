@@ -27,7 +27,7 @@
 module powerbi.extensibility.visual {
     // powerbi.extensibility.utils.dataview
     import DataViewObjectsParser = utils.dataview.DataViewObjectsParser;
-    export type GanttDateType = "Day" | "Week" | "Month" | "Year";
+    export type GanttDateType = "Minute" | "Hour" | "Day" | "Week" | "Month" | "Year";
 
     export class GanttSettings extends DataViewObjectsParser {
         general: GeneralSettings = new GeneralSettings();
