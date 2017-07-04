@@ -172,9 +172,11 @@
     "objects": {
         "general": {
             "displayName": "General",
+            "displayNameKey": "Visual_General",
             "properties": {
                 "groupTasks": {
                     "displayName": "Group Tasks",
+                    "displayNameKey": "Visual_GroupTasks",
                     "type": {
                         "bool": true
                     }
@@ -183,56 +185,68 @@
         },
         "legend": {
             "displayName": "Legend",
+            "displayNameKey": "Visual_Legend",
             "description": "Display legend options",
             "properties": {
                 "show": {
                     "displayName": "Show",
+                    "displayNameKey": "Visual_Show",
                     "type": {
                         "bool": true
                     }
                 },
                 "position": {
                     "displayName": "Position",
+                    "displayNameKey": "Visual_Position",
                     "description": "Select the location for the legend",
                     "type": {
                         "enumeration": [
                             {
                                 "value": "Top",
-                                "displayName": "Top"
+                                "displayName": "Top",
+                                "displayNameKey": "Visual_Position_Top"
                             },
                             {
                                 "value": "Bottom",
-                                "displayName": "Bottom"
+                                "displayName": "Bottom",
+                                "displayNameKey": "Visual_Position_Bottom"
                             },
                             {
                                 "value": "Left",
-                                "displayName": "Left"
+                                "displayName": "Left",
+                                "displayNameKey": "Visual_Position_Left"
                             },
                             {
                                 "value": "Right",
-                                "displayName": "Right"
+                                "displayName": "Right",
+                                "displayNameKey": "Visual_Position_Right"
                             },
                             {
                                 "value": "TopCenter",
-                                "displayName": "Top Center"
+                                "displayName": "Top Center",
+                                "displayNameKey": "Visual_Position_TopCenter"
                             },
                             {
                                 "value": "BottomCenter",
-                                "displayName": "Bottom Center"
+                                "displayName": "Bottom Center",
+                                "displayNameKey": "Visual_Position_BottomCenter"
                             },
                             {
                                 "value": "LeftCenter",
-                                "displayName": "Left Center"
+                                "displayName": "Left Center",
+                                "displayNameKey": "Visual_Position_LeftCenter"
                             },
                             {
                                 "value": "RightCenter",
-                                "displayName": "Right Center"
+                                "displayName": "Right Center",
+                                "displayNameKey": "Visual_Position_RightCenter"
                             }
                         ]
                     }
                 },
                 "showTitle": {
                     "displayName": "Title",
+                    "displayNameKey": "Visual_Title",
                     "description": "Display a title for legend symbols",
                     "type": {
                         "bool": true
@@ -240,6 +254,7 @@
                 },
                 "titleText": {
                     "displayName": "Legend Name",
+                    "displayNameKey": "Visual_LegendName",
                     "description": "Title text",
                     "type": {
                         "text": true
@@ -248,6 +263,7 @@
                 },
                 "labelColor": {
                     "displayName": "Color",
+                    "displayNameKey": "Visual_Color",
                     "type": {
                         "fill": {
                             "solid": {
@@ -258,6 +274,7 @@
                 },
                 "fontSize": {
                     "displayName": "Text Size",
+                    "displayNameKey": "Visual_TextSize",
                     "type": {
                         "formatting": {
                             "fontSize": true
@@ -266,6 +283,7 @@
                 },
                 "fill": {
                     "displayName": "Legend color",
+                    "displayNameKey": "Visual_LegendColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -278,15 +296,18 @@
         },
         "taskLabels": {
             "displayName": "Category Labels",
+            "displayNameKey": "Visual_CategoryLabels",
             "properties": {
                 "show": {
                     "displayName": "Show",
+                    "displayNameKey": "Visual_Show",
                     "type": {
                         "bool": true
                     }
                 },
                 "fill": {
                     "displayName": "Fill",
+                    "displayNameKey": "Visual_Fill",
                     "type": {
                         "fill": {
                             "solid": {
@@ -297,6 +318,7 @@
                 },
                 "fontSize": {
                     "displayName": "Font Size",
+                    "displayNameKey": "Visual_FontSize",
                     "type": {
                         "formatting": {
                             "fontSize": true
@@ -305,6 +327,7 @@
                 },
                 "width": {
                     "displayName": "Width",
+                    "displayNameKey": "Visual_Width",
                     "type": {
                         "numeric": true
                     }
@@ -313,6 +336,7 @@
         },
         "taskCompletion": {
             "displayName": "Task Completion",
+            "displayNameKey": "Visual_TaskCompletion",
             "properties": {
                 "show": {
                     "type": {
@@ -321,6 +345,7 @@
                 },
                 "fill": {
                     "displayName": "Completion color",
+                    "displayNameKey": "Visual_CompletionColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -333,15 +358,18 @@
         },
         "taskResource": {
             "displayName": "Data Labels",
+            "displayNameKey": "Visual_DataLabels",
             "properties": {
                 "show": {
                     "displayName": "Show",
+                    "displayNameKey": "Visual_Show",
                     "type": {
                         "bool": true
                     }
                 },
                 "fill": {
                     "displayName": "Color",
+                    "displayNameKey": "Visual_Color",
                     "type": {
                         "fill": {
                             "solid": {
@@ -352,6 +380,7 @@
                 },
                 "fontSize": {
                     "displayName": "Font Size",
+                    "displayNameKey": "Visual_FontSize",
                     "type": {
                         "formatting": {
                             "fontSize": true
@@ -362,26 +391,32 @@
         },
         "dateType": {
             "displayName": "Gantt Date type",
+            "displayNameKey": "Visual_GanttDateType",
             "properties": {
                 "type": {
                     "displayName": "Type",
+                    "displayNameKey": "Visual_Type",
                     "type": {
                         "enumeration": [
                             {
                                 "value": "Day",
-                                "displayName": "Day"
+                                "displayName": "Day",
+                                "displayNameKey": "Visual_GanttDateType_Day"
                             },
                             {
                                 "value": "Week",
-                                "displayName": "Week"
+                                "displayName": "Week",
+                                "displayNameKey": "Visual_GanttDateType_Week"
                             },
                             {
                                 "value": "Month",
-                                "displayName": "Month"
+                                "displayName": "Month",
+                                "displayNameKey": "Visual_GanttDateType_Month"
                             },
                             {
                                 "value": "Year",
-                                "displayName": "Year"
+                                "displayName": "Year",
+                                "displayNameKey": "Visual_GanttDateType_Year"
                             }
                         ]
                     }
