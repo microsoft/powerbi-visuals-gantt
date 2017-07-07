@@ -1,4 +1,10 @@
 {
+    "Role_Legend": "Legend",
+    "Role_Task": "Task",
+    "Role_StartDate": "Start Date",
+    "Role_Duration": "Duration",
+    "Role_Completion": "% Completion"
+    "Role_Resource": "Resource",
     "Visual_General": "General",
     "Visual_GroupTasks": "Group Tasks",
     "Visual_Legend": "Legend",

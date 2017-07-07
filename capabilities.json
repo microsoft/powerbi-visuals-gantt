@@ -3,21 +3,25 @@
         {
             "name": "Legend",
             "displayName": "Legend",
+            "displayNameKey": "Role_Legend",
             "kind": "Grouping"
         },
         {
             "name": "Task",
             "displayName": "Task",
+            "displayNameKey": "Role_Task",
             "kind": "Grouping"
         },
         {
             "name": "StartDate",
             "displayName": "Start Date",
+            "displayNameKey": "Role_StartDate",
             "kind": "Grouping"
         },
         {
             "name": "Duration",
             "displayName": "Duration",
+            "displayNameKey": "Role_Duration",
             "kind": "Measure",
             "requiredTypes": [
                 {
@@ -31,6 +35,7 @@
         {
             "name": "Completion",
             "displayName": "% Completion",
+            "displayNameKey": "Role_Completion",
             "kind": "Measure",
             "requiredTypes": [
                 {
@@ -44,6 +49,7 @@
         {
             "name": "Resource",
             "displayName": "Resource",
+            "displayNameKey": "Role_Resource",
             "kind": "Grouping"
         }
     ],
