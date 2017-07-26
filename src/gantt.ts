@@ -106,7 +106,13 @@ module powerbi.extensibility.visual {
     const MillisecondsInAYear: number = 365 * MillisecondsInADay;
     const ChartLineHeight: number = 40;
     const PaddingTasks: number = 5;
-    const numberFormat = "#";
+
+    const GanttDurationUnitType = [
+        "day",
+        "hour",
+        "minute",
+        "second"
+    ];
 
     export interface Task extends SelectableDataPoint {
         id: number;
@@ -131,7 +137,6 @@ module powerbi.extensibility.visual {
     export interface GanttChartFormatters {
         startDateFormatter: IValueFormatter;
         completionFormatter: IValueFormatter;
-        durationFormatter: IValueFormatter;
     }
 
     export interface GanttViewModel {
@@ -428,7 +433,7 @@ module powerbi.extensibility.visual {
         * @param task All task attributes.
         * @param formatters Formatting options for gantt attributes.
         */
-        private static getTooltipInfo(task: Task, locale: string, formatters: GanttChartFormatters, timeInterval: string = "Days"): VisualTooltipDataItem[] {
+        private static getTooltipInfo(task: Task, locale: string, formatters: GanttChartFormatters, durationUnit: string): VisualTooltipDataItem[] {
             let tooltipDataArray: VisualTooltipDataItem[] = [];
 
             if (task.taskType) {
@@ -440,7 +445,9 @@ module powerbi.extensibility.visual {
                 tooltipDataArray.push({ displayName: "Start Date", value: formatters.startDateFormatter.format(task.start) });
             }
 
-            tooltipDataArray.push({ displayName: "Duration", value: `${formatters.durationFormatter.format(task.duration)} ${timeInterval}` });
+            const durationLabel: string = this.generateLabelForDuration(task.duration, durationUnit);
+
+            tooltipDataArray.push({ displayName: "Duration", value: durationLabel });
             tooltipDataArray.push({ displayName: "Completion", value: formatters.completionFormatter.format(task.completion) });
 
             if (task.resource) {
@@ -491,7 +498,6 @@ module powerbi.extensibility.visual {
 
             return <GanttChartFormatters>{
                 startDateFormatter: ValueFormatter.create({ format: dateFormat, cultureSelector }),
-                durationFormatter: ValueFormatter.create({ format: numberFormat }),
                 completionFormatter: ValueFormatter.create({ format: PercentFormat, value: 1, allowFormatBeautification: true })
             };
         }
@@ -530,7 +536,8 @@ module powerbi.extensibility.visual {
             taskTypes: TaskTypes,
             host: IVisualHost,
             formatters: GanttChartFormatters,
-            colors: IColorPalette
+            colors: IColorPalette,
+            settings: GanttSettings
         ): Task[] {
             const tasks: Task[] = [];
             const colorHelper: ColorHelper = new ColorHelper(
@@ -589,8 +596,11 @@ module powerbi.extensibility.visual {
                             identity: selectionId
                         };
 
-                        task.end = d3.time.day.offset(task.start, task.duration);
-                        task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters);
+                        let durationUnit = settings.general.durationUnit;
+                        durationUnit = (GanttDurationUnitType.indexOf(durationUnit) !== -1 && durationUnit) || "day";
+
+                        task.end = d3.time[durationUnit].offset(task.start, task.duration);
+                        task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters, settings.general.durationUnit);
 
                         tasks.push(task);
                     }
@@ -599,6 +609,45 @@ module powerbi.extensibility.visual {
             });
 
             return tasks;
+        }
+
+        /**
+         * Generate 'Duration' label for tooltip
+         * @param duration The duration of task
+         * @param durationUnit The duration unit for chart
+         */
+        private static generateLabelForDuration(duration: number, durationUnit: string): string {
+            let label: string = "";
+
+            const days: number = Math.floor(duration / 24);
+            label += days ? `${days} Days ` : ``;
+            if (durationUnit === "day") {
+                return `${duration} Days `;
+            }
+
+            const hours: number = duration - (days * 24);
+            label += hours ? `${hours} Hours ` : ``;
+            if (durationUnit === "hour") {
+                return duration >= 24
+                    ? label
+                    : `${duration} Hours`;
+            }
+
+            const minutes: number = duration - ((days * 24) + (hours * 60));
+            label += minutes ? `${minutes} Minutes ` : ``;
+            if (durationUnit === "minute") {
+                return duration >= 60
+                    ? label
+                    : `${duration} Minutes `;
+            }
+
+            const seconds: number = duration - (days * 24 + hours * 60 + minutes * 60);
+            label += seconds ? `${seconds} Seconds ` : ``;
+            if (durationUnit === "second") {
+                return duration >= 60
+                    ? label
+                    : `${duration} Seconds `;
+            }
         }
 
         /**
@@ -617,7 +666,7 @@ module powerbi.extensibility.visual {
 
             const taskTypes: TaskTypes = Gantt.getAllTasksTypes(dataView)
                 , formatters: GanttChartFormatters = this.getFormatters(dataView,  host.locale || null)
-                , tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors);
+                , tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings);
 
             return {
                 dataView,
