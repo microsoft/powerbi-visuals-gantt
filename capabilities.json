@@ -186,6 +186,34 @@
                     "type": {
                         "bool": true
                     }
+                },
+                "durationUnit": {
+                    "displayName": "Duration unit",
+                    "displayNameKey": "Visual_DurationUnit",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "day",
+                                "displayName": "Days",
+                                "displayNameKey": "Visual_DurationUnit_Days"
+                            },
+                            {
+                                "value": "hour",
+                                "displayName": "Hours",
+                                "displayNameKey": "Visual_DurationUnit_Hours"
+                            },
+                            {
+                                "value": "minute",
+                                "displayName": "Minutes",
+                                "displayNameKey": "Visual_DurationUnit_Minutes"
+                            },
+                            {
+                                "value": "second",
+                                "displayName": "Seconds",
+                                "displayNameKey": "Visual_DurationUnit_Seconds"
+                            }
+                        ]
+                    }
                 }
             }
         },

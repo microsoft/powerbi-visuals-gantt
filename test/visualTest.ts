@@ -313,6 +313,74 @@ module powerbi.extensibility.visual.test {
         });
 
         describe("Format settings test", () => {
+            describe("General", () => {
+                describe("Duration units", () => {
+
+                    function checkDurationUnit(durationUnit: string) {
+                        const tasks: Task[] = d3
+                            .select(visualBuilder.element.get(0))
+                            .selectAll(".task")
+                            .data();
+
+                        tasks.forEach(task => {
+                            const dates: Date[] = d3
+                                .time[durationUnit]
+                                .range(task.start, task.end);
+                            expect(dates.length).toEqual(task.duration);
+                        });
+                    }
+
+                    function setDurationUnit(durationUnit) {
+                        dataView.metadata.objects = {
+                            general: {
+                                durationUnit: durationUnit
+                            }
+                        };
+                    }
+
+                    it("days", (done) => {
+                        let durationUnit: string = "day";
+                        setDurationUnit(durationUnit);
+
+                        visualBuilder.updateRenderTimeout(dataView, () => {
+                            checkDurationUnit(durationUnit);
+                            done();
+                        });
+                    });
+
+                    it("hours", (done) => {
+                        let durationUnit: string = "hour";
+                        setDurationUnit(durationUnit);
+
+                        visualBuilder.updateRenderTimeout(dataView, () => {
+                            checkDurationUnit(durationUnit);
+                            done();
+                        });
+                    });
+
+                    it("minutes", (done) => {
+                        let durationUnit: string = "minute";
+                        setDurationUnit(durationUnit);
+
+                        visualBuilder.updateRenderTimeout(dataView, () => {
+                            checkDurationUnit(durationUnit);
+                            done();
+                        });
+                    });
+
+                    it("seconds", (done) => {
+                        let durationUnit: string = "second";
+                        setDurationUnit(durationUnit);
+
+                        visualBuilder.updateRenderTimeout(dataView, () => {
+                            checkDurationUnit(durationUnit);
+                            done();
+                        });
+                    });
+
+                });
+            });
+
             describe("Data labels", () => {
                 beforeEach(() => {
                     dataView.metadata.objects = {

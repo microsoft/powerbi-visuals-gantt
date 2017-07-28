@@ -40,6 +40,7 @@ module powerbi.extensibility.visual {
 
     export class GeneralSettings {
         groupTasks: boolean = false;
+        durationUnit: string = "day";
     }
 
     export class LegendSettings {

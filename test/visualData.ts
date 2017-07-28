@@ -86,7 +86,7 @@ module powerbi.extensibility.visual.test {
         public static getRandomUniqueNumbers(count: number, min: number = 0, max: number = 1): number[] {
             let result: number[] = [];
             for (let i: number = 0; i < count; i++) {
-                result.push(getRandomNumber(min, max, result));
+                result.push(Math.floor(getRandomNumber(min, max, result)));
             }
 
             return result;
