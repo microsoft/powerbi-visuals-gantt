@@ -214,6 +214,13 @@
                             }
                         ]
                     }
+                },
+                "durationMin": {
+                    "displayName": "Duration min",
+                    "displayNameKey": "Visual_DurationMinimum",
+                    "type": {
+                        "numeric": true
+                    }
                 }
             }
         },
