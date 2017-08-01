@@ -267,7 +267,6 @@ module powerbi.extensibility.visual {
         private static ComplectionMax: number = 1;
         private static ComplectionMin: number = 0;
         private static ComplectionTotal: number = 100;
-        private static DurationMin: number = 1;
         private static MinTasks: number = 1;
         private static ChartLineProportion: number = 1.5;
         private static MilestoneTop: number = 0;
@@ -567,8 +566,9 @@ module powerbi.extensibility.visual {
                             && Gantt.isValidDate(values.StartDate[index] as Date) && values.StartDate[index] as Date)
                             || new Date(Date.now());
 
-                        const duration: number = group.Duration.values[index] < Gantt.DurationMin ? Gantt.DurationMin :
-                            group.Duration.values[index] as number;
+                        const duration: number = group.Duration.values[index] < settings.general.durationMin
+                            ? settings.general.durationMin
+                            : group.Duration.values[index] as number;
 
                         const resource: string = values.Resource
                             ? values.Resource[index] as string
@@ -792,6 +792,11 @@ module powerbi.extensibility.visual {
             }
             let startDate: Date = _.minBy(tasks, (t) => t.start).start;
             let endDate: Date = _.maxBy(tasks, (t) => t.end).end;
+
+            if (startDate.toString() === endDate.toString()) {
+                endDate = new Date(endDate.valueOf() + (24 * 60 * 60 * 1000));
+            }
+
             let dateTypeMilliseconds: number = Gantt.getDateType(this.viewModel.settings.dateType.type);
             let ticks: number = Math.ceil(Math.round(endDate.valueOf() - startDate.valueOf()) / dateTypeMilliseconds);
 
