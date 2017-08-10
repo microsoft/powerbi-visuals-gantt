@@ -399,9 +399,11 @@
         },
         "taskConfig": {
             "displayName": "Task Settings",
+            "displayNameKey": "Visual_TaskSettings",
             "properties": {
                 "fill": {
                     "displayName": "Task color",
+                    "displayNameKey": "Visual_TaskSettings_Color",
                     "description": "This ONLY takes effect when you have no legend specified",
                     "type": {
                         "fill": {
@@ -413,6 +415,7 @@
                 },
                 "height": {
                     "displayName": "Height",
+                    "displayNameKey": "Visual_TaskSettings_Height",
                     "type": {
                         "numeric": true
                     }
@@ -486,6 +489,7 @@
                 },
                 "todayColor": {
                     "displayName": "Today Color",
+                    "displayNameKey": "Visual_GanttDateType_TodayColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -496,6 +500,7 @@
                 },
                 "axisColor": {
                     "displayName": "Axis Color",
+                    "displayNameKey": "Visual_GanttDateType_AxisColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -506,6 +511,7 @@
                 },
                 "axisTextColor": {
                     "displayName": "Axis Text Color",
+                    "displayNameKey": "Visual_GanttDateType_AxisTextColor",
                     "type": {
                         "fill": {
                             "solid": {

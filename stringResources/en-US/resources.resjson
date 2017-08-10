@@ -28,6 +28,9 @@
     "Visual_Width": "Width",
     "Visual_TaskCompletion": "Task Completion",
     "Visual_CompletionColor": "Completion color",
+    "Visual_TaskSettings": "Task settings",
+    "Visual_TaskSettings_Color": "Color",
+    "Visual_TaskSettings_Height": "Height",
     "Visual_DataLabels": "Data Labels",
     "Visual_CategoryLabels": "Category Labels",
     "Visual_Type": "Type",
@@ -36,4 +39,7 @@
     "Visual_GanttDateType_Week": "Week",
     "Visual_GanttDateType_Month": "Month",
     "Visual_GanttDateType_Year": "Year",
+    "Visual_GanttDateType_TodayColor": "Today color",
+    "Visual_GanttDateType_AxisColor": "Axis color",
+    "Visual_GanttDateType_AxisTextColor": "Axis text color",
 }
