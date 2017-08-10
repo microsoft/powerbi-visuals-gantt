@@ -104,7 +104,7 @@ module powerbi.extensibility.visual {
     const MillisecondsInWeek: number = 4 * MillisecondsInADay;
     const MillisecondsInAMonth: number = 30 * MillisecondsInADay;
     const MillisecondsInAYear: number = 365 * MillisecondsInADay;
-    function ChartLineHeight(lineHeight: number): number {
+    function chartLineHeight(lineHeight: number): number {
         if (!lineHeight) {
             lineHeight = 40;
         }
@@ -506,7 +506,7 @@ module powerbi.extensibility.visual {
             };
         }
 
-        private static createLegend(dataView: DataView, host: IVisualHost, colorPalette: IColorPalette, settings: GanttSettings, taskTypes: TaskTypes): LegendData {
+        private static createLegend(host: IVisualHost, colorPalette: IColorPalette, settings: GanttSettings, taskTypes: TaskTypes): LegendData {
             const colorHelper = new ColorHelper(colorPalette, Gantt.LegendPropertyIdentifier);
             const legendData: LegendData = {
                 fontSize: settings.legend.fontSize,
@@ -815,7 +815,7 @@ module powerbi.extensibility.visual {
             let axisLength: number = ticks * Gantt.DefaultTicksLength;
             this.ganttSvg
                 .attr({
-                    height: PixelConverter.toString(groupedTasks.length * ChartLineHeight(this.viewModel.settings.taskConfig.height) + this.margin.top),
+                    height: PixelConverter.toString(groupedTasks.length * chartLineHeight(this.viewModel.settings.taskConfig.height) + this.margin.top),
                     width: PixelConverter.toString(this.margin.left + this.viewModel.settings.taskLabels.width + axisLength + Gantt.DefaultValues.ResourceWidth)
                 });
             let viewportIn: IViewport = {
@@ -1117,7 +1117,7 @@ module powerbi.extensibility.visual {
          */
         private getTaskLabelCoordinateY(taskIndex: number): number {
             const fontSize: number = + this.viewModel.settings.taskLabels.fontSize;
-            return (ChartLineHeight(this.viewModel.settings.taskConfig.height) * taskIndex) + (Gantt.getBarHeight(this.viewModel.settings.taskConfig.height) + Gantt.BarHeightMargin - (ChartLineHeight(this.viewModel.settings.taskConfig.height) - fontSize) / Gantt.ChartLineHeightDivider);
+            return (chartLineHeight(this.viewModel.settings.taskConfig.height) * taskIndex) + (Gantt.getBarHeight(this.viewModel.settings.taskConfig.height) + Gantt.BarHeightMargin - (chartLineHeight(this.viewModel.settings.taskConfig.height) - fontSize) / Gantt.ChartLineHeightDivider);
         }
 
         /**
@@ -1206,7 +1206,7 @@ module powerbi.extensibility.visual {
         }
 
         private getMilestoneLineLength(numOfTasks: number): number {
-            return numOfTasks * ChartLineHeight(this.viewModel.settings.taskConfig.height);
+            return numOfTasks * chartLineHeight(this.viewModel.settings.taskConfig.height);
         }
 
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
@@ -1240,7 +1240,7 @@ module powerbi.extensibility.visual {
                 });
             });
         }
-        
+
         private addAnInstanceToEnumeration(
             instanceEnumeration: VisualObjectInstanceEnumeration,
             instance: VisualObjectInstance): void {
