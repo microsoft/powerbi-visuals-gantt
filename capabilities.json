@@ -397,6 +397,31 @@
                 }
             }
         },
+        "taskConfig": {
+            "displayName": "Task Settings",
+            "displayNameKey": "Visual_TaskSettings",
+            "properties": {
+                "fill": {
+                    "displayName": "Task color",
+                    "displayNameKey": "Visual_TaskSettings_Color",
+                    "description": "This ONLY takes effect when you have no legend specified",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "height": {
+                    "displayName": "Height",
+                    "displayNameKey": "Visual_TaskSettings_Height",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
         "taskResource": {
             "displayName": "Data Labels",
             "displayNameKey": "Visual_DataLabels",
@@ -460,6 +485,39 @@
                                 "displayNameKey": "Visual_GanttDateType_Year"
                             }
                         ]
+                    }
+                },
+                "todayColor": {
+                    "displayName": "Today Color",
+                    "displayNameKey": "Visual_GanttDateType_TodayColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "axisColor": {
+                    "displayName": "Axis Color",
+                    "displayNameKey": "Visual_GanttDateType_AxisColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "axisTextColor": {
+                    "displayName": "Axis Text Color",
+                    "displayNameKey": "Visual_GanttDateType_AxisTextColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
                     }
                 }
             }

@@ -33,6 +33,7 @@ module powerbi.extensibility.visual {
         general: GeneralSettings = new GeneralSettings();
         legend: LegendSettings = new LegendSettings();
         taskLabels: TaskLabelsSettings = new TaskLabelsSettings();
+        taskConfig: TaskConfigSettings = new TaskConfigSettings();
         taskCompletion: TaskCompletionSettings = new TaskCompletionSettings();
         taskResource: TaskResourceSettings = new TaskResourceSettings();
         dateType: DateTypeSettings = new DateTypeSettings();
@@ -60,6 +61,11 @@ module powerbi.extensibility.visual {
         width: number = 110;
     }
 
+    export class TaskConfigSettings {
+        fill: string = "#00B099";
+        height: number = 40;
+    }
+
     export class TaskCompletionSettings {
         show: boolean = true;
         fill: string = "#000000";
@@ -70,8 +76,12 @@ module powerbi.extensibility.visual {
         fill: string = "#000000";
         fontSize: number = 9;
     }
+
     export class DateTypeSettings {
         // tslint:disable-next-line:no-reserved-keywords
         type: GanttDateType = "Week";
+        todayColor: string = "#000000";
+        axisColor: string = "#000000";
+        axisTextColor: string = "#000000";
     }
 }
