@@ -462,6 +462,46 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            describe("Task Settings", () => {
+                it("color", (done) => {
+                    dataView = defaultDataViewBuilder.getDataView([
+                        GanttData.ColumnTask,
+                        GanttData.ColumnStartDate,
+                        GanttData.ColumnDuration,
+                        GanttData.ColumnResource]);
+
+                    let color: string = GanttBuilder.getRandomHexColor();
+                    dataView.metadata.objects = {
+                        taskConfig: {
+                            fill: GanttBuilder.getSolidColorStructuralObject(color)
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        visualBuilder.taskRect.toArray().map($).forEach(e =>
+                            assertColorsMatch(e.css("fill"), color));
+
+                        done();
+                    });
+                });
+
+                it("height", (done) => {
+                    let height: number = 50;
+                    dataView.metadata.objects = {
+                        taskConfig: {
+                            height
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        visualBuilder.taskRect.toArray().map($).forEach(e =>
+                            expect(+e.attr("height")).toEqual(height));
+
+                        done();
+                    });
+                });
+            });
+
             describe("Category Labels", () => {
                 beforeEach(() => {
                     dataView.metadata.objects = {
@@ -553,6 +593,54 @@ module powerbi.extensibility.visual.test {
                         done();
                     });
                 });
+            });
+
+            describe("Gantt date types", () => {
+                it("Today color", (done) => {
+                    let color: string = GanttBuilder.getRandomHexColor();
+                    dataView.metadata.objects = {
+                        dateType: {
+                            todayColor: GanttBuilder.getSolidColorStructuralObject(color)
+                        }
+                    };
+
+                    checkColor(visualBuilder.chartLine, color, "stroke", done);
+                });
+
+                it("Axis color", (done) => {
+                    let color: string = GanttBuilder.getRandomHexColor();
+                    dataView.metadata.objects = {
+                        dateType: {
+                            axisColor: GanttBuilder.getSolidColorStructuralObject(color)
+                        }
+                    };
+
+                    checkColor(visualBuilder.axisTicksLine, color, "stroke", done);
+                });
+
+                it("Axis taxt color", (done) => {
+                    let color: string = GanttBuilder.getRandomHexColor();
+                    dataView.metadata.objects = {
+                        dateType: {
+                            axisTextColor: GanttBuilder.getSolidColorStructuralObject(color)
+                        }
+                    };
+
+                    checkColor(visualBuilder.axisTicksText, color, "fill", done);
+                });
+
+                function checkColor(
+                    elements: Element[],
+                    color: string,
+                    cssStyle: string,
+                    done: () => void): void {
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        elements.toArray().map($).forEach(e =>
+                            assertColorsMatch(e.css(cssStyle), color));
+
+                        done();
+                    });
+                }
             });
         });
 

@@ -54,15 +54,38 @@ module powerbi.extensibility.visual.test {
         }
 
         public get axis() {
-            return this.mainElement.children("g.axis");
+            return this.mainElement
+                .children("g.axis");
         }
 
         public get axisTicks() {
-            return this.axis.children("g.tick");
+            return this.axis
+                .children("g.tick");
+        }
+
+        public get axisTicksLine() {
+            return this.axisTicks
+                .children("line");
+        }
+
+        public get axisTicksText() {
+            return this.axisTicks
+                .children("text");
         }
 
         public get chart() {
-            return this.mainElement.children("g.chart");
+            return this.mainElement
+                .children("g.chart");
+        }
+
+        public get chartLine() {
+            return this.chart
+                .children("line.chart-line");
+        }
+
+        public get taskRect() {
+            return this.tasks
+                .children("rect.task-lines");
         }
 
         public get taskLabels() {
@@ -78,11 +101,13 @@ module powerbi.extensibility.visual.test {
         }
 
         public get tasks() {
-            return this.tasksGroups.children("g.task");
+            return this.tasksGroups
+                .children("g.task");
         }
 
         public get taskResources() {
-            return this.tasks.children("text.task-resource");
+            return this.tasks
+                .children("text.task-resource");
         }
 
         public get taskProgress() {
