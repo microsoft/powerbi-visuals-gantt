@@ -3,13 +3,13 @@
     "Role_Task": "Task",
     "Role_StartDate": "Start Date",
     "Role_Duration": "Duration",
-    "Role_Completion": "% Completion",
+    "Role_Completion": "% Completion"
     "Role_Resource": "Resource",
     "Visual_General": "General",
     "Visual_GroupTasks": "Group Tasks",
     "Visual_Legend": "Legend",
     "Visual_LegendName": "Legend Name",
-    "Visual_LegendColor": "Legend Color",
+    "Visual_LegendColor": "Legend Color"
     "Visual_Show": "Show",
     "Visual_Position": "Position",
     "Visual_Position_Top": "Top",
