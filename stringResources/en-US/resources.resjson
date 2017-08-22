@@ -34,12 +34,15 @@
     "Visual_DataLabels": "Data Labels",
     "Visual_CategoryLabels": "Category Labels",
     "Visual_Type": "Type",
-    "Visual_GanttDateType": "Gantt Date type",
-    "Visual_GanttDateType_Day": "Day",
-    "Visual_GanttDateType_Week": "Week",
-    "Visual_GanttDateType_Month": "Month",
-    "Visual_GanttDateType_Year": "Year",
-    "Visual_GanttDateType_TodayColor": "Today color",
-    "Visual_GanttDateType_AxisColor": "Axis color",
-    "Visual_GanttDateType_AxisTextColor": "Axis text color"
+    "Visual_DateType": "Date type",
+    "Visual_DateType_Second": "Second",
+    "Visual_DateType_Minute": "Minute",
+    "Visual_DateType_Hour": "Hour",
+    "Visual_DateType_Day": "Day",
+    "Visual_DateType_Week": "Week",
+    "Visual_DateType_Month": "Month",
+    "Visual_DateType_Year": "Year",
+    "Visual_DateType_TodayColor": "Today color",
+    "Visual_DateType_AxisColor": "Axis color",
+    "Visual_DateType_AxisTextColor": "Axis text color"
 }

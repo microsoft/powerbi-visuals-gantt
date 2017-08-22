@@ -48,10 +48,14 @@ module powerbi.extensibility.visual.test {
 
     import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
 
-    export enum GanttDateType {
+    export enum DateTypes {
+        Second = <any>"Second",
+        Minute = <any>"Minute",
+        Hour = <any>"Hour",
         Day = <any>"Day",
         Week = <any>"Week",
         Month = <any>"Month",
+        Quarter = <any>"Quarter",
         Year = <any>"Year"
     }
 
@@ -221,8 +225,21 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
-            for (let dateType in GanttDateType) {
+            for (let dateType in DateTypes) {
                 it(`Verify date format (${dateType})`, ((dateType) => (done) => {
+                    switch (dateType) {
+                        case "Second":
+                        case "Minute":
+                        case "Hour":
+                            defaultDataViewBuilder.valuesStartDate = GanttData.getRandomUniqueDates(
+                                defaultDataViewBuilder.valuesTaskTypeResource.length,
+                                new Date(2017, 7, 0),
+                                new Date(2017, 7, 1)
+                            );
+                            dataView = defaultDataViewBuilder.getDataView();
+                            break;
+                    }
+
                     dataView.metadata.objects = { dateType: { type: dateType } };
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
