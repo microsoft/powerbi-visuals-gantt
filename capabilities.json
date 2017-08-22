@@ -456,8 +456,8 @@
             }
         },
         "dateType": {
-            "displayName": "Gantt Date type",
-            "displayNameKey": "Visual_GanttDateType",
+            "displayName": "Date type",
+            "displayNameKey": "Visual_DateType",
             "properties": {
                 "type": {
                     "displayName": "Type",
@@ -465,31 +465,51 @@
                     "type": {
                         "enumeration": [
                             {
+                                "value": "Second",
+                                "displayName": "Second",
+                                "displayNameKey": "Visual_DateType_Second"
+                            },
+                            {
+                                "value": "Minute",
+                                "displayName": "Minute",
+                                "displayNameKey": "Visual_DateType_Minute"
+                            },
+                            {
+                                "value": "Hour",
+                                "displayName": "Hour",
+                                "displayNameKey": "Visual_DateType_Hour"
+                            },
+                            {
                                 "value": "Day",
                                 "displayName": "Day",
-                                "displayNameKey": "Visual_GanttDateType_Day"
+                                "displayNameKey": "Visual_DateType_Day"
                             },
                             {
                                 "value": "Week",
                                 "displayName": "Week",
-                                "displayNameKey": "Visual_GanttDateType_Week"
+                                "displayNameKey": "Visual_DateType_Week"
                             },
                             {
                                 "value": "Month",
                                 "displayName": "Month",
-                                "displayNameKey": "Visual_GanttDateType_Month"
+                                "displayNameKey": "Visual_DateType_Month"
+                            },
+                            {
+                                "value": "Quarter",
+                                "displayName": "Quarter",
+                                "displayNameKey": "Visual_DateType_Quarter"
                             },
                             {
                                 "value": "Year",
                                 "displayName": "Year",
-                                "displayNameKey": "Visual_GanttDateType_Year"
+                                "displayNameKey": "Visual_DateType_Year"
                             }
                         ]
                     }
                 },
                 "todayColor": {
                     "displayName": "Today Color",
-                    "displayNameKey": "Visual_GanttDateType_TodayColor",
+                    "displayNameKey": "Visual_DateType_TodayColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -500,7 +520,7 @@
                 },
                 "axisColor": {
                     "displayName": "Axis Color",
-                    "displayNameKey": "Visual_GanttDateType_AxisColor",
+                    "displayNameKey": "Visual_DateType_AxisColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -511,7 +531,7 @@
                 },
                 "axisTextColor": {
                     "displayName": "Axis Text Color",
-                    "displayNameKey": "Visual_GanttDateType_AxisTextColor",
+                    "displayNameKey": "Visual_DateType_AxisTextColor",
                     "type": {
                         "fill": {
                             "solid": {

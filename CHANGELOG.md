@@ -1,3 +1,5 @@
+## 1.4.0
+ * Added new date types for x-axis(Quarter, Hours, Minutes, Seconds)
 ## 1.3.0
  * Added colour settings for: Today Bar Color, Axis Color, Axis Text Color
  * Added ability to set colour of Tasks if there is no legend specified.

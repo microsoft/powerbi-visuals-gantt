@@ -27,7 +27,7 @@
 module powerbi.extensibility.visual {
     // powerbi.extensibility.utils.dataview
     import DataViewObjectsParser = utils.dataview.DataViewObjectsParser;
-    export type GanttDateType = "Day" | "Week" | "Month" | "Year";
+    export type DateType = "Second" | "Minute" | "Hour" | "Day" | "Week" | "Month" | "Year";
 
     export class GanttSettings extends DataViewObjectsParser {
         general: GeneralSettings = new GeneralSettings();
@@ -79,7 +79,7 @@ module powerbi.extensibility.visual {
 
     export class DateTypeSettings {
         // tslint:disable-next-line:no-reserved-keywords
-        type: GanttDateType = "Week";
+        type: DateType = "Week";
         todayColor: string = "#000000";
         axisColor: string = "#000000";
         axisTextColor: string = "#000000";

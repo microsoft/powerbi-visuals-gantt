@@ -100,10 +100,14 @@ module powerbi.extensibility.visual {
     import timeScale = d3.time.Scale;
 
     const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
-    const MillisecondsInADay: number = 24 * 60 * 60 * 1000;
+    const MillisecondsInASecond: number = 1000;
+    const MillisecondsInAMinute: number = 60 * MillisecondsInASecond;
+    const MillisecondsInAHour: number = 60 * MillisecondsInAMinute;
+    const MillisecondsInADay: number = 24 * MillisecondsInAHour;
     const MillisecondsInWeek: number = 4 * MillisecondsInADay;
     const MillisecondsInAMonth: number = 30 * MillisecondsInADay;
     const MillisecondsInAYear: number = 365 * MillisecondsInADay;
+    const MillisecondsInAQuarter: number = MillisecondsInAYear / 4;
     const PaddingTasks: number = 5;
     const DefaultChartLineHeight = 40;
     const GanttDurationUnitType = [
@@ -246,9 +250,13 @@ module powerbi.extensibility.visual {
             TaskLineWidth: 15,
             DefaultDateType: "Week",
             DateFormatStrings: {
+                Second: "HH:mm:ss",
+                Minute: "HH:mm:ss",
+                Hour: "(dd) HH:mm",
                 Day: "MMM dd",
                 Week: "MMM dd",
                 Month: "MMM yyyy",
+                Quarter: "MMM yyyy",
                 Year: "yyyy"
             }
         };
@@ -908,6 +916,15 @@ module powerbi.extensibility.visual {
 
         private static getDateType(dateType: string): number {
             switch (dateType) {
+                case "Second":
+                    return MillisecondsInASecond;
+
+                case "Minute":
+                    return MillisecondsInAMinute;
+
+                case "Hour":
+                    return MillisecondsInAHour;
+
                 case "Day":
                     return MillisecondsInADay;
 
@@ -916,6 +933,9 @@ module powerbi.extensibility.visual {
 
                 case "Month":
                     return MillisecondsInAMonth;
+
+                case "Quarter":
+                    return MillisecondsInAQuarter;
 
                 case "Year":
                     return MillisecondsInAYear;
