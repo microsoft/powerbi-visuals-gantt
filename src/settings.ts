@@ -37,6 +37,7 @@ module powerbi.extensibility.visual {
         taskCompletion: TaskCompletionSettings = new TaskCompletionSettings();
         taskResource: TaskResourceSettings = new TaskResourceSettings();
         dateType: DateTypeSettings = new DateTypeSettings();
+        tooltipConfig: TooltipConfigSettings = new TooltipConfigSettings();
     }
 
     export class GeneralSettings {
@@ -83,5 +84,9 @@ module powerbi.extensibility.visual {
         todayColor: string = "#000000";
         axisColor: string = "#000000";
         axisTextColor: string = "#000000";
+    }
+
+    export class TooltipConfigSettings {
+        dateFormat: string = null;
     }
 }

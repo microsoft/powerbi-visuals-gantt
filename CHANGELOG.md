@@ -1,3 +1,5 @@
+## 1.5.0
+ * Added ability to use custom date format for tooltip dates
 ## 1.4.0
  * Added new date types for x-axis(Quarter, Hours, Minutes, Seconds)
 ## 1.3.0

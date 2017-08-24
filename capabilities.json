@@ -397,6 +397,19 @@
                 }
             }
         },
+        "tooltipConfig": {
+            "displayName": "Tooltip Settings",
+            "displayNameKey": "Visual_TooltipSettings",
+            "properties": {
+                "dateFormat": {
+                    "displayName": "Date format",
+                    "displayNameKey": "Visual_TooltipSettings_DateFormat",
+                    "type": {
+                        "text": true
+                    }
+                }
+            }
+        },
         "taskConfig": {
             "displayName": "Task Settings",
             "displayNameKey": "Visual_TaskSettings",
