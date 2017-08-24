@@ -525,6 +525,7 @@ module powerbi.extensibility.visual {
          */
         private static getFormatters(
             dataView: DataView,
+            settings: GanttSettings,
             cultureSelector: string): GanttChartFormatters {
 
             if (!dataView ||
@@ -533,14 +534,26 @@ module powerbi.extensibility.visual {
                 return null;
             }
 
-            let dateFormat = "d";
+            let dateFormat: string = "d";
             for (let dvColumn of dataView.metadata.columns) {
-                if (!!dataView.categorical.categories) {
-                    for (let dvCategory of dataView.categorical.categories) {
-                        if (Gantt.hasRole(dvCategory.source, GanttRoles.StartDate))
-                            dateFormat = dvColumn.format;
-                    }
+                if (Gantt.hasRole(dvColumn, GanttRoles.StartDate)) {
+                    dateFormat = dvColumn.format;
                 }
+            }
+
+            // Priority of using date format: Format from dvColumn -> Format by culture selector -> Custom Format
+            if (cultureSelector) {
+                dateFormat = null;
+            }
+
+            if (!settings.tooltipConfig.dateFormat) {
+                settings.tooltipConfig.dateFormat = dateFormat;
+            }
+
+            if (settings.tooltipConfig.dateFormat &&
+                settings.tooltipConfig.dateFormat !== dateFormat) {
+
+                dateFormat = settings.tooltipConfig.dateFormat;
             }
 
             return <GanttChartFormatters>{
@@ -733,7 +746,7 @@ module powerbi.extensibility.visual {
 
             const settings: GanttSettings = GanttSettings.parse<GanttSettings>(dataView);
             const taskTypes: TaskTypes = Gantt.getAllTasksTypes(dataView);
-            const formatters: GanttChartFormatters = this.getFormatters(dataView,  host.locale || null);
+            const formatters: GanttChartFormatters = this.getFormatters(dataView, settings, host.locale || null);
             const legendData = Gantt.createLegend(host, colors, settings, taskTypes);
 
             let taskColor: string = (legendData.dataPoints.length <= 1)

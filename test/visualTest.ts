@@ -255,7 +255,7 @@ module powerbi.extensibility.visual.test {
             it("Verify date format for culture which user have chosen", (done) => {
                 let host: IVisualHost = mocks.createVisualHost();
                 host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
-                let dateFormatter: IValueFormatter  = valueFormatter.create({format: "d", cultureSelector: host.locale});
+                let dateFormatter: IValueFormatter  = valueFormatter.create({format: null, cultureSelector: host.locale});
 
                 let formattedDates: Date[] = [];
                 for (let date of defaultDataViewBuilder.valuesStartDate) {
@@ -267,16 +267,6 @@ module powerbi.extensibility.visual.test {
                     GanttData.ColumnStartDate,
                     GanttData.ColumnDuration]);
 
-                for (let dvColumn of dataView.metadata.columns) {
-                    if (dataView.categorical.categories) {
-                        for (let dvCategory of dataView.categorical.categories) {
-                            if (dvCategory.source.roles && dvCategory.source.roles[GanttData.ColumnStartDate]) {
-                                dvColumn.format = "d";
-                            }
-                        }
-                    }
-                }
-
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
                     for (let task of tasks) {
@@ -287,6 +277,29 @@ module powerbi.extensibility.visual.test {
 
                                 expect(value).toEqual(formattedDates[idx]);
                                 formattedDates.splice(idx, 1);
+                            }
+                        }
+                    }
+
+                    done();
+                });
+            });
+
+            it("Verify custom date format inside tooltip", (done) => {
+                dataView.metadata.objects = {
+                    tooltipConfig: {
+                        dateFormat: "MMMM dd,yyyy"
+                    }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    for (let task of tasks) {
+                        for (let tooltipInfo of task.tooltipInfo) {
+                            if (tooltipInfo.displayName === "Start Date") {
+                                let value: VisualTooltipDataItem  = tooltipInfo.value;
+
+                                expect(value).toMatch(/([a-z].)\s{1}([0-9]{2}),([0-9]{0,4})/);
                             }
                         }
                     }
