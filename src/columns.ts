@@ -43,10 +43,25 @@ module powerbi.extensibility.visual {
             let categories: DataViewCategoricalColumn[] = categorical && categorical.categories || [];
             let values: DataViewValueColumns = categorical && categorical.values || <DataViewValueColumns>[];
             let series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
-            return categorical && _.mapValues(new this<any[]>(), (n, i) =>
-                (<DataViewCategoricalColumn[]>_.toArray(categories)).concat(_.toArray(values))
-                    .filter(x => x.source.roles && x.source.roles[i]).map(x => x.values)[0]
-                || values.source && values.source.roles && values.source.roles[i] && series);
+
+            return categorical && _.mapValues(new this<any[]>(), (n, i) => {
+               let  columns: PrimitiveValue[] | { [x: string]: PrimitiveValue[]; };
+               (<DataViewCategoricalColumn[]>_.toArray(categories))
+                  .concat(_.toArray(values))
+                  .filter(x => x.source.roles && x.source.roles[i])
+                  .forEach(x => {
+                     if (x.source.roles && x.source.roles["ExtraInformation"]) {
+                         if (!columns) {
+                             columns = {};
+                         }
+                         columns[x.source.displayName] = x.values;
+                     } else {
+                         columns = x.values;
+                     }
+                  });
+
+                return columns || values.source && values.source.roles && values.source.roles[i] && series;
+            });
         }
 
         public static getSeriesValues(dataView: DataView): PrimitiveValue[] {
@@ -61,5 +76,6 @@ module powerbi.extensibility.visual {
         public Duration: T = null;
         public Completion: T = null;
         public Resource: T = null;
+        public ExtraInformation: T = null;
     }
 }

@@ -213,6 +213,29 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            it("Verify tooltips have extra information", (done) => {
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration,
+                    GanttData.ColumnExtraInformation]);
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let index = 0;
+                    for (let task of tasks) {
+                        for (let tooltipInfo of task.tooltipInfo) {
+                            if (tooltipInfo.displayName === GanttData.ColumnExtraInformation) {
+                                let value: VisualTooltipDataItem  = tooltipInfo.value;
+                                expect(value).toEqual(defaultDataViewBuilder.valuesExtraInformation[index++]);
+                            }
+                        }
+                    }
+
+                    done();
+                });
+            });
+
             it("Verify Font Size set to default", (done) => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let element = d3.select(visualBuilder.element.get(0));
@@ -648,7 +671,7 @@ module powerbi.extensibility.visual.test {
                     checkColor(visualBuilder.axisTicksLine, color, "stroke", done);
                 });
 
-                it("Axis taxt color", (done) => {
+                it("Axis text color", (done) => {
                     let color: string = GanttBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
                         dateType: {
