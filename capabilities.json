@@ -51,6 +51,12 @@
             "displayName": "Resource",
             "displayNameKey": "Role_Resource",
             "kind": "Grouping"
+        },
+        {
+            "name": "ExtraInformation",
+            "displayName": "Extra information",
+            "displayNameKey": "Role_ExtraInformation",
+            "kind": "Grouping"
         }
     ],
     "dataViewMappings": [
@@ -80,6 +86,10 @@
                     "Resource": {
                         "min": 0,
                         "max": 0
+                    },
+                    "ExtraInformation": {
+                        "min": 0,
+                        "max": 3
                     }
                 },
                 {
@@ -106,6 +116,10 @@
                     "Resource": {
                         "min": 0,
                         "max": 0
+                    },
+                    "ExtraInformation": {
+                        "min": 0,
+                        "max": 3
                     }
                 },
                 {
@@ -132,6 +146,10 @@
                     "Resource": {
                         "min": 0,
                         "max": 1
+                    },
+                    "ExtraInformation": {
+                        "min": 0,
+                        "max": 3
                     }
                 }
             ],
@@ -151,6 +169,11 @@
                         {
                             "for": {
                                 "in": "Resource"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "ExtraInformation"
                             }
                         }
                     ]

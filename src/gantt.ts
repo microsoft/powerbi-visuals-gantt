@@ -129,6 +129,12 @@ module powerbi.extensibility.visual {
         description: string;
         color: string;
         tooltipInfo: VisualTooltipDataItem[];
+        extraInformation: ExtraInformation[];
+    }
+
+    export interface ExtraInformation {
+        displayName: string;
+        value: string;
     }
 
     export interface GroupedTask {
@@ -498,6 +504,10 @@ module powerbi.extensibility.visual {
                 tooltipDataArray.push({ displayName: "Resource", value: task.resource });
             }
 
+            for (const key of Object.keys(task.extraInformation)) {
+                tooltipDataArray.push(task.extraInformation[key]);
+            }
+
             return tooltipDataArray;
         }
 
@@ -648,6 +658,19 @@ module powerbi.extensibility.visual {
                             ? values.Resource[index] as string
                             : "";
 
+                        const extraInformation: ExtraInformation[] = [];
+                        if (values.ExtraInformation && Object.keys(values.ExtraInformation).length) {
+                            for (const key of Object.keys(values.ExtraInformation)) {
+                                const value: string = values.ExtraInformation[key][index];
+                                if (value) {
+                                    extraInformation.push({
+                                        displayName: key,
+                                        value: value
+                                    });
+                                }
+                            }
+                        }
+
                         let completion: number = (group.Completion
                             && Gantt.convertToDecimal(group.Completion.values[index] as number))
                             || 0;
@@ -667,7 +690,8 @@ module powerbi.extensibility.visual {
                             description: categoryValue as string,
                             tooltipInfo: [],
                             selected: false,
-                            identity: selectionId
+                            identity: selectionId,
+                            extraInformation: extraInformation,
                         };
 
                         let durationUnit = settings.general.durationUnit;

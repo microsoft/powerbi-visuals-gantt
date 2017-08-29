@@ -41,6 +41,7 @@ module powerbi.extensibility.visual.test {
         public static ColumnDuration: string = "Duration";
         public static ColumnResource: string = "Resource";
         public static ColumnCompletePrecntege: string = "CompletePrecntege";
+        public static ColumnExtraInformation: string = "Description";
 
         public valuesTaskTypeResource: string[][] = [
             ["Spec", "MOLAP connectivity", "Mey"],
@@ -78,6 +79,13 @@ module powerbi.extensibility.visual.test {
         public valuesStartDate = GanttData.getRandomUniqueDates(this.valuesTaskTypeResource.length, new Date(2015, 7, 0), new Date(2017, 7, 0));
         public valuesDuration = GanttData.getRandomUniqueNumbers(this.valuesTaskTypeResource.length, 3, 40);
         public valuesCompletePrecntege = GanttData.getRandomUniqueNumbers(this.valuesTaskTypeResource.length);
+        public valuesExtraInformation = GanttData.getTexts(this.valuesTaskTypeResource, "Description");
+
+        public static getTexts(valuesTaskTypeResource: string[][], text: string): string[] {
+            return valuesTaskTypeResource.map((item) => {
+                return `${text} for ${item[1]} task`;
+            });
+        }
 
         public static getRandomUniqueDates(count: number, start: Date, end: Date): Date[] {
             return this.getRandomUniqueNumbers(count, start.getTime(), end.getTime()).map(x => new Date(x));
@@ -125,6 +133,14 @@ module powerbi.extensibility.visual.test {
                         roles: { "StartDate": true }
                     },
                     values: this.valuesStartDate
+                },
+                {
+                    source: {
+                        displayName: GanttData.ColumnExtraInformation,
+                        type: ValueType.fromDescriptor({ text: true }),
+                        roles: { "ExtraInformation": true }
+                    },
+                    values: this.valuesExtraInformation
                 }
             ], [
                     {

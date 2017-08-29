@@ -5,6 +5,7 @@
 	"Role_Duration": "Duration",
 	"Role_Completion": "% Completion",
 	"Role_Resource": "Resource",
+  	"Role_ExtraInformation": "Extra information",
 	"Visual_General": "General",
 	"Visual_GroupTasks": "Group Tasks",
 	"Visual_Legend": "Legend",
@@ -43,6 +44,7 @@
 	"Visual_DateType_Day": "Day",
 	"Visual_DateType_Week": "Week",
 	"Visual_DateType_Month": "Month",
+  	"Visual_DateType_Quarter": "Quarter",
 	"Visual_DateType_Year": "Year",
 	"Visual_DateType_TodayColor": "Today Color",
 	"Visual_DateType_AxisColor": "Axis Color",
@@ -52,6 +54,5 @@
 	"Visual_DurationUnit_Hours": "Hours",
 	"Visual_DurationUnit_Minutes": "Minutes",
 	"Visual_DurationUnit_Seconds": "Seconds",
-	"Visual_DurationMinimum": "Duration min",
-	"Visual_DateType_Quarter": "Quarter"
+	"Visual_DurationMinimum": "Duration min"
 }
