@@ -53,6 +53,11 @@ module powerbi.extensibility.visual.test {
                 .children("svg.gantt");
         }
 
+        public get chartLine() {
+            return this.chart
+                .children("line.chart-line");
+        }
+
         public get axis() {
             return this.mainElement
                 .children("g.axis");
