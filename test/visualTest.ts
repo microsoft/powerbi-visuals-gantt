@@ -276,6 +276,27 @@ module powerbi.extensibility.visual.test {
                 })(dateType));
             }
 
+            it(`Verify milestone line is present in dom`, (done) => {
+                let startDate: Date = new Date();
+                let endDate: Date = new Date();
+
+                startDate.setDate(startDate.getDate() - 30);
+                endDate.setDate(endDate.getDate() + 30);
+
+                defaultDataViewBuilder.valuesStartDate = GanttData.getRandomUniqueDates(
+                    defaultDataViewBuilder.valuesTaskTypeResource.length,
+                    startDate,
+                    endDate
+                );
+                dataView = defaultDataViewBuilder.getDataView();
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    expect(visualBuilder.chartLine).toBeInDOM();
+
+                    done();
+                });
+            });
+
             it("Verify date format for culture which user have chosen", (done) => {
                 let host: IVisualHost = mocks.createVisualHost();
                 host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];

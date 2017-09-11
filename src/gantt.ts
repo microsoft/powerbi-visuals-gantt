@@ -118,6 +118,22 @@ module powerbi.extensibility.visual {
         "second"
     ];
 
+     export enum DateTypes {
+        Second = <any>"Second",
+        Minute = <any>"Minute",
+        Hour = <any>"Hour",
+        Day = <any>"Day",
+        Week = <any>"Week",
+        Month = <any>"Month",
+        Quarter = <any>"Quarter",
+        Year = <any>"Year"
+    }
+
+    export enum LabelsForDateTypes {
+        Now = <any>"Now",
+        Today = <any>"Today"
+    }
+
     export interface Task extends SelectableDataPoint {
         id: number;
         name: string;
@@ -259,7 +275,7 @@ module powerbi.extensibility.visual {
             DateFormatStrings: {
                 Second: "HH:mm:ss",
                 Minute: "HH:mm:ss",
-                Hour: "(dd) HH:mm",
+                Hour: "(dd/MM) HH:mm",
                 Day: "MMM dd",
                 Week: "MMM dd",
                 Month: "MMM yyyy",
@@ -957,30 +973,30 @@ module powerbi.extensibility.visual {
             }
         }
 
-        private static getDateType(dateType: string): number {
+        private static getDateType(dateType: DateTypes): number {
             switch (dateType) {
-                case "Second":
+                case DateTypes.Second:
                     return MillisecondsInASecond;
 
-                case "Minute":
+                case DateTypes.Minute:
                     return MillisecondsInAMinute;
 
-                case "Hour":
+                case DateTypes.Hour:
                     return MillisecondsInAHour;
 
-                case "Day":
+                case DateTypes.Day:
                     return MillisecondsInADay;
 
-                case "Week":
+                case DateTypes.Week:
                     return MillisecondsInWeek;
 
-                case "Month":
+                case DateTypes.Month:
                     return MillisecondsInAMonth;
 
-                case "Quarter":
+                case DateTypes.Quarter:
                     return MillisecondsInAQuarter;
 
-                case "Year":
+                case DateTypes.Year:
                     return MillisecondsInAYear;
 
                 default:
@@ -1413,10 +1429,27 @@ module powerbi.extensibility.visual {
             return this.timeScale(task.end) - this.timeScale(task.start);
         }
 
-        private getTooltipForMilstoneLine(timestamp: number, milestoneTitle: string): VisualTooltipDataItem[] {
+        private getTooltipForMilstoneLine(
+            timestamp: number,
+            milestoneTitle: string | LabelsForDateTypes): VisualTooltipDataItem[] {
+            let dateTime: string = new Date(timestamp).toLocaleDateString();
+
+            if (!milestoneTitle) {
+                switch (this.viewModel.settings.dateType.type) {
+                    case DateTypes.Second:
+                    case DateTypes.Minute:
+                    case DateTypes.Hour:
+                        milestoneTitle = LabelsForDateTypes.Now;
+                        dateTime = new Date(timestamp).toLocaleString();
+                        break;
+                    default:
+                        milestoneTitle = LabelsForDateTypes.Today;
+                }
+            }
+
             return [{
-                displayName: milestoneTitle,
-                value: new Date(timestamp).toDateString()
+                displayName: <string>milestoneTitle,
+                value: dateTime
             }];
         }
 
@@ -1428,8 +1461,8 @@ module powerbi.extensibility.visual {
         */
         private createMilestoneLine(
             tasks: GroupedTask[],
-            milestoneTitle: string = "Today",
-            timestamp: number = Date.now()): void {
+            timestamp: number = Date.now(),
+            milestoneTitle?: string): void {
 
             let todayColor: string = this.viewModel.settings.dateType.todayColor;
             let line: Line[] = [{

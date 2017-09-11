@@ -1,5 +1,7 @@
 ## 1.6.0
  * Added ability automatically scroll chart to today date
+## 1.5.1
+ * Fixed tooltip label and date format of milestone line
 ## 1.5.0
  * Added ability to use custom date format for tooltip dates
  * Added ability to use extra information in the tooltip
