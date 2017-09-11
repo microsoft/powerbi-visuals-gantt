@@ -8,6 +8,7 @@
   	"Role_ExtraInformation": "Extra information",
 	"Visual_General": "General",
 	"Visual_GroupTasks": "Group Tasks",
+	"Visual_ScrollToCurrentTime": "Scroll to current time",
 	"Visual_Legend": "Legend",
 	"Visual_LegendName": "Legend Name",
 	"Visual_LegendColor": "Legend color",

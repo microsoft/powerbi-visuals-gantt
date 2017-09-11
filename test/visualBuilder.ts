@@ -47,9 +47,13 @@ module powerbi.extensibility.visual.test {
             return this.visual;
         }
 
-        public get mainElement() {
+        public get body() {
             return this.element
-                .children("div.gantt-body")
+                .children("div.gantt-body");
+        }
+
+        public get mainElement() {
+            return this.body
                 .children("svg.gantt");
         }
 
