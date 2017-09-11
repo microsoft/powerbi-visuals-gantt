@@ -97,6 +97,11 @@ module powerbi.extensibility.visual.test {
                 .children("rect.task-lines");
         }
 
+        public get taskDaysOffRect() {
+            return this.tasks
+                .children("rect.task-days-off");
+        }
+
         public get taskLabels() {
             return this.mainElement
                 .children("g.task-lines")

@@ -30,6 +30,7 @@ module powerbi.extensibility.visual {
 
     export class GanttSettings extends DataViewObjectsParser {
         general: GeneralSettings = new GeneralSettings();
+        daysOff: DaysOffSettings = new DaysOffSettings();
         legend: LegendSettings = new LegendSettings();
         taskLabels: TaskLabelsSettings = new TaskLabelsSettings();
         taskConfig: TaskConfigSettings = new TaskConfigSettings();
@@ -44,6 +45,12 @@ module powerbi.extensibility.visual {
         scrollToCurrentTime: boolean = false;
         durationUnit: string = "day";
         durationMin: number = 0;
+    }
+
+    export class DaysOffSettings {
+        show: boolean = false;
+        fill: string = "#00B093";
+        firstDayOfWeek: string = "0";
     }
 
     export class LegendSettings {

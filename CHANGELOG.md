@@ -1,3 +1,5 @@
+## 1.7.0
+ * Added an ability to ignore weekends
 ## 1.6.0
  * Added ability automatically scroll chart to today date
 ## 1.5.1
