@@ -100,6 +100,7 @@ module powerbi.extensibility.visual {
     import timeScale = d3.time.Scale;
 
     const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
+    const ScrollMargin: number = 100;
     const MillisecondsInASecond: number = 1000;
     const MillisecondsInAMinute: number = 60 * MillisecondsInASecond;
     const MillisecondsInAHour: number = 60 * MillisecondsInAMinute;
@@ -411,7 +412,9 @@ module powerbi.extensibility.visual {
                 LegendPosition.Top);
 
             this.ganttDiv.on("scroll", function (evt) {
-                const taskLabelsWidth: number = self.viewModel.settings.taskLabels.show ? self.viewModel.settings.taskLabels.width : 0;
+                const taskLabelsWidth: number = self.viewModel.settings.taskLabels.show
+                    ? self.viewModel.settings.taskLabels.width
+                    : 0;
                 self.axisGroup
                     .attr("transform", SVGUtil.translate(taskLabelsWidth + self.margin.left, Gantt.TaskLabelsMarginTop + this.scrollTop));
                 self.lineGroup
@@ -949,9 +952,12 @@ module powerbi.extensibility.visual {
             this.renderAxis(xAxisProperties);
             this.renderTasks(groupedTasks);
 
-            this.createMilestoneLine(groupedTasks);
             this.updateTaskLabels(groupedTasks, settings.taskLabels.width);
             this.updateElementsPositions(this.margin);
+            this.createMilestoneLine(groupedTasks);
+            if (settings.general.scrollToCurrentTime) {
+                this.scrollToMilestoneLine(axisLength);
+            }
 
             if (this.interactivityService) {
                 let behaviorOptions: GanttBehaviorOptions = {
@@ -1490,6 +1496,20 @@ module powerbi.extensibility.visual {
             chartLineSelection
                 .exit()
                 .remove();
+        }
+
+        private scrollToMilestoneLine(axisLength: number,
+                                      timestamp: number = Date.now()): void {
+
+            let scrollValue = this.timeScale(new Date(timestamp));
+            scrollValue -= scrollValue > ScrollMargin
+                ? ScrollMargin
+                : 0;
+
+            if (axisLength > scrollValue) {
+                (this.body.node() as SVGSVGElement)
+                    .querySelector(Selectors.Body.selector).scrollLeft = scrollValue;
+            }
         }
 
         private renderTooltip(selection: Selection<Line | Task>): void {

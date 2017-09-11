@@ -41,6 +41,7 @@ module powerbi.extensibility.visual {
 
     export class GeneralSettings {
         groupTasks: boolean = false;
+        scrollToCurrentTime: boolean = false;
         durationUnit: string = "day";
         durationMin: number = 0;
     }

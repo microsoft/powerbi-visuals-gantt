@@ -60,6 +60,7 @@ module powerbi.extensibility.visual.test {
     }
 
     const defaultTaskDuration: number = 1;
+    const datesAmountForScroll: number = 90;
 
     describe("Gantt", () => {
         let visualBuilder: GanttBuilder,
@@ -388,6 +389,32 @@ module powerbi.extensibility.visual.test {
 
         describe("Format settings test", () => {
             describe("General", () => {
+                it("Scroll to current time", (done) => {
+                    let todayDate = new Date();
+                    let startDate = new Date();
+                    let endDate = new Date();
+
+                    startDate.setDate(todayDate.getDate() - datesAmountForScroll);
+                    endDate.setDate(todayDate.getDate() + datesAmountForScroll);
+
+                    defaultDataViewBuilder.valuesStartDate = GanttData.getRandomUniqueDates(
+                        defaultDataViewBuilder.valuesTaskTypeResource.length,
+                        startDate,
+                        endDate
+                    );
+                    dataView = defaultDataViewBuilder.getDataView();
+                    dataView.metadata.objects = {
+                        general: {
+                            scrollToCurrentTime: true
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        expect(visualBuilder.body.scrollLeft()).not.toEqual(0);
+                        done();
+                    });
+                });
+
                 describe("Duration units", () => {
 
                     function checkDurationUnit(durationUnit: string) {

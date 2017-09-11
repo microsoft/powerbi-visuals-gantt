@@ -210,6 +210,13 @@
                         "bool": true
                     }
                 },
+                "scrollToCurrentTime": {
+                    "displayName": "Scroll to current time",
+                    "displayNameKey": "Visual_ScrollToCurrentTime",
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "durationUnit": {
                     "displayName": "Duration unit",
                     "displayNameKey": "Visual_DurationUnit",
