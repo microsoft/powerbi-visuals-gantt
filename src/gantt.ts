@@ -110,6 +110,11 @@ module powerbi.extensibility.visual {
     const MillisecondsInAYear: number = 365 * MillisecondsInADay;
     const MillisecondsInAQuarter: number = MillisecondsInAYear / 4;
     const PaddingTasks: number = 5;
+    const DaysInAWeekend: number = 2;
+    const DaysInAWeek: number = 5;
+    const HoursInADay: number = 24;
+    const MinutesInADay: number = 24 * HoursInADay;
+    const SecondsInADay: number = 24 * MinutesInADay;
     const DefaultChartLineHeight = 40;
     const GanttDurationUnitType = [
         "day",
@@ -147,6 +152,14 @@ module powerbi.extensibility.visual {
         color: string;
         tooltipInfo: VisualTooltipDataItem[];
         extraInformation: ExtraInformation[];
+        daysOffList: DaysOffData[];
+    }
+
+    export type DaysOffData = [Date, number];
+
+    export interface TaskDaysOff {
+        id: number;
+        daysOff: DaysOffData;
     }
 
     export interface ExtraInformation {
@@ -232,6 +245,7 @@ module powerbi.extensibility.visual {
         export const SingleTask: ClassAndSelector = createClassAndSelector("task");
         export const TaskRect: ClassAndSelector = createClassAndSelector("task-rect");
         export const TaskProgress: ClassAndSelector = createClassAndSelector("task-progress");
+        export const TaskDaysOff: ClassAndSelector = createClassAndSelector("task-days-off");
         export const TaskResource: ClassAndSelector = createClassAndSelector("task-resource");
         export const TaskLabels: ClassAndSelector = createClassAndSelector("task-labels");
         export const TaskLines: ClassAndSelector = createClassAndSelector("task-lines");
@@ -492,7 +506,7 @@ module powerbi.extensibility.visual {
             durationUnit: string): VisualTooltipDataItem[] {
 
             let tooltipDataArray: VisualTooltipDataItem[] = [];
-            const durationLabel: string = this.generateLabelForDuration(task.duration, durationUnit);
+            const durationLabel: string = Gantt.generateLabelForDuration(task.duration, durationUnit);
             if (task.taskType) {
                 tooltipDataArray.push({ displayName: "Legend", value: task.taskType });
             }
@@ -711,12 +725,37 @@ module powerbi.extensibility.visual {
                             selected: false,
                             identity: selectionId,
                             extraInformation: extraInformation,
+                            daysOffList: []
                         };
 
-                        let durationUnit = settings.general.durationUnit;
+                        let durationUnit: string = settings.general.durationUnit;
                         durationUnit = (GanttDurationUnitType.indexOf(durationUnit) !== -1 && durationUnit) || "day";
 
                         task.end = d3.time[durationUnit].offset(task.start, task.duration);
+                        if (settings.daysOff.show) {
+                            let datesDiff: number = 0;
+                            do {
+                                task.daysOffList = Gantt.calculateDaysOff(
+                                    +settings.daysOff.firstDayOfWeek,
+                                    new Date(task.start.getTime()),
+                                    new Date(task.end.getTime())
+                                );
+
+                                if (task.daysOffList.length) {
+                                    // extra duration calculating in days
+                                    let extraDuration: number = task.daysOffList
+                                        .map((item) => item[1])
+                                        .reduce((prevValue, currentValue) => prevValue + currentValue);
+
+                                    extraDuration = Gantt.transformExtraDuration(durationUnit, extraDuration);
+                                    task.end = d3.time[durationUnit].offset(task.start, task.duration + extraDuration);
+
+                                    const lastDayOff: Date = task.daysOffList[task.daysOffList.length - 1][0];
+                                    datesDiff = Math.floor((task.end.getTime() - lastDayOff.getTime()) / MillisecondsInADay);
+                                }
+                            } while (task.daysOffList.length && datesDiff - DaysInAWeekend > DaysInAWeek);
+                        }
+
                         task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters, settings.general.durationUnit);
 
                         tasks.push(task);
@@ -726,6 +765,52 @@ module powerbi.extensibility.visual {
             });
 
             return tasks;
+        }
+
+        private static transformExtraDuration(
+            durationUnit: string,
+            extraDuration: number): number {
+            switch (durationUnit) {
+                case "hour":
+                    return HoursInADay * extraDuration;
+
+                case "minute":
+                    return MinutesInADay * extraDuration;
+
+                case "second":
+                    return SecondsInADay * extraDuration;
+
+                default:
+                    return extraDuration;
+            }
+        }
+
+        /**
+         * Calculate days off
+         * @param firstDayOfWeek First day of working week. From settings
+         * @param fromDate Start of task
+         * @param toDate End of task
+         */
+        private static calculateDaysOff(
+            firstDayOfWeek: number,
+            fromDate: Date,
+            toDate: Date): DaysOffData[] {
+            let daysOffList: DaysOffData[] = [];
+            while (fromDate < toDate) {
+                let amountOfDays: number = 1;
+                for (let i = DaysInAWeekend; i > 0; i--) {
+                    let dateForCheck: Date = new Date(fromDate.getTime());
+                    dateForCheck.setDate(dateForCheck.getDate() + i);
+                    if (dateForCheck.getDay() === +firstDayOfWeek) {
+                        amountOfDays = i;
+                        daysOffList.push([new Date(fromDate.getTime()), i]);
+                        break;
+                    }
+                }
+                fromDate.setDate(fromDate.getDate() + amountOfDays);
+            }
+
+            return daysOffList;
         }
 
         /**
@@ -1132,11 +1217,30 @@ module powerbi.extensibility.visual {
 
             this.axisGroup
                 .selectAll(".tick line")
-                .style("stroke", axisColor); // ticks
+                .style("stroke", (timestamp) => this.setTickColor(timestamp, axisColor)); // ticks
 
             this.axisGroup
                 .selectAll(".tick text")
-                .style("fill", axisTextColor); // text
+                .style("fill", (timestamp) => this.setTickColor(timestamp, axisTextColor)); // text
+        }
+
+        private setTickColor(
+            timestamp: number,
+            defaultColor: string): string {
+            const tickTime = new Date(timestamp);
+            const firstDayOfWeek: string = this.viewModel.settings.daysOff.firstDayOfWeek;
+            const color: string = this.viewModel.settings.daysOff.fill;
+            if (this.viewModel.settings.daysOff.show) {
+                let dateForCheck: Date =  new Date(tickTime.getTime());
+                for (let i = 0; i <= DaysInAWeekend; i++) {
+                    if (dateForCheck.getDay() === +firstDayOfWeek) {
+                        return color;
+                    }
+                    dateForCheck.setDate(dateForCheck.getDate() + 1);
+                }
+            }
+
+            return defaultColor;
         }
 
         /**
@@ -1219,6 +1323,7 @@ module powerbi.extensibility.visual {
 
             this.taskProgressRender(taskSelection, taskConfigHeight);
             this.taskResourceRender(taskSelection, taskConfigHeight);
+            this.taskDaysOffRender(taskSelection, taskConfigHeight);
 
             this.renderTooltip(taskSelection);
 
@@ -1284,7 +1389,7 @@ module powerbi.extensibility.visual {
                 .attr({
                     x: (task: Task) => this.timeScale(task.start),
                     y: (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight),
-                    width: (task: Task) => this.taskDurationToWidth(task),
+                    width: (task: Task) => this.taskDurationToWidth(task.start, task.end),
                     height: () => Gantt.getBarHeight(taskConfigHeight)
                 })
                 .style("fill", (task: Task) => task.color);
@@ -1292,6 +1397,63 @@ module powerbi.extensibility.visual {
             taskRect
                 .exit()
                 .remove();
+        }
+
+        /**
+         * Render days off rects
+         * @param taskSelection Task Selection
+         * @param taskConfigHeight Task heights from settings
+         */
+        private taskDaysOffRender(
+            taskSelection: UpdateSelection<Task>,
+            taskConfigHeight: number): void {
+
+            const taskDaysOffColor: string = this.viewModel.settings.daysOff.fill;
+            const taskDaysOffShow: boolean = this.viewModel.settings.daysOff.show;
+
+            if (taskDaysOffShow) {
+                let tasksDaysOff: UpdateSelection<TaskDaysOff> = taskSelection
+                    .selectAll(Selectors.TaskDaysOff.selector)
+                    .data((d: Task) => {
+                        let tasksDaysOff: TaskDaysOff[] = [];
+
+                        for (let i = 0; i < d.daysOffList.length; i++) {
+                            tasksDaysOff.push({
+                                id: d.id,
+                                daysOff: d.daysOffList[i]
+                            });
+                        }
+
+                        return tasksDaysOff;
+                    });
+
+                tasksDaysOff
+                    .enter()
+                    .append("rect")
+                    .classed(Selectors.TaskDaysOff.class, true);
+
+                tasksDaysOff
+                    .attr({
+                        x: (task: TaskDaysOff) => this.timeScale(task.daysOff[0]),
+                        y: (task: TaskDaysOff) => Gantt.getBarYCoordinate(task.id, taskConfigHeight),
+                        width: (task: TaskDaysOff) => {
+                            const startDate: Date = task.daysOff[0];
+                            const startTime: number = startDate.getTime();
+                            const endDate: Date = new Date(startTime + (task.daysOff[1] * MillisecondsInADay));
+
+                            return this.taskDurationToWidth(startDate, endDate);
+                        },
+                        height: Gantt.getBarHeight(taskConfigHeight)
+                    })
+                    .style("fill", taskDaysOffColor);
+
+                tasksDaysOff
+                    .exit()
+                    .remove();
+
+            } else {
+                this.removeBySelectors(taskSelection, "TaskDaysOff");
+            }
         }
 
         /**
@@ -1394,14 +1556,58 @@ module powerbi.extensibility.visual {
         }
 
         /**
+         * Get width of days off rect for progress
+         * @param task All task attributes
+         * @param dateTypeMilliseconds milleseconds for choosen date type
+         */
+        private getDaysOffWidthForProgress(
+            task: Task,
+            dateTypeMilliseconds: number): number {
+            let daysOffAmount: number = 0;
+            let widthOfOneTick: number = 0;
+
+            if (task.daysOffList &&
+                task.daysOffList.length) {
+                let startTime: number = task.start.getTime();
+
+                let originalEnd: Date = new Date(startTime + (task.duration * dateTypeMilliseconds));
+                let originalProgressLength: number = (originalEnd.getTime() - startTime) * task.completion;
+                let currentProgressTime: number = new Date(startTime + originalProgressLength).getTime();
+
+                let daysOffFiltered: DaysOffData[] = task.daysOffList
+                    .filter((date) => startTime <= date[0].getTime() && date[0].getTime() <= currentProgressTime);
+
+                if (daysOffFiltered.length) {
+                    daysOffAmount = daysOffFiltered
+                        .map(i => i[1])
+                        .reduce((i, j) => i + j);
+                }
+
+                widthOfOneTick = this.taskDurationToWidth(task.start, new Date(startTime + dateTypeMilliseconds));
+            }
+
+            return widthOfOneTick * daysOffAmount;
+        }
+
+        /**
          * Set the task progress bar in the gantt
          * @param task All task attributes
          */
         private setTaskProgress(task: Task): number {
-            return this.taskDurationToWidth(task) * task.completion;
+            let daysOffWidth: number = 0;
+            let end: Date = task.end;
+            if (this.viewModel.settings.daysOff.show) {
+                let dateTypeMilliseconds: number = Gantt.getDateType(this.viewModel.settings.dateType.type);
+
+                daysOffWidth = this.getDaysOffWidthForProgress(task, dateTypeMilliseconds);
+                end = new Date(task.start.getTime() + (task.duration * dateTypeMilliseconds));
+            }
+
+            return (this.taskDurationToWidth(task.start, end) * task.completion) + daysOffWidth;
         }
 
-        /**
+
+            /**
          * Get bar y coordinate
          * @param lineNumber Line number that represents the task number
          * @param lineHeight Height of task line
@@ -1422,11 +1628,14 @@ module powerbi.extensibility.visual {
         }
 
         /**
-        * convert task duration to width in the time scale
-        * @param task The task to convert
-        */
-        private taskDurationToWidth(task: Task): number {
-            return this.timeScale(task.end) - this.timeScale(task.start);
+         * convert task duration to width in the time scale
+         * @param start The start of task to convert
+         * @param end The end of task to convert
+         */
+        private taskDurationToWidth(
+            start: Date,
+            end: Date): number {
+            return this.timeScale(end) - this.timeScale(start);
         }
 
         private getTooltipForMilstoneLine(

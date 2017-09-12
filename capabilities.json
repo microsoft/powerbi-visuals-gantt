@@ -254,6 +254,73 @@
                 }
             }
         },
+        "daysOff": {
+            "displayName": "DaysOff",
+            "displayNameKey": "Visual_DaysOff",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "displayNameKey": "Visual_Show",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "fill": {
+                    "displayName": "Fill",
+                    "displayNameKey": "Visual_Fill",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "firstDayOfWeek": {
+                    "displayName": "First Day of Week",
+                    "displayNameKey": "Visual_FirstDayOfWeek",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "0",
+                                "displayName": "Sunday",
+                                "displayNameKey": "Visual_Day_Sunday"
+                            },
+                            {
+                                "value": "1",
+                                "displayName": "Monday",
+                                "displayNameKey": "Visual_Day_Monday"
+                            },
+                            {
+                                "value": "2",
+                                "displayName": "Tuesday",
+                                "displayNameKey": "Visual_Day_Tuesday"
+                            },
+                            {
+                                "value": "3",
+                                "displayName": "Wednesday",
+                                "displayNameKey": "Visual_Day_Wednesday"
+                            },
+                            {
+                                "value": "4",
+                                "displayName": "Thursday",
+                                "displayNameKey": "Visual_Day_Thursday"
+                            },
+                            {
+                                "value": "5",
+                                "displayName": "Friday",
+                                "displayNameKey": "Visual_Day_Friday"
+                            },
+                            {
+                                "value": "6",
+                                "displayName": "Saturday",
+                                "displayNameKey": "Visual_Day_Saturday"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
         "legend": {
             "displayName": "Legend",
             "displayNameKey": "Visual_Legend",

@@ -59,6 +59,16 @@ module powerbi.extensibility.visual.test {
         Year = <any>"Year"
     }
 
+    export enum Days {
+        Sunday = <any>"0",
+        Monday = <any>"1",
+        Tuesday = <any>"2",
+        Wednesday = <any>"3",
+        Thursday = <any>"4",
+        Friday = <any>"5",
+        Saturday = <any>"6"
+    }
+
     const defaultTaskDuration: number = 1;
     const datesAmountForScroll: number = 90;
 
@@ -480,6 +490,52 @@ module powerbi.extensibility.visual.test {
                     });
 
                 });
+            });
+
+            describe("Days off", () => {
+                it("color", (done) => {
+                    let color: string = GanttBuilder.getRandomHexColor();
+                    dataView.metadata.objects = {
+                        daysOff: {
+                            show: true,
+                            fill: GanttBuilder.getSolidColorStructuralObject(color)
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        visualBuilder.taskDaysOffRect.toArray().map($).forEach(e => {
+                            assertColorsMatch(e.css("fill"), color);
+                        });
+
+                        done();
+                    });
+                });
+
+                for (let day in Days) {
+                    it(`Verify day off (${day})`, ((day) => (done) => {
+                        dataView = defaultDataViewBuilder.getDataView();
+
+                        dataView.metadata.objects = {
+                            daysOff: {
+                                show: true,
+                                firstDayOfWeek: day
+                            }
+                        };
+
+                        visualBuilder.updateRenderTimeout(dataView, () => {
+                            const millisecondsInADay: number  = 24 * 60 * 60 * 1000;
+                            visualBuilder.taskDaysOffRect.each((i, e) => {
+                                let daysOff: TaskDaysOff = e.__data__.daysOff;
+                                const amountOfWeekendDays: number = daysOff[1];
+                                const firstDayOfWeek: Date =
+                                    new Date(daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay));
+
+                                expect(firstDayOfWeek.getDay()).toEqual(+day);
+                            });
+                            done();
+                        });
+                    })(day));
+                }
             });
 
             describe("Data labels", () => {
