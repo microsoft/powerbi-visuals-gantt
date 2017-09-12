@@ -1142,11 +1142,17 @@ module powerbi.extensibility.visual {
             options: GanttCalculateScaleAndDomainOptions,
             metaDataColumn: DataViewMetadataColumn): IAxisProperties {
 
+            const dateType: DateTypes = this.viewModel.settings.dateType.type;
+            const cultureSelector: string = this.host.locale;
+            let xAxisDateFormatter = ValueFormatter.create({
+                format: Gantt.DefaultValues.DateFormatStrings[dateType],
+                cultureSelector
+            });
             let xAxisProperties: IAxisProperties = AxisHelper.createAxis({
                 pixelSpan: viewportIn.width,
                 dataDomain: options.forcedXDomain,
                 metaDataColumn: metaDataColumn,
-                formatString: Gantt.DefaultValues.DateFormatStrings[this.viewModel.settings.dateType.type],
+                formatString: Gantt.DefaultValues.DateFormatStrings[dateType],
                 outerPadding: 0,
                 isScalar: true,
                 isVertical: false,
@@ -1154,8 +1160,7 @@ module powerbi.extensibility.visual {
                 useTickIntervalForDisplayUnits: true,
                 isCategoryAxis: true,
                 getValueFn: (index) => {
-                    return ValueFormatter.format(new Date(index),
-                        Gantt.DefaultValues.DateFormatStrings[this.viewModel.settings.dateType.type]);
+                    return xAxisDateFormatter.format(new Date(index));
                 },
                 scaleType: options.categoryAxisScaleType,
                 axisDisplayUnits: options.categoryAxisDisplayUnits,

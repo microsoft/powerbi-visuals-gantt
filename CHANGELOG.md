@@ -1,3 +1,6 @@
+## 1.7.1
+ * Fixed wrong date formatting of x-axis. Date formatting didn't use
+ PowerBi language setting
 ## 1.7.0
  * Added an ability to ignore weekends
 ## 1.6.0
