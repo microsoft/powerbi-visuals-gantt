@@ -206,6 +206,35 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            it("Task Completion width is equal task width", (done) => {
+                defaultDataViewBuilder.valuesCompletePrecntege = GanttData.getRandomUniqueNumbers(
+                    defaultDataViewBuilder.valuesTaskTypeResource.length, 0, 100
+                );
+
+                defaultDataViewBuilder.valuesCompletePrecntege.forEach((value, index) => {
+                    defaultDataViewBuilder.valuesCompletePrecntege[index] = value * 0.01;
+                });
+
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration,
+                    GanttData.ColumnCompletePrecntege]);
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let progressOfTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task-progress")[0];
+                    progressOfTasks.forEach((e, i) => {
+                        let percent: number = defaultDataViewBuilder.valuesCompletePrecntege[i];
+                        let widthOfTask: number = $(visualBuilder.taskRect[i]).attr("width");
+                        let widthOfProgressTask: number = +$(e).attr("width");
+
+                        expect(widthOfProgressTask).toEqual(widthOfTask * percent);
+                    });
+
+                    done();
+                });
+            });
+
             it("Verify task labels have tooltips", (done) => {
                 defaultDataViewBuilder.valuesTaskTypeResource.forEach(x => x[1] = _.repeat(x[1] + " ", 5).trim());
                 dataView = defaultDataViewBuilder.getDataView();
@@ -276,11 +305,20 @@ module powerbi.extensibility.visual.test {
 
                     dataView.metadata.objects = { dateType: { type: dateType } };
 
+                    let host: IVisualHost = mocks.createVisualHost();
+                    host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
+
+                    let xAxisDateFormatter: IValueFormatter = valueFormatter.create({
+                        format: VisualClass.DefaultValues.DateFormatStrings[dateType],
+                        cultureSelector: host.locale
+                    });
+
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        visualBuilder.axisTicks.children("text").each((i, e) =>
-                            expect($(e).text()).toEqual(valueFormatter.format(
-                                new Date((<any>e).__data__),
-                                VisualClass.DefaultValues.DateFormatStrings[dateType])));
+                        visualBuilder.axisTicks.children("text").each((i, e) => {
+                            let date: Date = new Date((<any>e).__data__);
+                            expect($(e).text()).toEqual(xAxisDateFormatter.format(date));
+                        });
+
                         done();
                     });
                 })(dateType));
@@ -635,7 +673,7 @@ module powerbi.extensibility.visual.test {
                     };
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        visualBuilder.taskRect.toArray().map($).forEach(e =>
+                        visualBuilder.taskLine.toArray().map($).forEach(e =>
                             assertColorsMatch(e.css("fill"), color));
 
                         done();
@@ -651,7 +689,7 @@ module powerbi.extensibility.visual.test {
                     };
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        visualBuilder.taskRect.toArray().map($).forEach(e =>
+                        visualBuilder.taskLine.toArray().map($).forEach(e =>
                             expect(+e.attr("height")).toEqual(height));
 
                         done();

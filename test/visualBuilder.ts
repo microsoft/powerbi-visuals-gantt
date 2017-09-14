@@ -92,7 +92,7 @@ module powerbi.extensibility.visual.test {
                 .children("line.chart-line");
         }
 
-        public get taskRect() {
+        public get taskLine() {
             return this.tasks
                 .children("rect.task-lines");
         }
@@ -117,6 +117,12 @@ module powerbi.extensibility.visual.test {
         public get tasks() {
             return this.tasksGroups
                 .children("g.task");
+        }
+
+
+        public get taskRect() {
+            return this.tasks
+                .children("rect.task-rect");
         }
 
         public get taskResources() {
