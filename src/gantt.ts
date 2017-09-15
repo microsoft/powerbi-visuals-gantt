@@ -426,13 +426,15 @@ module powerbi.extensibility.visual {
                 LegendPosition.Top);
 
             this.ganttDiv.on("scroll", function (evt) {
-                const taskLabelsWidth: number = self.viewModel.settings.taskLabels.show
-                    ? self.viewModel.settings.taskLabels.width
-                    : 0;
-                self.axisGroup
-                    .attr("transform", SVGUtil.translate(taskLabelsWidth + self.margin.left, Gantt.TaskLabelsMarginTop + this.scrollTop));
-                self.lineGroup
-                    .attr("transform", SVGUtil.translate(this.scrollLeft, self.margin.top));
+                if (self.viewModel) {
+                    const taskLabelsWidth: number = self.viewModel.settings.taskLabels.show
+                        ? self.viewModel.settings.taskLabels.width
+                        : 0;
+                    self.axisGroup
+                        .attr("transform", SVGUtil.translate(taskLabelsWidth + self.margin.left, Gantt.TaskLabelsMarginTop + this.scrollTop));
+                    self.lineGroup
+                        .attr("transform", SVGUtil.translate(this.scrollLeft, self.margin.top));
+                }
             }, false);
         }
 
