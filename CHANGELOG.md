@@ -1,3 +1,5 @@
+## 1.7.3
+ * Fixed unexpected error with scroll in some cases
 ## 1.7.2
  * Fixed wrong width calculation of completion line when daysOff setting
  is switched on
