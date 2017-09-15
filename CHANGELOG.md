@@ -1,3 +1,6 @@
+## 1.7.2
+ * Fixed wrong width calculation of completion line when daysOff setting
+ is switched on
 ## 1.7.1
  * Fixed wrong date formatting of x-axis. Date formatting didn't use
  PowerBi language setting

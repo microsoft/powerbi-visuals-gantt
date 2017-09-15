@@ -1144,7 +1144,7 @@ module powerbi.extensibility.visual {
 
             const dateType: DateTypes = this.viewModel.settings.dateType.type;
             const cultureSelector: string = this.host.locale;
-            let xAxisDateFormatter = ValueFormatter.create({
+            let xAxisDateFormatter: IValueFormatter = ValueFormatter.create({
                 format: Gantt.DefaultValues.DateFormatStrings[dateType],
                 cultureSelector
             });
@@ -1563,35 +1563,37 @@ module powerbi.extensibility.visual {
         /**
          * Get width of days off rect for progress
          * @param task All task attributes
-         * @param dateTypeMilliseconds milleseconds for choosen date type
+         * @param durationUnit unit Duration unit
          */
         private getDaysOffWidthForProgress(
             task: Task,
-            dateTypeMilliseconds: number): number {
-            let daysOffAmount: number = 0;
+            durationUnit: string): number {
+            let daysOffDuration: number = 0;
             let widthOfOneTick: number = 0;
 
             if (task.daysOffList &&
                 task.daysOffList.length) {
-                let startTime: number = task.start.getTime();
+                const startTime: number = task.start.getTime();
 
-                let originalEnd: Date = new Date(startTime + (task.duration * dateTypeMilliseconds));
-                let originalProgressLength: number = (originalEnd.getTime() - startTime) * task.completion;
-                let currentProgressTime: number = new Date(startTime + originalProgressLength).getTime();
+                const originalEnd: Date = d3.time[durationUnit].offset(task.start, task.duration);
+                const nextTickAfterStart: Date = d3.time[durationUnit].offset(task.start, 1);
+
+                const originalProgressLength: number = (originalEnd.getTime() - startTime) * task.completion;
+                const currentProgressTime: number = new Date(startTime + originalProgressLength).getTime();
 
                 let daysOffFiltered: DaysOffData[] = task.daysOffList
                     .filter((date) => startTime <= date[0].getTime() && date[0].getTime() <= currentProgressTime);
 
                 if (daysOffFiltered.length) {
-                    daysOffAmount = daysOffFiltered
+                    daysOffDuration = daysOffFiltered
                         .map(i => i[1])
                         .reduce((i, j) => i + j);
                 }
 
-                widthOfOneTick = this.taskDurationToWidth(task.start, new Date(startTime + dateTypeMilliseconds));
+                widthOfOneTick = this.taskDurationToWidth(task.start, nextTickAfterStart);
             }
 
-            return widthOfOneTick * daysOffAmount;
+            return widthOfOneTick * Gantt.transformExtraDuration(durationUnit, daysOffDuration);
         }
 
         /**
@@ -1602,10 +1604,10 @@ module powerbi.extensibility.visual {
             let daysOffWidth: number = 0;
             let end: Date = task.end;
             if (this.viewModel.settings.daysOff.show) {
-                let dateTypeMilliseconds: number = Gantt.getDateType(this.viewModel.settings.dateType.type);
+                const durationUnit =  this.viewModel.settings.general.durationUnit;
 
-                daysOffWidth = this.getDaysOffWidthForProgress(task, dateTypeMilliseconds);
-                end = new Date(task.start.getTime() + (task.duration * dateTypeMilliseconds));
+                daysOffWidth = this.getDaysOffWidthForProgress(task, durationUnit);
+                end = d3.time[durationUnit].offset(task.start, task.duration);
             }
 
             return (this.taskDurationToWidth(task.start, end) * task.completion) + daysOffWidth;
