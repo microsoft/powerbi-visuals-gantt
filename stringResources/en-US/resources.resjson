@@ -64,5 +64,6 @@
 	"Visual_DurationUnit_Days": "Days",
 	"Visual_DurationUnit_Hours": "Hours",
 	"Visual_DurationUnit_Minutes": "Minutes",
-	"Visual_DurationUnit_Seconds": "Seconds"
+	"Visual_DurationUnit_Seconds": "Seconds",
+	"Visual_DurationMinimum": "Duration min"
 }
