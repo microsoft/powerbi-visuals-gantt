@@ -34,5 +34,6 @@
 	"Visual_GanttDateType": "Tipo de fecha Gantt",
 	"Visual_GanttDateType_Day": "Día",
 	"Visual_GanttDateType_Week": "Semana",
-	"Visual_GanttDateType_Month": "Mes"
+	"Visual_GanttDateType_Month": "Mes",
+	"Visual_GanttDateType_Year": "Año"
 }
