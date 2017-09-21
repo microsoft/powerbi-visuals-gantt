@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-gantt",
-  "version": "1.7.3",
+  "version": "1.8.0",
   "description": "A Gantt chart is a type of bar chart which illustrates a project timeline or schedule. The Gantt Chart visual shows the Tasks, Start Dates, Durations, % Complete, and Resources for a project. The Gantt Chart visual can be used to show current schedule status using percent-complete shadings and a vertical \"TODAY\" line. The Legend may be used to group or filter tasks based upon data values.",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
     "powerbi-visuals"
   ],
   "scripts": {
-    "postinstall": "pbiviz update 1.6.0",
+    "postinstall": "pbiviz update 1.7.0",
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "package": "pbiviz package",
@@ -57,7 +57,7 @@
     "karma-remap-istanbul": "0.6.0",
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript-preprocessor": "0.3.1",
-    "powerbi-visuals-tools": "1.6.3",
+    "powerbi-visuals-tools": "^1.7.5",
     "powerbi-visuals-utils-testutils": "1.0.0",
     "tslint": "4.5.1",
     "tslint-microsoft-contrib": "4.0.1",

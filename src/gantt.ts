@@ -666,104 +666,113 @@ module powerbi.extensibility.visual {
             if (!values.Task) {
                 return tasks;
             }
-            groupValues.forEach((group: GanttColumns<DataViewValueColumn>) => {
-                values.Task.forEach((categoryValue: PrimitiveValue, index: number) => {
-                    if (group.Duration && group.Duration.values[index] !== null) {
-                        const selectoinBuider: ISelectionIdBuilder = host
-                            .createSelectionIdBuilder()
-                            .withCategory(dataView.categorical.categories[0], index);
-                        let color = taskColor || Gantt.DefaultValues.TaskColor;
-                        const taskType = _.find(taskTypes.types, (typeMeta: TaskTypeMetadata) => typeMeta.name === group.Duration.source.groupName);
-                        if (taskType) {
-                            selectoinBuider
-                                .withCategory(taskType.selectionColumn, 0);
-                            color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
-                        }
-                        const selectionId: powerbi.extensibility.ISelectionId = selectoinBuider.createSelectionId();
+            values.Task.forEach((categoryValue: PrimitiveValue, index: number) => {
+                let duration: number = settings.general.durationMin;
+                let color: string = taskColor || Gantt.DefaultValues.TaskColor;
+                let completion: number = 0;
+                let taskType: TaskTypeMetadata = null;
 
-                        const startDate: Date = (values.StartDate
-                            && Gantt.isValidDate(values.StartDate[index] as Date) && values.StartDate[index] as Date)
-                            || new Date(Date.now());
+                const selectionBuider: ISelectionIdBuilder = host
+                    .createSelectionIdBuilder()
+                    .withCategory(dataView.categorical.categories[0], index);
 
-                        const duration: number = group.Duration.values[index] < settings.general.durationMin
-                            ? settings.general.durationMin
-                            : group.Duration.values[index] as number;
+                if (groupValues) {
+                    groupValues.forEach((group: GanttColumns<DataViewValueColumn>) => {
+                        if (group.Duration && group.Duration.values[index] !== null) {
+                            taskType = _.find(taskTypes.types,
+                                (typeMeta: TaskTypeMetadata) => typeMeta.name === group.Duration.source.groupName);
 
-                        const resource: string = values.Resource
-                            ? values.Resource[index] as string
-                            : "";
+                            if (taskType) {
+                                selectionBuider.withCategory(taskType.selectionColumn, 0);
+                                color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
+                            }
 
-                        const extraInformation: ExtraInformation[] = [];
-                        if (values.ExtraInformation && Object.keys(values.ExtraInformation).length) {
-                            for (const key of Object.keys(values.ExtraInformation)) {
-                                const value: string = values.ExtraInformation[key][index];
-                                if (value) {
-                                    extraInformation.push({
-                                        displayName: key,
-                                        value: value
-                                    });
-                                }
+                            duration = group.Duration.values[index] > settings.general.durationMin
+                                && group.Duration.values[index] as number;
+
+                            completion = ((group.Completion && group.Completion.values[index])
+                                && Gantt.convertToDecimal(group.Completion.values[index] as number)) || 0;
+
+                            if (completion < Gantt.ComplectionMin) {
+                                completion = Gantt.ComplectionMin;
+                            }
+
+                            if (completion > Gantt.ComplectionMax) {
+                                completion = Gantt.ComplectionMax;
                             }
                         }
+                    });
+                }
 
-                        let completion: number = (group.Completion
-                            && Gantt.convertToDecimal(group.Completion.values[index] as number))
-                            || 0;
-                        completion = completion < Gantt.ComplectionMin ? Gantt.ComplectionMin :
-                            completion > Gantt.ComplectionMax ? Gantt.ComplectionMax : completion;
+                const selectionId: powerbi.extensibility.ISelectionId = selectionBuider.createSelectionId();
+                const extraInformation: ExtraInformation[] = [];
+                const resource: string = (values.Resource && values.Resource[index] as string) || "";
+                const startDate: Date = (values.StartDate
+                    && Gantt.isValidDate(values.StartDate[index] as Date) && values.StartDate[index] as Date)
+                    || new Date(Date.now());
 
-                        const task: Task = {
-                            color,
-                            completion,
-                            resource,
-                            id: index,
-                            name: categoryValue as string,
-                            start: startDate,
-                            end: null,
-                            duration: duration,
-                            taskType: taskType ? taskType.name : "",
-                            description: categoryValue as string,
-                            tooltipInfo: [],
-                            selected: false,
-                            identity: selectionId,
-                            extraInformation: extraInformation,
-                            daysOffList: []
-                        };
-
-                        let durationUnit: string = settings.general.durationUnit;
-                        durationUnit = (GanttDurationUnitType.indexOf(durationUnit) !== -1 && durationUnit) || "day";
-
-                        task.end = d3.time[durationUnit].offset(task.start, task.duration);
-                        if (settings.daysOff.show) {
-                            let datesDiff: number = 0;
-                            do {
-                                task.daysOffList = Gantt.calculateDaysOff(
-                                    +settings.daysOff.firstDayOfWeek,
-                                    new Date(task.start.getTime()),
-                                    new Date(task.end.getTime())
-                                );
-
-                                if (task.daysOffList.length) {
-                                    // extra duration calculating in days
-                                    let extraDuration: number = task.daysOffList
-                                        .map((item) => item[1])
-                                        .reduce((prevValue, currentValue) => prevValue + currentValue);
-
-                                    extraDuration = Gantt.transformExtraDuration(durationUnit, extraDuration);
-                                    task.end = d3.time[durationUnit].offset(task.start, task.duration + extraDuration);
-
-                                    const lastDayOff: Date = task.daysOffList[task.daysOffList.length - 1][0];
-                                    datesDiff = Math.floor((task.end.getTime() - lastDayOff.getTime()) / MillisecondsInADay);
-                                }
-                            } while (task.daysOffList.length && datesDiff - DaysInAWeekend > DaysInAWeek);
+                if (values.ExtraInformation) {
+                    const extraInformationKeys: any[] = Object.keys(values.ExtraInformation);
+                    for (const key of extraInformationKeys) {
+                        const value: string = values.ExtraInformation[key][index];
+                        if (value) {
+                            extraInformation.push({
+                                displayName: key,
+                                value: value
+                            });
                         }
-
-                        task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters, settings.general.durationUnit);
-
-                        tasks.push(task);
                     }
-                });
+                }
 
+                const task: Task = {
+                    color,
+                    completion,
+                    resource,
+                    id: index,
+                    name: categoryValue as string,
+                    start: startDate,
+                    end: null,
+                    duration: duration,
+                    taskType: taskType && taskType.name,
+                    description: categoryValue as string,
+                    tooltipInfo: [],
+                    selected: false,
+                    identity: selectionId,
+                    extraInformation: extraInformation,
+                    daysOffList: []
+                };
+
+                let durationUnit: string = settings.general.durationUnit;
+                durationUnit = (GanttDurationUnitType.indexOf(durationUnit) !== -1 && durationUnit) || "day";
+
+                task.end = d3.time[durationUnit].offset(task.start, task.duration);
+                if (settings.daysOff.show) {
+                    let datesDiff: number = 0;
+                    do {
+                        task.daysOffList = Gantt.calculateDaysOff(
+                            +settings.daysOff.firstDayOfWeek,
+                            new Date(task.start.getTime()),
+                            new Date(task.end.getTime())
+                        );
+
+                        if (task.daysOffList.length) {
+                            // extra duration calculating in days
+                            let extraDuration: number = task.daysOffList
+                                .map((item) => item[1])
+                                .reduce((prevValue, currentValue) => prevValue + currentValue);
+
+                            extraDuration = Gantt.transformExtraDuration(durationUnit, extraDuration);
+                            task.end = d3.time[durationUnit].offset(task.start, task.duration + extraDuration);
+
+                            const lastDayOff: Date = task.daysOffList[task.daysOffList.length - 1][0];
+                            datesDiff = Math.ceil((task.end.getTime() - lastDayOff.getTime()) / MillisecondsInADay);
+                        }
+                    } while (task.daysOffList.length && datesDiff - DaysInAWeekend > DaysInAWeek);
+                }
+
+                task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters, settings.general.durationUnit);
+
+                tasks.push(task);
             });
 
             return tasks;
