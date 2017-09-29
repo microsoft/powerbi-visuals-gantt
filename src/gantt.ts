@@ -293,8 +293,8 @@ module powerbi.extensibility.visual {
             DefaultDateType: "Week",
             DateFormatStrings: {
                 Second: "HH:mm:ss",
-                Minute: "HH:mm:ss",
-                Hour: "(dd) HH:mm",
+                Minute: "HH:mm",
+                Hour: "HH:mm (dd)",
                 Day: "MMM dd",
                 Week: "MMM dd",
                 Month: "MMM yyyy",
