@@ -46,7 +46,7 @@ module powerbi.extensibility.visual {
 
             return categorical && _.mapValues(new this<any[]>(), (n, i) => {
                let  columns: PrimitiveValue[] | { [x: string]: PrimitiveValue[]; };
-               (<DataViewCategoricalColumn[]>_.toArray(categories))
+               (<DataViewValueColumn[]>_.toArray(categories))
                   .concat(_.toArray(values))
                   .filter(x => x.source.roles && x.source.roles[i])
                   .forEach(x => {

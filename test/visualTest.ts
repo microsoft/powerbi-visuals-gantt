@@ -117,6 +117,16 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            it("Task Elements are presented in DOM if and only if task name is available (specified)", (done) => {
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask]);
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    expect(visualBuilder.tasks.length).not.toEqual(0);
+                    done();
+                });
+            });
+
             it("When Task Element is Missing, empty viewport should be created", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
                     GanttData.ColumnType,
