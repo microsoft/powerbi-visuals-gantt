@@ -1,6 +1,10 @@
 ## 1.8.0
  * Fixed wrong behavior when chart didn't render without duration data.
  * Update API to v1.7
+## 1.7.5
+ * Fixed estimated time incorrect when we use weekend setting
+## 1.7.4
+ * Fixed X-axis date formatting overlapped for "Hour" date type
 ## 1.7.3
  * Fixed unexpected error with scroll in some cases
 ## 1.7.2

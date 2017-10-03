@@ -71,6 +71,7 @@ module powerbi.extensibility.visual.test {
 
     const defaultTaskDuration: number = 1;
     const datesAmountForScroll: number = 90;
+    const millisecondsInADay: number  = 24 * 60 * 60 * 1000;
 
     describe("Gantt", () => {
         let visualBuilder: GanttBuilder,
@@ -559,8 +560,24 @@ module powerbi.extensibility.visual.test {
                     });
                 });
 
+                function checkDaysOff(
+                    dayForCheck: number,
+                    done: () => void): void {
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        visualBuilder.taskDaysOffRect.each((i, e) => {
+                            let daysOff: TaskDaysOff = e.__data__.daysOff;
+                            const amountOfWeekendDays: number = daysOff[1];
+                            const firstDayOfWeek: Date =
+                                new Date(daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay));
+
+                            expect(firstDayOfWeek.getDay()).toEqual(dayForCheck);
+                        });
+                        done();
+                    });
+                }
+
                 for (let day in Days) {
-                    it(`Verify day off (${day})`, ((day) => (done) => {
+                    it(`Verify day off (${day}) for 'Day' date type`, ((day) => (done) => {
                         dataView = defaultDataViewBuilder.getDataView();
 
                         dataView.metadata.objects = {
@@ -570,20 +587,39 @@ module powerbi.extensibility.visual.test {
                             }
                         };
 
-                        visualBuilder.updateRenderTimeout(dataView, () => {
-                            const millisecondsInADay: number  = 24 * 60 * 60 * 1000;
-                            visualBuilder.taskDaysOffRect.each((i, e) => {
-                                let daysOff: TaskDaysOff = e.__data__.daysOff;
-                                const amountOfWeekendDays: number = daysOff[1];
-                                const firstDayOfWeek: Date =
-                                    new Date(daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay));
-
-                                expect(firstDayOfWeek.getDay()).toEqual(+day);
-                            });
-                            done();
-                        });
+                        checkDaysOff(+day, done);
                     })(day));
                 }
+
+                it(`Verify end date of task is weekend date`, (done) => {
+                    let startDate: Date = new Date(2017, 8, 29); // Its a last day of working week
+                    let endDate: Date = new Date(2017, 8, 30);
+
+                    defaultDataViewBuilder.valuesStartDate = GanttData.getRandomUniqueDates(
+                        defaultDataViewBuilder.valuesTaskTypeResource.length,
+                        startDate,
+                        endDate
+                    );
+                    defaultDataViewBuilder.valuesDuration = GanttData.getRandomUniqueNumbers(
+                        defaultDataViewBuilder.valuesTaskTypeResource.length, 30, 48);
+                    dataView = defaultDataViewBuilder.getDataView();
+
+
+                    dataView.metadata.objects = {
+                        general: {
+                            durationUnit: "hour"
+                        },
+                        dateType: {
+                            type: "Hour"
+                        },
+                        daysOff: {
+                            show: true,
+                            firstDayOfWeek: +Days.Monday
+                        }
+                    };
+
+                    checkDaysOff(+Days.Monday, done);
+                });
             });
 
             describe("Data labels", () => {

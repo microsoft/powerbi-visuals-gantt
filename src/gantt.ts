@@ -152,14 +152,19 @@ module powerbi.extensibility.visual {
         color: string;
         tooltipInfo: VisualTooltipDataItem[];
         extraInformation: ExtraInformation[];
-        daysOffList: DaysOffData[];
+        daysOffList: DayOffData[];
     }
 
-    export type DaysOffData = [Date, number];
+    export type DayOffData = [Date, number];
+
+    export interface DaysOffDataForAddition {
+        list: DayOffData[];
+        amountOfLastDaysOff: number;
+    }
 
     export interface TaskDaysOff {
         id: number;
-        daysOff: DaysOffData;
+        daysOff: DayOffData;
     }
 
     export interface ExtraInformation {
@@ -288,8 +293,8 @@ module powerbi.extensibility.visual {
             DefaultDateType: "Week",
             DateFormatStrings: {
                 Second: "HH:mm:ss",
-                Minute: "HH:mm:ss",
-                Hour: "(dd/MM) HH:mm",
+                Minute: "HH:mm",
+                Hour: "HH:mm (dd)",
                 Day: "MMM dd",
                 Week: "MMM dd",
                 Month: "MMM yyyy",
@@ -798,6 +803,33 @@ module powerbi.extensibility.visual {
 
         /**
          * Calculate days off
+         * @param daysOffDataForAddition Temporary days off data for addition new one
+         * @param firstDayOfWeek First day of working week. From settings
+         * @param date Date for verifying
+         * @param extraCondition Extra condition for handle special case for last date
+         */
+        private static addNextDaysOff(
+            daysOffDataForAddition: DaysOffDataForAddition,
+            firstDayOfWeek: number,
+            date: Date,
+            extraCondition: boolean = false): DaysOffDataForAddition {
+            daysOffDataForAddition.amountOfLastDaysOff = 1;
+            for (let i = DaysInAWeekend; i > 0; i--) {
+                let dateForCheck: Date = new Date(date.getTime() + (i * MillisecondsInADay));
+                if  (dateForCheck.getDay() === +firstDayOfWeek &&
+                    (!extraCondition || (extraCondition && !/00\:00\:00/g.test(dateForCheck.toTimeString())))) {
+                    daysOffDataForAddition.amountOfLastDaysOff = i;
+                    daysOffDataForAddition.list.push([
+                        new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0), i
+                    ]);
+                }
+            }
+
+            return daysOffDataForAddition;
+        }
+
+        /**
+         * Calculate days off
          * @param firstDayOfWeek First day of working week. From settings
          * @param fromDate Start of task
          * @param toDate End of task
@@ -805,23 +837,19 @@ module powerbi.extensibility.visual {
         private static calculateDaysOff(
             firstDayOfWeek: number,
             fromDate: Date,
-            toDate: Date): DaysOffData[] {
-            let daysOffList: DaysOffData[] = [];
+            toDate: Date): DayOffData[] {
+            let tempDaysOffData: DaysOffDataForAddition = {
+                list: [],
+                amountOfLastDaysOff: 0
+            };
+
             while (fromDate < toDate) {
-                let amountOfDays: number = 1;
-                for (let i = DaysInAWeekend; i > 0; i--) {
-                    let dateForCheck: Date = new Date(fromDate.getTime());
-                    dateForCheck.setDate(dateForCheck.getDate() + i);
-                    if (dateForCheck.getDay() === +firstDayOfWeek) {
-                        amountOfDays = i;
-                        daysOffList.push([new Date(fromDate.getTime()), i]);
-                        break;
-                    }
-                }
-                fromDate.setDate(fromDate.getDate() + amountOfDays);
+                Gantt.addNextDaysOff(tempDaysOffData, firstDayOfWeek, fromDate);
+                fromDate.setDate(fromDate.getDate() + tempDaysOffData.amountOfLastDaysOff);
             }
 
-            return daysOffList;
+            Gantt.addNextDaysOff(tempDaysOffData, firstDayOfWeek, toDate, true);
+            return tempDaysOffData.list;
         }
 
         /**
@@ -1250,7 +1278,9 @@ module powerbi.extensibility.visual {
                 let dateForCheck: Date =  new Date(tickTime.getTime());
                 for (let i = 0; i <= DaysInAWeekend; i++) {
                     if (dateForCheck.getDay() === +firstDayOfWeek) {
-                        return color;
+                        return !i
+                            ? defaultColor
+                            : color;
                     }
                     dateForCheck.setDate(dateForCheck.getDate() + 1);
                 }
@@ -1585,14 +1615,12 @@ module powerbi.extensibility.visual {
             if (task.daysOffList &&
                 task.daysOffList.length) {
                 const startTime: number = task.start.getTime();
-
-                const originalEnd: Date = d3.time[durationUnit].offset(task.start, task.duration);
                 const nextTickAfterStart: Date = d3.time[durationUnit].offset(task.start, 1);
 
-                const originalProgressLength: number = (originalEnd.getTime() - startTime) * task.completion;
-                const currentProgressTime: number = new Date(startTime + originalProgressLength).getTime();
+                const progressLength: number = (task.end.getTime() - startTime) * task.completion;
+                const currentProgressTime: number = new Date(startTime + progressLength).getTime();
 
-                let daysOffFiltered: DaysOffData[] = task.daysOffList
+                let daysOffFiltered: DayOffData[] = task.daysOffList
                     .filter((date) => startTime <= date[0].getTime() && date[0].getTime() <= currentProgressTime);
 
                 if (daysOffFiltered.length) {
