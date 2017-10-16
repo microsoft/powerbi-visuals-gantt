@@ -264,6 +264,38 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            it("Verify case if duration is not integer number", (done) => {
+                defaultDataViewBuilder.valuesDuration = GanttData.getRandomUniqueNumbers(
+                    defaultDataViewBuilder.valuesTaskTypeResource.length, 0, 20, false);
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration]);
+
+                dataView.metadata.objects = {
+                    general: {
+                        durationUnit: "day"
+                    }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+
+                    for (let i in tasks) {
+                        const newDuration: number = tasks[i].duration;
+                        if (tasks[i].duration % 1 !== 0) {
+                            newDuration =
+                                VisualClass.transformDuration(defaultDataViewBuilder.valuesDuration[i], "minute", 2);
+                        }
+
+                        expect(tasks[i].duration).toEqual(newDuration);
+                        expect(tasks[i].duration % 1 === 0).toBeTruthy();
+                    }
+
+                    done();
+                });
+            });
+
             it("Verify tooltips have extra information", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
                     GanttData.ColumnTask,

@@ -91,10 +91,14 @@ module powerbi.extensibility.visual.test {
             return this.getRandomUniqueNumbers(count, start.getTime(), end.getTime()).map(x => new Date(x));
         }
 
-        public static getRandomUniqueNumbers(count: number, min: number = 0, max: number = 1): number[] {
+        public static getRandomUniqueNumbers(count: number, min: number = 0, max: number = 1, needFloor: boolean = true): number[] {
             let result: number[] = [];
             for (let i: number = 0; i < count; i++) {
-                result.push(Math.floor(getRandomNumber(min, max, result)));
+                let value = getRandomNumber(min, max, result);
+                if (needFloor) {
+                    value = Math.floor(value);
+                }
+                result.push(value);
             }
 
             return result;
