@@ -1,3 +1,5 @@
+## 1.8.1
+ * Fixed issue with not integer duration in some browsers
 ## 1.8.0
  * Fixed wrong behavior when chart didn't render without duration data.
  * Update API to v1.7

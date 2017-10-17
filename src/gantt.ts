@@ -113,15 +113,26 @@ module powerbi.extensibility.visual {
     const DaysInAWeekend: number = 2;
     const DaysInAWeek: number = 5;
     const HoursInADay: number = 24;
-    const MinutesInADay: number = 24 * HoursInADay;
-    const SecondsInADay: number = 24 * MinutesInADay;
+    const MinutesInAHour: number = 60;
+    const SecondsInAMinute: number = 60;
+    const MinutesInADay: number = 24 * MinutesInAHour;
+    const SecondsInADay: number = 60 * MinutesInADay;
+    const SecondsInAHour: number = MinutesInAHour * SecondsInAMinute;
     const DefaultChartLineHeight = 40;
+    const stepDurationTransformationDefault = 2;
     const GanttDurationUnitType = [
-        "day",
-        "hour",
+        "second",
         "minute",
-        "second"
+        "hour",
+        "day",
     ];
+
+    export enum DurationUnits {
+        Second = <any>"second",
+        Minute = <any>"minute",
+        Hour = <any>"hour",
+        Day = <any>"day",
+    }
 
      export enum DateTypes {
         Second = <any>"Second",
@@ -153,6 +164,7 @@ module powerbi.extensibility.visual {
         tooltipInfo: VisualTooltipDataItem[];
         extraInformation: ExtraInformation[];
         daysOffList: DayOffData[];
+        wasDowngradeDurationUnit: boolean;
     }
 
     export type DayOffData = [Date, number];
@@ -673,9 +685,11 @@ module powerbi.extensibility.visual {
             }
             values.Task.forEach((categoryValue: PrimitiveValue, index: number) => {
                 let duration: number = settings.general.durationMin;
+                let durationUnit: string = settings.general.durationUnit;
                 let color: string = taskColor || Gantt.DefaultValues.TaskColor;
                 let completion: number = 0;
                 let taskType: TaskTypeMetadata = null;
+                let wasDowngradeDurationUnit: boolean = false;
 
                 const selectionBuider: ISelectionIdBuilder = host
                     .createSelectionIdBuilder()
@@ -694,6 +708,15 @@ module powerbi.extensibility.visual {
 
                             duration = group.Duration.values[index] > settings.general.durationMin
                                 && group.Duration.values[index] as number;
+
+                            if (duration && duration % 1 !== 0) {
+                                durationUnit = Gantt.downgradeDurationUnit(durationUnit);
+                                let stepDurationTransformation: number =
+                                    GanttDurationUnitType.indexOf(settings.general.durationUnit) - GanttDurationUnitType.indexOf(durationUnit);
+
+                                duration = Gantt.transformDuration(duration, durationUnit, stepDurationTransformation);
+                                wasDowngradeDurationUnit = true;
+                            }
 
                             completion = ((group.Completion && group.Completion.values[index])
                                 && Gantt.convertToDecimal(group.Completion.values[index] as number)) || 0;
@@ -737,18 +760,16 @@ module powerbi.extensibility.visual {
                     name: categoryValue as string,
                     start: startDate,
                     end: null,
-                    duration: duration,
+                    duration,
                     taskType: taskType && taskType.name,
                     description: categoryValue as string,
                     tooltipInfo: [],
                     selected: false,
                     identity: selectionId,
-                    extraInformation: extraInformation,
-                    daysOffList: []
+                    extraInformation,
+                    daysOffList: [],
+                    wasDowngradeDurationUnit
                 };
-
-                let durationUnit: string = settings.general.durationUnit;
-                durationUnit = (GanttDurationUnitType.indexOf(durationUnit) !== -1 && durationUnit) || "day";
 
                 task.end = d3.time[durationUnit].offset(task.start, task.duration);
                 if (settings.daysOff.show) {
@@ -775,7 +796,7 @@ module powerbi.extensibility.visual {
                     } while (task.daysOffList.length && datesDiff - DaysInAWeekend > DaysInAWeek);
                 }
 
-                task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters, settings.general.durationUnit);
+                task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters, durationUnit);
 
                 tasks.push(task);
             });
@@ -783,22 +804,62 @@ module powerbi.extensibility.visual {
             return tasks;
         }
 
+        private static downgradeDurationUnit(durationUnit: string): string {
+            let durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
+            durationUnit = (durationUnitTypeIndex !== -1 && durationUnit) || "day";
+            // stepDurationTransformationDefault - variable for accuracy calculation of duration transformation
+            // if duration == 0.84 day, we need transform duration to minutes in order to get duration without extra loss
+            for (let i = stepDurationTransformationDefault; i > 0; i--) {
+                if (durationUnitTypeIndex - i > -1) {
+                    durationUnit = GanttDurationUnitType[durationUnitTypeIndex - i];
+                    break;
+                }
+            }
+
+            return durationUnit;
+        }
+
         private static transformExtraDuration(
-            durationUnit: string,
-            extraDuration: number): number {
+            durationUnit: string | DurationUnits,
+            duration: number): number {
             switch (durationUnit) {
-                case "hour":
-                    return HoursInADay * extraDuration;
+                case DurationUnits.Hour:
+                    return HoursInADay * duration;
 
-                case "minute":
-                    return MinutesInADay * extraDuration;
+                case DurationUnits.Minute:
+                    return MinutesInADay * duration;
 
-                case "second":
-                    return SecondsInADay * extraDuration;
+                case DurationUnits.Second:
+                    return SecondsInADay * duration;
 
                 default:
-                    return extraDuration;
+                    return duration;
             }
+
+        }
+
+        private static transformDuration(
+            duration: number,
+            newDurationUnit: string | DurationUnits,
+            stepDurationTransformation: number): number {
+            let transformedDuration: number = duration;
+            switch (newDurationUnit) {
+                case DurationUnits.Hour:
+                    transformedDuration = duration * HoursInADay;
+                    break;
+                case DurationUnits.Minute:
+                    transformedDuration = duration * (stepDurationTransformation === 2
+                            ? MinutesInADay
+                            : MinutesInAHour);
+                    break;
+                case DurationUnits.Second:
+                    transformedDuration = duration * (stepDurationTransformation === 2
+                            ? SecondsInAHour
+                            : SecondsInAMinute);
+                    break;
+            }
+
+            return Math.floor(transformedDuration);
         }
 
         /**
@@ -859,34 +920,51 @@ module powerbi.extensibility.visual {
          */
         private static generateLabelForDuration(
             duration: number,
-            durationUnit: string): string {
+            durationUnit: string | DurationUnits): string {
+
+            let oneDayDuration: number = HoursInADay;
+            let oneHourDuration: number = MinutesInAHour;
+            let oneMinuteDuration: number = 1;
+            switch (durationUnit) {
+                case DurationUnits.Minute:
+                    oneDayDuration = MinutesInADay;
+                    break;
+                case DurationUnits.Second:
+                    oneDayDuration = SecondsInADay;
+                    oneHourDuration = SecondsInAHour;
+                    oneMinuteDuration = SecondsInAMinute;
+                    break;
+            }
 
             let label: string = "";
-            const days: number = Math.floor(duration / 24);
+            const days: number = Math.floor(duration / oneDayDuration);
             label += days ? `${days} Days ` : ``;
-            if (durationUnit === "day") {
+            if (durationUnit === DurationUnits.Day) {
                 return `${duration} Days `;
             }
 
-            const hours: number = duration - (days * 24);
+            let timeDelta: number = days * oneDayDuration;
+            const hours: number = Math.floor((duration - timeDelta) / oneHourDuration);
             label += hours ? `${hours} Hours ` : ``;
-            if (durationUnit === "hour") {
+            if (durationUnit === DurationUnits.Hour) {
                 return duration >= 24
                     ? label
                     : `${duration} Hours`;
             }
 
-            const minutes: number = duration - ((days * 24) + (hours * 60));
+            timeDelta = (days * oneDayDuration) + (hours * oneHourDuration);
+            const minutes: number = Math.floor((duration - timeDelta) / oneMinuteDuration);
             label += minutes ? `${minutes} Minutes ` : ``;
-            if (durationUnit === "minute") {
+            if (durationUnit === DurationUnits.Minute) {
                 return duration >= 60
                     ? label
                     : `${duration} Minutes `;
             }
 
-            const seconds: number = duration - (days * 24 + hours * 60 + minutes * 60);
+            timeDelta = (days * oneDayDuration) + (hours * oneHourDuration) + (minutes * oneMinuteDuration);
+            const seconds: number = Math.floor(duration - timeDelta);
             label += seconds ? `${seconds} Seconds ` : ``;
-            if (durationUnit === "second") {
+            if (durationUnit === DurationUnits.Second) {
                 return duration >= 60
                     ? label
                     : `${duration} Seconds `;
@@ -1643,7 +1721,10 @@ module powerbi.extensibility.visual {
             let daysOffWidth: number = 0;
             let end: Date = task.end;
             if (this.viewModel.settings.daysOff.show) {
-                const durationUnit =  this.viewModel.settings.general.durationUnit;
+                let durationUnit: string = this.viewModel.settings.general.durationUnit;
+                if (task.wasDowngradeDurationUnit) {
+                    durationUnit = Gantt.downgradeDurationUnit(durationUnit);
+                }
 
                 daysOffWidth = this.getDaysOffWidthForProgress(task, durationUnit);
                 end = d3.time[durationUnit].offset(task.start, task.duration);
