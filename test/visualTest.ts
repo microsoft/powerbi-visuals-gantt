@@ -938,5 +938,29 @@ module powerbi.extensibility.visual.test {
                     });
             });
         });
+
+        describe("Capabilities tests", () => {
+            it("all items having displayName should have displayNameKey property", () => {
+                jasmine.getJSONFixtures().fixturesPath = "base";
+
+                let jsonData = getJSONFixture("capabilities.json");
+
+                let objectsChecker: Function = (obj) => {
+                    for (let property in obj) {
+                        let value: any = obj[property];
+
+                        if (value.displayName) {
+                            expect(value.displayNameKey).toBeDefined();
+                        }
+
+                        if (typeof value === "object") {
+                            objectsChecker(value);
+                        }
+                    }
+                };
+
+                objectsChecker(jsonData);
+            });
+        });
     });
 }
