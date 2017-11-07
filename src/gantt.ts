@@ -33,7 +33,6 @@ module powerbi.extensibility.visual {
     import DataView = powerbi.DataView;
     import IViewport = powerbi.IViewport;
     import VisualObjectInstance = powerbi.VisualObjectInstance;
-    import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
     import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
     import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
     import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
@@ -124,14 +123,14 @@ module powerbi.extensibility.visual {
         "second",
         "minute",
         "hour",
-        "day",
+        "day"
     ];
 
     export enum DurationUnits {
         Second = <any>"second",
         Minute = <any>"minute",
         Hour = <any>"hour",
-        Day = <any>"day",
+        Day = <any>"day"
     }
 
      export enum DateTypes {
@@ -205,14 +204,12 @@ module powerbi.extensibility.visual {
 
     export interface TaskTypes { /*TODO: change to more proper name*/
         typeName: string;
-        types: TaskTypeMetadata[];
+        types: TaskTypesList;
     }
 
-    export interface TaskTypeMetadata {
-        name: string;
-        columnGroup: DataViewValueColumnGroup;
-        selectionColumn: DataViewCategoryColumn;
-    }
+    export type TaskTypesList = {
+        [group: string]: string[]
+    } | undefined[];
 
     export interface GanttCalculateScaleAndDomainOptions {
         viewport: IViewport;
@@ -520,14 +517,16 @@ module powerbi.extensibility.visual {
         */
         private static getTooltipInfo(
             task: Task,
-            locale: string,
             formatters: GanttChartFormatters,
             durationUnit: string): VisualTooltipDataItem[] {
 
             let tooltipDataArray: VisualTooltipDataItem[] = [];
             const durationLabel: string = Gantt.generateLabelForDuration(task.duration, durationUnit);
             if (task.taskType) {
-                tooltipDataArray.push({ displayName: "Legend", value: task.taskType });
+                tooltipDataArray.push({
+                    displayName: "Legend",
+                    value: task.taskType
+                });
             }
 
             tooltipDataArray.push({
@@ -553,7 +552,10 @@ module powerbi.extensibility.visual {
             });
 
             if (task.resource) {
-                tooltipDataArray.push({ displayName: "Resource", value: task.resource });
+                tooltipDataArray.push({
+                    displayName: "Resource",
+                    value: task.resource
+                });
             }
 
             for (const key of Object.keys(task.extraInformation)) {
@@ -629,8 +631,6 @@ module powerbi.extensibility.visual {
             colorPalette: IColorPalette,
             settings: GanttSettings,
             taskTypes: TaskTypes): LegendData {
-
-            const colorHelper = new ColorHelper(colorPalette, Gantt.LegendPropertyIdentifier);
             const legendData: LegendData = {
                 fontSize: settings.legend.fontSize,
                 dataPoints: [],
@@ -638,20 +638,23 @@ module powerbi.extensibility.visual {
                 labelColor: settings.legend.labelColor
             };
 
-            legendData.dataPoints = taskTypes.types.map(
-                (typeMeta: TaskTypeMetadata): LegendDataPoint => {
-                    return {
-                        label: typeMeta.name as string,
-                        color: (taskTypes.types.length <= 1)
-                            ? settings.taskConfig.fill
-                            : colorHelper.getColorForMeasure(typeMeta.columnGroup.objects, typeMeta.name),
-                        icon: LegendIcon.Circle,
-                        selected: false,
-                        identity: host.createSelectionIdBuilder()
-                            .withCategory(typeMeta.selectionColumn, 0)
-                            .createSelectionId()
-                    };
+            const colorHelper = new ColorHelper(colorPalette, Gantt.LegendPropertyIdentifier);
+
+            _.each(taskTypes.types, (tasksNames, groupName) => {
+                let color: string = colorHelper.getColorForSeriesValue(undefined, groupName),
+                    selectionId: ISelectionId = host.createSelectionIdBuilder()
+                        .withMeasure("Legend." + groupName)
+                        .createSelectionId();
+
+                legendData.dataPoints.push({
+                    color: color,
+                    icon: LegendIcon.Circle,
+                    label: groupName,
+                    identity: selectionId,
+                    selected: false
                 });
+
+            });
 
             return legendData;
         }
@@ -660,76 +663,54 @@ module powerbi.extensibility.visual {
         * Create task objects dataView
         * @param dataView The data Model.
         * @param formatters task attributes represented format.
-        * @param taskColor Color of task
         * @param settings settings of visual
-        * @param colors colors of groped tasks
         * @param host Host object
         * @param taskTypes
+        * @param legendData data for legend
         */
         private static createTasks(
             dataView: DataView,
             taskTypes: TaskTypes,
             host: IVisualHost,
             formatters: GanttChartFormatters,
-            colors: IColorPalette,
             settings: GanttSettings,
-            taskColor: string): Task[] {
+            legendData: LegendData): Task[] {
 
             const tasks: Task[] = [];
-            const colorHelper: ColorHelper = new ColorHelper(colors, Gantt.LegendPropertyIdentifier);
             const values: GanttColumns<any> = GanttColumns.getCategoricalValues(dataView);
-            const groupValues: GanttColumns<DataViewValueColumn>[] = GanttColumns.getGroupedValueColumns(dataView);
 
             if (!values.Task) {
                 return tasks;
             }
             values.Task.forEach((categoryValue: PrimitiveValue, index: number) => {
-                let duration: number = settings.general.durationMin;
-                let durationUnit: string = settings.general.durationUnit;
-                let color: string = taskColor || Gantt.DefaultValues.TaskColor;
-                let completion: number = 0;
-                let taskType: TaskTypeMetadata = null;
+                let durationUnit: string = settings.general.durationUnit || "day";
                 let wasDowngradeDurationUnit: boolean = false;
 
                 const selectionBuider: ISelectionIdBuilder = host
                     .createSelectionIdBuilder()
                     .withCategory(dataView.categorical.categories[0], index);
 
-                if (groupValues) {
-                    groupValues.forEach((group: GanttColumns<DataViewValueColumn>) => {
-                        if (group.Duration && group.Duration.values[index] !== null) {
-                            taskType = _.find(taskTypes.types,
-                                (typeMeta: TaskTypeMetadata) => typeMeta.name === group.Duration.source.groupName);
+                let duration: number = ((values.Duration && values.Duration[index] > settings.general.durationMin)
+                        && values.Duration[index] as number) || settings.general.durationMin;
 
-                            if (taskType) {
-                                selectionBuider.withCategory(taskType.selectionColumn, 0);
-                                color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
-                            }
+                if (duration && duration % 1 !== 0) {
+                    durationUnit = Gantt.downgradeDurationUnit(durationUnit);
+                    let stepDurationTransformation: number =
+                        GanttDurationUnitType.indexOf(settings.general.durationUnit) - GanttDurationUnitType.indexOf(durationUnit);
 
-                            duration = group.Duration.values[index] > settings.general.durationMin
-                                && group.Duration.values[index] as number;
+                    duration = Gantt.transformDuration(duration, durationUnit, stepDurationTransformation);
+                    wasDowngradeDurationUnit = true;
+                }
 
-                            if (duration && duration % 1 !== 0) {
-                                durationUnit = Gantt.downgradeDurationUnit(durationUnit);
-                                let stepDurationTransformation: number =
-                                    GanttDurationUnitType.indexOf(settings.general.durationUnit) - GanttDurationUnitType.indexOf(durationUnit);
+                let completion: number = ((values.Completion && values.Completion[index])
+                    && Gantt.convertToDecimal(values.Completion[index] as number)) || 0;
 
-                                duration = Gantt.transformDuration(duration, durationUnit, stepDurationTransformation);
-                                wasDowngradeDurationUnit = true;
-                            }
+                if (completion < Gantt.ComplectionMin) {
+                    completion = Gantt.ComplectionMin;
+                }
 
-                            completion = ((group.Completion && group.Completion.values[index])
-                                && Gantt.convertToDecimal(group.Completion.values[index] as number)) || 0;
-
-                            if (completion < Gantt.ComplectionMin) {
-                                completion = Gantt.ComplectionMin;
-                            }
-
-                            if (completion > Gantt.ComplectionMax) {
-                                completion = Gantt.ComplectionMax;
-                            }
-                        }
-                    });
+                if (completion > Gantt.ComplectionMax) {
+                    completion = Gantt.ComplectionMax;
                 }
 
                 const selectionId: powerbi.extensibility.ISelectionId = selectionBuider.createSelectionId();
@@ -752,6 +733,9 @@ module powerbi.extensibility.visual {
                     }
                 }
 
+                let taskType: string = Gantt.getTaskType(taskTypes.types, <string>categoryValue);
+                let color: string = Gantt.getColorByTaskType(legendData.dataPoints, taskType, settings);
+
                 const task: Task = {
                     color,
                     completion,
@@ -761,7 +745,7 @@ module powerbi.extensibility.visual {
                     start: startDate,
                     end: null,
                     duration,
-                    taskType: taskType && taskType.name,
+                    taskType,
                     description: categoryValue as string,
                     tooltipInfo: [],
                     selected: false,
@@ -796,12 +780,41 @@ module powerbi.extensibility.visual {
                     } while (task.daysOffList.length && datesDiff - DaysInAWeekend > DaysInAWeek);
                 }
 
-                task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters, durationUnit);
+                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit);
 
                 tasks.push(task);
             });
 
             return tasks;
+        }
+
+        private static getTaskType(
+            taskTypes: TaskTypesList,
+            categoryValue: string): string {
+            for (let taskType in taskTypes) {
+                if (taskTypes[taskType] &&
+                    taskTypes.hasOwnProperty(taskType) &&
+                    taskTypes[taskType].indexOf(categoryValue) !== -1) {
+                    return taskType;
+                }
+            }
+        }
+
+        private static getColorByTaskType(
+            dataPoints: any[],
+            taskType: string,
+            settings: GanttSettings): string {
+            let color: string = (dataPoints.length <= 1)
+                ? settings.taskConfig.fill
+                : Gantt.DefaultValues.TaskColor;
+
+            dataPoints.forEach(item => {
+                if (item.label === taskType) {
+                    color = item.color;
+                }
+            });
+
+            return color;
         }
 
         private static downgradeDurationUnit(durationUnit: string): string {
@@ -835,7 +848,6 @@ module powerbi.extensibility.visual {
                 default:
                     return duration;
             }
-
         }
 
         private static transformDuration(
@@ -994,11 +1006,15 @@ module powerbi.extensibility.visual {
             const formatters: GanttChartFormatters = this.getFormatters(dataView, settings, host.locale || null);
             const legendData = Gantt.createLegend(host, colors, settings, taskTypes);
 
-            let taskColor: string = (legendData.dataPoints.length <= 1)
-                ? settings.taskConfig.fill
-                : null;
+            const tasks: Task[] = Gantt.createTasks(
+                dataView,
+                taskTypes,
+                host,
+                formatters,
+                settings,
+                legendData
+            );
 
-            const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor);
             return {
                 dataView,
                 settings,
@@ -1033,27 +1049,29 @@ module powerbi.extensibility.visual {
                 typeName: "",
                 types: []
             };
-            let index: number = _.findIndex(dataView.metadata.columns, col => col.roles.hasOwnProperty(GanttRoles.Legend));
 
-            if (index !== -1) {
-                taskTypes.typeName = dataView.metadata.columns[index].displayName;
-                let legendMetaCategoryColumn: DataViewMetadataColumn = dataView.metadata.columns[index];
-                let groupValues = dataView.categorical.values.grouped();
-                taskTypes.types = groupValues.map((group: DataViewValueColumnGroup): TaskTypeMetadata => {
-                    let column: DataViewCategoryColumn = {
-                        identity: [group.identity],
-                        source: {
-                            displayName: null,
-                            queryName: legendMetaCategoryColumn.queryName
-                        },
-                        values: null
-                    };
-                    return {
-                        name: group.name as string,
-                        selectionColumn: column,
-                        columnGroup: group
-                    };
+            let indexLegend: number = _.findIndex(dataView.categorical.categories,
+                col => col.source.roles.hasOwnProperty(GanttRoles.Legend));
+
+            if (indexLegend !== -1) {
+                const categories = dataView.categorical.categories;
+                let groupedValues: any = {};
+                let indexTask: number = _.findIndex(dataView.categorical.categories,
+                    col => col.source.roles.hasOwnProperty(GanttRoles.Task));
+
+                taskTypes.typeName = dataView.metadata.columns[indexLegend].displayName;
+
+                categories[indexTask].values.forEach((item, idx) => {
+                    let taskName: PrimitiveValue = <string>categories[indexTask].values[idx];
+                    let taskLegend: PrimitiveValue = <string>categories[indexLegend].values[idx];
+                    if (!groupedValues[taskLegend]) {
+                        groupedValues[taskLegend] = [];
+                    }
+
+                    groupedValues[taskLegend].push(taskName);
                 });
+
+                taskTypes.types = groupedValues;
             }
 
             return taskTypes;
