@@ -1,3 +1,5 @@
+## 1.8.2
+ * Fixed issue when task type value doesn't matter without duration
 ## 1.8.1
  * Fixed issue with not integer duration in some browsers
 ## 1.8.0
