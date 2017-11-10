@@ -456,6 +456,12 @@ module powerbi.extensibility.visual {
          * Clear the viewport area
          */
         private clearViewport(): void {
+            this.ganttDiv
+                .style({
+                    height: 0,
+                    width: 0
+                });
+
             this.body
                 .selectAll(Selectors.LegendItems.selector)
                 .remove();
@@ -474,6 +480,10 @@ module powerbi.extensibility.visual {
 
             this.lineGroup
                 .selectAll(Selectors.TaskLabels.selector)
+                .remove();
+
+            this.lineGroup
+                .selectAll(Selectors.Label.selector)
                 .remove();
 
             this.chartGroup
@@ -1123,7 +1133,7 @@ module powerbi.extensibility.visual {
             }
 
             this.viewModel = Gantt.converter(options.dataViews[0], this.host, this.colors);
-            if (!this.viewModel) {
+            if (!this.viewModel || !this.viewModel.tasks || this.viewModel.tasks.length <= 0) {
                 this.clearViewport();
                 return;
             }

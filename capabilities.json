@@ -656,13 +656,6 @@
         }
     },
     "sorting": {
-        "implicit": {
-            "clauses": [
-                {
-                    "role": "StartDate",
-                    "direction": 1
-                }
-            ]
-        }
+        "default": { }
     }
 }
