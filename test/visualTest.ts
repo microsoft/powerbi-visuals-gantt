@@ -264,26 +264,6 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
-            it("Verify tasks have colors by types", (done) => {
-                dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnType,
-                    GanttData.ColumnTask]);
-
-                visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
-                    let uniqueColors: string[] = [];
-                    tasks.forEach(task => {
-                        if (uniqueColors.indexOf(task.color) === -1) {
-                            uniqueColors.push(task.color);
-                        }
-                    });
-
-                    expect(uniqueColors.length).not.toEqual(1);
-
-                    done();
-                });
-            });
-
             it("Verify case if duration is not integer number", (done) => {
                 defaultDataViewBuilder.valuesDuration = GanttData.getRandomUniqueNumbers(
                     defaultDataViewBuilder.valuesTaskTypeResource.length, 0, 20, false);

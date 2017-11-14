@@ -158,11 +158,6 @@
                     "select": [
                         {
                             "for": {
-                                "in": "Legend"
-                            }
-                        },
-                        {
-                            "for": {
                                 "in": "Task"
                             }
                         },
@@ -184,18 +179,21 @@
                     ]
                 },
                 "values": {
-                    "select": [
-                        {
-                            "for": {
-                                "in": "Duration"
+                    "group": {
+                        "by": "Legend",
+                        "select": [
+                            {
+                                "for": {
+                                    "in": "Duration"
+                                }
+                            },
+                            {
+                                "for": {
+                                    "in": "Completion"
+                                }
                             }
-                        },
-                        {
-                            "for": {
-                                "in": "Completion"
-                            }
-                        }
-                    ]
+                        ]
+                    }
                 }
             }
         }
