@@ -1,3 +1,7 @@
+## 1.8.3
+ * Reverted 1.8.2 fix caused selection issue.
+ * Fixed viewport clearing if no data in dataView
+ * Added ordering feature
 ## 1.8.2
  * Fixed issue when task type value doesn't matter without duration
 ## 1.8.1
