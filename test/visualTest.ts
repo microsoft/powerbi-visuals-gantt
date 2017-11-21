@@ -319,6 +319,48 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            describe("Verify tooltips have no completion info", () => {
+                function checkCompletionEqualNull(done: () => void) {
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        for (let task of tasks) {
+                            for (let tooltipInfo of task.tooltipInfo) {
+                                if (tooltipInfo.displayName === GanttData.ColumnCompletePrecntege) {
+                                    expect(tooltipInfo.value).toEqual(null);
+                                }
+                            }
+                        }
+
+                        done();
+                    });
+                }
+
+                it("TaskCompletion setting is switched off", (done) => {
+                    dataView = defaultDataViewBuilder.getDataView([
+                        GanttData.ColumnTask,
+                        GanttData.ColumnStartDate,
+                        GanttData.ColumnDuration,
+                        GanttData.ColumnCompletePrecntege]);
+
+                    dataView.metadata.objects = {
+                        taskCompletion: {
+                            show: false
+                        }
+                    };
+
+                    checkCompletionEqualNull(done);
+                });
+
+                it("Completion data unavailable", (done) => {
+                    dataView = defaultDataViewBuilder.getDataView([
+                        GanttData.ColumnTask,
+                        GanttData.ColumnStartDate,
+                        GanttData.ColumnDuration]);
+
+                    checkCompletionEqualNull(done);
+                });
+            });
+
             it("Verify Font Size set to default", (done) => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let element = d3.select(visualBuilder.element.get(0));
@@ -710,18 +752,11 @@ module powerbi.extensibility.visual.test {
             });
 
             describe("Task Completion", () => {
-                beforeEach(() => {
-                    dataView.metadata.objects = {
-                        taskCompletion: {
-                            show: true
-                        }
-                    };
-                });
-
                 it("color", (done) => {
                     let color: string = GanttBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
                         taskCompletion: {
+                            show: true,
                             fill: GanttBuilder.getSolidColorStructuralObject(color)
                         }
                     };

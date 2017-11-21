@@ -531,7 +531,6 @@ module powerbi.extensibility.visual {
         */
         private static getTooltipInfo(
             task: Task,
-            locale: string,
             formatters: GanttChartFormatters,
             durationUnit: string): VisualTooltipDataItem[] {
 
@@ -558,10 +557,12 @@ module powerbi.extensibility.visual {
                 value: durationLabel
             });
 
-            tooltipDataArray.push({
-                displayName: "Completion",
-                value: formatters.completionFormatter.format(task.completion)
-            });
+            if (task.completion) {
+                tooltipDataArray.push({
+                    displayName: "Completion",
+                    value: formatters.completionFormatter.format(task.completion)
+                });
+            }
 
             if (task.resource) {
                 tooltipDataArray.push({ displayName: "Resource", value: task.resource });
@@ -704,6 +705,7 @@ module powerbi.extensibility.visual {
             values.Task.forEach((categoryValue: PrimitiveValue, index: number) => {
                 let duration: number = settings.general.durationMin;
                 let durationUnit: string = settings.general.durationUnit;
+                let taskProgressShow: boolean = settings.taskCompletion.show;
                 let color: string = taskColor || Gantt.DefaultValues.TaskColor;
                 let completion: number = 0;
                 let taskType: TaskTypeMetadata = null;
@@ -737,14 +739,17 @@ module powerbi.extensibility.visual {
                             }
 
                             completion = ((group.Completion && group.Completion.values[index])
-                                && Gantt.convertToDecimal(group.Completion.values[index] as number)) || 0;
+                                && taskProgressShow
+                                && Gantt.convertToDecimal(group.Completion.values[index] as number)) || null;
 
-                            if (completion < Gantt.ComplectionMin) {
-                                completion = Gantt.ComplectionMin;
-                            }
+                            if (completion !== null) {
+                                if (completion < Gantt.ComplectionMin) {
+                                    completion = Gantt.ComplectionMin;
+                                }
 
-                            if (completion > Gantt.ComplectionMax) {
-                                completion = Gantt.ComplectionMax;
+                                if (completion > Gantt.ComplectionMax) {
+                                    completion = Gantt.ComplectionMax;
+                                }
                             }
                         }
                     });
@@ -814,7 +819,7 @@ module powerbi.extensibility.visual {
                     } while (task.daysOffList.length && datesDiff - DaysInAWeekend > DaysInAWeek);
                 }
 
-                task.tooltipInfo = Gantt.getTooltipInfo(task, host.locale, formatters, durationUnit);
+                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit);
 
                 tasks.push(task);
             });
