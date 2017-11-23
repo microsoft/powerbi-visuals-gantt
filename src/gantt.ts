@@ -127,6 +127,11 @@ module powerbi.extensibility.visual {
         "day",
     ];
 
+    export enum ResourceLabelPositions {
+        Top = <any>"Top",
+        Right = <any>"Right"
+    }
+
     export enum DurationUnits {
         Second = <any>"second",
         Minute = <any>"minute",
@@ -321,7 +326,6 @@ module powerbi.extensibility.visual {
         private static TaskLineCoordinateX: number = 15;
         private static AxisLabelClip: number = 20;
         private static AxisLabelStrokeWidth: number = 1;
-        private static TaskResourcePadding: number = 4;
         private static BarHeightMargin: number = 5;
         private static ChartLineHeightDivider: number = 4;
         private static ResourceWidthPadding: number = 10;
@@ -332,6 +336,9 @@ module powerbi.extensibility.visual {
         private static MinTasks: number = 1;
         private static ChartLineProportion: number = 1.5;
         private static MilestoneTop: number = 0;
+        private static DeviderForCalculatingPadding: number = 4;
+        private static LabelTopOffsetForPadding: number = 0.5;
+        private static DeviderForCalculatingCenter: number = 2;
 
         private static get DefaultMargin(): IMargin {
             return {
@@ -361,6 +368,7 @@ module powerbi.extensibility.visual {
         private tooltipServiceWrapper: ITooltipServiceWrapper;
         private host: IVisualHost;
         private isInteractiveChart: boolean = false;
+        private groupTasksPrevValue: boolean = false;
 
         constructor(options: VisualConstructorOptions) {
             this.init(options);
@@ -1659,12 +1667,38 @@ module powerbi.extensibility.visual {
             taskSelection: UpdateSelection<Task>,
             taskConfigHeight: number): void {
 
+            const groupTasks: boolean = this.viewModel.settings.general.groupTasks;
+            let newLabelPosition: ResourceLabelPositions | null = null;
+            if (groupTasks && !this.groupTasksPrevValue) {
+                newLabelPosition = ResourceLabelPositions.Top;
+            }
+
+            if (!groupTasks && this.groupTasksPrevValue) {
+                newLabelPosition = ResourceLabelPositions.Right;
+            }
+
+            if (newLabelPosition) {
+                this.host.persistProperties(<VisualObjectInstancesToPersist>{
+                    merge: [{
+                        objectName: "taskResource",
+                        selector: null,
+                        properties: { position: newLabelPosition }
+                    }]
+                });
+
+                this.viewModel.settings.taskResource.position = newLabelPosition;
+                newLabelPosition = null;
+            }
+
+            this.groupTasksPrevValue = groupTasks;
+
             let taskResourceShow: boolean = this.viewModel.settings.taskResource.show;
             let taskResourceColor: string = this.viewModel.settings.taskResource.fill;
             let taskResourceFontSize: number = this.viewModel.settings.taskResource.fontSize;
+            let taskResourcePosition: ResourceLabelPositions = this.viewModel.settings.taskResource.position;
+            let taskResourceFullText: boolean = this.viewModel.settings.taskResource.fullText;
 
             if (taskResourceShow) {
-                let barHeight = Gantt.getBarHeight(taskConfigHeight);
                 let taskResource: UpdateSelection<Task> = taskSelection
                     .selectAll(Selectors.TaskResource.selector)
                     .data((d: Task) => [d]);
@@ -1676,23 +1710,53 @@ module powerbi.extensibility.visual {
 
                 taskResource
                     .attr({
-                        x: (task: Task) => this.timeScale(task.end) + Gantt.TaskResourcePadding,
-                        y: (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (barHeight / 2) + Gantt.TaskResourcePadding
+                        x: (task: Task) => this.getResourceLabelXCoordinate(task, taskResourceFontSize, taskResourcePosition),
+                        y: (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight)
+                            + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition)
                     })
                     .text((task: Task) => task.resource)
                     .style({
                         fill: taskResourceColor,
                         "font-size": PixelConverter.fromPoint(taskResourceFontSize)
-                    })
-                    .call(AxisHelper.LabelLayoutStrategy.clip,
-                        Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding,
-                        textMeasurementService.svgEllipsis);
+                    });
+
+                if (!taskResourceFullText) {
+                    taskResource
+                        .call(AxisHelper.LabelLayoutStrategy.clip,
+                            Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding,
+                            textMeasurementService.svgEllipsis);
+                }
 
                 taskResource
                     .exit()
                     .remove();
             } else {
                 this.removeBySelectors(taskSelection, "TaskResource");
+            }
+        }
+
+        private static getResourceLabelYOffset(
+            taskConfigHeight: number,
+            taskResourceFontSize: number,
+            taskResourcePosition: ResourceLabelPositions): number {
+            const barHeight: number = Gantt.getBarHeight(taskConfigHeight);
+            switch (taskResourcePosition) {
+                case ResourceLabelPositions.Right:
+                    return (barHeight / Gantt.DeviderForCalculatingCenter) + (taskResourceFontSize / Gantt.DeviderForCalculatingCenter);
+                case ResourceLabelPositions.Top:
+                    return -(taskResourceFontSize / Gantt.DeviderForCalculatingPadding) + Gantt.LabelTopOffsetForPadding;
+            }
+        }
+
+        private getResourceLabelXCoordinate(
+            task: Task,
+            taskResourceFontSize: number,
+            taskResourcePosition: ResourceLabelPositions): number {
+            switch (taskResourcePosition) {
+                case ResourceLabelPositions.Right:
+                    return this.timeScale(task.end) + (taskResourceFontSize / 2);
+                case ResourceLabelPositions.Top:
+                    return this.timeScale(task.start);
             }
         }
 

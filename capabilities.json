@@ -562,6 +562,31 @@
                             "fontSize": true
                         }
                     }
+                },
+                "position": {
+                    "displayName": "Position",
+                    "displayNameKey": "Visual_Position",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "Top",
+                                "displayName": "Top",
+                                "displayNameKey": "Visual_Position_Top"
+                            },
+                            {
+                                "value": "Right",
+                                "displayName": "Right",
+                                "displayNameKey": "Visual_Position_Right"
+                            }
+                        ]
+                    }
+                },
+                "fullText": {
+                    "displayName": "Full text",
+                    "displayNameKey": "Visual_FullText",
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         },

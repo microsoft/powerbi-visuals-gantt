@@ -1,6 +1,8 @@
+## 1.8.5
+ * Fixed issue with wrong displaying resources labels
 ## 1.8.4
- * Fixed behavior when completion values display in tooltip though
-  the %Completion doesn't have any field   
+ * Fixed behavior when completion values display in tooltip though the
+ %Completion doesn't have any field
 ## 1.8.3
  * Reverted 1.8.2 fix caused selection issue.
  * Fixed viewport clearing if no data in dataView
