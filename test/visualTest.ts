@@ -42,6 +42,9 @@ module powerbi.extensibility.visual.test {
     import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
     import mocks = powerbi.extensibility.utils.test.mocks;
 
+    // powerbi.extensibility.utils.type
+    import PixelConverter = powerbi.extensibility.utils.type.PixelConverter;
+
     // powerbi.extensibility.utils.formatting
     import valueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
     import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
@@ -707,12 +710,6 @@ module powerbi.extensibility.visual.test {
                 });
 
                 it("show", (done) => {
-                    dataView.metadata.objects = {
-                        taskResource: {
-                            show: true
-                        }
-                    };
-
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         expect(visualBuilder.taskResources).toBeInDOM();
 
@@ -745,6 +742,62 @@ module powerbi.extensibility.visual.test {
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         visualBuilder.taskResources.toArray().map($).forEach(e =>
                             assertColorsMatch(e.css("fill"), color));
+
+                        done();
+                    });
+                });
+
+                it("fontSize", (done) => {
+                    const fontSize: number = 10;
+                    dataView.metadata.objects = {
+                        taskResource: {
+                            fontSize
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        visualBuilder.taskResources.toArray().map($).forEach(e => {
+                            let fontSizeEl: string = e.css("font-size");
+                            fontSizeEl = fontSizeEl.substr(0, fontSizeEl.length - 2);
+
+                            let fontSizePoint: string = PixelConverter.fromPoint(fontSize);
+                            fontSizePoint = (+(fontSizePoint.substr(0, fontSizePoint.length - 2))).toFixed(4);
+
+                            expect(fontSizeEl).toEqual(fontSizePoint);
+                        });
+
+                        done();
+                    });
+                });
+
+                it("position", (done) => {
+                    dataView.metadata.objects = {
+                        taskResource: {
+                            position: "Top"
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let taskRects: any[] = visualBuilder.taskRect.toArray().map($);
+                        visualBuilder.taskResources.toArray().map($).forEach((e, i) => {
+                            expect(+e.attr("x")).toEqual(+taskRects[i].attr("x"));
+                            expect(+e.attr("y")).toBeLessThan(+taskRects[i].attr("y"));
+                        });
+
+                        done();
+                    });
+                });
+
+                it("fullText", (done) => {
+                    dataView.metadata.objects = {
+                        taskResource: {
+                            fullText: true
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        visualBuilder.taskResources.toArray().map($).forEach(e =>
+                            expect(e.text().indexOf("...")).toEqual(-1));
 
                         done();
                     });

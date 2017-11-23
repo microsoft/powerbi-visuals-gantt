@@ -83,6 +83,8 @@ module powerbi.extensibility.visual {
         show: boolean = true;
         fill: string = "#000000";
         fontSize: number = 9;
+        position: ResourceLabelPositions = ResourceLabelPositions.Right;
+        fullText: boolean = false;
     }
 
     export class DateTypeSettings {
