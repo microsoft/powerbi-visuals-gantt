@@ -1,3 +1,5 @@
+## 1.8.6
+ * Added option to data labels which cut them up to the width of the task
 ## 1.8.5
  * Fixed issue with wrong displaying resources labels
 ## 1.8.4

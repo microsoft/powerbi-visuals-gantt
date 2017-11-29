@@ -85,6 +85,7 @@ module powerbi.extensibility.visual {
         fontSize: number = 9;
         position: ResourceLabelPositions = ResourceLabelPositions.Right;
         fullText: boolean = false;
+        widthByTask: boolean = false;
     }
 
     export class DateTypeSettings {
