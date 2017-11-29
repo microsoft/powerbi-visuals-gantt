@@ -587,6 +587,13 @@
                     "type": {
                         "bool": true
                     }
+                },
+                "widthByTask": {
+                    "displayName": "Width by task",
+                    "displayNameKey": "Visual_WidthByTask",
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         },

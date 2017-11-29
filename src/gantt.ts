@@ -1697,6 +1697,7 @@ module powerbi.extensibility.visual {
             let taskResourceFontSize: number = this.viewModel.settings.taskResource.fontSize;
             let taskResourcePosition: ResourceLabelPositions = this.viewModel.settings.taskResource.position;
             let taskResourceFullText: boolean = this.viewModel.settings.taskResource.fullText;
+            let taskResourceWidthByTask: boolean = this.viewModel.settings.taskResource.widthByTask;
 
             if (taskResourceShow) {
                 let taskResource: UpdateSelection<Task> = taskSelection
@@ -1720,11 +1721,16 @@ module powerbi.extensibility.visual {
                         "font-size": PixelConverter.fromPoint(taskResourceFontSize)
                     });
 
+                let self: Gantt = this;
                 if (!taskResourceFullText) {
                     taskResource
-                        .call(AxisHelper.LabelLayoutStrategy.clip,
-                            Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding,
-                            textMeasurementService.svgEllipsis);
+                        .each(function(task: Task){
+                            const width: number = taskResourceWidthByTask
+                                ? self.taskDurationToWidth(task.start, task.end)
+                                : Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding;
+
+                            AxisHelper.LabelLayoutStrategy.clip(d3.select(this), width, textMeasurementService.svgEllipsis);
+                        });
                 }
 
                 taskResource

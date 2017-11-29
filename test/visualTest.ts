@@ -802,6 +802,31 @@ module powerbi.extensibility.visual.test {
                         done();
                     });
                 });
+
+                it("widthByTask", (done) => {
+                    dataView.metadata.objects = {
+                        taskResource: {
+                            position: "Top",
+                            fullText: false,
+                            widthByTask: true
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let taskRects: any[] = visualBuilder.taskRect.toArray().map($);
+                        visualBuilder.taskResources.toArray().map($).forEach((e, i) => {
+                            let labelElRawWidth: string = e.css("width");
+                            let labelElWidth: number = +labelElRawWidth.substr(0, labelElRawWidth.length - 2);
+
+                            let taskElRawWidth: string = taskRects[i].css("width");
+                            let taskElWidth: number = +taskElRawWidth.substr(0, taskElRawWidth.length - 2);
+
+                            expect(labelElWidth <= taskElWidth).toBeTruthy();
+                        });
+
+                        done();
+                    });
+                });
             });
 
             describe("Task Completion", () => {
