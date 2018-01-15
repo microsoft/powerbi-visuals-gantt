@@ -46,6 +46,15 @@ module powerbi.extensibility.visual {
                 (d3.event as MouseEvent).stopPropagation();
             });
 
+            options.subTasksCollapse.selection.on("click", (d: GroupedTask) => {
+                if (!_.flatten(d.tasks.map(task => task.children)).length) {
+                    return;
+                }
+
+                (d3.event as MouseEvent).stopPropagation();
+                options.subTasksCollapse.callback(d);
+            });
+
             clearCatcher.on("click", () => {
                 selectionHandler.handleClearSelection();
             });

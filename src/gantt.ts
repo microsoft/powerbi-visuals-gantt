@@ -95,6 +95,7 @@ module powerbi.extensibility.visual {
     import LegendDataPoint = powerbi.extensibility.utils.chart.legend.LegendDataPoint;
     import LegendIcon = powerbi.extensibility.utils.chart.legend.LegendIcon;
     import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
+    import ColorUtils = powerbi.extensibility.utils.color;
 
     import DataViewMetadataColumn = powerbi.DataViewMetadataColumn;
     import timeScale = d3.time.Scale;
@@ -163,6 +164,9 @@ module powerbi.extensibility.visual {
         completion: number;
         resource: string;
         end: Date;
+        parent: string;
+        children: string[];
+        visibility: boolean;
         taskType: string;
         description: string;
         color: string;
@@ -248,10 +252,16 @@ module powerbi.extensibility.visual {
         tooltipInfo: VisualTooltipDataItem[];
     }
 
+    export interface SubTasksCollapse {
+        selection: Selection<any>;
+        callback: Function;
+    }
+
     export interface GanttBehaviorOptions {
         clearCatcher: Selection<any>;
         taskSelection: Selection<any>;
         legendSelection: Selection<any>;
+        subTasksCollapse: SubTasksCollapse;
         interactivityService: IInteractivityService;
     }
 
@@ -299,6 +309,10 @@ module powerbi.extensibility.visual {
             objectName: "legend",
             propertyName: "fill"
         };
+        private static CollapsedTasksPropertyIdentifier: DataViewObjectPropertyIdentifier = {
+            objectName: "collapsedTasks",
+            propertyName: "list"
+        };
 
         public static DefaultValues = {
             AxisTickSize: 6,
@@ -339,6 +353,10 @@ module powerbi.extensibility.visual {
         private static DeviderForCalculatingPadding: number = 4;
         private static LabelTopOffsetForPadding: number = 0.5;
         private static DeviderForCalculatingCenter: number = 2;
+        private static SubtasksLeftMargin: number = 15;
+        private static ArrowSymbolLeft: string = "\u21E2";
+        private static ArrowSymbolDown: string = "\u21E3";
+        private static SubtaskDarken: number = -30;
 
         private static get DefaultMargin(): IMargin {
             return {
@@ -369,6 +387,7 @@ module powerbi.extensibility.visual {
         private host: IVisualHost;
         private isInteractiveChart: boolean = false;
         private groupTasksPrevValue: boolean = false;
+        private collapsedTasks: string[] = [];
 
         constructor(options: VisualConstructorOptions) {
             this.init(options);
@@ -402,11 +421,6 @@ module powerbi.extensibility.visual {
 
             // create clear catcher
             this.clearCatcher = appendClearCatcher(this.ganttSvg);
-
-            // create chart container
-            this.chartGroup = this.ganttSvg
-                .append("g")
-                .classed(Selectors.Chart.class, true);
 
             // create chart container
             this.chartGroup = this.ganttSvg
@@ -702,7 +716,7 @@ module powerbi.extensibility.visual {
             settings: GanttSettings,
             taskColor: string): Task[] {
 
-            const tasks: Task[] = [];
+            let tasks: Task[] = [];
             const colorHelper: ColorHelper = new ColorHelper(colors, Gantt.LegendPropertyIdentifier);
             const values: GanttColumns<any> = GanttColumns.getCategoricalValues(dataView);
             const groupValues: GanttColumns<DataViewValueColumn>[] = GanttColumns.getGroupedValueColumns(dataView);
@@ -710,10 +724,13 @@ module powerbi.extensibility.visual {
             if (!values.Task) {
                 return tasks;
             }
+
+            let collapsedTasks: string[] = JSON.parse(settings.collapsedTasks.list);
+            let durationUnit: string = settings.general.durationUnit;
+            let duration: number = settings.general.durationMin;
+            let taskProgressShow: boolean = settings.taskCompletion.show;
+
             values.Task.forEach((categoryValue: PrimitiveValue, index: number) => {
-                let duration: number = settings.general.durationMin;
-                let durationUnit: string = settings.general.durationUnit;
-                let taskProgressShow: boolean = settings.taskCompletion.show;
                 let color: string = taskColor || Gantt.DefaultValues.TaskColor;
                 let completion: number = 0;
                 let taskType: TaskTypeMetadata = null;
@@ -766,6 +783,7 @@ module powerbi.extensibility.visual {
                 const selectionId: powerbi.extensibility.ISelectionId = selectionBuider.createSelectionId();
                 const extraInformation: ExtraInformation[] = [];
                 const resource: string = (values.Resource && values.Resource[index] as string) || "";
+                const parent: string = (values.Parent && values.Parent[index] as string) || null;
                 const startDate: Date = (values.StartDate
                     && Gantt.isValidDate(values.StartDate[index] as Date) && values.StartDate[index] as Date)
                     || new Date(Date.now());
@@ -791,6 +809,9 @@ module powerbi.extensibility.visual {
                     name: categoryValue as string,
                     start: startDate,
                     end: null,
+                    parent: (parent ?  parent + "." : "") + categoryValue,
+                    children: [],
+                    visibility: true,
                     duration,
                     taskType: taskType && taskType.name,
                     description: categoryValue as string,
@@ -827,12 +848,106 @@ module powerbi.extensibility.visual {
                     } while (task.daysOffList.length && datesDiff - DaysInAWeekend > DaysInAWeek);
                 }
 
-                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit);
+                if (task.parent !== task.name) {
+                    task.visibility = collapsedTasks.indexOf(task.parent) === -1;
+                }
 
                 tasks.push(task);
             });
 
+            if (values.Parent) {
+                tasks
+                    .filter((task: Task) => task.parent.indexOf(".") === -1)
+                    .forEach((task: Task) => Gantt.childrenOfTaskProcessing(tasks, task, settings, formatters, durationUnit));
+
+                tasks
+                    .sort((a, b) => {
+                        if (a.parent > b.parent) {
+                            return 1;
+                        }
+                        if (a.parent < b.parent) {
+                            return -1;
+                        }
+                        return 0;
+                    });
+            }
+
             return tasks;
+        }
+
+        private static childrenOfTaskProcessing(tasks: Task[],
+                                                task: Task,
+                                                settings: GanttSettings,
+                                                formatters: GanttChartFormatters,
+                                                durationUnit: string): void {
+            let childrenOfTask: Task[] = tasks.filter((childTask: Task) =>
+                (childTask.parent.substr(0, task.parent.length) === task.parent &&
+                childTask.parent.length > task.parent.length &&
+                childTask.parent.indexOf(".") !== -1)
+            );
+
+            if (childrenOfTask.length) {
+                childrenOfTask.forEach((childTask: Task) => {
+                    task.children.push(childTask.name);
+                    Gantt.childrenOfTaskProcessing(tasks, childTask, settings, formatters, durationUnit);
+                });
+
+                if ((!settings.subTasks.inheritParentLegend && !task.taskType) ||
+                    (settings.subTasks.inheritParentLegend && task.taskType)) {
+                    Gantt.setChildrenTaskLegend(task, childrenOfTask);
+                }
+
+                if (settings.subTasks.parentDurationByChildren) {
+                    Gantt.setParentDurationByChildren(task, childrenOfTask);
+                }
+
+                if (settings.subTasks.parentCompletionByChildren) {
+                    Gantt.setParentCompletionByChildren(task, childrenOfTask);
+                }
+            }
+
+            task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit);
+        }
+
+        /**
+         * Set completion for parent task - average completions all sub tasks
+         * @param task Parent task
+         * @param children Sub tasks of parent task
+         */
+        private static setParentCompletionByChildren(task: Task, children: Task[]): void {
+            if (task.completion) {
+                return;
+            }
+
+            task.completion = children
+                .reduce((prevValue, childTaskNext: Task) => prevValue + childTaskNext.completion, 0) /
+                 children.length;
+        }
+
+        /**
+         * Set duration for parent task - start time of first sub task and end time of last sub task
+         * @param task Parent task
+         * @param children Sub tasks of parent task
+         */
+        private static setParentDurationByChildren(task: Task, children: Task[]): void {
+            task.start = (_.minBy(children, (childTask: Task) => childTask.start)).start;
+            task.end = (_.maxBy(children, (childTask: Task) => childTask.end)).end;
+        }
+
+        /**
+         * inherit legend from parent to sub tasks
+         * @param parent Parent task
+         * @param children Sub tasks of parent task
+         */
+        private static setChildrenTaskLegend(parent: Task, children: Task[]): Task[] {
+            let rgbColor: ColorUtils.RgbColor = ColorUtils.parseColorString(parent.color);
+            rgbColor = ColorUtils.darken(rgbColor, Gantt.SubtaskDarken);
+            children.forEach((childTask: Task) => {
+                childTask.color = ColorUtils.hexString(rgbColor);
+                childTask.taskType = parent.taskType ;
+            });
+
+            return children;
         }
 
         private static downgradeDurationUnit(durationUnit: string): string {
@@ -1138,8 +1253,7 @@ module powerbi.extensibility.visual {
             if (!options
                 || !options.dataViews
                 || !options.dataViews[0]
-            ) {
-                this.clearViewport();
+            ) {                this.clearViewport();
                 return;
             }
 
@@ -1155,7 +1269,12 @@ module powerbi.extensibility.visual {
             this.renderLegend();
             this.updateChartSize();
 
-            let tasks: Task[] = this.viewModel.tasks;
+            let tasks: Task[] = this.viewModel.tasks
+                .filter((task: Task) => task.visibility)
+                .map((task: Task, i: number) => {
+                    task.id = i;
+                    return task;
+                });
 
             if (this.interactivityService) {
                 this.interactivityService.applySelectionStateToData(tasks);
@@ -1190,6 +1309,8 @@ module powerbi.extensibility.visual {
             let xAxisProperties: IAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, ticks, false);
             this.timeScale = <timeScale<Date, Date>>xAxisProperties.scale;
 
+            this.collapsedTasks = JSON.parse(settings.collapsedTasks.list);
+
             this.renderAxis(xAxisProperties);
             this.renderTasks(groupedTasks);
 
@@ -1207,6 +1328,11 @@ module powerbi.extensibility.visual {
                         .selectAll(Selectors.SingleTask.selector),
                     legendSelection: this.body
                         .selectAll(Selectors.LegendItems.selector),
+                    subTasksCollapse: {
+                        selection: this.body
+                            .selectAll(Selectors.Label.selector),
+                        callback: this.subTasksCollapseCb.bind(this)
+                    },
                     interactivityService: this.interactivityService
                 };
 
@@ -1340,10 +1466,18 @@ module powerbi.extensibility.visual {
 
         private groupTasks(tasks: Task[]): GroupedTask[] {
             if (this.viewModel.settings.general.groupTasks) {
-                let groupedTasks: _.Dictionary<Task[]> = _.groupBy(tasks, x => x.name);
-                let result: GroupedTask[] = _.map(groupedTasks, (x, i) => <GroupedTask>{
-                    name: i,
-                    tasks: groupedTasks[i]
+                let groupedTasks: _.Dictionary<Task[]> = _.groupBy(tasks,
+                    x => (x.parent ? `${x.parent}.${x.name}` : x.name));
+
+                let result: GroupedTask[] = _.map(groupedTasks, (x, i) => {
+                    let name: string = i;
+                    if (groupedTasks[i][0].parent && i.indexOf(groupedTasks[i][0].parent) !== -1) {
+                        name = i.substr(groupedTasks[i][0].parent.length + 1, i.length);
+                    }
+                    return <GroupedTask>{
+                        name,
+                        tasks: groupedTasks[i]
+                    };
                 });
 
                 result.forEach((x, i) => {
@@ -1437,20 +1571,38 @@ module powerbi.extensibility.visual {
 
                 axisLabel
                     .attr({
-                        x: Gantt.TaskLineCoordinateX,
-                        y: (task: GroupedTask, i: number) => this.getTaskLabelCoordinateY(task.id),
+                        x: (task: GroupedTask) => (Gantt.TaskLineCoordinateX +
+                            (_.every(task.tasks, (task: Task) => task.parent.indexOf(".") !== -1)
+                                ? Gantt.SubtasksLeftMargin * (task.tasks[0].parent.split(".").length - 1)
+                                : 0)),
+                        y: (task: GroupedTask) => this.getTaskLabelCoordinateY(task.id),
                         fill: taskLabelsColor,
                         "stroke-width": Gantt.AxisLabelStrokeWidth
                     })
                     .style("font-size", PixelConverter.fromPoint(taskLabelsFontSize))
-                    .text((task: GroupedTask) => { return task.name; });
+                    .text((task: GroupedTask) => {
+                        let hasArrowSymbol: boolean = !!task.tasks[0].children.length;
+                        let arrowSymbol: string = "";
+                        if (hasArrowSymbol) {
+                            const childTask: Task = _.find(this.viewModel.tasks, {
+                                parent: `${task.tasks[0].parent}.${task.tasks[0].children[0]}`
+                            });
+                            if (childTask) {
+                                arrowSymbol = !childTask.visibility
+                                    ? Gantt.ArrowSymbolLeft
+                                    : Gantt.ArrowSymbolDown;
+                            }
+                        }
+
+                        return `${task.name} ${arrowSymbol}`;
+                    });
 
                 axisLabel
                     .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis);
 
                 axisLabel
                     .append("title")
-                    .text((task: GroupedTask) => { return task.name; });
+                    .text((task: GroupedTask) => task.name);
 
                 axisLabel
                     .exit()
@@ -1463,6 +1615,38 @@ module powerbi.extensibility.visual {
                     .selectAll(Selectors.Label.selector)
                     .remove();
             }
+        }
+
+        /**
+         * callback for subtasks click event
+         * @param taskClicked Grouped clicked task
+         */
+        private subTasksCollapseCb(taskClicked: GroupedTask): void {
+            const taskClickedParent: string = taskClicked.tasks[0].parent;
+            this.viewModel.tasks.forEach((task: Task) => {
+                if (task.parent.substr(0, taskClickedParent.length) === taskClickedParent &&
+                    task.parent.length > taskClickedParent.length &&
+                    task.parent.indexOf(".") !== -1) {
+                    const index: number = this.collapsedTasks.indexOf(task.parent);
+                    if (task.visibility) {
+                        this.collapsedTasks.push(task.parent);
+                    } else {
+                        if (taskClickedParent === task.parent.substr(0, task.parent.length - task.name.length - 1)) {
+                            this.collapsedTasks.splice(index, 1);
+                        }
+                    }
+                }
+            });
+
+            this.host.persistProperties(<VisualObjectInstancesToPersist>{
+                merge: [{
+                    objectName: "collapsedTasks",
+                    selector: null,
+                    properties: {
+                        list : JSON.stringify(this.collapsedTasks)
+                    }
+                }]
+            });
         }
 
         /**
@@ -1644,7 +1828,8 @@ module powerbi.extensibility.visual {
                 taskProgress
                     .attr({
                         x: (task: Task) => this.timeScale(task.start),
-                        y: (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight) + Gantt.getBarHeight(taskConfigHeight) / 2 - Gantt.DefaultValues.ProgressBarHeight / 2,
+                        y: (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight)
+                            + Gantt.getBarHeight(taskConfigHeight) / 2 - Gantt.DefaultValues.ProgressBarHeight / 2,
                         width: (task: Task) => this.setTaskProgress(task),
                         height: Gantt.DefaultValues.ProgressBarHeight
                     })
@@ -1987,6 +2172,10 @@ module powerbi.extensibility.visual {
                 GanttSettings.enumerateObjectInstances(settings, options);
             if (options.objectName === Gantt.LegendPropertyIdentifier.objectName) {
                 this.enumerateLegend(instanceEnumeration);
+            }
+
+            if (options.objectName === Gantt.CollapsedTasksPropertyIdentifier.objectName) {
+                return;
             }
 
             return instanceEnumeration || [];

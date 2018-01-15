@@ -251,12 +251,15 @@ module powerbi.extensibility.visual.test {
 
             it("Verify task labels have tooltips", (done) => {
                 defaultDataViewBuilder.valuesTaskTypeResource.forEach(x => x[1] = _.repeat(x[1] + " ", 5).trim());
-                dataView = defaultDataViewBuilder.getDataView();
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskLabelsInDom = d3.select(visualBuilder.element.get(0)).selectAll(".label title")[0];
                     let taskLabels = d3.select(visualBuilder.element.get(0)).selectAll(".label").data();
-                    let tasks: PrimitiveValue[] = dataView.categorical.categories[1].values;
+                    let tasks: PrimitiveValue[] = dataView.categorical.categories[0].values;
 
                     for (let i = 0; i < tasks.length; i++) {
                         expect(taskLabels[i].name).toEqual((taskLabelsInDom[i] as Node).textContent);
@@ -317,6 +320,36 @@ module powerbi.extensibility.visual.test {
                             }
                         }
                     }
+
+                    done();
+                });
+            });
+
+            it("Verify sub tasks", (done) => {
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration,
+                    GanttData.ColumnParent]);
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    expect(tasks.length).toEqual(defaultDataViewBuilder.valuesTaskTypeResource.length);
+
+                    let parentIndex: number = 4;
+                    let parentTask = visualBuilder.taskLabels.eq(parentIndex);
+                    clickElement(parentTask);
+
+                    const childTaskMarginLeft: number = +visualBuilder.taskLabels.eq(++parentIndex).attr("x");
+                    expect(childTaskMarginLeft).toEqual(VisualClass.SubtasksLeftMargin);
+
+                    childTaskMarginLeft = +visualBuilder.taskLabels.eq(++parentIndex).attr("x");
+                    expect(childTaskMarginLeft).toEqual(VisualClass.SubtasksLeftMargin);
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        expect(tasks.length).toEqual(defaultDataViewBuilder.valuesTaskTypeResource.length);
+                    });
 
                     done();
                 });
@@ -490,6 +523,12 @@ module powerbi.extensibility.visual.test {
             });
 
             it("Verify group tasks enabled", (done) => {
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnType,
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration]);
+
                 dataView.metadata.objects = { general: { groupTasks: true } };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
@@ -697,6 +736,113 @@ module powerbi.extensibility.visual.test {
 
                     checkDaysOff(+Days.Monday, done);
                 });
+            });
+
+            describe("Sub tasks", () => {
+                beforeEach(() => {
+                    dataView = defaultDataViewBuilder.getDataView([
+                        GanttData.ColumnType,
+                        GanttData.ColumnTask,
+                        GanttData.ColumnStartDate,
+                        GanttData.ColumnDuration,
+                        GanttData.ColumnParent]);
+                });
+
+                it("inherit parent legend", (done) => {
+                    dataView.metadata.objects = {
+                        subTasks: {
+                            inheritParentLegend: true
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        tasks.forEach((task) => {
+                            if (task.parent) {
+                                const parentName = task.parent.substr(0, task.parent.length - task.name.length - 1);
+                                const parentTask: string = _.find(tasks, {name: parentName});
+                                if (parentTask) {
+                                    expect(task.taskType).toEqual(parentTask.taskType);
+                                }
+                            }
+                        });
+
+                        done();
+                    });
+                });
+
+                it("parent duration by children", (done) => {
+                    dataView.metadata.objects = {
+                        subTasks: {
+                            parentDurationByChildren: true
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        let {parents, children} = getChildrenAndParents(tasks);
+
+                        parents.forEach((parent: Task) => {
+                            const start: Date = (_.minBy(children[parent.name],
+                                (childTask: Task) => childTask.start)).start;
+                            const end: Date = (_.maxBy(children[parent.name],
+                                (childTask: Task) => childTask.end)).end;
+
+                            expect(parent.start).toEqual(start);
+                            expect(parent.end).toEqual(end);
+                        });
+
+                        done();
+                    });
+                });
+
+                it("parent completion by children", (done) => {
+                    dataView.metadata.objects = {
+                        subTasks: {
+                            parentCompletionByChildren: true
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        let {parents, children} = getChildrenAndParents(tasks);
+
+                        parents.forEach((parent: Task) => {
+                            const childrenAverageCompletion: number = children[parent.name]
+                                .reduce((prevValue, currentTask) => prevValue + currentTask.completion, 0) /
+                                children[parent.name].length;
+
+                            expect(parent.completion).toEqual(childrenAverageCompletion);
+
+                        });
+
+                        done();
+                    });
+                });
+
+                function getChildrenAndParents(tasks: Task[]) {
+                    let children: {[key: string]: Task[]} = {};
+                    let parents: Task[] = [];
+                    tasks.forEach((task) => {
+                        if (task.parent) {
+                            const parentName = task.parent.substr(0, task.parent.length - task.name.length - 1);
+                            const parentTask: string = _.find(tasks, {name: parentName});
+                            if (parentTask) {
+                                if (!_.find(parents, {name: parentTask.name})) {
+                                    parents.push(parentTask);
+                                }
+
+                                if (!children[parentTask.name]) {
+                                    children[parentTask.name] = [];
+                                }
+
+                                children[parentTask.name].push(task);
+                            }
+                        }
+                    });
+
+                    return {parents, children};
+                }
             });
 
             describe("Data labels", () => {

@@ -42,15 +42,16 @@ module powerbi.extensibility.visual.test {
         public static ColumnResource: string = "Resource";
         public static ColumnCompletePrecntege: string = "CompletePrecntege";
         public static ColumnExtraInformation: string = "Description";
+        public static ColumnParent: string = "Parent";
 
         public valuesTaskTypeResource: string[][] = [
             ["Spec", "MOLAP connectivity", "Mey"],
             ["Design", "Clickthrough", "John"],
             ["Dev", "Tech design", "JohnV"],
             ["Dev", "Front End dev", "Sheng"],
-            ["Dev", "Connection", "Gentiana"],
-            ["Dev", "Query Pipeline", "Just"],
-            ["Spec", "Gateway", "Darshan"],
+            ["Dev", "ConnectionWithChildren", "Gentiana"],
+            ["", "Query Pipeline", "Just", "ConnectionWithChildren"],
+            ["", "Gateway", "Darshan", "ConnectionWithChildren"],
             ["Spec", "EGW", "Mini"],
             ["Dev", "Development", "Shay"],
             ["Dev", "Desktop", "Ehren"],
@@ -75,6 +76,7 @@ module powerbi.extensibility.visual.test {
             ["Dev", "Desktop", "Ehren"],
             ["Dev", "Service Fixup", "James"],
             ["Dev", "BugFixing", "Last Name"]
+
         ];
         public valuesStartDate = GanttData.getRandomUniqueDates(this.valuesTaskTypeResource.length, new Date(2015, 7, 0), new Date(2017, 7, 0));
         public valuesDuration = GanttData.getRandomUniqueNumbers(this.valuesTaskTypeResource.length, 3, 40);
@@ -145,6 +147,14 @@ module powerbi.extensibility.visual.test {
                         roles: { "ExtraInformation": true }
                     },
                     values: this.valuesExtraInformation
+                },
+                {
+                    source: {
+                        displayName: GanttData.ColumnParent,
+                        type: ValueType.fromDescriptor({ text: true }),
+                        roles: { "Parent": true }
+                    },
+                    values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null)
                 }
             ], [
                     {
