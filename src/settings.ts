@@ -30,6 +30,8 @@ module powerbi.extensibility.visual {
 
     export class GanttSettings extends DataViewObjectsParser {
         general: GeneralSettings = new GeneralSettings();
+        subTasks: SubTasks = new SubTasks();
+        collapsedTasks: CollapsedTasks = new CollapsedTasks();
         daysOff: DaysOffSettings = new DaysOffSettings();
         legend: LegendSettings = new LegendSettings();
         taskLabels: TaskLabelsSettings = new TaskLabelsSettings();
@@ -45,6 +47,16 @@ module powerbi.extensibility.visual {
         scrollToCurrentTime: boolean = false;
         durationUnit: string = "day";
         durationMin: number = 1;
+    }
+
+    export class SubTasks {
+        inheritParentLegend: boolean = false;
+        parentDurationByChildren: boolean = false;
+        parentCompletionByChildren: boolean = false;
+    }
+
+    export class CollapsedTasks {
+        list: string = "[]";
     }
 
     export class DaysOffSettings {

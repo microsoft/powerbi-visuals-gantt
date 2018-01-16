@@ -13,6 +13,12 @@
             "kind": "Grouping"
         },
         {
+            "name": "Parent",
+            "displayName": "Parent",
+            "displayNameKey": "Role_Parent",
+            "kind": "Grouping"
+        },
+        {
             "name": "StartDate",
             "displayName": "Start Date",
             "displayNameKey": "Role_StartDate",
@@ -71,6 +77,10 @@
                         "min": 1,
                         "max": 1
                     },
+                    "Parent": {
+                        "min": 0,
+                        "max": 1
+                    },
                     "StartDate": {
                         "min": 0,
                         "max": 0
@@ -101,6 +111,10 @@
                         "min": 1,
                         "max": 1
                     },
+                    "Parent": {
+                        "min": 0,
+                        "max": 1
+                    },
                     "StartDate": {
                         "min": 0,
                         "max": 1
@@ -128,6 +142,10 @@
                         "max": 1
                     },
                     "Task": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "Parent": {
                         "min": 0,
                         "max": 1
                     },
@@ -159,6 +177,11 @@
                         {
                             "for": {
                                 "in": "Task"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "Parent"
                             }
                         },
                         {
@@ -250,6 +273,42 @@
                     "displayNameKey": "Visual_DurationMinimum",
                     "type": {
                         "numeric": true
+                    }
+                }
+            }
+        },
+        "subTasks": {
+            "displayName": "Sub tasks",
+            "displayNameKey": "Visual_SubTasks",
+            "properties": {
+                "inheritParentLegend": {
+                    "displayName": "Inherit parent legend",
+                    "displayNameKey": "Visual_InheritParentLegend",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "parentDurationByChildren": {
+                    "displayName": "Parent duration by children",
+                    "displayNameKey": "Visual_ParentDurationByChildren",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "parentCompletionByChildren": {
+                    "displayName": "Parent completion by children",
+                    "displayNameKey": "Visual_ParentCompletionByChildren",
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
+        "collapsedTasks": {
+            "properties": {
+                "list": {
+                    "type": {
+                        "text": true
                     }
                 }
             }

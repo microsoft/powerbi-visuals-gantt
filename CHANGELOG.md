@@ -1,3 +1,5 @@
+## 1.9.0
+ * Added ability to use sub tasks
 ## 1.8.6
  * Added option to data labels which cut them up to the width of the task
 ## 1.8.5
