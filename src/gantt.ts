@@ -1723,6 +1723,10 @@ module powerbi.extensibility.visual {
         private taskMainRectRender(
             taskSelection: UpdateSelection <Task>,
             taskConfigHeight: number): void {
+            const isBorder: boolean = this.viewModel.settings.taskConfig.border;
+            const borderWidth: number = this.viewModel.settings.taskConfig.borderWidth;
+            const borderColor: string = this.viewModel.settings.taskConfig.borderColor;
+
             let taskRect: UpdateSelection<Task> = taskSelection
                 .selectAll(Selectors.TaskRect.selector)
                 .data((d: Task) => [d]);
@@ -1739,7 +1743,11 @@ module powerbi.extensibility.visual {
                     width: (task: Task) => this.taskDurationToWidth(task.start, task.end),
                     height: () => Gantt.getBarHeight(taskConfigHeight)
                 })
-                .style("fill", (task: Task) => task.color);
+                .style({
+                    "fill": (task: Task) => task.color,
+                    "stroke": isBorder ? borderColor : null,
+                    "stroke-width": isBorder ? borderWidth : null
+                });
 
             taskRect
                 .exit()

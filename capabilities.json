@@ -588,6 +588,31 @@
                     "type": {
                         "numeric": true
                     }
+                },
+                "border": {
+                    "displayName": "Border",
+                    "displayNameKey": "Visual_TaskSettings_Border",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "borderWidth": {
+                    "displayName": "Border width",
+                    "displayNameKey": "Visual_TaskSettings_BorderWidth",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "borderColor": {
+                    "displayName": "Border color",
+                    "displayNameKey": "Visual_TaskSettings_BorderColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
                 }
             }
         },

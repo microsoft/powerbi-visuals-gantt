@@ -84,6 +84,9 @@ module powerbi.extensibility.visual {
     export class TaskConfigSettings {
         fill: string = "#00B099";
         height: number = 40;
+        border: boolean = false;
+        borderWidth: number = 1;
+        borderColor: string = "#000000";
     }
 
     export class TaskCompletionSettings {

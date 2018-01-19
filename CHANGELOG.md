@@ -1,3 +1,5 @@
+## 1.10.0
+ * Added ability to set 'border' for task rect
 ## 1.9.0
  * Added ability to use sub tasks
 ## 1.8.6

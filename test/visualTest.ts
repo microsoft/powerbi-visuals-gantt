@@ -1032,6 +1032,55 @@ module powerbi.extensibility.visual.test {
                         done();
                     });
                 });
+
+                it("border", (done) => {
+                    dataView.metadata.objects = {
+                        taskConfig: {
+                            border: true
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        visualBuilder.taskLine.toArray().map($).forEach(e =>
+                            expect(e.css("stroke")).not.toEqual(undefined));
+
+                        done();
+                    });
+                });
+
+                it("borderWidth", (done) => {
+                    const borderWidth: number = 5;
+                    dataView.metadata.objects = {
+                        taskConfig: {
+                            border: true,
+                            borderWidth
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        visualBuilder.taskLine.toArray().map($).forEach(e =>
+                            expect(+e.css("stroke-width")).toEqual(borderWidth));
+
+                        done();
+                    });
+                });
+
+                it("borderWidth", (done) => {
+                    const borderColor: string = GanttBuilder.getRandomHexColor();
+                    dataView.metadata.objects = {
+                        taskConfig: {
+                            border: true,
+                            borderColor
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        visualBuilder.taskLine.toArray().map($).forEach(e =>
+                            assertColorsMatch(e.css("fill"), borderColor));
+
+                        done();
+                    });
+                });
             });
 
             describe("Category Labels", () => {
