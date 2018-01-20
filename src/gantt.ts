@@ -858,7 +858,7 @@ module powerbi.extensibility.visual {
             if (values.Parent) {
                 tasks
                     .filter((task: Task) => task.parent.indexOf(".") === -1)
-                    .forEach((task: Task) => Gantt.childrenOfTaskProcessing(tasks, task, settings, formatters, durationUnit));
+                    .forEach((task: Task) => Gantt.childrenOfTaskProcessing(tasks, task, settings, durationUnit));
 
                 tasks
                     .sort((a, b) => {
@@ -872,13 +872,16 @@ module powerbi.extensibility.visual {
                     });
             }
 
+            tasks.forEach((task: Task) => {
+                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit);
+            });
+
             return tasks;
         }
 
         private static childrenOfTaskProcessing(tasks: Task[],
                                                 task: Task,
                                                 settings: GanttSettings,
-                                                formatters: GanttChartFormatters,
                                                 durationUnit: string): void {
             let childrenOfTask: Task[] = tasks.filter((childTask: Task) =>
                 (childTask.parent.substr(0, task.parent.length) === task.parent &&
@@ -889,7 +892,7 @@ module powerbi.extensibility.visual {
             if (childrenOfTask.length) {
                 childrenOfTask.forEach((childTask: Task) => {
                     task.children.push(childTask.name);
-                    Gantt.childrenOfTaskProcessing(tasks, childTask, settings, formatters, durationUnit);
+                    Gantt.childrenOfTaskProcessing(tasks, childTask, settings, durationUnit);
                 });
 
                 if ((!settings.subTasks.inheritParentLegend && !task.taskType) ||
@@ -898,15 +901,13 @@ module powerbi.extensibility.visual {
                 }
 
                 if (settings.subTasks.parentDurationByChildren) {
-                    Gantt.setParentDurationByChildren(task, childrenOfTask);
+                    Gantt.setParentDurationByChildren(task, childrenOfTask, durationUnit);
                 }
 
                 if (settings.subTasks.parentCompletionByChildren) {
                     Gantt.setParentCompletionByChildren(task, childrenOfTask);
                 }
             }
-
-            task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit);
         }
 
         /**
@@ -929,9 +930,10 @@ module powerbi.extensibility.visual {
          * @param task Parent task
          * @param children Sub tasks of parent task
          */
-        private static setParentDurationByChildren(task: Task, children: Task[]): void {
+        private static setParentDurationByChildren(task: Task, children: Task[], durationUnit: string): void {
             task.start = (_.minBy(children, (childTask: Task) => childTask.start)).start;
             task.end = (_.maxBy(children, (childTask: Task) => childTask.end)).end;
+            task.duration =  d3.time[durationUnit].range(task.start, task.end).length;
         }
 
         /**
