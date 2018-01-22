@@ -1,3 +1,6 @@
+## 1.9.1
+ * Fixed issue with wrong tooltip data displaying without 'parent' data
+ * Fixed issue with wrong duration in the tooltip
 ## 1.9.0
  * Added ability to use sub tasks
 ## 1.8.6

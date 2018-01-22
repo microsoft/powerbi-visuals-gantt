@@ -397,6 +397,38 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            describe("Verify tooltips have info according 'parent' data", () => {
+                function checkTasksHaveTooltipInfo(done: () => void) {
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        for (let task of tasks) {
+                            expect(task.tooltipInfo.length).not.toEqual(0);
+                        }
+
+                        done();
+                    });
+                }
+
+                it("With parent data", (done) => {
+                    dataView = defaultDataViewBuilder.getDataView([
+                        GanttData.ColumnTask,
+                        GanttData.ColumnStartDate,
+                        GanttData.ColumnDuration,
+                        GanttData.ColumnParent]);
+
+                    checkTasksHaveTooltipInfo(done);
+                });
+
+                it("Without parent data", (done) => {
+                    dataView = defaultDataViewBuilder.getDataView([
+                        GanttData.ColumnTask,
+                        GanttData.ColumnStartDate,
+                        GanttData.ColumnDuration]);
+
+                    checkTasksHaveTooltipInfo(done);
+                });
+            });
+
             it("Verify Font Size set to default", (done) => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let element = d3.select(visualBuilder.element.get(0));
@@ -790,6 +822,9 @@ module powerbi.extensibility.visual.test {
 
                             expect(parent.start).toEqual(start);
                             expect(parent.end).toEqual(end);
+
+                            const newDuration: number = d3.time["day"].range(start, end).length;
+                            expect(parent.duration).toEqual(newDuration);
                         });
 
                         done();
