@@ -46,6 +46,22 @@ module powerbi.extensibility.visual {
                 (d3.event as MouseEvent).stopPropagation();
             });
 
+            options.legendSelection.on("click", (d: any) => {
+                if (!d.selected) {
+                    selectionHandler.handleSelection(d, true);
+                    (d3.event as MouseEvent).stopPropagation();
+
+                    let selectedType: string = d.tooltip;
+                    options.taskSelection.each((d: Task) => {
+                        if (d.taskType === selectedType && d.parent && !d.selected) {
+                            selectionHandler.handleSelection(d, true);
+                        }
+                    });
+                } else {
+                    selectionHandler.handleClearSelection();
+                }
+            });
+
             options.subTasksCollapse.selection.on("click", (d: GroupedTask) => {
                 if (!_.flatten(d.tasks.map(task => task.children)).length) {
                     return;
