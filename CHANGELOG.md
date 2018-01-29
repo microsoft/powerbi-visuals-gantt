@@ -1,3 +1,5 @@
+## 1.9.2
+ * Fixed issue with wrong selection of children tasks from legend
 ## 1.9.1
  * Fixed issue with wrong tooltip data displaying without 'parent' data
  * Fixed issue with wrong duration in the tooltip
