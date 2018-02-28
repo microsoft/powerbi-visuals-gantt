@@ -1,3 +1,6 @@
+## 1.9.3
+ * Fixed issue with tooltip duration
+ * Fixed issue with line length with float value and 'second' duration
 ## 1.9.2
  * Fixed issue with wrong selection of children tasks from legend
 ## 1.9.1

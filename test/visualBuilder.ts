@@ -141,6 +141,10 @@ module powerbi.extensibility.visual.test {
                 .children("g#legendGroup");
         }
 
+        public downgradeDurationUnit(tasks: any, durationUnit: string) {
+            VisualClass.downgradeDurationUnitIfNeed(tasks, durationUnit);
+        }
+
         public static getSolidColorStructuralObject(color: string): any {
             return { solid: { color: color } };
         }

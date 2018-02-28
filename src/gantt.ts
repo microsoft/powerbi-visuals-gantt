@@ -174,6 +174,7 @@ module powerbi.extensibility.visual {
         extraInformation: ExtraInformation[];
         daysOffList: DayOffData[];
         wasDowngradeDurationUnit: boolean;
+        stepDurationTransformation?: number;
     }
 
     export type DayOffData = [Date, number];
@@ -735,6 +736,7 @@ module powerbi.extensibility.visual {
                 let completion: number = 0;
                 let taskType: TaskTypeMetadata = null;
                 let wasDowngradeDurationUnit: boolean = false;
+                let stepDurationTransformation: number = 0;
 
                 const selectionBuider: ISelectionIdBuilder = host
                     .createSelectionIdBuilder()
@@ -756,7 +758,7 @@ module powerbi.extensibility.visual {
 
                             if (duration && duration % 1 !== 0) {
                                 durationUnit = Gantt.downgradeDurationUnit(durationUnit);
-                                let stepDurationTransformation: number =
+                                stepDurationTransformation =
                                     GanttDurationUnitType.indexOf(settings.general.durationUnit) - GanttDurationUnitType.indexOf(durationUnit);
 
                                 duration = Gantt.transformDuration(duration, durationUnit, stepDurationTransformation);
@@ -820,9 +822,15 @@ module powerbi.extensibility.visual {
                     identity: selectionId,
                     extraInformation,
                     daysOffList: [],
-                    wasDowngradeDurationUnit
+                    wasDowngradeDurationUnit,
+                    stepDurationTransformation
                 };
+                tasks.push(task);
+            });
 
+            Gantt.downgradeDurationUnitIfNeed(tasks, durationUnit);
+
+            tasks.forEach(task => {
                 task.end = d3.time[durationUnit].offset(task.start, task.duration);
                 if (settings.daysOff.show && duration) {
                     let datesDiff: number = 0;
@@ -851,8 +859,6 @@ module powerbi.extensibility.visual {
                 if (task.parent !== task.name) {
                     task.visibility = collapsedTasks.indexOf(task.parent) === -1;
                 }
-
-                tasks.push(task);
             });
 
             if (values.Parent) {
@@ -877,6 +883,21 @@ module powerbi.extensibility.visual {
             });
 
             return tasks;
+        }
+
+        public static downgradeDurationUnitIfNeed(tasks: Task[], durationUnit: string) {
+            const downgradedDurationUnitTasks = tasks.filter(t => t.wasDowngradeDurationUnit);
+
+            if (downgradedDurationUnitTasks.length) {
+                let maxStepDurationTransformation: number = 0;
+                downgradedDurationUnitTasks.forEach(x => maxStepDurationTransformation = x.stepDurationTransformation > maxStepDurationTransformation ? x.stepDurationTransformation : maxStepDurationTransformation);
+
+                tasks.filter(x => x.stepDurationTransformation !== maxStepDurationTransformation).forEach(task => {
+                    task.duration = Gantt.transformDuration(task.duration, durationUnit, maxStepDurationTransformation);
+                    task.stepDurationTransformation = maxStepDurationTransformation;
+                    task.wasDowngradeDurationUnit = true;
+                });
+            }
         }
 
         private static childrenOfTaskProcessing(tasks: Task[],
@@ -990,6 +1011,11 @@ module powerbi.extensibility.visual {
             duration: number,
             newDurationUnit: string | DurationUnits,
             stepDurationTransformation: number): number {
+
+            if (!stepDurationTransformation) {
+                return Math.floor(duration);
+            }
+
             let transformedDuration: number = duration;
             switch (newDurationUnit) {
                 case DurationUnits.Hour:
@@ -1074,6 +1100,9 @@ module powerbi.extensibility.visual {
             let oneHourDuration: number = MinutesInAHour;
             let oneMinuteDuration: number = 1;
             switch (durationUnit) {
+                case DurationUnits.Hour:
+                    oneHourDuration = 1;
+                    break;
                 case DurationUnits.Minute:
                     oneDayDuration = MinutesInADay;
                     break;

@@ -167,6 +167,32 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            it("When task duration is float and duration unit 'second',  it should be round", (done) => {
+                defaultDataViewBuilder.valuesDuration = GanttData.getRandomUniqueNumbers(100, 1, 2, false);
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnType,
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnResource,
+                    GanttData.ColumnCompletePrecntege]);
+
+                dataView.metadata.objects = {
+                    general: {
+                        durationUnit: "second"
+                    }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+
+                    for (let task of tasks) {
+                        expect(task.duration).toEqual(defaultTaskDuration);
+                    }
+
+                    done();
+                });
+            });
+
             it("When task start time is missing, it should be set to today date", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
                     GanttData.ColumnType,
@@ -686,6 +712,40 @@ module powerbi.extensibility.visual.test {
                         });
                     });
 
+                });
+
+                describe("Duration units downgrade", () => {
+                    const firstTaskDuration = 4404;
+                    const secondTaskDuration = 1;
+                    const thirdTaskDuration = 1.12;
+                    const secondInHour = 3600;
+
+                    it("hour to second", done => {
+                        const tasks = [
+                            {
+                                wasDowngradeDurationUnit: true,
+                                stepDurationTransformation: 2,
+                                duration: firstTaskDuration
+                            },
+                            {
+                                wasDowngradeDurationUnit: false,
+                                stepDurationTransformation: 0,
+                                duration: secondTaskDuration
+                            },
+                            {
+                                wasDowngradeDurationUnit: false,
+                                stepDurationTransformation: 0,
+                                duration: thirdTaskDuration
+                            }
+                        ];
+
+                        visualBuilder.downgradeDurationUnit(tasks, "second");
+                        expect(tasks[0].duration).toEqual(firstTaskDuration);
+                        expect(tasks[1].duration).toEqual(Math.floor(secondTaskDuration * secondInHour));
+                        expect(tasks[2].duration).toEqual(Math.floor(thirdTaskDuration * secondInHour));
+
+                        done();
+                    });
                 });
             });
 
