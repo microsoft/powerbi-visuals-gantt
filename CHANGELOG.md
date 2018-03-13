@@ -1,3 +1,7 @@
+## 1.9.4
+ * Fixed issue with tooltip duration
+ * Fixed issue with invisible task line when duration is 1
+ * Added ability to use custom tooltip rows
 ## 1.9.3
  * Fixed issue with tooltip duration
  * Fixed issue with line length with float value and 'second' duration
