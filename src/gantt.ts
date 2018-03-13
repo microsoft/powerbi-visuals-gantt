@@ -295,6 +295,7 @@ module powerbi.extensibility.visual {
         export const Duration: string = "Duration";
         export const Completion: string = "Completion";
         export const Resource: string = "Resource";
+        export const Tooltips: string = "Tooltips";
     }
 
     export class Gantt implements IVisual {
@@ -591,6 +592,10 @@ module powerbi.extensibility.visual {
                 tooltipDataArray.push({ displayName: "Resource", value: task.resource });
             }
 
+            if (task.tooltipInfo && task.tooltipInfo.length) {
+                tooltipDataArray.push(...task.tooltipInfo);
+            }
+
             for (const key of Object.keys(task.extraInformation)) {
                 tooltipDataArray.push(task.extraInformation[key]);
             }
@@ -721,11 +726,9 @@ module powerbi.extensibility.visual {
             const colorHelper: ColorHelper = new ColorHelper(colors, Gantt.LegendPropertyIdentifier);
             const values: GanttColumns<any> = GanttColumns.getCategoricalValues(dataView);
             const groupValues: GanttColumns<DataViewValueColumn>[] = GanttColumns.getGroupedValueColumns(dataView);
-
             if (!values.Task) {
                 return tasks;
             }
-
             let collapsedTasks: string[] = JSON.parse(settings.collapsedTasks.list);
             let durationUnit: string = settings.general.durationUnit;
             let duration: number = settings.general.durationMin;
@@ -736,6 +739,8 @@ module powerbi.extensibility.visual {
                 let completion: number = 0;
                 let taskType: TaskTypeMetadata = null;
                 let wasDowngradeDurationUnit: boolean = false;
+                let tooltips: VisualTooltipDataItem[] = [];
+                let skipTooltipNames: string[] = [];
                 let stepDurationTransformation: number = 0;
 
                 const selectionBuider: ISelectionIdBuilder = host
@@ -753,8 +758,7 @@ module powerbi.extensibility.visual {
                                 color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
                             }
 
-                            duration = group.Duration.values[index] > settings.general.durationMin
-                                && group.Duration.values[index] as number;
+                            duration = group.Duration.values[index] > settings.general.durationMin ? group.Duration.values[index] as number : settings.general.durationMin;
 
                             if (duration && duration % 1 !== 0) {
                                 durationUnit = Gantt.downgradeDurationUnit(durationUnit);
@@ -777,6 +781,14 @@ module powerbi.extensibility.visual {
                                 if (completion > Gantt.ComplectionMax) {
                                     completion = Gantt.ComplectionMax;
                                 }
+                            }
+
+                            if (group.Tooltips && group.Tooltips.values[index]) {
+                                tooltips.push({
+                                    displayName: group.Tooltips.source.displayName,
+                                    value: group.Tooltips.values[index]
+                                } as VisualTooltipDataItem);
+                                skipTooltipNames.push(group.Tooltips.source.displayName);
                             }
                         }
                     });
@@ -803,6 +815,17 @@ module powerbi.extensibility.visual {
                     }
                 }
 
+                if (values.Tooltips) {
+                    const extraTooltipKeys: any[] = Object.keys(values.Tooltips);
+                    for (const key of extraTooltipKeys.filter(k => skipTooltipNames.indexOf(k) < 0)) {
+                        const value: string = values.Tooltips[key][index];
+                        tooltips.push({
+                            displayName: key,
+                            value: value || ""
+                        });
+                    }
+                }
+
                 const task: Task = {
                     color,
                     completion,
@@ -817,7 +840,7 @@ module powerbi.extensibility.visual {
                     duration,
                     taskType: taskType && taskType.name,
                     description: categoryValue as string,
-                    tooltipInfo: [],
+                    tooltipInfo: tooltips,
                     selected: false,
                     identity: selectionId,
                     extraInformation,
@@ -1281,10 +1304,8 @@ module powerbi.extensibility.visual {
         * @param options The visual option that contains the dataview and the viewport
         */
         public update(options: VisualUpdateOptions): void {
-            if (!options
-                || !options.dataViews
-                || !options.dataViews[0]
-            ) {                this.clearViewport();
+            if (!options || !options.dataViews || !options.dataViews[0]) {
+                this.clearViewport();
                 return;
             }
 
@@ -1299,7 +1320,6 @@ module powerbi.extensibility.visual {
 
             this.renderLegend();
             this.updateChartSize();
-
             let tasks: Task[] = this.viewModel.tasks
                 .filter((task: Task) => task.visibility)
                 .map((task: Task, i: number) => {
@@ -1341,7 +1361,6 @@ module powerbi.extensibility.visual {
             this.timeScale = <timeScale<Date, Date>>xAxisProperties.scale;
 
             this.collapsedTasks = JSON.parse(settings.collapsedTasks.list);
-
             this.renderAxis(xAxisProperties);
             this.renderTasks(groupedTasks);
 

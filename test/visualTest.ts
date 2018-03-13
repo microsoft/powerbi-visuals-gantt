@@ -167,6 +167,34 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            it("When task duration is 1 or less,  it should be set to 1, not false", (done) => {
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnType,
+                    GanttData.ColumnTask,
+                    GanttData.ColumnDuration,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnResource,
+                    GanttData.ColumnCompletePrecntege]);
+
+                dataView
+                    .categorical
+                    .values
+                    .filter(x => x.source.roles.Duration)
+                    .forEach((element, i) => {
+                        element.values = element.values.map((v, i) => i === 0 ? 1 : 1 / v);
+                    });
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+
+                    for (let task of tasks) {
+                        expect(task.duration).toEqual(defaultTaskDuration);
+                    }
+
+                    done();
+                });
+            });
+
             it("When task duration is float and duration unit 'second',  it should be round", (done) => {
                 defaultDataViewBuilder.valuesDuration = GanttData.getRandomUniqueNumbers(100, 1, 2, false);
                 dataView = defaultDataViewBuilder.getDataView([
@@ -280,7 +308,8 @@ module powerbi.extensibility.visual.test {
                 dataView = defaultDataViewBuilder.getDataView([
                     GanttData.ColumnTask,
                     GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration]);
+                    GanttData.ColumnDuration,
+                    GanttData.ColumnTooltips]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskLabelsInDom = d3.select(visualBuilder.element.get(0)).selectAll(".label title")[0];
@@ -343,6 +372,29 @@ module powerbi.extensibility.visual.test {
                             if (tooltipInfo.displayName === GanttData.ColumnExtraInformation) {
                                 let value: VisualTooltipDataItem  = tooltipInfo.value;
                                 expect(value).toEqual(defaultDataViewBuilder.valuesExtraInformation[index++]);
+                            }
+                        }
+                    }
+
+                    done();
+                });
+            });
+
+            it("Verify tooltips have tooltips", (done) => {
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration,
+                    GanttData.ColumnTooltips]);
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let index = 0;
+                    for (let task of tasks) {
+                        for (let tooltipInfo of task.tooltipInfo) {
+                            if (tooltipInfo.displayName === GanttData.ColumnTooltips) {
+                                let value: VisualTooltipDataItem  = tooltipInfo.value;
+                                expect(value).toEqual(defaultDataViewBuilder.valuesTooltips[index++]);
                             }
                         }
                     }
