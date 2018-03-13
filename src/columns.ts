@@ -55,12 +55,7 @@ module powerbi.extensibility.visual {
                              columns = {};
                          }
                          columns[x.source.displayName] = x.values;
-                     } else if (x.source.roles && x.source.roles["Tooltips"]) {
-                        if (!columns) {
-                            columns = {};
-                        }
-                        columns[x.source.displayName] = x.values;
-                    } else {
+                     } else {
                          columns = x.values;
                      }
                   });
@@ -83,6 +78,5 @@ module powerbi.extensibility.visual {
         public Completion: T = null;
         public Resource: T = null;
         public ExtraInformation: T = null;
-        public Tooltips: T = null;
     }
 }
