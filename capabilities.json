@@ -60,15 +60,9 @@
         },
         {
             "name": "ExtraInformation",
-            "displayName": "Extra information",
-            "displayNameKey": "Role_ExtraInformation",
-            "kind": "Grouping"
-        },
-        {
-            "name": "Tooltips",
             "displayName": "Tooltips",
             "displayNameKey": "Role_Tooltips",
-            "kind": "Measure"
+            "kind": "Grouping"
         }
     ],
     "dataViewMappings": [
@@ -204,11 +198,6 @@
                             "for": {
                                 "in": "ExtraInformation"
                             }
-                        },
-                        {
-                            "for": {
-                                "in": "Tooltips"
-                            }
                         }
                     ]
                 },
@@ -224,11 +213,6 @@
                             {
                                 "for": {
                                     "in": "Completion"
-                                }
-                            },
-                            {
-                                "for": {
-                                    "in": "Tooltips"
                                 }
                             }
                         ]

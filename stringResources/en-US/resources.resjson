@@ -5,7 +5,6 @@
 	"Role_Duration": "Duration",
 	"Role_Completion": "% Completion",
 	"Role_Resource": "Resource",
-  	"Role_ExtraInformation": "Extra information",
 	"Role_Tooltips": "Tooltips",
 	"Visual_General": "General",
 	"Visual_GroupTasks": "Group Tasks",

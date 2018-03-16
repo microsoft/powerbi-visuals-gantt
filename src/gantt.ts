@@ -740,7 +740,6 @@ module powerbi.extensibility.visual {
                 let taskType: TaskTypeMetadata = null;
                 let wasDowngradeDurationUnit: boolean = false;
                 let tooltips: VisualTooltipDataItem[] = [];
-                let skipTooltipNames: string[] = [];
                 let stepDurationTransformation: number = 0;
 
                 const selectionBuider: ISelectionIdBuilder = host
@@ -782,14 +781,6 @@ module powerbi.extensibility.visual {
                                     completion = Gantt.ComplectionMax;
                                 }
                             }
-
-                            if (group.Tooltips && group.Tooltips.values[index]) {
-                                tooltips.push({
-                                    displayName: group.Tooltips.source.displayName,
-                                    value: group.Tooltips.values[index]
-                                } as VisualTooltipDataItem);
-                                skipTooltipNames.push(group.Tooltips.source.displayName);
-                            }
                         }
                     });
                 }
@@ -812,17 +803,6 @@ module powerbi.extensibility.visual {
                                 value: value
                             });
                         }
-                    }
-                }
-
-                if (values.Tooltips) {
-                    const extraTooltipKeys: any[] = Object.keys(values.Tooltips);
-                    for (const key of extraTooltipKeys.filter(k => skipTooltipNames.indexOf(k) < 0)) {
-                        const value: string = values.Tooltips[key][index];
-                        tooltips.push({
-                            displayName: key,
-                            value: value || ""
-                        });
                     }
                 }
 
