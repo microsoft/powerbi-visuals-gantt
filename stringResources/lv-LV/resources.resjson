@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minūtes",
 	"Visual_DurationUnit_Seconds": "Sekundes",
 	"Visual_DurationMinimum": "Minimālais ilgums",
-	"Visual_DateType_Quarter": "Ceturksnis"
+	"Visual_DateType_Quarter": "Ceturksnis",
+	"Role_ExtraInformation": "Papildinformācija",
+	"Visual_ScrollToCurrentTime": "Ritināt līdz pašreizējam laikam",
+	"Visual_DaysOff": "Brīvdienas",
+	"Visual_Day": "Diena",
+	"Visual_Day_Sunday": "Svētdiena",
+	"Visual_Day_Monday": "Pirmdiena",
+	"Visual_Day_Tuesday": "Otrdiena",
+	"Visual_Day_Wednesday": "Trešdiena",
+	"Visual_Day_Thursday": "Ceturtdiena",
+	"Visual_Day_Friday": "Piektdiena",
+	"Visual_Day_Saturday": "Sestdiena",
+	"Visual_FirstDayOfWeek": "Pirmā nedēļas diena",
+	"Visual_FullText": "Pilnteksts",
+	"Visual_WidthByTask": "Platums pēc uzdevuma"
 }

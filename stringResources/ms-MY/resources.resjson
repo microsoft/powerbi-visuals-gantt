@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minit",
 	"Visual_DurationUnit_Seconds": "Saat",
 	"Visual_DurationMinimum": "Durasi min",
-	"Visual_DateType_Quarter": "Suku"
+	"Visual_DateType_Quarter": "Suku",
+	"Role_ExtraInformation": "Maklumat tambahan",
+	"Visual_ScrollToCurrentTime": "Tatal ke masa semasa",
+	"Visual_DaysOff": "Hari cuti",
+	"Visual_Day": "Hari",
+	"Visual_Day_Sunday": "Ahad",
+	"Visual_Day_Monday": "Isnin",
+	"Visual_Day_Tuesday": "Selasa",
+	"Visual_Day_Wednesday": "Rabu",
+	"Visual_Day_Thursday": "Khamis",
+	"Visual_Day_Friday": "Jumaat",
+	"Visual_Day_Saturday": "Sabtu",
+	"Visual_FirstDayOfWeek": "Hari pertama dalam minggu",
+	"Visual_FullText": "Teks penuh",
+	"Visual_WidthByTask": "Lebar mengikut tugas"
 }

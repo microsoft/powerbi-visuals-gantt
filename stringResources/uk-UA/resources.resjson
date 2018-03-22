@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Хвилини",
 	"Visual_DurationUnit_Seconds": "Секунди",
 	"Visual_DurationMinimum": "Тривалість у хв.",
-	"Visual_DateType_Quarter": "Квартал"
+	"Visual_DateType_Quarter": "Квартал",
+	"Role_ExtraInformation": "Додаткова інформація",
+	"Visual_ScrollToCurrentTime": "Прокрутити до поточного часу",
+	"Visual_DaysOff": "Вихідні дні",
+	"Visual_Day": "День",
+	"Visual_Day_Sunday": "Неділя",
+	"Visual_Day_Monday": "Понеділок",
+	"Visual_Day_Tuesday": "Вівторок",
+	"Visual_Day_Wednesday": "Середа",
+	"Visual_Day_Thursday": "Четвер",
+	"Visual_Day_Friday": "П’ятниця",
+	"Visual_Day_Saturday": "Субота",
+	"Visual_FirstDayOfWeek": "Перший день тижня",
+	"Visual_FullText": "Повний текст",
+	"Visual_WidthByTask": "Ширина за завданням"
 }

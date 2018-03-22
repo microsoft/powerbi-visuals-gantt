@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "мин",
 	"Visual_DurationUnit_Seconds": "Секунды",
 	"Visual_DurationMinimum": "Длительность (мин)",
-	"Visual_DateType_Quarter": "Квартал"
+	"Visual_DateType_Quarter": "Квартал",
+	"Role_ExtraInformation": "Дополнительные сведения",
+	"Visual_ScrollToCurrentTime": "Прокрутить до текущего времени",
+	"Visual_DaysOff": "Выходные дни",
+	"Visual_Day": "День",
+	"Visual_Day_Sunday": "Воскресенье",
+	"Visual_Day_Monday": "Понедельник",
+	"Visual_Day_Tuesday": "Вторник",
+	"Visual_Day_Wednesday": "Среда",
+	"Visual_Day_Thursday": "Четверг",
+	"Visual_Day_Friday": "Пятница",
+	"Visual_Day_Saturday": "Суббота",
+	"Visual_FirstDayOfWeek": "Первый день недели",
+	"Visual_FullText": "Полнотекстовый",
+	"Visual_WidthByTask": "Ширина по задаче"
 }

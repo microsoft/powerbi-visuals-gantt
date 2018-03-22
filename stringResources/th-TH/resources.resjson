@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "นาที",
 	"Visual_DurationUnit_Seconds": "วินาที",
 	"Visual_DurationMinimum": "ระยะเวลานาที",
-	"Visual_DateType_Quarter": "ไตรมาส"
+	"Visual_DateType_Quarter": "ไตรมาส",
+	"Role_ExtraInformation": "ข้อมูลเพิ่มเติม",
+	"Visual_ScrollToCurrentTime": "เลื่อนไปยังเวลาปัจจุบัน",
+	"Visual_DaysOff": "วันหยุด",
+	"Visual_Day": "วัน",
+	"Visual_Day_Sunday": "วันอาทิตย์",
+	"Visual_Day_Monday": "วันจันทร์",
+	"Visual_Day_Tuesday": "วันอังคาร",
+	"Visual_Day_Wednesday": "วันพุธ",
+	"Visual_Day_Thursday": "วันพฤหัสบดี",
+	"Visual_Day_Friday": "วันศุกร์",
+	"Visual_Day_Saturday": "วันเสาร์",
+	"Visual_FirstDayOfWeek": "วันแรกของสัปดาห์",
+	"Visual_FullText": "ข้อความแบบเต็ม",
+	"Visual_WidthByTask": "ความกว้างตามงาน"
 }

@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "‏‏דקות",
 	"Visual_DurationUnit_Seconds": "שניות",
 	"Visual_DurationMinimum": "משך זמן מינימלי",
-	"Visual_DateType_Quarter": "רבעון"
+	"Visual_DateType_Quarter": "רבעון",
+	"Role_ExtraInformation": "מידע נוסף",
+	"Visual_ScrollToCurrentTime": "גלול אל השעה הנוכחית",
+	"Visual_DaysOff": "ימי חופש",
+	"Visual_Day": "יום",
+	"Visual_Day_Sunday": "יום ראשון",
+	"Visual_Day_Monday": "יום שני",
+	"Visual_Day_Tuesday": "יום שלישי",
+	"Visual_Day_Wednesday": "יום רביעי",
+	"Visual_Day_Thursday": "יום חמישי",
+	"Visual_Day_Friday": "יום שישי",
+	"Visual_Day_Saturday": "יום שבת",
+	"Visual_FirstDayOfWeek": "היום הראשון בשבוע",
+	"Visual_FullText": "טקסט מלא",
+	"Visual_WidthByTask": "רוחב לפי משימה"
 }

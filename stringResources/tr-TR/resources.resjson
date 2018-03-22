@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Dakika",
 	"Visual_DurationUnit_Seconds": "Saniye",
 	"Visual_DurationMinimum": "Süre dk",
-	"Visual_DateType_Quarter": "Üç aylık dönem"
+	"Visual_DateType_Quarter": "Üç aylık dönem",
+	"Role_ExtraInformation": "Ek bilgi",
+	"Visual_ScrollToCurrentTime": "Geçerli zamana kaydır",
+	"Visual_DaysOff": "İzinli günler",
+	"Visual_Day": "Gün",
+	"Visual_Day_Sunday": "Pazar",
+	"Visual_Day_Monday": "Pazartesi",
+	"Visual_Day_Tuesday": "Salı",
+	"Visual_Day_Wednesday": "Çarşamba",
+	"Visual_Day_Thursday": "Perşembe",
+	"Visual_Day_Friday": "Cuma",
+	"Visual_Day_Saturday": "Cumartesi",
+	"Visual_FirstDayOfWeek": "Haftanın ilk günü",
+	"Visual_FullText": "Tam metin",
+	"Visual_WidthByTask": "Göreve göre genişlik"
 }

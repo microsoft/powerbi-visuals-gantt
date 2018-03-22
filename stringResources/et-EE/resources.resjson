@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minutid",
 	"Visual_DurationUnit_Seconds": "Sekundid",
 	"Visual_DurationMinimum": "Kestus min",
-	"Visual_DateType_Quarter": "Kvartal"
+	"Visual_DateType_Quarter": "Kvartal",
+	"Role_ExtraInformation": "Lisateave",
+	"Visual_ScrollToCurrentTime": "Keri praegusesse aega",
+	"Visual_DaysOff": "Puhkepäevad",
+	"Visual_Day": "Päev",
+	"Visual_Day_Sunday": "Pühapäev",
+	"Visual_Day_Monday": "Esmaspäev",
+	"Visual_Day_Tuesday": "Teisipäev",
+	"Visual_Day_Wednesday": "Kolmapäev",
+	"Visual_Day_Thursday": "Neljapäev",
+	"Visual_Day_Friday": "Reede",
+	"Visual_Day_Saturday": "Laupäev",
+	"Visual_FirstDayOfWeek": "Nädala esimene päev",
+	"Visual_FullText": "Terviktekst",
+	"Visual_WidthByTask": "Laius ülesande järgi"
 }

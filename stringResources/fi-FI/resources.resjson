@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minuuttia",
 	"Visual_DurationUnit_Seconds": "sekuntia",
 	"Visual_DurationMinimum": "Kesto minuutteina",
-	"Visual_DateType_Quarter": "Vuosineljännes"
+	"Visual_DateType_Quarter": "Vuosineljännes",
+	"Role_ExtraInformation": "Ylimääräiset tiedot",
+	"Visual_ScrollToCurrentTime": "Selaa nykyiseen aikaan",
+	"Visual_DaysOff": "Vapaapäivät",
+	"Visual_Day": "Päivä",
+	"Visual_Day_Sunday": "Sunnuntai",
+	"Visual_Day_Monday": "Maanantai",
+	"Visual_Day_Tuesday": "Tiistai",
+	"Visual_Day_Wednesday": "Keskiviikko",
+	"Visual_Day_Thursday": "Torstai",
+	"Visual_Day_Friday": "Perjantai",
+	"Visual_Day_Saturday": "Lauantai",
+	"Visual_FirstDayOfWeek": "Viikon ensimmäinen päivä",
+	"Visual_FullText": "Koko teksti",
+	"Visual_WidthByTask": "Leveys tehtävän mukaan"
 }

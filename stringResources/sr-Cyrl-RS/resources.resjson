@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Минути",
 	"Visual_DurationUnit_Seconds": "Секунде",
 	"Visual_DurationMinimum": "Трајање у мин.",
-	"Visual_DateType_Quarter": "Квартал"
+	"Visual_DateType_Quarter": "Квартал",
+	"Role_ExtraInformation": "Додатне информације",
+	"Visual_ScrollToCurrentTime": "Померите се до тренутног времена",
+	"Visual_DaysOff": "Слободни дани",
+	"Visual_Day": "Дан",
+	"Visual_Day_Sunday": "Недеља",
+	"Visual_Day_Monday": "Понедељак",
+	"Visual_Day_Tuesday": "Уторак",
+	"Visual_Day_Wednesday": "Среда",
+	"Visual_Day_Thursday": "Четвртак",
+	"Visual_Day_Friday": "Петак",
+	"Visual_Day_Saturday": "Субота",
+	"Visual_FirstDayOfWeek": "Први дан у седмици",
+	"Visual_FullText": "Комплетан текст",
+	"Visual_WidthByTask": "Ширина по задатку"
 }

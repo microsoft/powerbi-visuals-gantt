@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "मिनट",
 	"Visual_DurationUnit_Seconds": "सेकंड",
 	"Visual_DurationMinimum": "न्यूनतम अवधि",
-	"Visual_DateType_Quarter": "तिमाही"
+	"Visual_DateType_Quarter": "तिमाही",
+	"Role_ExtraInformation": "अतिरिक्त जानकारी",
+	"Visual_ScrollToCurrentTime": "वर्तमान समय में स्क्रॉल करें",
+	"Visual_DaysOff": "दिन का अवकाश",
+	"Visual_Day": "दिन",
+	"Visual_Day_Sunday": "रविवार",
+	"Visual_Day_Monday": "सोमवार",
+	"Visual_Day_Tuesday": "मंगलवार",
+	"Visual_Day_Wednesday": "बुधवार",
+	"Visual_Day_Thursday": "गुरूवार",
+	"Visual_Day_Friday": "शुक्रवार",
+	"Visual_Day_Saturday": "शनिवार",
+	"Visual_FirstDayOfWeek": "सप्ताह का पहला दिन",
+	"Visual_FullText": "पूर्ण पाठ",
+	"Visual_WidthByTask": "कार्य द्वारा चौड़ाई"
 }

@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Минути",
 	"Visual_DurationUnit_Seconds": "Секунди",
 	"Visual_DurationMinimum": "Минимална продължителност",
-	"Visual_DateType_Quarter": "Тримесечие"
+	"Visual_DateType_Quarter": "Тримесечие",
+	"Role_ExtraInformation": "Допълнителна информация",
+	"Visual_ScrollToCurrentTime": "Превъртане до текущия час",
+	"Visual_DaysOff": "Почивни дни",
+	"Visual_Day": "Ден",
+	"Visual_Day_Sunday": "Неделя",
+	"Visual_Day_Monday": "Понеделник",
+	"Visual_Day_Tuesday": "Вторник",
+	"Visual_Day_Wednesday": "Сряда",
+	"Visual_Day_Thursday": "Четвъртък",
+	"Visual_Day_Friday": "Петък",
+	"Visual_Day_Saturday": "Събота",
+	"Visual_FirstDayOfWeek": "Първи ден от седмицата",
+	"Visual_FullText": "Пълен текст",
+	"Visual_WidthByTask": "Ширина по задача"
 }

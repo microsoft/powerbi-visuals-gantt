@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minuten",
 	"Visual_DurationUnit_Seconds": "Seconden",
 	"Visual_DurationMinimum": "Duur (min)",
-	"Visual_DateType_Quarter": "Kwartaal"
+	"Visual_DateType_Quarter": "Kwartaal",
+	"Role_ExtraInformation": "Extra informatie",
+	"Visual_ScrollToCurrentTime": "Naar huidige tijd scrollen",
+	"Visual_DaysOff": "Vrije dagen",
+	"Visual_Day": "Dag",
+	"Visual_Day_Sunday": "zondag",
+	"Visual_Day_Monday": "maandag",
+	"Visual_Day_Tuesday": "dinsdag",
+	"Visual_Day_Wednesday": "woensdag",
+	"Visual_Day_Thursday": "donderdag",
+	"Visual_Day_Friday": "vrijdag",
+	"Visual_Day_Saturday": "zaterdag",
+	"Visual_FirstDayOfWeek": "Eerste dag van de week",
+	"Visual_FullText": "Volledige tekst",
+	"Visual_WidthByTask": "Breedte op taak"
 }

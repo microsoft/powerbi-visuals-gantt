@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Phút",
 	"Visual_DurationUnit_Seconds": "Giây",
 	"Visual_DurationMinimum": "Thời gian tính bằng phút",
-	"Visual_DateType_Quarter": "Quý"
+	"Visual_DateType_Quarter": "Quý",
+	"Role_ExtraInformation": "Thông tin khác",
+	"Visual_ScrollToCurrentTime": "Cuộn đến thời gian hiện tại",
+	"Visual_DaysOff": "Số ngày nghỉ",
+	"Visual_Day": "Ngày",
+	"Visual_Day_Sunday": "Chủ Nhật",
+	"Visual_Day_Monday": "Thứ Hai",
+	"Visual_Day_Tuesday": "Thứ Ba",
+	"Visual_Day_Wednesday": "Thứ Tư",
+	"Visual_Day_Thursday": "Thứ Năm",
+	"Visual_Day_Friday": "Thứ Sáu",
+	"Visual_Day_Saturday": "Thứ Bảy",
+	"Visual_FirstDayOfWeek": "Ngày đầu tuần",
+	"Visual_FullText": "Văn bản đầy đủ",
+	"Visual_WidthByTask": "Chiều rộng theo công việc"
 }

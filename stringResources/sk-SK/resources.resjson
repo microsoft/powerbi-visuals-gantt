@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minúty",
 	"Visual_DurationUnit_Seconds": "Sekundy",
 	"Visual_DurationMinimum": "Minimálne trvanie",
-	"Visual_DateType_Quarter": "Štvrťrok"
+	"Visual_DateType_Quarter": "Štvrťrok",
+	"Role_ExtraInformation": "Dodatočné informácie",
+	"Visual_ScrollToCurrentTime": "Prejsť na aktuálny čas",
+	"Visual_DaysOff": "Dni voľna",
+	"Visual_Day": "Deň",
+	"Visual_Day_Sunday": "Nedeľa",
+	"Visual_Day_Monday": "Pondelok",
+	"Visual_Day_Tuesday": "Utorok",
+	"Visual_Day_Wednesday": "Streda",
+	"Visual_Day_Thursday": "Štvrtok",
+	"Visual_Day_Friday": "Piatok",
+	"Visual_Day_Saturday": "Sobota",
+	"Visual_FirstDayOfWeek": "Prvý deň v týždni",
+	"Visual_FullText": "Úplný text",
+	"Visual_WidthByTask": "Šírka podľa úlohy"
 }

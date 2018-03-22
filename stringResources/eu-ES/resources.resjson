@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minutuak",
 	"Visual_DurationUnit_Seconds": "Segundoak",
 	"Visual_DurationMinimum": "Gutxieneko iraupena",
-	"Visual_DateType_Quarter": "Hiruhilekoa"
+	"Visual_DateType_Quarter": "Hiruhilekoa",
+	"Role_ExtraInformation": "Informazio gehigarria",
+	"Visual_ScrollToCurrentTime": "Korritu uneko ordura",
+	"Visual_DaysOff": "Oporrak",
+	"Visual_Day": "Eguna",
+	"Visual_Day_Sunday": "Igandea",
+	"Visual_Day_Monday": "Astelehena",
+	"Visual_Day_Tuesday": "Asteartea",
+	"Visual_Day_Wednesday": "Asteazkena",
+	"Visual_Day_Thursday": "Osteguna",
+	"Visual_Day_Friday": "Ostirala",
+	"Visual_Day_Saturday": "Larunbata",
+	"Visual_FirstDayOfWeek": "Asteko lehen eguna",
+	"Visual_FullText": "Testu osoa",
+	"Visual_WidthByTask": "Zeregin bakoitzaren zabalera"
 }

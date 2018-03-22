@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "دقائق",
 	"Visual_DurationUnit_Seconds": "ثوانٍ",
 	"Visual_DurationMinimum": "الحد الأدنى للمدة",
-	"Visual_DateType_Quarter": "‏‏ربع سنة"
+	"Visual_DateType_Quarter": "‏‏ربع سنة",
+	"Role_ExtraInformation": "معلومات إضافية",
+	"Visual_ScrollToCurrentTime": "تمرير إلى الوقت الحالي",
+	"Visual_DaysOff": "العطلات",
+	"Visual_Day": "يوم",
+	"Visual_Day_Sunday": "الأحد",
+	"Visual_Day_Monday": "الإثنين",
+	"Visual_Day_Tuesday": "الثلاثاء",
+	"Visual_Day_Wednesday": "الأربعاء",
+	"Visual_Day_Thursday": "الخميس",
+	"Visual_Day_Friday": "الجمعة",
+	"Visual_Day_Saturday": "السبت",
+	"Visual_FirstDayOfWeek": "أول يوم في الأسبوع",
+	"Visual_FullText": "النص بالكامل",
+	"Visual_WidthByTask": "العرض حسب المهمة"
 }

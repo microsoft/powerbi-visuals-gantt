@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Λεπτά",
 	"Visual_DurationUnit_Seconds": "Δευτερόλεπτα",
 	"Visual_DurationMinimum": "Ελάχιστη διάρκεια",
-	"Visual_DateType_Quarter": "Τρίμηνο"
+	"Visual_DateType_Quarter": "Τρίμηνο",
+	"Role_ExtraInformation": "Επιπλέον πληροφορίες",
+	"Visual_ScrollToCurrentTime": "Κύλιση στην τρέχουσα χρονική στιγμή",
+	"Visual_DaysOff": "Άδεια",
+	"Visual_Day": "Ημέρα",
+	"Visual_Day_Sunday": "Κυριακή",
+	"Visual_Day_Monday": "Δευτέρα",
+	"Visual_Day_Tuesday": "Τρίτη",
+	"Visual_Day_Wednesday": "Τετάρτη",
+	"Visual_Day_Thursday": "Πέμπτη",
+	"Visual_Day_Friday": "Παρασκευή",
+	"Visual_Day_Saturday": "Σάββατο",
+	"Visual_FirstDayOfWeek": "Πρώτη ημέρα της εβδομάδας",
+	"Visual_FullText": "Πλήρες κείμενο",
+	"Visual_WidthByTask": "Πλάτος κατά εργασία"
 }

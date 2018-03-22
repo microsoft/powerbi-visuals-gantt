@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minute",
 	"Visual_DurationUnit_Seconds": "Secunde",
 	"Visual_DurationMinimum": "Minim durată",
-	"Visual_DateType_Quarter": "Trimestru"
+	"Visual_DateType_Quarter": "Trimestru",
+	"Role_ExtraInformation": "Informații suplimentare",
+	"Visual_ScrollToCurrentTime": "Defilați la ora curentă",
+	"Visual_DaysOff": "Zile libere",
+	"Visual_Day": "Zi",
+	"Visual_Day_Sunday": "Duminică",
+	"Visual_Day_Monday": "Luni",
+	"Visual_Day_Tuesday": "Marți",
+	"Visual_Day_Wednesday": "Miercuri",
+	"Visual_Day_Thursday": "Joi",
+	"Visual_Day_Friday": "Vineri",
+	"Visual_Day_Saturday": "Sâmbătă",
+	"Visual_FirstDayOfWeek": "Prima zi a săptămânii",
+	"Visual_FullText": "Text complet",
+	"Visual_WidthByTask": "Lățimea după activitate"
 }

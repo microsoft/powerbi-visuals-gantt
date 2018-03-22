@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "分",
 	"Visual_DurationUnit_Seconds": "秒",
 	"Visual_DurationMinimum": "期間 (分)",
-	"Visual_DateType_Quarter": "四半期"
+	"Visual_DateType_Quarter": "四半期",
+	"Role_ExtraInformation": "追加情報",
+	"Visual_ScrollToCurrentTime": "現在の時刻にスクロールする",
+	"Visual_DaysOff": "非稼働日",
+	"Visual_Day": "日",
+	"Visual_Day_Sunday": "日曜日",
+	"Visual_Day_Monday": "月曜日",
+	"Visual_Day_Tuesday": "火曜日",
+	"Visual_Day_Wednesday": "水曜日",
+	"Visual_Day_Thursday": "木曜日",
+	"Visual_Day_Friday": "金曜日",
+	"Visual_Day_Saturday": "土曜日",
+	"Visual_FirstDayOfWeek": "週の最初の曜日",
+	"Visual_FullText": "フルテキスト",
+	"Visual_WidthByTask": "タスクにより幅を決定"
 }

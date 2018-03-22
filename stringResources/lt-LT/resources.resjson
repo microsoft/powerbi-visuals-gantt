@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minutės",
 	"Visual_DurationUnit_Seconds": "Sekundės",
 	"Visual_DurationMinimum": "Trukmė min.",
-	"Visual_DateType_Quarter": "Ketvirtis"
+	"Visual_DateType_Quarter": "Ketvirtis",
+	"Role_ExtraInformation": "Papildoma informacija",
+	"Visual_ScrollToCurrentTime": "Slinkti į dabartinį laiką",
+	"Visual_DaysOff": "Poilsio dienos",
+	"Visual_Day": "Diena",
+	"Visual_Day_Sunday": "Sekmadienis",
+	"Visual_Day_Monday": "Pirmadienis",
+	"Visual_Day_Tuesday": "Antradienis",
+	"Visual_Day_Wednesday": "Trečiadienis",
+	"Visual_Day_Thursday": "Ketvirtadienis",
+	"Visual_Day_Friday": "Penktadienis",
+	"Visual_Day_Saturday": "Šeštadienis",
+	"Visual_FirstDayOfWeek": "Pirma savaitės diena",
+	"Visual_FullText": "Visas tekstas",
+	"Visual_WidthByTask": "a"
 }

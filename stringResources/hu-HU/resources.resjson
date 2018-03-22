@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Perc",
 	"Visual_DurationUnit_Seconds": "Másodperc",
 	"Visual_DurationMinimum": "Időtartam, perc",
-	"Visual_DateType_Quarter": "Negyedév"
+	"Visual_DateType_Quarter": "Negyedév",
+	"Role_ExtraInformation": "További információ",
+	"Visual_ScrollToCurrentTime": "Görgetés az aktuális időhöz",
+	"Visual_DaysOff": "Szabadnapok",
+	"Visual_Day": "Nap",
+	"Visual_Day_Sunday": "vasárnap",
+	"Visual_Day_Monday": "hétfő",
+	"Visual_Day_Tuesday": "kedd",
+	"Visual_Day_Wednesday": "szerda",
+	"Visual_Day_Thursday": "csütörtök",
+	"Visual_Day_Friday": "péntek",
+	"Visual_Day_Saturday": "Szombat",
+	"Visual_FirstDayOfWeek": "A hét első napja",
+	"Visual_FullText": "Teljes szöveg",
+	"Visual_WidthByTask": "Szélesség feladatonként"
 }

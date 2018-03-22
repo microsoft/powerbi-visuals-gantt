@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minuter",
 	"Visual_DurationUnit_Seconds": "Sekunder",
 	"Visual_DurationMinimum": "Varaktighet min",
-	"Visual_DateType_Quarter": "Kvartal"
+	"Visual_DateType_Quarter": "Kvartal",
+	"Role_ExtraInformation": "Extra information",
+	"Visual_ScrollToCurrentTime": "Bläddra till aktuell tidpunkt",
+	"Visual_DaysOff": "Lediga dagar",
+	"Visual_Day": "Dag",
+	"Visual_Day_Sunday": "Söndag",
+	"Visual_Day_Monday": "måndag",
+	"Visual_Day_Tuesday": "Tisdag",
+	"Visual_Day_Wednesday": "onsdag",
+	"Visual_Day_Thursday": "Torsdag",
+	"Visual_Day_Friday": "Fredag",
+	"Visual_Day_Saturday": "lördag",
+	"Visual_FirstDayOfWeek": "Första dagen i veckan",
+	"Visual_FullText": "Fulltext",
+	"Visual_WidthByTask": "Bredd efter uppgift"
 }

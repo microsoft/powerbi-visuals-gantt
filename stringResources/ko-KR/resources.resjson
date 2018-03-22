@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "분",
 	"Visual_DurationUnit_Seconds": "초",
 	"Visual_DurationMinimum": "기간(분)",
-	"Visual_DateType_Quarter": "분기"
+	"Visual_DateType_Quarter": "분기",
+	"Role_ExtraInformation": "추가 정보",
+	"Visual_ScrollToCurrentTime": "현재 시간으로 스크롤",
+	"Visual_DaysOff": "휴가",
+	"Visual_Day": "일",
+	"Visual_Day_Sunday": "일요일",
+	"Visual_Day_Monday": "월요일",
+	"Visual_Day_Tuesday": "화요일",
+	"Visual_Day_Wednesday": "수요일",
+	"Visual_Day_Thursday": "목요일",
+	"Visual_Day_Friday": "금요일",
+	"Visual_Day_Saturday": "토요일",
+	"Visual_FirstDayOfWeek": "시작 요일",
+	"Visual_FullText": "전체 텍스트",
+	"Visual_WidthByTask": "작업별 너비"
 }

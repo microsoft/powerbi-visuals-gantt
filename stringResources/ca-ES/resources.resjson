@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minuts",
 	"Visual_DurationUnit_Seconds": "Segons",
 	"Visual_DurationMinimum": "Durada mínima",
-	"Visual_DateType_Quarter": "Trimestre"
+	"Visual_DateType_Quarter": "Trimestre",
+	"Role_ExtraInformation": "Informació addicional",
+	"Visual_ScrollToCurrentTime": "Desplaça a l'hora actual",
+	"Visual_DaysOff": "Dies lliures",
+	"Visual_Day": "Dia",
+	"Visual_Day_Sunday": "Diumenge",
+	"Visual_Day_Monday": "Dilluns",
+	"Visual_Day_Tuesday": "Dimarts",
+	"Visual_Day_Wednesday": "Dimecres",
+	"Visual_Day_Thursday": "Dijous",
+	"Visual_Day_Friday": "Divendres",
+	"Visual_Day_Saturday": "Dissabte",
+	"Visual_FirstDayOfWeek": "Primer dia de la setmana",
+	"Visual_FullText": "Text complet",
+	"Visual_WidthByTask": "Amplada per tasca"
 }

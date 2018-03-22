@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "分鐘",
 	"Visual_DurationUnit_Seconds": "秒",
 	"Visual_DurationMinimum": "持續時間 (分鐘)",
-	"Visual_DateType_Quarter": "季"
+	"Visual_DateType_Quarter": "季",
+	"Role_ExtraInformation": "額外資訊",
+	"Visual_ScrollToCurrentTime": "捲動到目前時間",
+	"Visual_DaysOff": "休息日",
+	"Visual_Day": "天",
+	"Visual_Day_Sunday": "星期日",
+	"Visual_Day_Monday": "星期一",
+	"Visual_Day_Tuesday": "星期二",
+	"Visual_Day_Wednesday": "星期三",
+	"Visual_Day_Thursday": "星期四",
+	"Visual_Day_Friday": "星期五",
+	"Visual_Day_Saturday": "星期六",
+	"Visual_FirstDayOfWeek": "每週第一天",
+	"Visual_FullText": "全文檢索",
+	"Visual_WidthByTask": "以工作為準的寬度"
 }

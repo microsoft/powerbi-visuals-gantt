@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minuty",
 	"Visual_DurationUnit_Seconds": "Sekundy",
 	"Visual_DurationMinimum": "Minimální doba trvání",
-	"Visual_DateType_Quarter": "Čtvrtletí"
+	"Visual_DateType_Quarter": "Čtvrtletí",
+	"Role_ExtraInformation": "Dodatečné informace",
+	"Visual_ScrollToCurrentTime": "Posunout na aktuální čas",
+	"Visual_DaysOff": "Dny volna",
+	"Visual_Day": "Den",
+	"Visual_Day_Sunday": "Neděle",
+	"Visual_Day_Monday": "Pondělí",
+	"Visual_Day_Tuesday": "Úterý",
+	"Visual_Day_Wednesday": "Středa",
+	"Visual_Day_Thursday": "Čtvrtek",
+	"Visual_Day_Friday": "Pátek",
+	"Visual_Day_Saturday": "Sobota",
+	"Visual_FirstDayOfWeek": "První den v týdnu",
+	"Visual_FullText": "Úplný text",
+	"Visual_WidthByTask": "Šířka podle úlohy"
 }

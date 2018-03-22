@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minute",
 	"Visual_DurationUnit_Seconds": "Sekunde",
 	"Visual_DurationMinimum": "Trajanje u min",
-	"Visual_DateType_Quarter": "Tromjesečje"
+	"Visual_DateType_Quarter": "Tromjesečje",
+	"Role_ExtraInformation": "Dodatne informacije",
+	"Visual_ScrollToCurrentTime": "Pomakni se na trenutno vrijeme",
+	"Visual_DaysOff": "Slobodni dani",
+	"Visual_Day": "Dan",
+	"Visual_Day_Sunday": "nedjelja",
+	"Visual_Day_Monday": "Ponedjeljak",
+	"Visual_Day_Tuesday": "Utorak",
+	"Visual_Day_Wednesday": "Srijeda",
+	"Visual_Day_Thursday": "Četvrtak",
+	"Visual_Day_Friday": "Petak",
+	"Visual_Day_Saturday": "Subota",
+	"Visual_FirstDayOfWeek": "Prvi dan u tjednu",
+	"Visual_FullText": "Cijeli tekst",
+	"Visual_WidthByTask": "Širina prema zadatku"
 }

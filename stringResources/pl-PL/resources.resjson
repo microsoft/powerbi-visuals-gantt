@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minuty",
 	"Visual_DurationUnit_Seconds": "Sekundy",
 	"Visual_DurationMinimum": "Czas trwania (min)",
-	"Visual_DateType_Quarter": "Kwartał"
+	"Visual_DateType_Quarter": "Kwartał",
+	"Role_ExtraInformation": "Dodatkowe informacje",
+	"Visual_ScrollToCurrentTime": "Przewiń do bieżącej godziny",
+	"Visual_DaysOff": "Dni wolne",
+	"Visual_Day": "Dzień",
+	"Visual_Day_Sunday": "Niedziela",
+	"Visual_Day_Monday": "Poniedziałek",
+	"Visual_Day_Tuesday": "Wtorek",
+	"Visual_Day_Wednesday": "Środa",
+	"Visual_Day_Thursday": "Czwartek",
+	"Visual_Day_Friday": "Piątek",
+	"Visual_Day_Saturday": "Sobota",
+	"Visual_FirstDayOfWeek": "Pierwszy dzień tygodnia",
+	"Visual_FullText": "Pełny tekst",
+	"Visual_WidthByTask": "Szerokość według zadania"
 }

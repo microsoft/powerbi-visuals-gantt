@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minuti",
 	"Visual_DurationUnit_Seconds": "Secondi",
 	"Visual_DurationMinimum": "Durata (min)",
-	"Visual_DateType_Quarter": "Trimestre"
+	"Visual_DateType_Quarter": "Trimestre",
+	"Role_ExtraInformation": "Informazioni aggiuntive",
+	"Visual_ScrollToCurrentTime": "Scorri fino all'ora corrente",
+	"Visual_DaysOff": "Giorni non lavorativi",
+	"Visual_Day": "Giorno",
+	"Visual_Day_Sunday": "domenica",
+	"Visual_Day_Monday": "lunedì",
+	"Visual_Day_Tuesday": "Martedì",
+	"Visual_Day_Wednesday": "mercoledì",
+	"Visual_Day_Thursday": "giovedì",
+	"Visual_Day_Friday": "venerdì",
+	"Visual_Day_Saturday": "Sabato",
+	"Visual_FirstDayOfWeek": "Primo giorno della settimana",
+	"Visual_FullText": "Full-text",
+	"Visual_WidthByTask": "Larghezza per attività"
 }

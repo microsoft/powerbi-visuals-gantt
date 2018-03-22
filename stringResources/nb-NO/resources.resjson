@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Minutter",
 	"Visual_DurationUnit_Seconds": "sekunder",
 	"Visual_DurationMinimum": "Varighet, min",
-	"Visual_DateType_Quarter": "Kvartal"
+	"Visual_DateType_Quarter": "Kvartal",
+	"Role_ExtraInformation": "Mer informasjon",
+	"Visual_ScrollToCurrentTime": "Rull til gjeldende klokkeslett",
+	"Visual_DaysOff": "Fridager",
+	"Visual_Day": "Dag",
+	"Visual_Day_Sunday": "Søndag",
+	"Visual_Day_Monday": "Mandag",
+	"Visual_Day_Tuesday": "Tirsdag",
+	"Visual_Day_Wednesday": "Onsdag",
+	"Visual_Day_Thursday": "Torsdag",
+	"Visual_Day_Friday": "Fredag",
+	"Visual_Day_Saturday": "Lørdag",
+	"Visual_FirstDayOfWeek": "Første dag i uken",
+	"Visual_FullText": "Fullstendig tekst",
+	"Visual_WidthByTask": "Bredde etter oppgave"
 }

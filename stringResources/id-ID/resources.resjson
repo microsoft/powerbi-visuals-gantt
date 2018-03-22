@@ -58,5 +58,19 @@
 	"Visual_DurationUnit_Minutes": "Menit",
 	"Visual_DurationUnit_Seconds": "Detik",
 	"Visual_DurationMinimum": "Durasi min",
-	"Visual_DateType_Quarter": "Kuartal"
+	"Visual_DateType_Quarter": "Kuartal",
+	"Role_ExtraInformation": "Informasi tambahan",
+	"Visual_ScrollToCurrentTime": "Gulir ke waktu saat ini",
+	"Visual_DaysOff": "Hari libur",
+	"Visual_Day": "Hari",
+	"Visual_Day_Sunday": "Minggu",
+	"Visual_Day_Monday": "Senin",
+	"Visual_Day_Tuesday": "Selasa",
+	"Visual_Day_Wednesday": "Rabu",
+	"Visual_Day_Thursday": "Kamis",
+	"Visual_Day_Friday": "Jumat",
+	"Visual_Day_Saturday": "Sabtu",
+	"Visual_FirstDayOfWeek": "Hari pertama dalam sepekan",
+	"Visual_FullText": "Teks penuh",
+	"Visual_WidthByTask": "Lebar berdasarkan tugas"
 }
