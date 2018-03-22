@@ -9,7 +9,7 @@
 	"Visual_General": "General",
 	"Visual_GroupTasks": "Group Tasks",
 	"Visual_ScrollToCurrentTime": "Scroll to current time",
-	"Visual_DaysOff": "Days off",
+	"Visual_DaysOff": "DaysOff",
 	"Visual_Day": "Day",
 	"Visual_Day_Sunday": "Sunday",
 	"Visual_Day_Monday": "Monday",
@@ -18,7 +18,7 @@
 	"Visual_Day_Thursday": "Thursday",
 	"Visual_Day_Friday": "Friday",
 	"Visual_Day_Saturday": "Saturday",
-	"Visual_FirstDayOfWeek": "First day of week",
+	"Visual_FirstDayOfWeek": "First Day of Week",
 	"Visual_Legend": "Legend",
 	"Visual_LegendName": "Legend Name",
 	"Visual_LegendColor": "Legend color",
@@ -57,7 +57,7 @@
 	"Visual_DateType_Day": "Day",
 	"Visual_DateType_Week": "Week",
 	"Visual_DateType_Month": "Month",
-  	"Visual_DateType_Quarter": "Quarter",
+	"Visual_DateType_Quarter": "Quarter",
 	"Visual_DateType_Year": "Year",
 	"Visual_DateType_TodayColor": "Today Color",
 	"Visual_DateType_AxisColor": "Axis Color",
@@ -67,5 +67,10 @@
 	"Visual_DurationUnit_Hours": "Hours",
 	"Visual_DurationUnit_Minutes": "Minutes",
 	"Visual_DurationUnit_Seconds": "Seconds",
-	"Visual_DurationMinimum": "Duration min"
+	"Visual_DurationMinimum": "Duration min",
+	"Role_Parent": "Parent",
+	"Visual_SubTasks": "Sub tasks",
+	"Visual_InheritParentLegend": "Inherit parent legend",
+	"Visual_ParentDurationByChildren": "Parent duration by children",
+	"Visual_ParentCompletionByChildren": "Parent completion by children"
 }
