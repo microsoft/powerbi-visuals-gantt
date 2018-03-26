@@ -26,6 +26,9 @@
 
 module powerbi.extensibility.visual {
     import converterHelper = powerbi.extensibility.utils.dataview.converterHelper;
+    import ValueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
+
+    const extraInformationRole = "ExtraInformation";
 
     export class GanttColumns<T> {
 
@@ -50,11 +53,17 @@ module powerbi.extensibility.visual {
                   .concat(_.toArray(values))
                   .filter(x => x.source.roles && x.source.roles[i])
                   .forEach(x => {
-                     if (x.source.roles && x.source.roles["ExtraInformation"]) {
-                         if (!columns) {
-                             columns = {};
-                         }
-                         columns[x.source.displayName] = x.values;
+                     if (i === extraInformationRole &&  x.source.roles && x.source.roles[extraInformationRole]) {
+                        if (!columns) {
+                            columns = {};
+                        }
+
+                        if (x.source.format) {
+                            const formatter = ValueFormatter.create({ format: x.source.format });
+                            columns[x.source.displayName] = x.values.map(v => formatter.format(v));
+                        } else {
+                            columns[x.source.displayName] = x.values;
+                        }
                      } else {
                          columns = x.values;
                      }
