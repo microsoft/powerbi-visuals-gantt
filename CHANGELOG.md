@@ -1,3 +1,7 @@
+## 1.10.1
+* Added 'End date' field to tooltip
+* Fixed issue with date in extra information field
+* Fixed crush when one field in Task and Extra Information
 ## 1.10.0
 * UPD: powerbi-visuals-tools has been updated to 1.11.0 to support Bookmarks
 * UPD: API has been updated to 1.11.0 to support Bookmarks

@@ -380,6 +380,33 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            it("Verify tooltips have extra information (date type)", (done) => {
+                let host: IVisualHost = mocks.createVisualHost();
+                host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
+                let dateFormatter: IValueFormatter  = valueFormatter.create({format: null, cultureSelector: host.locale});
+
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration,
+                    GanttData.ColumnExtraInformationDates]);
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    for (let task of tasks) {
+                        for (let tooltipInfo of task.tooltipInfo) {
+                            if (tooltipInfo.displayName === GanttData.ColumnExtraInformation) {
+                                let value: VisualTooltipDataItem  = tooltipInfo.value;
+                                expect(value).toEqual(dateFormatter.format(task.start));
+                            }
+                        }
+                    }
+
+                    done();
+                });
+            });
+
+
             it("Verify tooltips have tooltips", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
                     GanttData.ColumnTask,
@@ -624,6 +651,30 @@ module powerbi.extensibility.visual.test {
                                 let value: VisualTooltipDataItem  = tooltipInfo.value;
 
                                 expect(value).toMatch(/([a-z].)\s{1}([0-9]{2}),([0-9]{0,4})/);
+                            }
+                        }
+                    }
+
+                    done();
+                });
+            });
+
+            it("Verify end date in tooltip", (done) => {
+                let host: IVisualHost = mocks.createVisualHost();
+                host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
+                let dateFormatter: IValueFormatter  = valueFormatter.create({format: null, cultureSelector: host.locale});
+
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration]);
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    for (let task of tasks) {
+                        for (let tooltipInfo of task.tooltipInfo) {
+                            if (tooltipInfo.displayName === "End Date") {
+                               expect(tooltipInfo.value).toBe(dateFormatter.format(task.end));
                             }
                         }
                     }

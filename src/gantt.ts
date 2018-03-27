@@ -574,6 +574,11 @@ module powerbi.extensibility.visual {
                     displayName: "Start Date",
                     value: formatters.startDateFormatter.format(task.start)
                 });
+
+                tooltipDataArray.push({
+                    displayName: "End Date",
+                    value: formatters.startDateFormatter.format(task.end)
+                });
             }
 
             tooltipDataArray.push({
@@ -596,9 +601,23 @@ module powerbi.extensibility.visual {
                 tooltipDataArray.push(...task.tooltipInfo);
             }
 
-            for (const key of Object.keys(task.extraInformation)) {
-                tooltipDataArray.push(task.extraInformation[key]);
-            }
+            task.extraInformation
+                .map(tooltip => {
+                    if (typeof tooltip.value === "string") {
+                        return tooltip;
+                    }
+
+                    const value: any = tooltip.value;
+
+                    if (isNaN(Date.parse(value)) || typeof value === "number") {
+                        tooltip.value = value.toString();
+                    } else {
+                        tooltip.value = formatters.startDateFormatter.format(value);
+                    }
+
+                    return tooltip;
+                })
+                .forEach(tooltip => tooltipDataArray.push(tooltip));
 
             return tooltipDataArray;
         }
