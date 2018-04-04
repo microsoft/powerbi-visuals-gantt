@@ -1,3 +1,7 @@
+## 1.11.0
+* Fixed issue with wrong tooltips
+* Fixed issue with strange category labels
+* Fixed issue with unsynchronized legend and task color
 ## 1.10.1
 * Added 'End date' field to tooltip
 * Fixed issue with date in extra information field

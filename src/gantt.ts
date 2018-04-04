@@ -553,7 +553,7 @@ module powerbi.extensibility.visual {
         * @param formatters Formatting options for gantt attributes.
         * @param durationUnit Duration unit option
         */
-        private static getTooltipInfo(
+        public static getTooltipInfo(
             task: Task,
             formatters: GanttChartFormatters,
             durationUnit: string): VisualTooltipDataItem[] {
@@ -618,6 +618,10 @@ module powerbi.extensibility.visual {
                     return tooltip;
                 })
                 .forEach(tooltip => tooltipDataArray.push(tooltip));
+
+            tooltipDataArray
+                .filter(x => x.value && typeof x.value !== "string")
+                .forEach(tooltip => tooltip.value = tooltip.value.toString());
 
             return tooltipDataArray;
         }
@@ -703,13 +707,11 @@ module powerbi.extensibility.visual {
                     let color: string = settings.taskConfig.fill;
 
                     if (!useDefaultColor) {
-                        color = (taskTypes.types.length <= 1)
-                            ? settings.taskConfig.fill
-                            : colorHelper.getColorForMeasure(typeMeta.columnGroup.objects, typeMeta.name);
+                        color = colorHelper.getColorForMeasure(typeMeta.columnGroup.objects, typeMeta.name);
                     }
 
                     return {
-                        label: typeMeta.name as string,
+                        label: typeMeta.name,
                         color: color,
                         icon: LegendIcon.Circle,
                         selected: false,
@@ -1205,6 +1207,11 @@ module powerbi.extensibility.visual {
                 : null;
 
             const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor);
+
+            // Remove empty legend if tasks isn't exist
+            const types = _.groupBy(tasks, x => x.taskType);
+            legendData.dataPoints = legendData.dataPoints.filter(x => types[x.label]);
+
             return {
                 dataView,
                 settings,
@@ -1297,6 +1304,26 @@ module powerbi.extensibility.visual {
                     break;
             }
         }
+        /**
+         * Delete parent group names from tasks if this parent tasks do not representated in dataset
+         * @param tasks
+         * @param task
+         */
+        public static deleteNonExistentParents(tasks: Task[], task: Task): Task {
+            const parentNames = task.parent.split(".").filter((name) => name !== task.name);
+            let taskNames = tasks.map((task) => task.name);
+            let newTaskParent = "";
+
+            parentNames.forEach((parentName) => {
+                if (taskNames.indexOf(parentName) !== -1) {
+                    newTaskParent += parentName + ".";
+                }
+            });
+            newTaskParent += task.name;
+            task.parent = newTaskParent;
+
+            return task;
+        }
 
         /**
         * Called on data change or resizing
@@ -1319,11 +1346,13 @@ module powerbi.extensibility.visual {
 
             this.renderLegend();
             this.updateChartSize();
-            let tasks: Task[] = this.viewModel.tasks
-                .filter((task: Task) => task.visibility)
+
+            const visibleTasks = this.viewModel.tasks
+                .filter((task: Task) => task.visibility);
+            const tasks: Task[] = visibleTasks
                 .map((task: Task, i: number) => {
                     task.id = i;
-                    return task;
+                    return Gantt.deleteNonExistentParents(visibleTasks, task);
                 });
 
             if (this.interactivityService) {
