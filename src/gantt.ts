@@ -120,7 +120,6 @@ module powerbi.extensibility.visual {
     const SecondsInADay: number = 60 * MinutesInADay;
     const SecondsInAHour: number = MinutesInAHour * SecondsInAMinute;
     const DefaultChartLineHeight = 40;
-    const stepDurationTransformationDefault = 2;
     const GanttDurationUnitType = [
         "second",
         "minute",
@@ -781,7 +780,7 @@ module powerbi.extensibility.visual {
                             duration = group.Duration.values[index] > settings.general.durationMin ? group.Duration.values[index] as number : settings.general.durationMin;
 
                             if (duration && duration % 1 !== 0) {
-                                durationUnit = Gantt.downgradeDurationUnit(durationUnit);
+                                durationUnit = Gantt.downgradeDurationUnit(durationUnit, duration);
                                 stepDurationTransformation =
                                     GanttDurationUnitType.indexOf(settings.general.durationUnit) - GanttDurationUnitType.indexOf(durationUnit);
 
@@ -997,17 +996,33 @@ module powerbi.extensibility.visual {
             return children;
         }
 
-        private static downgradeDurationUnit(durationUnit: string): string {
-            let durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
-            durationUnit = (durationUnitTypeIndex !== -1 && durationUnit) || "day";
-            // stepDurationTransformationDefault - variable for accuracy calculation of duration transformation
-            // if duration == 0.84 day, we need transform duration to minutes in order to get duration without extra loss
-            for (let i = stepDurationTransformationDefault; i > 0; i--) {
-                if (durationUnitTypeIndex - i > -1) {
-                    durationUnit = GanttDurationUnitType[durationUnitTypeIndex - i];
+        public static getNewUnitByFloorDurationFloor(durationUnitTypeIndex: number, duration: number): string {
+            if (!durationUnitTypeIndex)
+                return GanttDurationUnitType[0];
+
+            switch (durationUnitTypeIndex) {
+                case  GanttDurationUnitType.indexOf("day"):
+                    duration = duration * HoursInADay;
                     break;
-                }
+                case GanttDurationUnitType.indexOf("hour"):
+                    duration = duration * MinutesInAHour;
+                    break;
+                case GanttDurationUnitType.indexOf("minute"):
+                    duration = duration * SecondsInAMinute;
+                    break;
             }
+
+            if ((duration - Math.floor(duration) !== 0) && durationUnitTypeIndex > 1 ) {
+                return Gantt.getNewUnitByFloorDurationFloor(durationUnitTypeIndex - 1, duration);
+            } else {
+                return GanttDurationUnitType[durationUnitTypeIndex - 1];
+            }
+        }
+
+        private static downgradeDurationUnit(durationUnit: string, duration: number): string {
+            let durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
+            // if duration == 0.84 day, we need transform duration to minutes in order to get duration without extra loss
+            durationUnit = Gantt.getNewUnitByFloorDurationFloor(durationUnitTypeIndex, duration);
 
             return durationUnit;
         }
@@ -1051,8 +1066,8 @@ module powerbi.extensibility.visual {
                             : MinutesInAHour);
                     break;
                 case DurationUnits.Second:
-                    transformedDuration = duration * (stepDurationTransformation === 2
-                            ? SecondsInAHour
+                    transformedDuration = duration * (stepDurationTransformation === 3 ? SecondsInADay
+                         : stepDurationTransformation === 2 ? SecondsInAHour
                             : SecondsInAMinute);
                     break;
             }
@@ -1319,8 +1334,7 @@ module powerbi.extensibility.visual {
                     newTaskParent += parentName + ".";
                 }
             });
-            newTaskParent += task.name;
-            task.parent = newTaskParent;
+            task.parent = newTaskParent.slice(0, -1);
 
             return task;
         }
@@ -2087,7 +2101,7 @@ module powerbi.extensibility.visual {
             if (this.viewModel.settings.daysOff.show) {
                 let durationUnit: string = this.viewModel.settings.general.durationUnit;
                 if (task.wasDowngradeDurationUnit) {
-                    durationUnit = Gantt.downgradeDurationUnit(durationUnit);
+                    durationUnit = Gantt.downgradeDurationUnit(durationUnit, task.duration);
                 }
 
                 daysOffWidth = this.getDaysOffWidthForProgress(task, durationUnit);

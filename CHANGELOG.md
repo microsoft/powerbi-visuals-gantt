@@ -1,3 +1,6 @@
+## 1.11.1
+* Fixed issue with not showing values in some cases for day duration unit
+* Fixed issue with task name left alignment
 ## 1.11.0
 * Fixed issue with wrong tooltips
 * Fixed issue with strange category labels

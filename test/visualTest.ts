@@ -1196,10 +1196,48 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            describe("check duration unit downgrade", () => {
+                it("check for days downgrading", () => {
+                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                        data = unitMocks.days.data,
+                        expected = unitMocks.days.expected,
+                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+
+                        expect(realResult).toEqual(expected);
+                });
+
+                it("check for hours downgrading", () => {
+                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                        data = unitMocks.hours.data,
+                        expected = unitMocks.hours.expected,
+                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+
+                        expect(realResult).toEqual(expected);
+                });
+
+                it("check for minutes downgrading", () => {
+                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                        data = unitMocks.minutes.data,
+                        expected = unitMocks.minutes.expected,
+                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+
+                        expect(realResult).toEqual(expected);
+                });
+
+                it("check for hours downgrading", () => {
+                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                        data = unitMocks.seconds.data,
+                        expected = unitMocks.seconds.expected,
+                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+
+                        expect(realResult).toEqual(expected);
+                });
+            });
+
             describe("check not existent parent deletion from tasks", () => {
                 it("check on correct parent dataset", () => {
                     let taskMock = GanttBuilder.getTaskMockCommon(),
-                        data = GanttBuilder.getTasksMockData(taskMock, "taskWithCorrectParentsMock"),
+                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithCorrectParentsMock"),
                         expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithCorrectParentsMock"),
                         realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
 
@@ -1208,7 +1246,7 @@ module powerbi.extensibility.visual.test {
 
                 it("check on not existent parent dataset - parent.children", () => {
                     let taskMock = GanttBuilder.getTaskMockCommon(),
-                        data = GanttBuilder.getTasksMockData(taskMock, "taskWithNotExistentParentsMock"),
+                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithNotExistentParentsMock"),
                         expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithNotExistentParentsMock"),
                         realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
 
@@ -1218,7 +1256,7 @@ module powerbi.extensibility.visual.test {
                 it("check on not existent in the middle parent dataset", () => {
                     // parent.nonExistentParent.children -> parent.children
                     let taskMock = GanttBuilder.getTaskMockCommon(),
-                        data = GanttBuilder.getTasksMockData(taskMock, "taskWithNotExistentMiddleParentsMock"),
+                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithNotExistentMiddleParentsMock"),
                         expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithNotExistentMiddleParentsMock"),
                         realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
 
