@@ -157,7 +157,7 @@ module powerbi.extensibility.visual.test {
             return { solid: { color: color } };
         }
 
-        public static getTasksMockData(mockArray: object, mockCaseName: string): Task[] {
+        public static getTaskMockData(mockArray: object, mockCaseName: string): Task[] {
             return mockArray[mockCaseName]["data"];
         }
 
@@ -196,6 +196,56 @@ module powerbi.extensibility.visual.test {
             return result;
         }
 
+        public static getDowngradeDurationUnitMocks() {
+            const GanttDurationUnitType = [
+                "second",
+                "minute",
+                "hour",
+                "day",
+            ];
+
+            let downgradeDurationUnitMock = {
+                days: {
+                    "data": [
+                        {"unit": GanttDurationUnitType.indexOf("day"), "duration": 1.5},
+                        {"unit": GanttDurationUnitType.indexOf("day"), "duration": 0.84}
+                    ],
+                    "expected": [
+                        "hour",
+                        "second"
+                    ]
+                },
+                hours: {
+                    "data": [
+                        {"unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.05},
+                        {"unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.005}
+                    ],
+                    "expected": [
+                        "minute",
+                        "second"
+                    ]
+                },
+                minutes: {
+                    "data": [
+                        {"unit": GanttDurationUnitType.indexOf("minute"), "duration": 0.01}
+                    ],
+                    "expected": [
+                        "second"
+                    ]
+                },
+                seconds: {
+                    "data": [
+                        {"unit": GanttDurationUnitType.indexOf("second"), "duration": 0.5}
+                    ],
+                    "expected": [
+                        "second"
+                    ]
+                }
+            };
+
+            return downgradeDurationUnitMock;
+        }
+
         public static getTaskMockCommon() {
             let taskMock = {
                 taskWithCorrectParentsMock: {
@@ -205,9 +255,9 @@ module powerbi.extensibility.visual.test {
                         {id: 3, name: "T2", parent: "Group C.T2", children: []}
                     ]),
                     "expected" : GanttBuilder.generateMocksCase([
-                        {id: 1, name: "T1", parent: "T1", children: []},
-                        {id: 2, name: "Group C", parent: "Group C", children: ["T2"]},
-                        {id: 3, name: "T2", parent: "Group C.T2", children: []}
+                        {id: 1, name: "T1", parent: "", children: []},
+                        {id: 2, name: "Group C", parent: "", children: ["T2"]},
+                        {id: 3, name: "T2", parent: "Group C", children: []}
                     ])
                 },
                 taskWithNotExistentParentsMock: {
@@ -218,10 +268,10 @@ module powerbi.extensibility.visual.test {
                         {id: 4, name: "T3", parent: "Group B.T3", children: []}
                     ]),
                     "expected" : GanttBuilder.generateMocksCase([
-                        {id: 1, name: "T1", parent: "T1", children: []},
-                        {id: 2, name: "Group C", parent: "Group C", children: []},
-                        {id: 3, name: "T2", parent: "T2", children: []},
-                        {id: 4, name: "T3", parent: "T3", children: []}
+                        {id: 1, name: "T1", parent: "", children: []},
+                        {id: 2, name: "Group C", parent: "", children: []},
+                        {id: 3, name: "T2", parent: "", children: []},
+                        {id: 4, name: "T3", parent: "", children: []}
                     ])
                 },
                 taskWithNotExistentMiddleParentsMock: {
@@ -231,9 +281,9 @@ module powerbi.extensibility.visual.test {
                         {id: 3, name: "T2", parent: "Group C.Group M.T2", children: []}
                     ]),
                     "expected" : GanttBuilder.generateMocksCase([
-                        {id: 1, name: "T1", parent: "T1", children: []},
-                        {id: 2, name: "Group C", parent: "Group C", children: ["T2"]},
-                        {id: 3, name: "T2", parent: "Group C.T2", children: []}
+                        {id: 1, name: "T1", parent: "", children: []},
+                        {id: 2, name: "Group C", parent: "", children: ["T2"]},
+                        {id: 3, name: "T2", parent: "Group C", children: []}
                     ])
                 }
             };
