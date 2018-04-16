@@ -424,8 +424,9 @@ module powerbi.extensibility.visual.test {
                     startDateFormatter: jasmine.createSpyObj("startDateFormatter", ["format"]),
                     completionFormatter: jasmine.createSpyObj("completionFormatter", ["format"])
                 };
+                const localizationManager = visualBuilder.visualHost.createLocalizationManager();
 
-                const tooltips = VisualClass.getTooltipInfo(task, formatters, durationUnit);
+                const tooltips = VisualClass.getTooltipInfo(task, formatters, durationUnit, localizationManager);
                 tooltips
                     .filter(t => t.value !== null && t.value !== undefined)
                     .forEach(t => {

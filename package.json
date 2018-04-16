@@ -59,8 +59,8 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript-preprocessor": "0.3.1",
     "powerbi-models": "^1.0.2",
-    "powerbi-visuals-tools": "1.11.0",
-    "powerbi-visuals-utils-testutils": "1.2.0",
+    "powerbi-visuals-tools": "1.11.2",
+    "powerbi-visuals-utils-testutils": "1.2.1",
     "tslint": "4.5.1",
     "tslint-microsoft-contrib": "4.0.1",
     "typescript": "2.1.4"
