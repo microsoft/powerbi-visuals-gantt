@@ -384,6 +384,7 @@
             "displayName": "Legend",
             "displayNameKey": "Visual_Legend",
             "description": "Display legend options",
+            "descriptionKey": "Visual_Description_Legend",
             "properties": {
                 "show": {
                     "displayName": "Show",
@@ -396,6 +397,7 @@
                     "displayName": "Position",
                     "displayNameKey": "Visual_Position",
                     "description": "Select the location for the legend",
+                    "descriptionKey": "Visual_Description_Position",
                     "type": {
                         "enumeration": [
                             {
@@ -445,6 +447,7 @@
                     "displayName": "Title",
                     "displayNameKey": "Visual_Title",
                     "description": "Display a title for legend symbols",
+                    "descriptionKey": "Visual_Description_Title",
                     "type": {
                         "bool": true
                     }
@@ -453,6 +456,7 @@
                     "displayName": "Legend Name",
                     "displayNameKey": "Visual_LegendName",
                     "description": "Title text",
+                    "descriptionKey": "Visual_Description_LegendName",
                     "type": {
                         "text": true
                     },
@@ -574,6 +578,7 @@
                     "displayName": "Task color",
                     "displayNameKey": "Visual_TaskSettings_Color",
                     "description": "This ONLY takes effect when you have no legend specified",
+                    "descriptionKey": "Visual_Description_TaskSettings_Color",
                     "type": {
                         "fill": {
                             "solid": {
