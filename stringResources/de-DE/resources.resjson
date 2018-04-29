@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Erster Tag der Woche",
 	"Visual_FullText": "Volltext",
 	"Visual_WidthByTask": "Breite nach Aufgabe",
-	"Role_Tooltips": "QuickInfos"
+	"Role_Tooltips": "QuickInfos",
+	"Role_EndDate": "Enddatum",
+	"Role_Parent": "Übergeordnetes Element",
+	"Visual_SubTasks": "Unteraufgaben",
+	"Visual_InheritParentLegend": "Übergeordnete Legende erben",
+	"Visual_ParentDurationByChildren": "Dauer für übergeordnetes Element nach untergeordnetem Element",
+	"Visual_ParentCompletionByChildren": "Abschluss für übergeordnetes Element nach untergeordnetem Element",
+	"Visual_Description_Legend": "Legendenoptionen anzeigen",
+	"Visual_Description_Position": "Speicherort für die Legende auswählen",
+	"Visual_Description_Title": "Titel für Legendensymbole anzeigen",
+	"Visual_Description_LegendName": "Titeltext",
+	"Visual_Description_TaskSettings_Color": "Wird NUR DANN angewendet, wenn keine Legende angegeben ist.",
+	"Visual_Label_Today": "Heute",
+	"Visual_Label_Now": "Jetzt"
 }

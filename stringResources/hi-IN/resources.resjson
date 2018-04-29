@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "सप्ताह का पहला दिन",
 	"Visual_FullText": "पूर्ण पाठ",
 	"Visual_WidthByTask": "कार्य द्वारा चौड़ाई",
-	"Role_Tooltips": "टूलटिप"
+	"Role_Tooltips": "टूलटिप",
+	"Role_EndDate": "समाप्ति दिनांक",
+	"Role_Parent": "पेरेंट",
+	"Visual_SubTasks": "उप-कार्य",
+	"Visual_InheritParentLegend": "पैरेंट लेजंड प्राप्त करें",
+	"Visual_ParentDurationByChildren": "संतानों द्वारा पैरेंट ड्यूरेशन",
+	"Visual_ParentCompletionByChildren": "संतानों द्वारा पैरेंट कम्प्लीशन",
+	"Visual_Description_Legend": "लेजेंड विकल्प प्रदर्शित करें",
+	"Visual_Description_Position": "लेजेंड के लिए स्थान चुनें",
+	"Visual_Description_Title": "लेजेंड चिह्नों के लिए कोई शीर्षक प्रदर्शित करें",
+	"Visual_Description_LegendName": "शीर्षक पाठ",
+	"Visual_Description_TaskSettings_Color": "आपके द्वारा कोई लेजंड निर्दिष्ट न किए जाने की सूरत में ही यह प्रभावी होता है",
+	"Visual_Label_Today": "आज",
+	"Visual_Label_Now": "अभी"
 }

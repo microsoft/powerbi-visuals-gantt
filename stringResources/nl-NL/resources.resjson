@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Eerste dag van de week",
 	"Visual_FullText": "Volledige tekst",
 	"Visual_WidthByTask": "Breedte op taak",
-	"Role_Tooltips": "Tooltips"
+	"Role_Tooltips": "Tooltips",
+	"Role_EndDate": "Einddatum",
+	"Role_Parent": "Bovenliggend item",
+	"Visual_SubTasks": "Subtaken",
+	"Visual_InheritParentLegend": "Bovenliggende legenda overnemen",
+	"Visual_ParentDurationByChildren": "Duur van de bovenliggende item door onderliggende items",
+	"Visual_ParentCompletionByChildren": "Bovenliggend item voltooien met onderliggende items",
+	"Visual_Description_Legend": "Legendaopties weergeven",
+	"Visual_Description_Position": "De locatie voor de legenda selecteren",
+	"Visual_Description_Title": "Een titel voor legendasymbolen weergeven",
+	"Visual_Description_LegendName": "Titeltekst",
+	"Visual_Description_TaskSettings_Color": "Dit wordt ALLEEN uitgevoerd als er geen legenda is opgegeven",
+	"Visual_Label_Today": "Vandaag",
+	"Visual_Label_Now": "Nu"
 }

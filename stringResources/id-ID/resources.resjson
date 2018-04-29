@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Hari pertama dalam sepekan",
 	"Visual_FullText": "Teks penuh",
 	"Visual_WidthByTask": "Lebar berdasarkan tugas",
-	"Role_Tooltips": "Tip-alat"
+	"Role_Tooltips": "Tip-alat",
+	"Role_EndDate": "Tanggal Berakhir",
+	"Role_Parent": "Induk",
+	"Visual_SubTasks": "Sub tugas",
+	"Visual_InheritParentLegend": "Dapatkan legenda induk",
+	"Visual_ParentDurationByChildren": "Durasi induk berdasarkan anak",
+	"Visual_ParentCompletionByChildren": "Penyelesaian induk berdasarkan anak",
+	"Visual_Description_Legend": "Tampilkan opsi legenda",
+	"Visual_Description_Position": "Pilih lokasi untuk legenda",
+	"Visual_Description_Title": "Tampilkan judul untuk simbol legenda",
+	"Visual_Description_LegendName": "Teks judul",
+	"Visual_Description_TaskSettings_Color": "Ini HANYA berlaku ketika Anda tidak memiliki legenda tertentu",
+	"Visual_Label_Today": "Hari Ini",
+	"Visual_Label_Now": "Sekarang"
 }

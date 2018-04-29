@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "A hét első napja",
 	"Visual_FullText": "Teljes szöveg",
 	"Visual_WidthByTask": "Szélesség feladatonként",
-	"Role_Tooltips": "Elemleírások"
+	"Role_Tooltips": "Elemleírások",
+	"Role_EndDate": "Záró dátum",
+	"Role_Parent": "Szülő",
+	"Visual_SubTasks": "Részfeladatok",
+	"Visual_InheritParentLegend": "Szülő jelmagyarázat öröklése",
+	"Visual_ParentDurationByChildren": "Szülő időtartama gyermekenként",
+	"Visual_ParentCompletionByChildren": "Szülő befejezése gyermekenként",
+	"Visual_Description_Legend": "Jelmagyarázati beállítások megjelenítése",
+	"Visual_Description_Position": "A jelmagyarázat helyének kiválasztása",
+	"Visual_Description_Title": "Cím megjelenítése a jelmagyarázat szimbólumaihoz",
+	"Visual_Description_LegendName": "Cím szövege",
+	"Visual_Description_TaskSettings_Color": "Ez CSAKIS akkor lép érvénybe, ha nincs megadva jelmagyarázat",
+	"Visual_Label_Today": "Ma",
+	"Visual_Label_Now": "Most"
 }

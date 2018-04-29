@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "시작 요일",
 	"Visual_FullText": "전체 텍스트",
 	"Visual_WidthByTask": "작업별 너비",
-	"Role_Tooltips": "도구 설명"
+	"Role_Tooltips": "도구 설명",
+	"Role_EndDate": "종료 날짜",
+	"Role_Parent": "부모",
+	"Visual_SubTasks": "하위 작업",
+	"Visual_InheritParentLegend": "부모 범례 상속",
+	"Visual_ParentDurationByChildren": "자식 요소별 부모 기간",
+	"Visual_ParentCompletionByChildren": "자식 요소별 부모 완료",
+	"Visual_Description_Legend": "범례 표시 옵션",
+	"Visual_Description_Position": "범례의 위치 선택",
+	"Visual_Description_Title": "범례 기호에 대한 제목 표시",
+	"Visual_Description_LegendName": "제목 텍스트",
+	"Visual_Description_TaskSettings_Color": "지정된 범례가 없을 때만 적용됩니다.",
+	"Visual_Label_Today": "오늘",
+	"Visual_Label_Now": "지금"
 }

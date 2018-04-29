@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "أول يوم في الأسبوع",
 	"Visual_FullText": "النص بالكامل",
 	"Visual_WidthByTask": "العرض حسب المهمة",
-	"Role_Tooltips": "تلميحات الأداة"
+	"Role_Tooltips": "تلميحات الأداة",
+	"Role_EndDate": "تاريخ الانتهاء",
+	"Role_Parent": "الأصل",
+	"Visual_SubTasks": "المهام الفرعية",
+	"Visual_InheritParentLegend": "وراثة وسيلة الإيضاح الأصل",
+	"Visual_ParentDurationByChildren": "مدة الأصل حسب التابع",
+	"Visual_ParentCompletionByChildren": "إكمال الأصل حسب التابع",
+	"Visual_Description_Legend": "عرض خيارات وسيلة الإيضاح",
+	"Visual_Description_Position": "تحديد موقع وسيلة الإيضاح",
+	"Visual_Description_Title": "عرض عنوان لرموز وسيلة الإيضاح",
+	"Visual_Description_LegendName": "نص العنوان",
+	"Visual_Description_TaskSettings_Color": "لا يسري هذا إلا عند عدم تحديد وسيلة إيضاح",
+	"Visual_Label_Today": "‏‏اليوم",
+	"Visual_Label_Now": "الآن"
 }

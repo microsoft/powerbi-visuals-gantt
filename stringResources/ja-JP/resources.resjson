@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "週の最初の曜日",
 	"Visual_FullText": "フルテキスト",
 	"Visual_WidthByTask": "タスクにより幅を決定",
-	"Role_Tooltips": "ヒント"
+	"Role_Tooltips": "ヒント",
+	"Role_EndDate": "終了日",
+	"Role_Parent": "親",
+	"Visual_SubTasks": "サブタスク",
+	"Visual_InheritParentLegend": "親の凡例を継承",
+	"Visual_ParentDurationByChildren": "子ごとの親の期間",
+	"Visual_ParentCompletionByChildren": "子ごとの親の完了",
+	"Visual_Description_Legend": "凡例オプションの表示",
+	"Visual_Description_Position": "凡例の場所を選ぶ",
+	"Visual_Description_Title": "凡例シンボルのタイトルを表示する",
+	"Visual_Description_LegendName": "タイトルのテキスト",
+	"Visual_Description_TaskSettings_Color": "効果があるのは、凡例を指定していない場合のみです",
+	"Visual_Label_Today": "今日",
+	"Visual_Label_Now": "現在"
 }

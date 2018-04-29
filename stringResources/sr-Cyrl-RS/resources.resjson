@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Први дан у седмици",
 	"Visual_FullText": "Комплетан текст",
 	"Visual_WidthByTask": "Ширина по задатку",
-	"Role_Tooltips": "Описи алатки"
+	"Role_Tooltips": "Описи алатки",
+	"Role_EndDate": "Датум завршетка",
+	"Role_Parent": "Надређена",
+	"Visual_SubTasks": "Подзадаци",
+	"Visual_InheritParentLegend": "Наследи надређену легенду",
+	"Visual_ParentDurationByChildren": "Трајање надрeћених по подређеним ставкама",
+	"Visual_ParentCompletionByChildren": "Довршавање надређених од стране подређених ставки",
+	"Visual_Description_Legend": "Прикажи опције легенде",
+	"Visual_Description_Position": "Изаберите локацију легенде",
+	"Visual_Description_Title": "Прикажи наслов за симболе легенде",
+	"Visual_Description_LegendName": "Текст наслова",
+	"Visual_Description_TaskSettings_Color": "Ово ступа на снагу САМО кад немате наведене легенде",
+	"Visual_Label_Today": "Данас",
+	"Visual_Label_Now": "Одмах"
 }

@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Pirmā nedēļas diena",
 	"Visual_FullText": "Pilnteksts",
 	"Visual_WidthByTask": "Platums pēc uzdevuma",
-	"Role_Tooltips": "Rīku padomi"
+	"Role_Tooltips": "Rīku padomi",
+	"Role_EndDate": "Beigu datums",
+	"Role_Parent": "Vecākelements",
+	"Visual_SubTasks": "Apakšuzdevumi",
+	"Visual_InheritParentLegend": "Pārmantot vecākelementa apzīmējumus",
+	"Visual_ParentDurationByChildren": "Vecākelementu ilgums pa bērnelementiem",
+	"Visual_ParentCompletionByChildren": "Vecākelementu pabeigšana pa bērnelementiem",
+	"Visual_Description_Legend": "Rādīt apzīmējumu opcijas",
+	"Visual_Description_Position": "Atlasīt apzīmējumu atrašanās vietu",
+	"Visual_Description_Title": "Rādīt apzīmējumu simbolu nosaukumu",
+	"Visual_Description_LegendName": "Virsraksta teksts",
+	"Visual_Description_TaskSettings_Color": "Šis iestatījums stājas spēkā TIKAI tad, ja nav norādīti apzīmējumi",
+	"Visual_Label_Today": "Šodien",
+	"Visual_Label_Now": "Tagad"
 }

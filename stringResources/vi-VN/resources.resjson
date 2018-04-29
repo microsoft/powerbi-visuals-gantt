@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Ngày đầu tuần",
 	"Visual_FullText": "Văn bản đầy đủ",
 	"Visual_WidthByTask": "Chiều rộng theo công việc",
-	"Role_Tooltips": "Chú giải công cụ"
+	"Role_Tooltips": "Chú giải công cụ",
+	"Role_EndDate": "Ngày Kết thúc",
+	"Role_Parent": "Cha mẹ",
+	"Visual_SubTasks": "Công việc phụ",
+	"Visual_InheritParentLegend": "Kế thừa chú giải chính",
+	"Visual_ParentDurationByChildren": "Thời lượng của chú giải chính theo chú giải phụ",
+	"Visual_ParentCompletionByChildren": "Hoàn thành chú giải chính theo chú giải phụ",
+	"Visual_Description_Legend": "Hiển thị tùy chọn chú giải",
+	"Visual_Description_Position": "Chọn vị trí cho chú giải",
+	"Visual_Description_Title": "Hiển thị tiêu đề cho biểu tượng chú giải",
+	"Visual_Description_LegendName": "Văn bản tiêu đề",
+	"Visual_Description_TaskSettings_Color": "Điều này CHỈ có hiệu lực khi bạn không chỉ định chú giải nào",
+	"Visual_Label_Today": "Hôm nay",
+	"Visual_Label_Now": "Bây giờ"
 }

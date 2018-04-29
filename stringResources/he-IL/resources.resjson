@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "היום הראשון בשבוע",
 	"Visual_FullText": "טקסט מלא",
 	"Visual_WidthByTask": "רוחב לפי משימה",
-	"Role_Tooltips": "תיאורי כלים"
+	"Role_Tooltips": "תיאורי כלים",
+	"Role_EndDate": "תאריך סיום",
+	"Role_Parent": "אב",
+	"Visual_SubTasks": "משימות משנה",
+	"Visual_InheritParentLegend": "קבל בירושה מקרא של אב",
+	"Visual_ParentDurationByChildren": "משך של האב לפי צאצאים",
+	"Visual_ParentCompletionByChildren": "השלמה של האב לפי צאצאים",
+	"Visual_Description_Legend": "הצג אפשרויות מקרא",
+	"Visual_Description_Position": "בחר את המיקום עבור המקרא",
+	"Visual_Description_Title": "הצג כותרת לסימני המקרא",
+	"Visual_Description_LegendName": "טקסט כותרת",
+	"Visual_Description_TaskSettings_Color": "פעולה זו תיכנס לתוקף רק כאשר לא צוין מקרא",
+	"Visual_Label_Today": "‏‏היום",
+	"Visual_Label_Now": "כעת"
 }

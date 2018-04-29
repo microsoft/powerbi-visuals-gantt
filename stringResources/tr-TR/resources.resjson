@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Haftanın ilk günü",
 	"Visual_FullText": "Tam metin",
 	"Visual_WidthByTask": "Göreve göre genişlik",
-	"Role_Tooltips": "Araç İpuçları"
+	"Role_Tooltips": "Araç İpuçları",
+	"Role_EndDate": "Bitiş Tarihi",
+	"Role_Parent": "Üst",
+	"Visual_SubTasks": "Alt görevler",
+	"Visual_InheritParentLegend": "Üst göstergeyi devral",
+	"Visual_ParentDurationByChildren": "Alt öğeler tarafından üst süresi",
+	"Visual_ParentCompletionByChildren": "Alt öğeler tarafından üst tamamlama",
+	"Visual_Description_Legend": "Gösterge seçeneklerini görüntüle",
+	"Visual_Description_Position": "Gösterge konumunu seçin",
+	"Visual_Description_Title": "Gösterge sembolleri için bir başlık görüntüleyin",
+	"Visual_Description_LegendName": "Başlık metni",
+	"Visual_Description_TaskSettings_Color": "Bu YALNIZCA bir gösterge belirtmediğinizde devreye girer",
+	"Visual_Label_Today": "Bugün",
+	"Visual_Label_Now": "Şimdi"
 }

@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Asteko lehen eguna",
 	"Visual_FullText": "Testu osoa",
 	"Visual_WidthByTask": "Zeregin bakoitzaren zabalera",
-	"Role_Tooltips": "Argibideak"
+	"Role_Tooltips": "Argibideak",
+	"Role_EndDate": "Amaiera-data",
+	"Role_Parent": "Nagusia",
+	"Visual_SubTasks": "Azpizereginak",
+	"Visual_InheritParentLegend": "Heredatu legenda nagusia",
+	"Visual_ParentDurationByChildren": "Elementu nagusiaren iraupena, bigarren mailakoen arabera",
+	"Visual_ParentCompletionByChildren": "Elementu nagusiak osatzea, bigarren mailakoen arabera",
+	"Visual_Description_Legend": "Bistaratu legendaren aukerak",
+	"Visual_Description_Position": "Hautatu legendaren kokalekua",
+	"Visual_Description_Title": "Bistaratu legendaren ikurren izena",
+	"Visual_Description_LegendName": "Izenaren testua",
+	"Visual_Description_TaskSettings_Color": "Legendarik zehaztu ez baduzu SOILIK aplikatzen da hau",
+	"Visual_Label_Today": "Gaur",
+	"Visual_Label_Now": "Orain,"
 }

@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Πρώτη ημέρα της εβδομάδας",
 	"Visual_FullText": "Πλήρες κείμενο",
 	"Visual_WidthByTask": "Πλάτος κατά εργασία",
-	"Role_Tooltips": "Συμβουλές εργαλείων"
+	"Role_Tooltips": "Συμβουλές εργαλείων",
+	"Role_EndDate": "Ημερομηνία λήξης",
+	"Role_Parent": "Γονικό",
+	"Visual_SubTasks": "Δευτερεύουσες εργασίες",
+	"Visual_InheritParentLegend": "Μεταβίβαση γονικού υπομνήματος",
+	"Visual_ParentDurationByChildren": "Διάρκεια γονικού στοιχείου με βάση τα θυγατρικά στοιχεία",
+	"Visual_ParentCompletionByChildren": "Συμπλήρωση γονικού στοιχείου με βάση τα θυγατρικά στοιχεία",
+	"Visual_Description_Legend": "Εμφάνιση επιλογών υπομνήματος",
+	"Visual_Description_Position": "Επιλογή θέσης υπομνήματος",
+	"Visual_Description_Title": "Εμφάνιση τίτλου για σύμβολα υπομνήματος",
+	"Visual_Description_LegendName": "Κείμενο τίτλου",
+	"Visual_Description_TaskSettings_Color": "Ισχύει ΜΟΝΟ όταν δεν έχει καθοριστεί υπόμνημα",
+	"Visual_Label_Today": "Σήμερα",
+	"Visual_Label_Now": "Τώρα"
 }

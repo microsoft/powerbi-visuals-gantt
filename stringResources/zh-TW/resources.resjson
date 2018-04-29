@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "每週第一天",
 	"Visual_FullText": "全文檢索",
 	"Visual_WidthByTask": "以工作為準的寬度",
-	"Role_Tooltips": "工具提示"
+	"Role_Tooltips": "工具提示",
+	"Role_EndDate": "結束日期",
+	"Role_Parent": "父代",
+	"Visual_SubTasks": "子工作",
+	"Visual_InheritParentLegend": "繼承父圖例",
+	"Visual_ParentDurationByChildren": "子系的父系持續時間",
+	"Visual_ParentCompletionByChildren": "子系已完成了父系",
+	"Visual_Description_Legend": "顯示圖例選項",
+	"Visual_Description_Position": "選取圖例的位置",
+	"Visual_Description_Title": "顯示圖例符號的標題",
+	"Visual_Description_LegendName": "標題文字",
+	"Visual_Description_TaskSettings_Color": "只有在未指定圖例時，這才會生效",
+	"Visual_Label_Today": "今日",
+	"Visual_Label_Now": "現在"
 }

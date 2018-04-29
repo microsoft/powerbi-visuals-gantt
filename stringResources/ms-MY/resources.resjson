@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Hari pertama dalam minggu",
 	"Visual_FullText": "Teks penuh",
 	"Visual_WidthByTask": "Lebar mengikut tugas",
-	"Role_Tooltips": "Petua alat"
+	"Role_Tooltips": "Petua alat",
+	"Role_EndDate": "Tarikh Tamat",
+	"Role_Parent": "Induk",
+	"Visual_SubTasks": "Subtugasan",
+	"Visual_InheritParentLegend": "Warisi petunjuk ibu bapa",
+	"Visual_ParentDurationByChildren": "Tempoh ibu bapa mengikut anak",
+	"Visual_ParentCompletionByChildren": "Pelengkapan ibu bapa mengikut anak",
+	"Visual_Description_Legend": "Paparkan opsyen penunjuk",
+	"Visual_Description_Position": "Pilih lokasi untuk penunjuk",
+	"Visual_Description_Title": "Paparkan tajuk untuk simbol penunjuk",
+	"Visual_Description_LegendName": "Teks tajuk",
+	"Visual_Description_TaskSettings_Color": "Ini berkesan HANYA apabila tiada petunjuk ditentukan",
+	"Visual_Label_Today": "Hari Ini",
+	"Visual_Label_Now": "Sekarang"
 }

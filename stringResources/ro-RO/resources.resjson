@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Prima zi a săptămânii",
 	"Visual_FullText": "Text complet",
 	"Visual_WidthByTask": "Lățimea după activitate",
-	"Role_Tooltips": "Sfaturi ecran"
+	"Role_Tooltips": "Sfaturi ecran",
+	"Role_EndDate": "Dată de sfârșit",
+	"Role_Parent": "Părinte",
+	"Visual_SubTasks": "Subactivități",
+	"Visual_InheritParentLegend": "Se moștenește legenda părinte",
+	"Visual_ParentDurationByChildren": "Durata elementelor principale după elementele secundare",
+	"Visual_ParentCompletionByChildren": "Finalizarea elementelor principale după elementele secundare",
+	"Visual_Description_Legend": "Afișați opțiunile pentru legendă",
+	"Visual_Description_Position": "Selectați locația pentru legendă",
+	"Visual_Description_Title": "Afișați un titlu pentru simbolurile legendei",
+	"Visual_Description_LegendName": "Text titlu",
+	"Visual_Description_TaskSettings_Color": "Acest lucru intră în vigoare DOAR atunci când nu aveți nicio legendă specificată",
+	"Visual_Label_Today": "Azi",
+	"Visual_Label_Now": "Acum"
 }

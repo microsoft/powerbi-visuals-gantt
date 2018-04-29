@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Nädala esimene päev",
 	"Visual_FullText": "Terviktekst",
 	"Visual_WidthByTask": "Laius ülesande järgi",
-	"Role_Tooltips": "Kohtspikrid"
+	"Role_Tooltips": "Kohtspikrid",
+	"Role_EndDate": "Lõppkuupäev",
+	"Role_Parent": "Ema",
+	"Visual_SubTasks": "Alamülesanded",
+	"Visual_InheritParentLegend": "Tuleta vanemlegend",
+	"Visual_ParentDurationByChildren": "Vanema tütarelementide poolne kestus",
+	"Visual_ParentCompletionByChildren": "Vanema tütarelementide poolne lõpuleviimine",
+	"Visual_Description_Legend": "Kuva legendi valikud",
+	"Visual_Description_Position": "Valige legendi asukoht",
+	"Visual_Description_Title": "Kuva legendi sümbolite pealkiri",
+	"Visual_Description_LegendName": "Pealkirja tekst",
+	"Visual_Description_TaskSettings_Color": "See jõustub AINULT siis, kui te pole legendi määranud",
+	"Visual_Label_Today": "Täna",
+	"Visual_Label_Now": "Praegu"
 }

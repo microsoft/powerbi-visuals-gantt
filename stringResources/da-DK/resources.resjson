@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Første dag i ugen",
 	"Visual_FullText": "Fuld tekst",
 	"Visual_WidthByTask": "Opgaver efter bredde",
-	"Role_Tooltips": "Værktøjstip"
+	"Role_Tooltips": "Værktøjstip",
+	"Role_EndDate": "Slutdato",
+	"Role_Parent": "Overordnet",
+	"Visual_SubTasks": "Underordnede opgaver",
+	"Visual_InheritParentLegend": "Overtag overordnet forklaring",
+	"Visual_ParentDurationByChildren": "Overordnet varighed af underordnede elementer",
+	"Visual_ParentCompletionByChildren": "Overordnet fuldførelse af underordnede elementer",
+	"Visual_Description_Legend": "Vis indstillinger for forklaring",
+	"Visual_Description_Position": "Vælg placering af forklaring",
+	"Visual_Description_Title": "Vis en titel på forklaringssymbolerne",
+	"Visual_Description_LegendName": "Titeltekst",
+	"Visual_Description_TaskSettings_Color": "Dette træder først i kraft, når du ikke har en angivet forklaring",
+	"Visual_Label_Today": "I dag",
+	"Visual_Label_Now": "Nu"
 }

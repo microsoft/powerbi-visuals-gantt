@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Primer día de la semana",
 	"Visual_FullText": "Texto completo",
 	"Visual_WidthByTask": "Ancho por tarea",
-	"Role_Tooltips": "Información sobre herramientas"
+	"Role_Tooltips": "Información sobre herramientas",
+	"Role_EndDate": "Fecha de finalización",
+	"Role_Parent": "Primario",
+	"Visual_SubTasks": "Subtareas",
+	"Visual_InheritParentLegend": "Heredar leyenda del elemento primario",
+	"Visual_ParentDurationByChildren": "Duración del elemento primario según los secundarios",
+	"Visual_ParentCompletionByChildren": "Finalización del elemento primario según los secundarios",
+	"Visual_Description_Legend": "Mostrar opciones de leyenda",
+	"Visual_Description_Position": "Seleccionar ubicación para la leyenda",
+	"Visual_Description_Title": "Mostrar un título para los símbolos de leyenda",
+	"Visual_Description_LegendName": "Texto del título",
+	"Visual_Description_TaskSettings_Color": "Esto SOLO se aplica cuando no se especifica ninguna leyenda",
+	"Visual_Label_Today": "Hoy",
+	"Visual_Label_Now": "Ahora"
 }

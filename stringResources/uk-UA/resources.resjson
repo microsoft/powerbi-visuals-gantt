@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Перший день тижня",
 	"Visual_FullText": "Повний текст",
 	"Visual_WidthByTask": "Ширина за завданням",
-	"Role_Tooltips": "Підказки"
+	"Role_Tooltips": "Підказки",
+	"Role_EndDate": "Дата завершення",
+	"Role_Parent": "Батьківський елемент",
+	"Visual_SubTasks": "Підзавдання",
+	"Visual_InheritParentLegend": "Успадкувати легенду батьківського елемента",
+	"Visual_ParentDurationByChildren": "Тривалість батьківського елемента за дочірніми елементами",
+	"Visual_ParentCompletionByChildren": "Завершення батьківського елемента за дочірніми елементами",
+	"Visual_Description_Legend": "Показати варіанти легенди",
+	"Visual_Description_Position": "Виберіть розташування для легенди",
+	"Visual_Description_Title": "Показати назву для символів легенди",
+	"Visual_Description_LegendName": "Текст назви",
+	"Visual_Description_TaskSettings_Color": "Набирає сили, ТІЛЬКИ якщо не вказано легенду",
+	"Visual_Label_Today": "Сьогодні",
+	"Visual_Label_Now": "Зараз"
 }

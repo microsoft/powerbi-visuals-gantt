@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Primeiro día da semana",
 	"Visual_FullText": "Texto completo",
 	"Visual_WidthByTask": "Largura por tarefa",
-	"Role_Tooltips": "Información sobre ferramentas"
+	"Role_Tooltips": "Información sobre ferramentas",
+	"Role_EndDate": "Data de finalización",
+	"Role_Parent": "Primaria",
+	"Visual_SubTasks": "Subtarefas",
+	"Visual_InheritParentLegend": "Herdar lenda do obxecto principal",
+	"Visual_ParentDurationByChildren": "Duración do elemento principal segundo os secundarios",
+	"Visual_ParentCompletionByChildren": "Finalización do elemento principais segundo os secundarios",
+	"Visual_Description_Legend": "Mostrar opcións de lendas",
+	"Visual_Description_Position": "Seleccionar a localización para a lenda",
+	"Visual_Description_Title": "Mostrar un título para símbolos da lenda",
+	"Visual_Description_LegendName": "Texto do título",
+	"Visual_Description_TaskSettings_Color": "Isto SÓ se aplica cando non se especifica ningunha lenda",
+	"Visual_Label_Today": "Hoxe",
+	"Visual_Label_Now": "Agora"
 }

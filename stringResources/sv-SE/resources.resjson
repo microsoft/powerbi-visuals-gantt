@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Första dagen i veckan",
 	"Visual_FullText": "Fulltext",
 	"Visual_WidthByTask": "Bredd efter uppgift",
-	"Role_Tooltips": "Knappbeskrivningar"
+	"Role_Tooltips": "Knappbeskrivningar",
+	"Role_EndDate": "Slutdatum",
+	"Role_Parent": "Överordnad",
+	"Visual_SubTasks": "Underuppgifter",
+	"Visual_InheritParentLegend": "Ärv överordnad förklaring",
+	"Visual_ParentDurationByChildren": "Överordnad varaktighet av underordnat element",
+	"Visual_ParentCompletionByChildren": "Slutförande av överordnad av underordnat element",
+	"Visual_Description_Legend": "Visa förklaringsalternativ",
+	"Visual_Description_Position": "Välj plats för förklaringen",
+	"Visual_Description_Title": "Visa en rubrik för förklaringssymboler",
+	"Visual_Description_LegendName": "Rubriktext",
+	"Visual_Description_TaskSettings_Color": "Detta träder ENDAST i kraft om du inte har angett någon förklaring",
+	"Visual_Label_Today": "Idag",
+	"Visual_Label_Now": "Nu"
 }

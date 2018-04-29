@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Prvý deň v týždni",
 	"Visual_FullText": "Úplný text",
 	"Visual_WidthByTask": "Šírka podľa úlohy",
-	"Role_Tooltips": "Popisy"
+	"Role_Tooltips": "Popisy",
+	"Role_EndDate": "Koncový dátum",
+	"Role_Parent": "Nadradená položka",
+	"Visual_SubTasks": "Podúlohy",
+	"Visual_InheritParentLegend": "Zdediť legendu nadradeného objektu",
+	"Visual_ParentDurationByChildren": "Doba trvania nadradených projektov podľa podradených",
+	"Visual_ParentCompletionByChildren": "Dokončenie nadradených objektov podľa podradených",
+	"Visual_Description_Legend": "Možnosti zobrazenia legendy",
+	"Visual_Description_Position": "Vyberte umiestnenie legendy",
+	"Visual_Description_Title": "Zobraziť názov pre symboly legendy",
+	"Visual_Description_LegendName": "Text názvu",
+	"Visual_Description_TaskSettings_Color": "Toto sa uplatní IBA vtedy, keď nemáte zadanú žiadnu legendu",
+	"Visual_Label_Today": "Dnes",
+	"Visual_Label_Now": "Teraz"
 }

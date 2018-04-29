@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Аптаның бірінші күні",
 	"Visual_FullText": "Толық мәтін",
 	"Visual_WidthByTask": "Тапсырма бойынша ені",
-	"Role_Tooltips": "Кеңестер"
+	"Role_Tooltips": "Кеңестер",
+	"Role_EndDate": "Аяқталу күні",
+	"Role_Parent": "Негізгі",
+	"Visual_SubTasks": "Қосалқы тапсырмалар",
+	"Visual_InheritParentLegend": "Негізгі мәндік белгілерді иелену",
+	"Visual_ParentDurationByChildren": "Қосалқы арқылы негізгінің ұзақтығы",
+	"Visual_ParentCompletionByChildren": "Қосалқы арқылы негізгіні аяқтау",
+	"Visual_Description_Legend": "Шартты белгілер параметрлерін көрсету",
+	"Visual_Description_Position": "Шартты белгілер үшін орынды таңдау",
+	"Visual_Description_Title": "Шартты белгілер таңбалары үшін тақырып таңдау",
+	"Visual_Description_LegendName": "Тақырып мәтіні",
+	"Visual_Description_TaskSettings_Color": "Мәндік белгілер көрсетілмегенде ҒАНА осы іске қосылады",
+	"Visual_Label_Today": "Бүгін",
+	"Visual_Label_Now": "Қазір"
 }

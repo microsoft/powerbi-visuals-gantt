@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Viikon ensimmäinen päivä",
 	"Visual_FullText": "Koko teksti",
 	"Visual_WidthByTask": "Leveys tehtävän mukaan",
-	"Role_Tooltips": "Työkaluvihjeet"
+	"Role_Tooltips": "Työkaluvihjeet",
+	"Role_EndDate": "Lopetuspäivä",
+	"Role_Parent": "Pääkohde",
+	"Visual_SubTasks": "Alitehtävät",
+	"Visual_InheritParentLegend": "Peri ylemmän tason selite",
+	"Visual_ParentDurationByChildren": "Ylemmän tason kesto alemman tason mukaan",
+	"Visual_ParentCompletionByChildren": "Ylemmän tason valmistuminen alemman tason mukaan",
+	"Visual_Description_Legend": "Näytä selitevaihtoehdot",
+	"Visual_Description_Position": "Valitse selitteen sijainti",
+	"Visual_Description_Title": "Näytä otsikko selitesymboleille",
+	"Visual_Description_LegendName": "Otsikon teksti",
+	"Visual_Description_TaskSettings_Color": "Tämä tulee voimaan VAIN, kun sinulla ei ole selitettä määritettynä",
+	"Visual_Label_Today": "Tänään",
+	"Visual_Label_Now": "Nyt"
 }

@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Pirma savaitės diena",
 	"Visual_FullText": "Visas tekstas",
 	"Visual_WidthByTask": "a",
-	"Role_Tooltips": "Patarimai"
+	"Role_Tooltips": "Patarimai",
+	"Role_EndDate": "Pabaigos data",
+	"Role_Parent": "Pirminis",
+	"Visual_SubTasks": "Antrinės užduotys",
+	"Visual_InheritParentLegend": "Paveldėta pirminė legenda",
+	"Visual_ParentDurationByChildren": "Pirminė trukmė pagal antrinius elementus",
+	"Visual_ParentCompletionByChildren": "Pirminis užbaigimas pagal antrinius elementus",
+	"Visual_Description_Legend": "Rodyti legendos parinktis",
+	"Visual_Description_Position": "Pasirinkite legendos vietą",
+	"Visual_Description_Title": "Rodyti legendos simbolių pavadinimą",
+	"Visual_Description_LegendName": "Pavadinimo tekstas",
+	"Visual_Description_TaskSettings_Color": "Tai įsigalios TIK tuomet, kai nebus nurodyta jokia legenda",
+	"Visual_Label_Today": "Šiandien",
+	"Visual_Label_Now": "Dabar"
 }

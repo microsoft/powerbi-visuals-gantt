@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Primeiro dia da semana",
 	"Visual_FullText": "Texto completo",
 	"Visual_WidthByTask": "Largura por tarefa",
-	"Role_Tooltips": "Dicas de ferramentas"
+	"Role_Tooltips": "Dicas de ferramentas",
+	"Role_EndDate": "Data de Término",
+	"Role_Parent": "Pai",
+	"Visual_SubTasks": "Subtarefas",
+	"Visual_InheritParentLegend": "Herdar legenda pai",
+	"Visual_ParentDurationByChildren": "Duração do pai por filhos",
+	"Visual_ParentCompletionByChildren": "Conclusão do pai por filhos",
+	"Visual_Description_Legend": "Exibir opções de legenda",
+	"Visual_Description_Position": "Selecionar o local da legenda",
+	"Visual_Description_Title": "Exibir um título para os símbolos da legenda",
+	"Visual_Description_LegendName": "Texto do título",
+	"Visual_Description_TaskSettings_Color": "Essa opção tem efeito SOMENTE quando não há nenhuma legenda especificada",
+	"Visual_Label_Today": "Hoje",
+	"Visual_Label_Now": "Agora"
 }

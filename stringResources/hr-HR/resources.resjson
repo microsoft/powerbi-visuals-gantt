@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Prvi dan u tjednu",
 	"Visual_FullText": "Cijeli tekst",
 	"Visual_WidthByTask": "Širina prema zadatku",
-	"Role_Tooltips": "Zaslonski opisi"
+	"Role_Tooltips": "Zaslonski opisi",
+	"Role_EndDate": "Datum završetka",
+	"Role_Parent": "Nadređena stavka",
+	"Visual_SubTasks": "Podzadaci",
+	"Visual_InheritParentLegend": "Nasljeđivanje nadređene legende",
+	"Visual_ParentDurationByChildren": "Trajanje nadređenih elemenata uz podređene elemente",
+	"Visual_ParentCompletionByChildren": "Dovršavanje nadređenih elemenata uz podređene elemente",
+	"Visual_Description_Legend": "Prikaži mogućnosti legende",
+	"Visual_Description_Position": "Odaberite mjesto legende",
+	"Visual_Description_Title": "Prikaži naslov za simbole legende",
+	"Visual_Description_LegendName": "Tekst naslova",
+	"Visual_Description_TaskSettings_Color": "Ta se postavka primjenjuje SAMO kada nije navedena legenda",
+	"Visual_Label_Today": "Danas",
+	"Visual_Label_Now": "Odmah"
 }

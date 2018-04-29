@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Primer dia de la setmana",
 	"Visual_FullText": "Text complet",
 	"Visual_WidthByTask": "Amplada per tasca",
-	"Role_Tooltips": "Indicadors de funcions"
+	"Role_Tooltips": "Indicadors de funcions",
+	"Role_EndDate": "Data final",
+	"Role_Parent": "Principal",
+	"Visual_SubTasks": "Subtasques",
+	"Visual_InheritParentLegend": "Hereta la llegenda principal",
+	"Visual_ParentDurationByChildren": "Durada principal per element secundari",
+	"Visual_ParentCompletionByChildren": "Finalització principal per element secundari",
+	"Visual_Description_Legend": "Mostra les opcions per a la llegenda",
+	"Visual_Description_Position": "Seleccioneu la ubicació de la llegenda",
+	"Visual_Description_Title": "Mostra un títol per als símbols de la llegenda",
+	"Visual_Description_LegendName": "Text del títol",
+	"Visual_Description_TaskSettings_Color": "Això NOMÉS s'aplicarà quan no tingueu cap llegenda especificada.",
+	"Visual_Label_Today": "Avui",
+	"Visual_Label_Now": "Ara"
 }

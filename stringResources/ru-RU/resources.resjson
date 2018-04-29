@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "Первый день недели",
 	"Visual_FullText": "Полнотекстовый",
 	"Visual_WidthByTask": "Ширина по задаче",
-	"Role_Tooltips": "Подсказки"
+	"Role_Tooltips": "Подсказки",
+	"Role_EndDate": "Дата окончания",
+	"Role_Parent": "Родительский",
+	"Visual_SubTasks": "Подзадачи",
+	"Visual_InheritParentLegend": "Наследовать родительские условные обозначения",
+	"Visual_ParentDurationByChildren": "Длительность выполнения родительских объектов дочерними",
+	"Visual_ParentCompletionByChildren": "Выполнение родительских объектов дочерними",
+	"Visual_Description_Legend": "Показывать параметры условных обозначений",
+	"Visual_Description_Position": "Выбрать расположение условных обозначений",
+	"Visual_Description_Title": "Показывать заголовок для символов условных обозначений",
+	"Visual_Description_LegendName": "Текст заголовка",
+	"Visual_Description_TaskSettings_Color": "Параметр будет применен, ТОЛЬКО если у вас не указаны условные обозначения.",
+	"Visual_Label_Today": "Сегодня",
+	"Visual_Label_Now": "Сейчас"
 }

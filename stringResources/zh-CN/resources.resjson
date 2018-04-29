@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "一周的第一天",
 	"Visual_FullText": "全文",
 	"Visual_WidthByTask": "宽度(按任务)",
-	"Role_Tooltips": "工具提示"
+	"Role_Tooltips": "工具提示",
+	"Role_EndDate": "结束日期",
+	"Role_Parent": "父级",
+	"Visual_SubTasks": "子任务",
+	"Visual_InheritParentLegend": "继承父图例",
+	"Visual_ParentDurationByChildren": "子级继承父级持续时间",
+	"Visual_ParentCompletionByChildren": "子级继承父级完成",
+	"Visual_Description_Legend": "显示图例选项",
+	"Visual_Description_Position": "选择图例的位置",
+	"Visual_Description_Title": "显示图例符号的标题",
+	"Visual_Description_LegendName": "标题文本",
+	"Visual_Description_TaskSettings_Color": "只有当未指定图例时，这才生效",
+	"Visual_Label_Today": "今天",
+	"Visual_Label_Now": "现在"
 }

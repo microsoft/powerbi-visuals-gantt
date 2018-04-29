@@ -73,5 +73,18 @@
 	"Visual_FirstDayOfWeek": "První den v týdnu",
 	"Visual_FullText": "Úplný text",
 	"Visual_WidthByTask": "Šířka podle úlohy",
-	"Role_Tooltips": "Popisky"
+	"Role_Tooltips": "Popisky",
+	"Role_EndDate": "Koncové datum",
+	"Role_Parent": "Nadřazený",
+	"Visual_SubTasks": "Dílčí úkoly",
+	"Visual_InheritParentLegend": "Zdědit legendu nadřazeného objektu",
+	"Visual_ParentDurationByChildren": "Doba trvání nadřazených objektů podle podřízených",
+	"Visual_ParentCompletionByChildren": "Dokončení nadřazených objektů podle podřízených",
+	"Visual_Description_Legend": "Zobrazí možnosti pro legendu.",
+	"Visual_Description_Position": "Vyberte umístění pro legendu.",
+	"Visual_Description_Title": "Zobrazí nadpis pro symboly legendy.",
+	"Visual_Description_LegendName": "Text nadpisu",
+	"Visual_Description_TaskSettings_Color": "Toto se uplatní JENOM tehdy, když nemáte zadanou žádnou legendu",
+	"Visual_Label_Today": "Dnes",
+	"Visual_Label_Now": "Ihned"
 }
