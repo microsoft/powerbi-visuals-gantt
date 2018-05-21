@@ -406,28 +406,33 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            it("Verify tooltips have only string values", (done) => {
+                const randomNumber = 134223;
+                const durationUnit = "day";
 
-            it("Verify tooltips have tooltips", (done) => {
-                dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnTooltips]);
+                const task: any = {
+                    taskType: randomNumber,
+                    name: randomNumber,
+                    start: new Date(),
+                    end: new Date(),
+                    duration: randomNumber,
+                    completion: randomNumber,
+                    extraInformation: []
+                };
 
-                visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
-                    let index = 0;
-                    for (let task of tasks) {
-                        for (let tooltipInfo of task.tooltipInfo) {
-                            if (tooltipInfo.displayName === GanttData.ColumnTooltips) {
-                                let value: VisualTooltipDataItem  = tooltipInfo.value;
-                                expect(value).toEqual(defaultDataViewBuilder.valuesTooltips[index++]);
-                            }
-                        }
-                    }
+                const formatters = {
+                    startDateFormatter: jasmine.createSpyObj("startDateFormatter", ["format"]),
+                    completionFormatter: jasmine.createSpyObj("completionFormatter", ["format"])
+                };
+                const localizationManager = visualBuilder.visualHost.createLocalizationManager();
 
-                    done();
-                });
+                const tooltips = VisualClass.getTooltipInfo(task, formatters, durationUnit, localizationManager);
+                tooltips
+                    .filter(t => t.value !== null && t.value !== undefined)
+                    .forEach(t => {
+                        expect(typeof t.value).toBe("string");
+                    });
+                done();
             });
 
             it("Verify sub tasks", (done) => {
@@ -1190,6 +1195,91 @@ module powerbi.extensibility.visual.test {
                         done();
                     });
                 });
+            });
+
+            describe("check duration unit downgrade", () => {
+                it("check for days downgrading", () => {
+                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                        data = unitMocks.days.data,
+                        expected = unitMocks.days.expected,
+                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+
+                        expect(realResult).toEqual(expected);
+                });
+
+                it("check for hours downgrading", () => {
+                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                        data = unitMocks.hours.data,
+                        expected = unitMocks.hours.expected,
+                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+
+                        expect(realResult).toEqual(expected);
+                });
+
+                it("check for minutes downgrading", () => {
+                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                        data = unitMocks.minutes.data,
+                        expected = unitMocks.minutes.expected,
+                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+
+                        expect(realResult).toEqual(expected);
+                });
+
+                it("check for hours downgrading", () => {
+                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                        data = unitMocks.seconds.data,
+                        expected = unitMocks.seconds.expected,
+                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+
+                        expect(realResult).toEqual(expected);
+                });
+            });
+
+            describe("check not existent parent deletion from tasks", () => {
+                it("check on correct parent dataset", () => {
+                    let taskMock = GanttBuilder.getTaskMockCommon(),
+                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithCorrectParentsMock"),
+                        expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithCorrectParentsMock"),
+                        realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
+
+                    expectSimilarObject(expectedResult, realResult);
+                });
+
+                it("check on not existent parent dataset - parent.children", () => {
+                    let taskMock = GanttBuilder.getTaskMockCommon(),
+                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithNotExistentParentsMock"),
+                        expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithNotExistentParentsMock"),
+                        realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
+
+                    expectSimilarObject(expectedResult, realResult);
+                });
+
+                it("check on not existent in the middle parent dataset", () => {
+                    // parent.nonExistentParent.children -> parent.children
+                    let taskMock = GanttBuilder.getTaskMockCommon(),
+                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithNotExistentMiddleParentsMock"),
+                        expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithNotExistentMiddleParentsMock"),
+                        realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
+
+                    expectSimilarObject(expectedResult, realResult);
+                });
+
+                function expectSimilarObject(expectedResult, realResult) {
+                    const expectedKeys = Object.keys(expectedResult);
+                    const realKeys = Object.keys(realResult);
+
+                    expect(expectedKeys.length).toEqual(realKeys.length);
+                    expectedKeys.forEach(key => {
+                        const expectedObj = expectedResult[key];
+                        const realObj = realResult[key];
+
+                        if (typeof expectedObj === "object") {
+                            expectSimilarObject(expectedObj, realObj);
+                        } else {
+                            expect(realObj).toEqual(expectedObj);
+                        }
+                    });
+                };
             });
 
             describe("Task Settings", () => {

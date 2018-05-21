@@ -2,6 +2,7 @@
 	"Role_Legend": "Legend",
 	"Role_Task": "Task",
 	"Role_StartDate": "Start Date",
+	"Role_EndDate": "End Date",
 	"Role_Duration": "Duration",
 	"Role_Completion": "% Completion",
 	"Role_Resource": "Resource",
@@ -67,5 +68,17 @@
 	"Visual_DurationUnit_Hours": "Hours",
 	"Visual_DurationUnit_Minutes": "Minutes",
 	"Visual_DurationUnit_Seconds": "Seconds",
-	"Visual_DurationMinimum": "Duration min"
+	"Visual_DurationMinimum": "Duration min",
+	"Role_Parent": "Parent",
+	"Visual_SubTasks": "Sub tasks",
+	"Visual_InheritParentLegend": "Inherit parent legend",
+	"Visual_ParentDurationByChildren": "Parent duration by children",
+	"Visual_ParentCompletionByChildren": "Parent completion by children",
+	"Visual_Description_Legend": "Display legend options",
+	"Visual_Description_Position": "Select the location for the legend",
+	"Visual_Description_Title": "Display a title for legend symbols",
+	"Visual_Description_LegendName": "Title text",
+	"Visual_Description_TaskSettings_Color": "This ONLY takes effect when you have no legend specified",
+	"Visual_Label_Today": "Today",
+	"Visual_Label_Now": "Now"
 }

@@ -120,7 +120,6 @@ module powerbi.extensibility.visual {
     const SecondsInADay: number = 60 * MinutesInADay;
     const SecondsInAHour: number = MinutesInAHour * SecondsInAMinute;
     const DefaultChartLineHeight = 40;
-    const stepDurationTransformationDefault = 2;
     const GanttDurationUnitType = [
         "second",
         "minute",
@@ -387,6 +386,7 @@ module powerbi.extensibility.visual {
         private interactivityService: IInteractivityService;
         private tooltipServiceWrapper: ITooltipServiceWrapper;
         private host: IVisualHost;
+        private localizationManager: ILocalizationManager;
         private isInteractiveChart: boolean = false;
         private groupTasksPrevValue: boolean = false;
         private collapsedTasks: string[] = [];
@@ -397,6 +397,7 @@ module powerbi.extensibility.visual {
 
         private init(options: VisualConstructorOptions): void {
             this.host = options.host;
+            this.localizationManager = this.host.createLocalizationManager();
             this.colors = options.host.colorPalette;
             this.selectionManager = options.host.createSelectionManager();
             this.body = d3.select(options.element);
@@ -553,48 +554,55 @@ module powerbi.extensibility.visual {
         * @param formatters Formatting options for gantt attributes.
         * @param durationUnit Duration unit option
         */
-        private static getTooltipInfo(
+        public static getTooltipInfo(
             task: Task,
             formatters: GanttChartFormatters,
-            durationUnit: string): VisualTooltipDataItem[] {
+            durationUnit: string,
+            localizationManager: ILocalizationManager): VisualTooltipDataItem[] {
 
             let tooltipDataArray: VisualTooltipDataItem[] = [];
-            const durationLabel: string = Gantt.generateLabelForDuration(task.duration, durationUnit);
+            const durationLabel: string = Gantt.generateLabelForDuration(task.duration, durationUnit, localizationManager);
             if (task.taskType) {
-                tooltipDataArray.push({ displayName: "Legend", value: task.taskType });
+                tooltipDataArray.push({
+                    displayName: localizationManager.getDisplayName("Role_Legend"),
+                    value: task.taskType
+                });
             }
 
             tooltipDataArray.push({
-                displayName: "Task",
+                displayName: localizationManager.getDisplayName("Role_Task"),
                 value: task.name
             });
 
             if (!isNaN(task.start.getDate())) {
                 tooltipDataArray.push({
-                    displayName: "Start Date",
+                    displayName: localizationManager.getDisplayName("Role_StartDate"),
                     value: formatters.startDateFormatter.format(task.start)
                 });
 
                 tooltipDataArray.push({
-                    displayName: "End Date",
+                    displayName: localizationManager.getDisplayName("Role_EndDate"),
                     value: formatters.startDateFormatter.format(task.end)
                 });
             }
 
             tooltipDataArray.push({
-                displayName: "Duration",
+                displayName: localizationManager.getDisplayName("Role_Duration"),
                 value: durationLabel
             });
 
             if (task.completion) {
                 tooltipDataArray.push({
-                    displayName: "Completion",
+                    displayName: localizationManager.getDisplayName("Role_Completion"),
                     value: formatters.completionFormatter.format(task.completion)
                 });
             }
 
             if (task.resource) {
-                tooltipDataArray.push({ displayName: "Resource", value: task.resource });
+                tooltipDataArray.push({
+                    displayName: localizationManager.getDisplayName("Role_Resource"),
+                    value: task.resource
+                });
             }
 
             if (task.tooltipInfo && task.tooltipInfo.length) {
@@ -618,6 +626,10 @@ module powerbi.extensibility.visual {
                     return tooltip;
                 })
                 .forEach(tooltip => tooltipDataArray.push(tooltip));
+
+            tooltipDataArray
+                .filter(x => x.value && typeof x.value !== "string")
+                .forEach(tooltip => tooltip.value = tooltip.value.toString());
 
             return tooltipDataArray;
         }
@@ -703,13 +715,11 @@ module powerbi.extensibility.visual {
                     let color: string = settings.taskConfig.fill;
 
                     if (!useDefaultColor) {
-                        color = (taskTypes.types.length <= 1)
-                            ? settings.taskConfig.fill
-                            : colorHelper.getColorForMeasure(typeMeta.columnGroup.objects, typeMeta.name);
+                        color = colorHelper.getColorForMeasure(typeMeta.columnGroup.objects, typeMeta.name);
                     }
 
                     return {
-                        label: typeMeta.name as string,
+                        label: typeMeta.name,
                         color: color,
                         icon: LegendIcon.Circle,
                         selected: false,
@@ -739,7 +749,8 @@ module powerbi.extensibility.visual {
             formatters: GanttChartFormatters,
             colors: IColorPalette,
             settings: GanttSettings,
-            taskColor: string): Task[] {
+            taskColor: string,
+            localizationManager: ILocalizationManager): Task[] {
 
             let tasks: Task[] = [];
             const colorHelper: ColorHelper = new ColorHelper(colors, Gantt.LegendPropertyIdentifier);
@@ -779,7 +790,7 @@ module powerbi.extensibility.visual {
                             duration = group.Duration.values[index] > settings.general.durationMin ? group.Duration.values[index] as number : settings.general.durationMin;
 
                             if (duration && duration % 1 !== 0) {
-                                durationUnit = Gantt.downgradeDurationUnit(durationUnit);
+                                durationUnit = Gantt.downgradeDurationUnit(durationUnit, duration);
                                 stepDurationTransformation =
                                     GanttDurationUnitType.indexOf(settings.general.durationUnit) - GanttDurationUnitType.indexOf(durationUnit);
 
@@ -901,7 +912,7 @@ module powerbi.extensibility.visual {
             }
 
             tasks.forEach((task: Task) => {
-                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit);
+                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit, localizationManager);
             });
 
             return tasks;
@@ -995,17 +1006,33 @@ module powerbi.extensibility.visual {
             return children;
         }
 
-        private static downgradeDurationUnit(durationUnit: string): string {
-            let durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
-            durationUnit = (durationUnitTypeIndex !== -1 && durationUnit) || "day";
-            // stepDurationTransformationDefault - variable for accuracy calculation of duration transformation
-            // if duration == 0.84 day, we need transform duration to minutes in order to get duration without extra loss
-            for (let i = stepDurationTransformationDefault; i > 0; i--) {
-                if (durationUnitTypeIndex - i > -1) {
-                    durationUnit = GanttDurationUnitType[durationUnitTypeIndex - i];
+        public static getNewUnitByFloorDurationFloor(durationUnitTypeIndex: number, duration: number): string {
+            if (!durationUnitTypeIndex)
+                return GanttDurationUnitType[0];
+
+            switch (durationUnitTypeIndex) {
+                case  GanttDurationUnitType.indexOf("day"):
+                    duration = duration * HoursInADay;
                     break;
-                }
+                case GanttDurationUnitType.indexOf("hour"):
+                    duration = duration * MinutesInAHour;
+                    break;
+                case GanttDurationUnitType.indexOf("minute"):
+                    duration = duration * SecondsInAMinute;
+                    break;
             }
+
+            if ((duration - Math.floor(duration) !== 0) && durationUnitTypeIndex > 1 ) {
+                return Gantt.getNewUnitByFloorDurationFloor(durationUnitTypeIndex - 1, duration);
+            } else {
+                return GanttDurationUnitType[durationUnitTypeIndex - 1];
+            }
+        }
+
+        private static downgradeDurationUnit(durationUnit: string, duration: number): string {
+            let durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
+            // if duration == 0.84 day, we need transform duration to minutes in order to get duration without extra loss
+            durationUnit = Gantt.getNewUnitByFloorDurationFloor(durationUnitTypeIndex, duration);
 
             return durationUnit;
         }
@@ -1049,8 +1076,8 @@ module powerbi.extensibility.visual {
                             : MinutesInAHour);
                     break;
                 case DurationUnits.Second:
-                    transformedDuration = duration * (stepDurationTransformation === 2
-                            ? SecondsInAHour
+                    transformedDuration = duration * (stepDurationTransformation === 3 ? SecondsInADay
+                         : stepDurationTransformation === 2 ? SecondsInAHour
                             : SecondsInAMinute);
                     break;
             }
@@ -1116,7 +1143,8 @@ module powerbi.extensibility.visual {
          */
         private static generateLabelForDuration(
             duration: number,
-            durationUnit: string | DurationUnits): string {
+            durationUnit: string | DurationUnits,
+            localizationManager: ILocalizationManager): string {
 
             let oneDayDuration: number = HoursInADay;
             let oneHourDuration: number = MinutesInAHour;
@@ -1137,36 +1165,36 @@ module powerbi.extensibility.visual {
 
             let label: string = "";
             const days: number = Math.floor(duration / oneDayDuration);
-            label += days ? `${days} Days ` : ``;
+            label += days ? `${days} ${localizationManager.getDisplayName("Visual_DurationUnit_Days")} ` : ``;
             if (durationUnit === DurationUnits.Day) {
-                return `${duration} Days `;
+                return `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Days")} `;
             }
 
             let timeDelta: number = days * oneDayDuration;
             const hours: number = Math.floor((duration - timeDelta) / oneHourDuration);
-            label += hours ? `${hours} Hours ` : ``;
+            label += hours ? `${hours} ${localizationManager.getDisplayName("Visual_DurationUnit_Hours")} ` : ``;
             if (durationUnit === DurationUnits.Hour) {
                 return duration >= 24
                     ? label
-                    : `${duration} Hours`;
+                    : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Hours")}`;
             }
 
             timeDelta = (days * oneDayDuration) + (hours * oneHourDuration);
             const minutes: number = Math.floor((duration - timeDelta) / oneMinuteDuration);
-            label += minutes ? `${minutes} Minutes ` : ``;
+            label += minutes ? `${minutes} ${localizationManager.getDisplayName("Visual_DurationUnit_Minutes")} ` : ``;
             if (durationUnit === DurationUnits.Minute) {
                 return duration >= 60
                     ? label
-                    : `${duration} Minutes `;
+                    : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Minutes")} `;
             }
 
             timeDelta = (days * oneDayDuration) + (hours * oneHourDuration) + (minutes * oneMinuteDuration);
             const seconds: number = Math.floor(duration - timeDelta);
-            label += seconds ? `${seconds} Seconds ` : ``;
+            label += seconds ? `${seconds} ${localizationManager.getDisplayName("Visual_DurationUnit_Seconds")} ` : ``;
             if (durationUnit === DurationUnits.Second) {
                 return duration >= 60
                     ? label
-                    : `${duration} Seconds `;
+                    : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Seconds")} `;
             }
         }
 
@@ -1179,7 +1207,8 @@ module powerbi.extensibility.visual {
         public static converter(
             dataView: DataView,
             host: IVisualHost,
-            colors: IColorPalette): GanttViewModel {
+            colors: IColorPalette,
+            localizationManager: ILocalizationManager): GanttViewModel {
 
             if (!dataView
                 || !dataView.categorical
@@ -1204,7 +1233,12 @@ module powerbi.extensibility.visual {
                 ? settings.taskConfig.fill
                 : null;
 
-            const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor);
+            const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager);
+
+            // Remove empty legend if tasks isn't exist
+            const types = _.groupBy(tasks, x => x.taskType);
+            legendData.dataPoints = legendData.dataPoints.filter(x => types[x.label]);
+
             return {
                 dataView,
                 settings,
@@ -1297,6 +1331,25 @@ module powerbi.extensibility.visual {
                     break;
             }
         }
+        /**
+         * Delete parent group names from tasks if this parent tasks do not representated in dataset
+         * @param tasks
+         * @param task
+         */
+        public static deleteNonExistentParents(tasks: Task[], task: Task): Task {
+            const parentNames = task.parent.split(".").filter((name) => name !== task.name);
+            let taskNames = tasks.map((task) => task.name);
+            let newTaskParent = "";
+
+            parentNames.forEach((parentName) => {
+                if (taskNames.indexOf(parentName) !== -1) {
+                    newTaskParent += parentName + ".";
+                }
+            });
+            task.parent = newTaskParent.slice(0, -1);
+
+            return task;
+        }
 
         /**
         * Called on data change or resizing
@@ -1308,7 +1361,7 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            this.viewModel = Gantt.converter(options.dataViews[0], this.host, this.colors);
+            this.viewModel = Gantt.converter(options.dataViews[0], this.host, this.colors, this.localizationManager);
             if (!this.viewModel || !this.viewModel.tasks || this.viewModel.tasks.length <= 0) {
                 this.clearViewport();
                 return;
@@ -1319,11 +1372,13 @@ module powerbi.extensibility.visual {
 
             this.renderLegend();
             this.updateChartSize();
-            let tasks: Task[] = this.viewModel.tasks
-                .filter((task: Task) => task.visibility)
+
+            const visibleTasks = this.viewModel.tasks
+                .filter((task: Task) => task.visibility);
+            const tasks: Task[] = visibleTasks
                 .map((task: Task, i: number) => {
                     task.id = i;
-                    return task;
+                    return Gantt.deleteNonExistentParents(visibleTasks, task);
                 });
 
             if (this.interactivityService) {
@@ -1430,7 +1485,7 @@ module powerbi.extensibility.visual {
 
             let dataTypeDatetime: ValueType = ValueType.fromPrimitiveTypeAndCategory(PrimitiveType.Date);
             let category: DataViewMetadataColumn = {
-                displayName: "Start Date",
+                displayName: this.localizationManager.getDisplayName("Role_StartDate"),
                 queryName: GanttRoles.StartDate,
                 type: dataTypeDatetime,
                 index: 0
@@ -2058,7 +2113,7 @@ module powerbi.extensibility.visual {
             if (this.viewModel.settings.daysOff.show) {
                 let durationUnit: string = this.viewModel.settings.general.durationUnit;
                 if (task.wasDowngradeDurationUnit) {
-                    durationUnit = Gantt.downgradeDurationUnit(durationUnit);
+                    durationUnit = Gantt.downgradeDurationUnit(durationUnit, task.duration);
                 }
 
                 daysOffWidth = this.getDaysOffWidthForProgress(task, durationUnit);
@@ -2110,11 +2165,11 @@ module powerbi.extensibility.visual {
                     case DateTypes.Second:
                     case DateTypes.Minute:
                     case DateTypes.Hour:
-                        milestoneTitle = LabelsForDateTypes.Now;
+                        milestoneTitle = this.localizationManager.getDisplayName("Visual_Label_Now");
                         dateTime = new Date(timestamp).toLocaleString();
                         break;
                     default:
-                        milestoneTitle = LabelsForDateTypes.Today;
+                        milestoneTitle = this.localizationManager.getDisplayName("Visual_Label_Today");
                 }
             }
 

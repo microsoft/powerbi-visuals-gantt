@@ -30,9 +30,17 @@ module powerbi.extensibility.visual.test {
     // powerbi.extensibility.utils.test
     import VisualBuilderBase = powerbi.extensibility.utils.test.VisualBuilderBase;
     import getRandomNumber = powerbi.extensibility.utils.test.helpers.getRandomNumber;
+    import Task = powerbi.extensibility.visual.Gantt1448688115699.Task;
 
     // Gantt1448688115699
     import VisualClass = powerbi.extensibility.visual.Gantt1448688115699.Gantt;
+
+    interface TaskMockParamsInterface {
+        id: number;
+        name: string;
+        parent: string;
+        children: string[];
+    }
 
     export class GanttBuilder extends VisualBuilderBase<VisualClass> {
         constructor(width: number, height: number) {
@@ -147,6 +155,140 @@ module powerbi.extensibility.visual.test {
 
         public static getSolidColorStructuralObject(color: string): any {
             return { solid: { color: color } };
+        }
+
+        public static getTaskMockData(mockArray: object, mockCaseName: string): Task[] {
+            return mockArray[mockCaseName]["data"];
+        }
+
+        public static getTaskMockExpected(mockArray: object, mockCaseName: string): Task[] {
+            return mockArray[mockCaseName]["expected"];
+        }
+
+        private static generateTaskWithDefaultParams(taskMockParams: TaskMockParamsInterface) {
+            return {
+                id: taskMockParams.id,
+                name: taskMockParams.name,
+                start: new Date(),
+                duration: 1,
+                completion: 1,
+                resource: "res",
+                end: new Date(),
+                parent: taskMockParams.parent,
+                children: taskMockParams.children,
+                visibility: true,
+                taskType: "type",
+                description: name,
+                color: "red",
+                tooltipInfo: [],
+                extraInformation: [],
+                daysOffList: [],
+                wasDowngradeDurationUnit: true,
+                stepDurationTransformation: 0
+            };
+        }
+
+        private static generateMocksCase(taskMockParams: TaskMockParamsInterface[]) {
+            let result = taskMockParams.map((taskMockParamsItem) => {
+                return GanttBuilder.generateTaskWithDefaultParams(taskMockParamsItem);
+            });
+
+            return result;
+        }
+
+        public static getDowngradeDurationUnitMocks() {
+            const GanttDurationUnitType = [
+                "second",
+                "minute",
+                "hour",
+                "day",
+            ];
+
+            let downgradeDurationUnitMock = {
+                days: {
+                    "data": [
+                        {"unit": GanttDurationUnitType.indexOf("day"), "duration": 1.5},
+                        {"unit": GanttDurationUnitType.indexOf("day"), "duration": 0.84}
+                    ],
+                    "expected": [
+                        "hour",
+                        "second"
+                    ]
+                },
+                hours: {
+                    "data": [
+                        {"unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.05},
+                        {"unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.005}
+                    ],
+                    "expected": [
+                        "minute",
+                        "second"
+                    ]
+                },
+                minutes: {
+                    "data": [
+                        {"unit": GanttDurationUnitType.indexOf("minute"), "duration": 0.01}
+                    ],
+                    "expected": [
+                        "second"
+                    ]
+                },
+                seconds: {
+                    "data": [
+                        {"unit": GanttDurationUnitType.indexOf("second"), "duration": 0.5}
+                    ],
+                    "expected": [
+                        "second"
+                    ]
+                }
+            };
+
+            return downgradeDurationUnitMock;
+        }
+
+        public static getTaskMockCommon() {
+            let taskMock = {
+                taskWithCorrectParentsMock: {
+                    "data": GanttBuilder.generateMocksCase([
+                        {id: 1, name: "T1", parent: "T1", children: []},
+                        {id: 2, name: "Group C", parent: "Group C", children: ["T2"]},
+                        {id: 3, name: "T2", parent: "Group C.T2", children: []}
+                    ]),
+                    "expected" : GanttBuilder.generateMocksCase([
+                        {id: 1, name: "T1", parent: "", children: []},
+                        {id: 2, name: "Group C", parent: "", children: ["T2"]},
+                        {id: 3, name: "T2", parent: "Group C", children: []}
+                    ])
+                },
+                taskWithNotExistentParentsMock: {
+                    "data": GanttBuilder.generateMocksCase([
+                        {id: 1, name: "T1", parent: "T1", children: []},
+                        {id: 2, name: "Group C", parent: "Group C", children: []},
+                        {id: 3, name: "T2", parent: "Group A.T2", children: []},
+                        {id: 4, name: "T3", parent: "Group B.T3", children: []}
+                    ]),
+                    "expected" : GanttBuilder.generateMocksCase([
+                        {id: 1, name: "T1", parent: "", children: []},
+                        {id: 2, name: "Group C", parent: "", children: []},
+                        {id: 3, name: "T2", parent: "", children: []},
+                        {id: 4, name: "T3", parent: "", children: []}
+                    ])
+                },
+                taskWithNotExistentMiddleParentsMock: {
+                    "data": GanttBuilder.generateMocksCase([
+                        {id: 1, name: "T1", parent: "T1", children: []},
+                        {id: 2, name: "Group C", parent: "Group C", children: ["T2"]},
+                        {id: 3, name: "T2", parent: "Group C.Group M.T2", children: []}
+                    ]),
+                    "expected" : GanttBuilder.generateMocksCase([
+                        {id: 1, name: "T1", parent: "", children: []},
+                        {id: 2, name: "Group C", parent: "", children: ["T2"]},
+                        {id: 3, name: "T2", parent: "Group C", children: []}
+                    ])
+                }
+            };
+
+            return taskMock;
         }
 
         public static getRandomHexColor(): string {
