@@ -1,3 +1,6 @@
+## 1.12.0
+* Added localization for all supported languages
+
 ## 1.11.1
 * Fixed issue with not showing values in some cases for day duration unit
 * Fixed issue with task name left alignment
