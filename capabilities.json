@@ -314,7 +314,7 @@
             }
         },
         "daysOff": {
-            "displayName": "DaysOff",
+            "displayName": "Days off",
             "displayNameKey": "Visual_DaysOff",
             "properties": {
                 "show": {
@@ -336,7 +336,7 @@
                     }
                 },
                 "firstDayOfWeek": {
-                    "displayName": "First Day of Week",
+                    "displayName": "First day of week",
                     "displayNameKey": "Visual_FirstDayOfWeek",
                     "type": {
                         "enumeration": [
