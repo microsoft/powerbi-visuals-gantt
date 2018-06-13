@@ -47,10 +47,7 @@ module powerbi.extensibility.visual.test {
 
         public valuesTaskTypeResource: string[][] = [
             ["Spec", "MOLAP connectivity", "Mey"],
-            ["Design", "Clickthrough", "John"],
-            ["Dev", "Tech design", "JohnV"],
             ["Dev", "Front End dev", "Sheng"],
-            ["Dev", "ConnectionWithChildren", "Gentiana"],
             ["", "Query Pipeline", "Just", "ConnectionWithChildren"],
             ["", "Gateway", "Darshan", "ConnectionWithChildren"],
             ["Spec", "EGW", "Mini"],
@@ -60,24 +57,20 @@ module powerbi.extensibility.visual.test {
             ["Dev", "BugFixing", "Matt"],
             ["Design", "Clickthrough", "John"],
             ["Dev", "Tech design", "JohnV"],
-            ["Dev", "Front End dev", "Sheng"],
+            ["Dev", "Front End dev", "John"],
             ["Dev", "Connection", "Gentiana"],
             ["Dev", "Query Pipeline", "Just"],
             ["Spec", "Gateway", "Darshan"],
-            ["Spec", "EGW", "Mini"],
-            ["Dev", "Development", "Shay"],
-            ["Dev", "Desktop", "Ehren"],
-            ["Dev", "Service Fixup", "James"],
-            ["Dev", "BugFixing", "Matt"],
-            ["Dev", "Connection", "Gentiana"],
-            ["Dev", "Query Pipeline", "Just"],
-            ["Spec", "Gateway", "Darshan"],
-            ["Spec", "EGW", "Mini"],
-            ["Dev", "Development", "Shay"],
-            ["Dev", "Desktop", "Ehren"],
-            ["Dev", "Service Fixup", "James"],
+            ["Spec", "EGW", "Min"],
+            ["Dev", "Development", "Sean"],
+            ["Dev", "Desktop", "Iri"],
+            ["Dev", "Service Fixup", "Jimmy"],
+            ["Dev", "BugFixing", "Tom"],
+            ["Dev", "Query Pipeline", "John"],
+            ["Spec", "EGW", "Mall"],
+            ["Dev", "Development", "Sou"],
+            ["Dev", "Service Fixup", "Jamie"],
             ["Dev", "BugFixing", "Last Name"]
-
         ];
         public valuesStartDate = VisualData.getRandomUniqueDates(this.valuesTaskTypeResource.length, new Date(2015, 7, 0), new Date(2017, 7, 0));
         public valuesDuration = VisualData.getRandomUniqueNumbers(this.valuesTaskTypeResource.length, 3, 40);
@@ -136,14 +129,6 @@ module powerbi.extensibility.visual.test {
                 },
                 {
                     source: {
-                        displayName: VisualData.ColumnStartDate,
-                        type: ValueType.fromDescriptor({ dateTime: true }),
-                        roles: { "StartDate": true }
-                    },
-                    values: this.valuesStartDate
-                },
-                {
-                    source: {
                         displayName: VisualData.ColumnExtraInformation,
                         type: ValueType.fromDescriptor({ text: true }),
                         roles: { "ExtraInformation": true }
@@ -168,6 +153,14 @@ module powerbi.extensibility.visual.test {
                     values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null)
                 }
             ], [
+                    {
+                        source: {
+                            displayName: VisualData.ColumnStartDate,
+                            type: ValueType.fromDescriptor({ dateTime: true }),
+                            roles: { "StartDate": true }
+                        },
+                        values: this.valuesStartDate
+                    },
                     {
                         source: {
                             displayName: VisualData.ColumnDuration,

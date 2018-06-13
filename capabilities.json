@@ -25,6 +25,12 @@
             "kind": "Grouping"
         },
         {
+            "name": "EndDate",
+            "displayName": "End Date",
+            "displayNameKey": "Role_EndDate",
+            "kind": "Measure"
+        },
+        {
             "name": "Duration",
             "displayName": "Duration",
             "displayNameKey": "Role_Duration",
@@ -83,7 +89,11 @@
                     },
                     "StartDate": {
                         "min": 0,
-                        "max": 0
+                        "max": 1
+                    },
+                    "EndDate": {
+                        "min": 0,
+                        "max": 1
                     },
                     "Duration": {
                         "min": 0,
@@ -119,9 +129,13 @@
                         "min": 0,
                         "max": 1
                     },
-                    "Duration": {
+                    "EndDate": {
                         "min": 0,
                         "max": 0
+                    },
+                    "Duration": {
+                        "min": 0,
+                        "max": 1
                     },
                     "Completion": {
                         "min": 0,
@@ -153,6 +167,48 @@
                         "min": 0,
                         "max": 1
                     },
+                    "EndDate": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "Duration": {
+                        "min": 0,
+                        "max": 0
+                    },
+                    "Completion": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "Resource": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "ExtraInformation": {
+                        "min": 0,
+                        "max": 3
+                    }
+                },
+                {
+                    "Legend": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "Task": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "Parent": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "StartDate": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "EndDate": {
+                        "min": 0,
+                        "max": 0
+                    },
                     "Duration": {
                         "min": 0,
                         "max": 1
@@ -183,12 +239,12 @@
                             "for": {
                                 "in": "Parent"
                             }
-                        },
+                        },            
                         {
                             "for": {
                                 "in": "StartDate"
                             }
-                        },
+                        },             
                         {
                             "for": {
                                 "in": "Resource"
@@ -204,7 +260,12 @@
                 "values": {
                     "group": {
                         "by": "Legend",
-                        "select": [
+                        "select": [                       
+                            {
+                                "for": {
+                                    "in": "EndDate"
+                                }
+                            },                                  
                             {
                                 "for": {
                                     "in": "Duration"
