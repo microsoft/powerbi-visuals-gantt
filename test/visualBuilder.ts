@@ -65,6 +65,16 @@ module powerbi.extensibility.visual.test {
                 .children("svg.gantt");
         }
 
+        public get collapseAllRect() {
+            return this.mainElement
+                .children("g.collapse-all");
+        }
+
+        public get collapseAllArrow() {
+            return this.collapseAllRect
+                .children(".collapse-all-arrow");
+        }
+
         public get chartLine() {
             return this.chart
                 .children("line.chart-line");
@@ -93,11 +103,6 @@ module powerbi.extensibility.visual.test {
         public get chart() {
             return this.mainElement
                 .children("g.chart");
-        }
-
-        public get chartLine() {
-            return this.chart
-                .children("line.chart-line");
         }
 
         public get taskLine() {
@@ -150,7 +155,7 @@ module powerbi.extensibility.visual.test {
         }
 
         public downgradeDurationUnit(tasks: any, durationUnit: string) {
-            VisualClass.downgradeDurationUnitIfNeed(tasks, durationUnit);
+            VisualClass.downgradeDurationUnitIfNeeded(tasks, durationUnit);
         }
 
         public static getSolidColorStructuralObject(color: string): any {

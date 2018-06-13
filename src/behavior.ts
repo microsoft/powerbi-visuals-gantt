@@ -71,6 +71,11 @@ module powerbi.extensibility.visual {
                 options.subTasksCollapse.callback(d);
             });
 
+            options.allSubtasksCollapse.selection.on("click", () => {
+                (d3.event as MouseEvent).stopPropagation();
+                options.allSubtasksCollapse.callback();
+            });
+
             clearCatcher.on("click", () => {
                 selectionHandler.handleClearSelection();
             });
