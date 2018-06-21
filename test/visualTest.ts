@@ -36,6 +36,7 @@ module powerbi.extensibility.visual.test {
 
     // powerbi.extensibility.visual.Gantt1448688115699
     import VisualClass = powerbi.extensibility.visual.Gantt1448688115699.Gantt;
+    import DurationHelper = powerbi.extensibility.visual.Gantt1448688115699.DurationHelper;
 
     // powerbi.extensibility.utils.test
     import clickElement = powerbi.extensibility.utils.test.helpers.clickElement;
@@ -88,8 +89,36 @@ module powerbi.extensibility.visual.test {
             defaultDataViewBuilder = new GanttData();
             dataView = defaultDataViewBuilder.getDataView();
 
+            fixDataViewDateValuesAggregation(dataView);
+
             visualInstance = visualBuilder.instance;
         });
+
+        function fixDataViewDateValuesAggregation(dataView) {
+            let values = dataView.categorical.values[0].values;
+
+            for (let i = 0; i < values.length; ++i) {
+                let stringValue: string = values[i].toString();
+                let index: number = stringValue.indexOf(")");
+
+                if (stringValue.length - 1 !== index) {
+                    values[i] = new Date(stringValue.substring(0, index + 1));
+                }
+            }
+        };
+
+        function getUniqueParentsCount(dataView, parentColumnIndex) {
+            let uniqueParents: string[] = [];
+
+            dataView.table.rows.forEach(row => {
+                if (row[parentColumnIndex] && uniqueParents.indexOf(row[parentColumnIndex] as string)) {
+                    uniqueParents.push(row[parentColumnIndex] as string);
+                }
+            });
+
+            return uniqueParents.length;
+        }
+
         describe("DOM tests", () => {
 
             // function that uses grep to filter
@@ -112,9 +141,11 @@ module powerbi.extensibility.visual.test {
                         .length;
                     let countOfTasks = visualBuilder.tasks.length;
 
-                    expect(countOfTaskLabels).toEqual(dataView.table.rows.length);
-                    expect(countOfTaskLines).toEqual(dataView.table.rows.length);
-                    expect(countOfTasks).toEqual(dataView.table.rows.length);
+                    let uniqueParents = getUniqueParentsCount(dataView, 5);
+
+                    expect(countOfTaskLabels).toEqual(dataView.table.rows.length + uniqueParents);
+                    expect(countOfTaskLines).toEqual(dataView.table.rows.length + uniqueParents);
+                    expect(countOfTasks).toEqual(dataView.table.rows.length + uniqueParents);
 
                     done();
                 });
@@ -156,6 +187,8 @@ module powerbi.extensibility.visual.test {
                     GanttData.ColumnResource,
                     GanttData.ColumnCompletePrecntege]);
 
+                fixDataViewDateValuesAggregation(dataView);
+
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
 
@@ -184,6 +217,8 @@ module powerbi.extensibility.visual.test {
                         element.values = element.values.map((v, i) => i === 0 ? 1 : 1 / v);
                     });
 
+                fixDataViewDateValuesAggregation(dataView);
+
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
 
@@ -209,6 +244,8 @@ module powerbi.extensibility.visual.test {
                         durationUnit: "second"
                     }
                 };
+
+                fixDataViewDateValuesAggregation(dataView);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
@@ -248,6 +285,8 @@ module powerbi.extensibility.visual.test {
                     GanttData.ColumnDuration,
                     GanttData.ColumnCompletePrecntege]);
 
+                fixDataViewDateValuesAggregation(dataView);
+
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let resources = d3.select(visualBuilder.element.get(0)).selectAll(".task-resource")[0];
                     let returnResource = grep(resources);
@@ -264,6 +303,8 @@ module powerbi.extensibility.visual.test {
                     GanttData.ColumnStartDate,
                     GanttData.ColumnDuration,
                     GanttData.ColumnResource]);
+
+                fixDataViewDateValuesAggregation(dataView);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let progressOfTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task-progress")[0];
@@ -284,16 +325,23 @@ module powerbi.extensibility.visual.test {
                 });
 
                 dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnType,
                     GanttData.ColumnTask,
                     GanttData.ColumnStartDate,
                     GanttData.ColumnDuration,
+                    GanttData.ColumnResource,
                     GanttData.ColumnCompletePrecntege]);
+
+
+                fixDataViewDateValuesAggregation(dataView);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let progressOfTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task-progress")[0];
+
+                    let skippedParents: number = 0;
                     progressOfTasks.forEach((e, i) => {
-                        let percent: number = defaultDataViewBuilder.valuesCompletePrecntege[i];
-                        let widthOfTask: number = $(visualBuilder.taskRect[i]).attr("width");
+                        let percent: number = defaultDataViewBuilder.valuesCompletePrecntege[i - skippedParents];
+                        let widthOfTask: number = $(visualBuilder.taskRect[i - skippedParents]).attr("width");
                         let widthOfProgressTask: number = +$(e).attr("width");
 
                         expect(widthOfProgressTask).toEqual(widthOfTask * percent);
@@ -310,6 +358,8 @@ module powerbi.extensibility.visual.test {
                     GanttData.ColumnStartDate,
                     GanttData.ColumnDuration,
                     GanttData.ColumnTooltips]);
+
+                fixDataViewDateValuesAggregation(dataView);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskLabelsInDom = d3.select(visualBuilder.element.get(0)).selectAll(".label title")[0];
@@ -339,6 +389,8 @@ module powerbi.extensibility.visual.test {
                     }
                 };
 
+                fixDataViewDateValuesAggregation(dataView);
+
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
 
@@ -346,7 +398,7 @@ module powerbi.extensibility.visual.test {
                         const newDuration: number = tasks[i].duration;
                         if (tasks[i].duration % 1 !== 0) {
                             newDuration =
-                                VisualClass.transformDuration(defaultDataViewBuilder.valuesDuration[i], "minute", 2);
+                                DurationHelper.transformDuration(defaultDataViewBuilder.valuesDuration[i], "minute", 2);
                         }
 
                         expect(tasks[i].duration).toEqual(newDuration);
@@ -359,10 +411,14 @@ module powerbi.extensibility.visual.test {
 
             it("Verify tooltips have extra information", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnType,
                     GanttData.ColumnTask,
                     GanttData.ColumnStartDate,
                     GanttData.ColumnDuration,
+                    GanttData.ColumnResource,
                     GanttData.ColumnExtraInformation]);
+
+                fixDataViewDateValuesAggregation(dataView);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
@@ -386,6 +442,7 @@ module powerbi.extensibility.visual.test {
                 let dateFormatter: IValueFormatter  = valueFormatter.create({format: null, cultureSelector: host.locale});
 
                 dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnType,
                     GanttData.ColumnTask,
                     GanttData.ColumnStartDate,
                     GanttData.ColumnDuration,
@@ -437,14 +494,21 @@ module powerbi.extensibility.visual.test {
 
             it("Verify sub tasks", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnType,
                     GanttData.ColumnTask,
                     GanttData.ColumnStartDate,
                     GanttData.ColumnDuration,
+                    GanttData.ColumnResource,
                     GanttData.ColumnParent]);
 
+                fixDataViewDateValuesAggregation(dataView);
+
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
-                    expect(tasks.length).toEqual(defaultDataViewBuilder.valuesTaskTypeResource.length);
+
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data(),
+                        uniqueParentsCount: number = getUniqueParentsCount(dataView, 3);
+
+                    expect(tasks.length).toEqual(defaultDataViewBuilder.valuesTaskTypeResource.length + uniqueParentsCount);
 
                     let parentIndex: number = 4;
                     let parentTask = visualBuilder.taskLabels.eq(parentIndex);
@@ -456,12 +520,40 @@ module powerbi.extensibility.visual.test {
                     childTaskMarginLeft = +visualBuilder.taskLabels.eq(++parentIndex).attr("x");
                     expect(childTaskMarginLeft).toEqual(VisualClass.SubtasksLeftMargin);
 
-                    visualBuilder.updateRenderTimeout(dataView, () => {
-                        tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
-                        expect(tasks.length).toEqual(defaultDataViewBuilder.valuesTaskTypeResource.length);
-                    });
-
                     done();
+                });
+            });
+
+            it("Show collapse all arrow if parent is added", (done) => {
+                dataView = defaultDataViewBuilder.getDataView([
+                    GanttData.ColumnType,
+                    GanttData.ColumnTask,
+                    GanttData.ColumnStartDate,
+                    GanttData.ColumnDuration,
+                    GanttData.ColumnResource,
+                    GanttData.ColumnParent
+                ]);
+
+                fixDataViewDateValuesAggregation(dataView);
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let collapseArrow = visualBuilder.collapseAllArrow[0];
+                    expect(collapseArrow).toBeDefined();
+
+                    dataView = defaultDataViewBuilder.getDataView([
+                        GanttData.ColumnType,
+                        GanttData.ColumnTask,
+                        GanttData.ColumnStartDate,
+                        GanttData.ColumnDuration,
+                        GanttData.ColumnResource
+                    ]);
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+
+                        let collapseArrow = visualBuilder.collapseAllArrow[0];
+                        expect(collapseArrow).not.toBeDefined();
+                        done();
+                    });
                 });
             });
 
@@ -488,6 +580,8 @@ module powerbi.extensibility.visual.test {
                         GanttData.ColumnDuration,
                         GanttData.ColumnCompletePrecntege]);
 
+                    fixDataViewDateValuesAggregation(dataView);
+
                     dataView.metadata.objects = {
                         taskCompletion: {
                             show: false
@@ -503,16 +597,21 @@ module powerbi.extensibility.visual.test {
                         GanttData.ColumnStartDate,
                         GanttData.ColumnDuration]);
 
+                    fixDataViewDateValuesAggregation(dataView);
+
                     checkCompletionEqualNull(done);
                 });
             });
 
             describe("Verify tooltips have info according 'parent' data", () => {
                 function checkTasksHaveTooltipInfo(done: () => void) {
+                    fixDataViewDateValuesAggregation(dataView);
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
                         for (let task of tasks) {
-                            expect(task.tooltipInfo.length).not.toEqual(0);
+                            if (!task.children) {
+                                expect(task.tooltipInfo.length).not.toEqual(0);
+                            }
                         }
 
                         done();
@@ -525,6 +624,8 @@ module powerbi.extensibility.visual.test {
                         GanttData.ColumnStartDate,
                         GanttData.ColumnDuration,
                         GanttData.ColumnParent]);
+
+                    fixDataViewDateValuesAggregation(dataView);
 
                     checkTasksHaveTooltipInfo(done);
                 });
@@ -623,6 +724,8 @@ module powerbi.extensibility.visual.test {
                     GanttData.ColumnStartDate,
                     GanttData.ColumnDuration]);
 
+                fixDataViewDateValuesAggregation(dataView);
+
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
                     for (let task of tasks) {
@@ -650,8 +753,9 @@ module powerbi.extensibility.visual.test {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
-                    for (let task of tasks) {
-                        for (let tooltipInfo of task.tooltipInfo) {
+
+                    for (let task of tasks.filter(x => x.tooltipInfo)) {
+                        for (let tooltipInfo of task) {
                             if (tooltipInfo.displayName === "Start Date") {
                                 let value: VisualTooltipDataItem  = tooltipInfo.value;
 
@@ -673,6 +777,8 @@ module powerbi.extensibility.visual.test {
                     GanttData.ColumnTask,
                     GanttData.ColumnStartDate,
                     GanttData.ColumnDuration]);
+
+                fixDataViewDateValuesAggregation(dataView);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
@@ -696,6 +802,8 @@ module powerbi.extensibility.visual.test {
                     GanttData.ColumnDuration]);
 
                 dataView.metadata.objects = { general: { groupTasks: true } };
+
+                fixDataViewDateValuesAggregation(dataView);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let countOfTaskLines = visualBuilder.mainElement
@@ -765,10 +873,12 @@ module powerbi.extensibility.visual.test {
                             .data();
 
                         tasks.forEach(task => {
-                            const dates: Date[] = d3
-                                .time[durationUnit]
-                                .range(task.start, task.end);
-                            expect(dates.length).toEqual(task.duration);
+                            if (task.duration) {
+                                const dates: Date[] = d3
+                                    .time[durationUnit]
+                                    .range(task.start, task.end);
+                                expect(dates.length).toEqual(task.duration);
+                            }
                         });
                     }
 
@@ -784,6 +894,8 @@ module powerbi.extensibility.visual.test {
                         let durationUnit: string = "day";
                         setDurationUnit(durationUnit);
 
+                        fixDataViewDateValuesAggregation(dataView);
+
                         visualBuilder.updateRenderTimeout(dataView, () => {
                             checkDurationUnit(durationUnit);
                             done();
@@ -793,6 +905,8 @@ module powerbi.extensibility.visual.test {
                     it("hours", (done) => {
                         let durationUnit: string = "hour";
                         setDurationUnit(durationUnit);
+
+                        fixDataViewDateValuesAggregation(dataView);
 
                         visualBuilder.updateRenderTimeout(dataView, () => {
                             checkDurationUnit(durationUnit);
@@ -804,6 +918,8 @@ module powerbi.extensibility.visual.test {
                         let durationUnit: string = "minute";
                         setDurationUnit(durationUnit);
 
+                        fixDataViewDateValuesAggregation(dataView);
+
                         visualBuilder.updateRenderTimeout(dataView, () => {
                             checkDurationUnit(durationUnit);
                             done();
@@ -813,6 +929,8 @@ module powerbi.extensibility.visual.test {
                     it("seconds", (done) => {
                         let durationUnit: string = "second";
                         setDurationUnit(durationUnit);
+
+                        fixDataViewDateValuesAggregation(dataView);
 
                         visualBuilder.updateRenderTimeout(dataView, () => {
                             checkDurationUnit(durationUnit);
@@ -867,6 +985,8 @@ module powerbi.extensibility.visual.test {
                         }
                     };
 
+                    fixDataViewDateValuesAggregation(dataView);
+
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         visualBuilder.taskDaysOffRect.toArray().map($).forEach(e => {
                             assertColorsMatch(e.css("fill"), color);
@@ -881,12 +1001,16 @@ module powerbi.extensibility.visual.test {
                     done: () => void): void {
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         visualBuilder.taskDaysOffRect.each((i, e) => {
-                            let daysOff: TaskDaysOff = e.__data__.daysOff;
-                            const amountOfWeekendDays: number = daysOff[1];
-                            const firstDayOfWeek: Date =
-                                new Date(daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay));
+                            const isParentTask: boolean = !!e.__data__.children;
 
-                            expect(firstDayOfWeek.getDay()).toEqual(dayForCheck);
+                            if (!isParentTask) {
+                                let daysOff: TaskDaysOff = e.__data__.daysOff;
+                                const amountOfWeekendDays: number = daysOff[1];
+                                const firstDayOfWeek: Date =
+                                    new Date(daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay));
+
+                                expect(firstDayOfWeek.getDay()).toEqual(dayForCheck);
+                            }
                         });
                         done();
                     });
@@ -902,6 +1026,8 @@ module powerbi.extensibility.visual.test {
                                 firstDayOfWeek: day
                             }
                         };
+
+                        fixDataViewDateValuesAggregation(dataView);
 
                         checkDaysOff(+day, done);
                     })(day));
@@ -920,6 +1046,7 @@ module powerbi.extensibility.visual.test {
                         defaultDataViewBuilder.valuesTaskTypeResource.length, 30, 48);
                     dataView = defaultDataViewBuilder.getDataView();
 
+                    fixDataViewDateValuesAggregation(dataView);
 
                     dataView.metadata.objects = {
                         general: {
@@ -946,6 +1073,8 @@ module powerbi.extensibility.visual.test {
                         GanttData.ColumnStartDate,
                         GanttData.ColumnDuration,
                         GanttData.ColumnParent]);
+
+                    fixDataViewDateValuesAggregation(dataView);
                 });
 
                 it("inherit parent legend", (done) => {
@@ -1022,6 +1151,69 @@ module powerbi.extensibility.visual.test {
                         done();
                     });
                 });
+
+                it("sorting both parents and subtasks (tasks asc)", (done) => {
+                    dataView.metadata.columns[1].sort = 1; // 1 - ascending order
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        assertSortingOrderAsc(tasks);
+                        done();
+                    });
+                });
+
+                it("sorting both parents and subtasks (tasks desc)", (done) => {
+                    dataView.metadata.columns[1].sort = 2; // 2 - descending order
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        assertSortingOrderDesc(tasks);
+                        done();
+                    });
+                });
+
+                it("sorting both parents and subtasks (parent asc)", (done) => {
+
+                    dataView.metadata.columns[2].sort = 1; // 1 - ascending order
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        assertSortingOrderAsc(tasks);
+                        done();
+                    });
+                });
+
+                it("sorting both parents and subtasks (parent desc)", (done) => {
+                    dataView.metadata.columns[2].sort = 2; // 2 - descending order
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        assertSortingOrderDesc(tasks);
+                        done();
+                    });
+                });
+
+                function assertSortingOrderAsc(tasks: Task[]) {
+                    let prevIndex: number = 0;
+
+                    for (let i = 1; i < tasks.length; ++i) {
+                        if (!tasks[i].parent) {
+                            expect(tasks[i].name).toBeGreaterThan(tasks[prevIndex].name);
+                            prevIndex = i;
+                        }
+                    }
+                }
+
+                function assertSortingOrderDesc(tasks: Task[]) {
+                    let prevIndex: number = 0;
+
+                    for (let i = 1; i < tasks.length; ++i) {
+                        if (!tasks[i].parent) {
+                            expect(tasks[i].name).toBeLessThan(tasks[prevIndex].name);
+                            prevIndex = i;
+                        }
+                    }
+                }
 
                 function getChildrenAndParents(tasks: Task[]) {
                     let children: {[key: string]: Task[]} = {};
@@ -1202,7 +1394,7 @@ module powerbi.extensibility.visual.test {
                     let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.days.data,
                         expected = unitMocks.days.expected,
-                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
 
                         expect(realResult).toEqual(expected);
                 });
@@ -1211,7 +1403,7 @@ module powerbi.extensibility.visual.test {
                     let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.hours.data,
                         expected = unitMocks.hours.expected,
-                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
 
                         expect(realResult).toEqual(expected);
                 });
@@ -1220,7 +1412,7 @@ module powerbi.extensibility.visual.test {
                     let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.minutes.data,
                         expected = unitMocks.minutes.expected,
-                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
 
                         expect(realResult).toEqual(expected);
                 });
@@ -1229,57 +1421,10 @@ module powerbi.extensibility.visual.test {
                     let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.seconds.data,
                         expected = unitMocks.seconds.expected,
-                        realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
 
                         expect(realResult).toEqual(expected);
                 });
-            });
-
-            describe("check not existent parent deletion from tasks", () => {
-                it("check on correct parent dataset", () => {
-                    let taskMock = GanttBuilder.getTaskMockCommon(),
-                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithCorrectParentsMock"),
-                        expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithCorrectParentsMock"),
-                        realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
-
-                    expectSimilarObject(expectedResult, realResult);
-                });
-
-                it("check on not existent parent dataset - parent.children", () => {
-                    let taskMock = GanttBuilder.getTaskMockCommon(),
-                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithNotExistentParentsMock"),
-                        expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithNotExistentParentsMock"),
-                        realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
-
-                    expectSimilarObject(expectedResult, realResult);
-                });
-
-                it("check on not existent in the middle parent dataset", () => {
-                    // parent.nonExistentParent.children -> parent.children
-                    let taskMock = GanttBuilder.getTaskMockCommon(),
-                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithNotExistentMiddleParentsMock"),
-                        expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithNotExistentMiddleParentsMock"),
-                        realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
-
-                    expectSimilarObject(expectedResult, realResult);
-                });
-
-                function expectSimilarObject(expectedResult, realResult) {
-                    const expectedKeys = Object.keys(expectedResult);
-                    const realKeys = Object.keys(realResult);
-
-                    expect(expectedKeys.length).toEqual(realKeys.length);
-                    expectedKeys.forEach(key => {
-                        const expectedObj = expectedResult[key];
-                        const realObj = realResult[key];
-
-                        if (typeof expectedObj === "object") {
-                            expectSimilarObject(expectedObj, realObj);
-                        } else {
-                            expect(realObj).toEqual(expectedObj);
-                        }
-                    });
-                };
             });
 
             describe("Task Settings", () => {
@@ -1289,6 +1434,8 @@ module powerbi.extensibility.visual.test {
                         GanttData.ColumnStartDate,
                         GanttData.ColumnDuration,
                         GanttData.ColumnResource]);
+
+                    fixDataViewDateValuesAggregation(dataView);
 
                     let color: string = GanttBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
