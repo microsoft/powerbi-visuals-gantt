@@ -27,6 +27,7 @@
 module powerbi.extensibility.visual {
     // d3
     import Selection = d3.Selection;
+    import timeScale = d3.time.Scale;
     import UpdateSelection = d3.selection.Update;
 
     // powerbi
@@ -97,8 +98,9 @@ module powerbi.extensibility.visual {
     import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
     import ColorUtils = powerbi.extensibility.utils.color;
 
-    import DataViewMetadataColumn = powerbi.DataViewMetadataColumn;
-    import timeScale = d3.time.Scale;
+    // behavior
+    import Behavior = behavior.Behavior;
+    import BehaviorOptions = behavior.BehaviorOptions;
 
     const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
     const ScrollMargin: number = 100;
@@ -139,7 +141,7 @@ module powerbi.extensibility.visual {
         Day = <any>"day",
     }
 
-     export enum DateTypes {
+    export enum DateTypes {
         Second = <any>"Second",
         Minute = <any>"Minute",
         Hour = <any>"Hour",
@@ -174,6 +176,7 @@ module powerbi.extensibility.visual {
         daysOffList: DayOffData[];
         wasDowngradeDurationUnit: boolean;
         stepDurationTransformation?: number;
+        highlight?: boolean;
     }
 
     export type DayOffData = [Date, number];
@@ -252,19 +255,6 @@ module powerbi.extensibility.visual {
         tooltipInfo: VisualTooltipDataItem[];
     }
 
-    export interface SubTasksCollapse {
-        selection: Selection<any>;
-        callback: Function;
-    }
-
-    export interface GanttBehaviorOptions {
-        clearCatcher: Selection<any>;
-        taskSelection: Selection<any>;
-        legendSelection: Selection<any>;
-        subTasksCollapse: SubTasksCollapse;
-        interactivityService: IInteractivityService;
-    }
-
     module Selectors {
         export const ClassName: ClassAndSelector = createClassAndSelector("gantt");
         export const Chart: ClassAndSelector = createClassAndSelector("chart");
@@ -317,8 +307,6 @@ module powerbi.extensibility.visual {
 
         public static DefaultValues = {
             AxisTickSize: 6,
-            MaxTaskOpacity: 1,
-            MinTaskOpacity: 0.4,
             ProgressBarHeight: 4,
             ResourceWidth: 100,
             TaskColor: "#00B099",
@@ -381,8 +369,7 @@ module powerbi.extensibility.visual {
         private lineGroupWrapper: Selection<any>;
         private clearCatcher: Selection<any>;
         private ganttDiv: Selection<any>;
-        private selectionManager: ISelectionManager;
-        private behavior: GanttChartBehavior;
+        private behavior: Behavior;
         private interactivityService: IInteractivityService;
         private tooltipServiceWrapper: ITooltipServiceWrapper;
         private host: IVisualHost;
@@ -399,17 +386,16 @@ module powerbi.extensibility.visual {
             this.host = options.host;
             this.localizationManager = this.host.createLocalizationManager();
             this.colors = options.host.colorPalette;
-            this.selectionManager = options.host.createSelectionManager();
             this.body = d3.select(options.element);
             this.tooltipServiceWrapper = createTooltipServiceWrapper(this.host.tooltipService, options.element);
-            this.behavior = new GanttChartBehavior();
+            this.behavior = new Behavior();
             this.interactivityService = createInteractivityService(this.host);
 
             this.createViewport($(options.element));
         }
 
         /**
-         * Create the vieport area of the gantt chart
+         * Create the viewport area of the gantt chart
          */
         private createViewport(element: JQuery): void {
             let self = this;
@@ -844,7 +830,7 @@ module powerbi.extensibility.visual {
                     name: categoryValue as string,
                     start: startDate,
                     end: null,
-                    parent: (parent ?  parent + "." : "") + categoryValue,
+                    parent: (parent ? parent + "." : "") + categoryValue,
                     children: [],
                     visibility: true,
                     duration,
@@ -934,13 +920,13 @@ module powerbi.extensibility.visual {
         }
 
         private static childrenOfTaskProcessing(tasks: Task[],
-                                                task: Task,
-                                                settings: GanttSettings,
-                                                durationUnit: string): void {
+            task: Task,
+            settings: GanttSettings,
+            durationUnit: string): void {
             let childrenOfTask: Task[] = tasks.filter((childTask: Task) =>
                 (childTask.parent.substr(0, task.parent.length) === task.parent &&
-                childTask.parent.length > task.parent.length &&
-                childTask.parent.indexOf(".") !== -1)
+                    childTask.parent.length > task.parent.length &&
+                    childTask.parent.indexOf(".") !== -1)
             );
 
             if (childrenOfTask.length) {
@@ -976,7 +962,7 @@ module powerbi.extensibility.visual {
 
             task.completion = children
                 .reduce((prevValue, childTaskNext: Task) => prevValue + childTaskNext.completion, 0) /
-                 children.length;
+                children.length;
         }
 
         /**
@@ -987,7 +973,7 @@ module powerbi.extensibility.visual {
         private static setParentDurationByChildren(task: Task, children: Task[], durationUnit: string): void {
             task.start = (_.minBy(children, (childTask: Task) => childTask.start)).start;
             task.end = (_.maxBy(children, (childTask: Task) => childTask.end)).end;
-            task.duration =  d3.time[durationUnit].range(task.start, task.end).length;
+            task.duration = d3.time[durationUnit].range(task.start, task.end).length;
         }
 
         /**
@@ -1000,7 +986,7 @@ module powerbi.extensibility.visual {
             rgbColor = ColorUtils.darken(rgbColor, Gantt.SubtaskDarken);
             children.forEach((childTask: Task) => {
                 childTask.color = ColorUtils.hexString(rgbColor);
-                childTask.taskType = parent.taskType ;
+                childTask.taskType = parent.taskType;
             });
 
             return children;
@@ -1011,7 +997,7 @@ module powerbi.extensibility.visual {
                 return GanttDurationUnitType[0];
 
             switch (durationUnitTypeIndex) {
-                case  GanttDurationUnitType.indexOf("day"):
+                case GanttDurationUnitType.indexOf("day"):
                     duration = duration * HoursInADay;
                     break;
                 case GanttDurationUnitType.indexOf("hour"):
@@ -1022,7 +1008,7 @@ module powerbi.extensibility.visual {
                     break;
             }
 
-            if ((duration - Math.floor(duration) !== 0) && durationUnitTypeIndex > 1 ) {
+            if ((duration - Math.floor(duration) !== 0) && durationUnitTypeIndex > 1) {
                 return Gantt.getNewUnitByFloorDurationFloor(durationUnitTypeIndex - 1, duration);
             } else {
                 return GanttDurationUnitType[durationUnitTypeIndex - 1];
@@ -1072,12 +1058,12 @@ module powerbi.extensibility.visual {
                     break;
                 case DurationUnits.Minute:
                     transformedDuration = duration * (stepDurationTransformation === 2
-                            ? MinutesInADay
-                            : MinutesInAHour);
+                        ? MinutesInADay
+                        : MinutesInAHour);
                     break;
                 case DurationUnits.Second:
                     transformedDuration = duration * (stepDurationTransformation === 3 ? SecondsInADay
-                         : stepDurationTransformation === 2 ? SecondsInAHour
+                        : stepDurationTransformation === 2 ? SecondsInAHour
                             : SecondsInAMinute);
                     break;
             }
@@ -1100,7 +1086,7 @@ module powerbi.extensibility.visual {
             daysOffDataForAddition.amountOfLastDaysOff = 1;
             for (let i = DaysInAWeekend; i > 0; i--) {
                 let dateForCheck: Date = new Date(date.getTime() + (i * MillisecondsInADay));
-                if  (dateForCheck.getDay() === +firstDayOfWeek &&
+                if (dateForCheck.getDay() === +firstDayOfWeek &&
                     (!extraCondition || (extraCondition && !/00\:00\:00/g.test(dateForCheck.toTimeString())))) {
                     daysOffDataForAddition.amountOfLastDaysOff = i;
                     daysOffDataForAddition.list.push([
@@ -1421,26 +1407,30 @@ module powerbi.extensibility.visual {
             this.updateTaskLabels(groupedTasks, settings.taskLabels.width);
             this.updateElementsPositions(this.margin);
             this.createMilestoneLine(groupedTasks);
+
             if (settings.general.scrollToCurrentTime) {
                 this.scrollToMilestoneLine(axisLength);
             }
 
             if (this.interactivityService) {
-                let behaviorOptions: GanttBehaviorOptions = {
+                const behaviorOptions: BehaviorOptions = {
                     clearCatcher: this.clearCatcher,
-                    taskSelection: this.taskGroup
-                        .selectAll(Selectors.SingleTask.selector),
-                    legendSelection: this.body
-                        .selectAll(Selectors.LegendItems.selector),
+                    taskSelection: this.taskGroup.selectAll(Selectors.SingleTask.selector),
+                    legendSelection: this.body.selectAll(Selectors.LegendItems.selector),
                     subTasksCollapse: {
-                        selection: this.body
-                            .selectAll(Selectors.Label.selector),
+                        selection: this.body.selectAll(Selectors.Label.selector),
                         callback: this.subTasksCollapseCb.bind(this)
                     },
                     interactivityService: this.interactivityService
                 };
 
-                this.interactivityService.bind(tasks, this.behavior, behaviorOptions);
+                this.interactivityService.bind(
+                    tasks,
+                    this.behavior,
+                    behaviorOptions,
+                );
+
+                this.behavior.renderSelection(false);
             }
         }
 
@@ -1565,7 +1555,7 @@ module powerbi.extensibility.visual {
             const width = PixelConverter.toString(this.margin.left + settings.taskLabels.width + axisLength + Gantt.DefaultValues.ResourceWidth);
 
             this.ganttSvg
-                .attr({height, width});
+                .attr({ height, width });
         }
 
         private groupTasks(tasks: Task[]): GroupedTask[] {
@@ -1630,7 +1620,7 @@ module powerbi.extensibility.visual {
             const firstDayOfWeek: string = this.viewModel.settings.daysOff.firstDayOfWeek;
             const color: string = this.viewModel.settings.daysOff.fill;
             if (this.viewModel.settings.daysOff.show) {
-                let dateForCheck: Date =  new Date(tickTime.getTime());
+                let dateForCheck: Date = new Date(tickTime.getTime());
                 for (let i = 0; i <= DaysInAWeekend; i++) {
                     if (dateForCheck.getDay() === +firstDayOfWeek) {
                         return !i
@@ -1747,7 +1737,7 @@ module powerbi.extensibility.visual {
                     objectName: "collapsedTasks",
                     selector: null,
                     properties: {
-                        list : JSON.stringify(this.collapsedTasks)
+                        list: JSON.stringify(this.collapsedTasks)
                     }
                 }]
             });
@@ -1795,7 +1785,7 @@ module powerbi.extensibility.visual {
         private removeBySelectors(
             taskSelection: UpdateSelection<Task>,
             selector: string
-            ): void {
+        ): void {
 
             taskSelection
                 .selectAll(Selectors[selector].selector)
@@ -1825,7 +1815,7 @@ module powerbi.extensibility.visual {
          * @param taskConfigHeight Task heights from settings
          */
         private taskMainRectRender(
-            taskSelection: UpdateSelection <Task>,
+            taskSelection: UpdateSelection<Task>,
             taskConfigHeight: number): void {
             let taskRect: UpdateSelection<Task> = taskSelection
                 .selectAll(Selectors.TaskRect.selector)
@@ -2013,7 +2003,7 @@ module powerbi.extensibility.visual {
                 let self: Gantt = this;
                 if (!taskResourceFullText) {
                     taskResource
-                        .each(function(task: Task){
+                        .each(function (task: Task) {
                             const width: number = taskResourceWidthByTask
                                 ? self.taskDurationToWidth(task.start, task.end)
                                 : Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding;
@@ -2124,11 +2114,11 @@ module powerbi.extensibility.visual {
         }
 
 
-            /**
-         * Get bar y coordinate
-         * @param lineNumber Line number that represents the task number
-         * @param lineHeight Height of task line
-         */
+        /**
+     * Get bar y coordinate
+     * @param lineNumber Line number that represents the task number
+     * @param lineHeight Height of task line
+     */
         private static getBarYCoordinate(
             lineNumber: number,
             lineHeight: number): number {
@@ -2225,7 +2215,7 @@ module powerbi.extensibility.visual {
         }
 
         private scrollToMilestoneLine(axisLength: number,
-                                      timestamp: number = Date.now()): void {
+            timestamp: number = Date.now()): void {
 
             let scrollValue = this.timeScale(new Date(timestamp));
             scrollValue -= scrollValue > ScrollMargin
