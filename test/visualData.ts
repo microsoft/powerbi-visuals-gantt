@@ -34,13 +34,13 @@ module powerbi.extensibility.visual.test {
     import TestDataViewBuilder = powerbi.extensibility.utils.test.dataViewBuilder.TestDataViewBuilder;
     import getRandomNumber = powerbi.extensibility.utils.test.helpers.getRandomNumber;
 
-    export class GanttData extends TestDataViewBuilder {
+    export class VisualData extends TestDataViewBuilder {
         public static ColumnType: string = "Type";
         public static ColumnTask: string = "Task";
         public static ColumnStartDate: string = "StartDate";
         public static ColumnDuration: string = "Duration";
         public static ColumnResource: string = "Resource";
-        public static ColumnCompletePrecntege: string = "CompletePrecntege";
+        public static ColumnCompletePercentage: string = "CompletePercentage";
         public static ColumnExtraInformation: string = "Description";
         public static ColumnParent: string = "Parent";
         public static ColumnExtraInformationDates: string = "DescriptionDates";
@@ -79,11 +79,11 @@ module powerbi.extensibility.visual.test {
             ["Dev", "BugFixing", "Last Name"]
 
         ];
-        public valuesStartDate = GanttData.getRandomUniqueDates(this.valuesTaskTypeResource.length, new Date(2015, 7, 0), new Date(2017, 7, 0));
-        public valuesDuration = GanttData.getRandomUniqueNumbers(this.valuesTaskTypeResource.length, 3, 40);
-        public valuesCompletePrecntege = GanttData.getRandomUniqueNumbers(this.valuesTaskTypeResource.length);
-        public valuesExtraInformation = GanttData.getTexts(this.valuesTaskTypeResource, "Description");
-        public valuesExtraInformationDates = GanttData.getRandomUniqueDates(this.valuesTaskTypeResource.length, new Date(2015, 7, 0), new Date(2017, 7, 0));
+        public valuesStartDate = VisualData.getRandomUniqueDates(this.valuesTaskTypeResource.length, new Date(2015, 7, 0), new Date(2017, 7, 0));
+        public valuesDuration = VisualData.getRandomUniqueNumbers(this.valuesTaskTypeResource.length, 3, 40);
+        public valuesCompletePrecntege = VisualData.getRandomUniqueNumbers(this.valuesTaskTypeResource.length);
+        public valuesExtraInformation = VisualData.getTexts(this.valuesTaskTypeResource, "Description");
+        public valuesExtraInformationDates = VisualData.getRandomUniqueDates(this.valuesTaskTypeResource.length, new Date(2015, 7, 0), new Date(2017, 7, 0));
 
         public static getTexts(valuesTaskTypeResource: string[][], text: string): string[] {
             return valuesTaskTypeResource.map((item) => {
@@ -112,7 +112,7 @@ module powerbi.extensibility.visual.test {
             return this.createCategoricalDataViewBuilder([
                 {
                     source: {
-                        displayName: GanttData.ColumnType,
+                        displayName: VisualData.ColumnType,
                         type: ValueType.fromDescriptor({ text: true }),
                         roles: { "Legend": true }
                     },
@@ -120,7 +120,7 @@ module powerbi.extensibility.visual.test {
                 },
                 {
                     source: {
-                        displayName: GanttData.ColumnTask,
+                        displayName: VisualData.ColumnTask,
                         type: ValueType.fromDescriptor({ text: true }),
                         roles: { "Task": true }
                     },
@@ -128,7 +128,7 @@ module powerbi.extensibility.visual.test {
                 },
                 {
                     source: {
-                        displayName: GanttData.ColumnResource,
+                        displayName: VisualData.ColumnResource,
                         type: ValueType.fromDescriptor({ text: true }),
                         roles: { "Resource": true }
                     },
@@ -136,7 +136,7 @@ module powerbi.extensibility.visual.test {
                 },
                 {
                     source: {
-                        displayName: GanttData.ColumnStartDate,
+                        displayName: VisualData.ColumnStartDate,
                         type: ValueType.fromDescriptor({ dateTime: true }),
                         roles: { "StartDate": true }
                     },
@@ -144,7 +144,7 @@ module powerbi.extensibility.visual.test {
                 },
                 {
                     source: {
-                        displayName: GanttData.ColumnExtraInformation,
+                        displayName: VisualData.ColumnExtraInformation,
                         type: ValueType.fromDescriptor({ text: true }),
                         roles: { "ExtraInformation": true }
                     },
@@ -153,7 +153,7 @@ module powerbi.extensibility.visual.test {
 
                 {
                     source: {
-                        displayName: GanttData.ColumnExtraInformationDates,
+                        displayName: VisualData.ColumnExtraInformationDates,
                         type: ValueType.fromDescriptor({ text: true }),
                         roles: { "ExtraInformation": true }
                     },
@@ -161,7 +161,7 @@ module powerbi.extensibility.visual.test {
                 },
                 {
                     source: {
-                        displayName: GanttData.ColumnParent,
+                        displayName: VisualData.ColumnParent,
                         type: ValueType.fromDescriptor({ text: true }),
                         roles: { "Parent": true }
                     },
@@ -170,7 +170,7 @@ module powerbi.extensibility.visual.test {
             ], [
                     {
                         source: {
-                            displayName: GanttData.ColumnDuration,
+                            displayName: VisualData.ColumnDuration,
                             type: ValueType.fromDescriptor({ numeric: true }),
                             roles: { "Duration": true }
                         },
@@ -178,7 +178,7 @@ module powerbi.extensibility.visual.test {
                     },
                     {
                         source: {
-                            displayName: GanttData.ColumnCompletePrecntege,
+                            displayName: VisualData.ColumnCompletePercentage,
                             type: ValueType.fromDescriptor({ numeric: true }),
                             roles: { "Completion": true }
                         },
