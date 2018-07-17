@@ -24,26 +24,55 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
-    // d3
-    import Selection = d3.Selection;
-
-    import SelectableDataPoint = powerbi.extensibility.utils.interactivity.SelectableDataPoint;
-    import IInteractiveBehavior = powerbi.extensibility.utils.interactivity.IInteractiveBehavior;
+module powerbi.extensibility.visual.behavior {
+    // powerbi.extensibility.utils.interactivity
     import ISelectionHandler = powerbi.extensibility.utils.interactivity.ISelectionHandler;
+    import IInteractiveBehavior = powerbi.extensibility.utils.interactivity.IInteractiveBehavior;
+    import IInteractivityService = powerbi.extensibility.utils.interactivity.IInteractivityService;
 
-    export class GanttChartBehavior implements IInteractiveBehavior {
-        private options: GanttBehaviorOptions;
-        private selectionHandler: ISelectionHandler;
+    export const DimmedOpacity: number = 0.4;
+    export const DefaultOpacity: number = 1.0;
 
-        public bindEvents(options: GanttBehaviorOptions, selectionHandler: ISelectionHandler) {
+    export function getFillOpacity(
+        selected: boolean,
+        highlight: boolean,
+        hasSelection: boolean,
+        hasPartialHighlights: boolean
+    ): number {
+        if ((hasPartialHighlights && !highlight) || (hasSelection && !selected)) {
+            return DimmedOpacity;
+        }
+
+        return DefaultOpacity;
+    }
+
+    export interface BehaviorOptions {
+        clearCatcher: d3.Selection<any>;
+        taskSelection: d3.Selection<Task>;
+        legendSelection: d3.Selection<any>;
+        interactivityService: IInteractivityService;
+        subTasksCollapse: {
+            selection: d3.Selection<any>;
+            callback: (groupedTask: GroupedTask) => void;
+        };
+    }
+
+    export class Behavior implements IInteractiveBehavior {
+        private options: BehaviorOptions;
+
+        public bindEvents(options: BehaviorOptions, selectionHandler: ISelectionHandler) {
             this.options = options;
-            let clearCatcher: Selection<any> = options.clearCatcher;
-            this.selectionHandler = selectionHandler;
 
-            options.taskSelection.on("click", (d: SelectableDataPoint) => {
-                selectionHandler.handleSelection(d, (d3.event as MouseEvent).ctrlKey);
-                (d3.event as MouseEvent).stopPropagation();
+            const {
+                clearCatcher,
+            } = options;
+
+            options.taskSelection.on("click", (dataPoint: Task) => {
+                const event: MouseEvent = d3.event as MouseEvent;
+
+                selectionHandler.handleSelection(dataPoint, event.ctrlKey);
+
+                event.stopPropagation();
             });
 
             options.legendSelection.on("click", (d: any) => {
@@ -77,8 +106,20 @@ module powerbi.extensibility.visual {
         }
 
         public renderSelection(hasSelection: boolean) {
-            this.options.taskSelection.style("opacity", (d: SelectableDataPoint) => {
-                return (hasSelection && !d.selected) ? Gantt.DefaultValues.MinTaskOpacity : Gantt.DefaultValues.MaxTaskOpacity;
+            const {
+                taskSelection,
+                interactivityService,
+            } = this.options;
+
+            const hasHighlights: boolean = interactivityService.hasSelection();
+
+            taskSelection.style("opacity", (dataPoint: Task) => {
+                return getFillOpacity(
+                    dataPoint.selected,
+                    dataPoint.highlight,
+                    !dataPoint.highlight && hasSelection,
+                    !dataPoint.selected && hasHighlights
+                );
             });
         }
     }

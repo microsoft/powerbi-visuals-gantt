@@ -31,16 +31,19 @@ module powerbi.extensibility.visual.test {
     import DataView = powerbi.DataView;
 
     // powerbi.extensibility.visual.test
-    import GanttData = powerbi.extensibility.visual.test.GanttData;
-    import GanttBuilder = powerbi.extensibility.visual.test.GanttBuilder;
+    import VisualData = powerbi.extensibility.visual.test.VisualData;
+    import VisualBuilder = powerbi.extensibility.visual.test.VisualBuilder;
 
     // powerbi.extensibility.visual.Gantt1448688115699
+    import Task = powerbi.extensibility.visual.Gantt1448688115699.Task;
     import VisualClass = powerbi.extensibility.visual.Gantt1448688115699.Gantt;
+    import TaskDaysOff = powerbi.extensibility.visual.Gantt1448688115699.TaskDaysOff;
 
     // powerbi.extensibility.utils.test
-    import clickElement = powerbi.extensibility.utils.test.helpers.clickElement;
-    import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
     import mocks = powerbi.extensibility.utils.test.mocks;
+    import clickElement = powerbi.extensibility.utils.test.helpers.clickElement;
+    import MockISelectionId = powerbi.extensibility.utils.test.mocks.MockISelectionId;
+    import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
 
     // powerbi.extensibility.utils.type
     import PixelConverter = powerbi.extensibility.utils.type.PixelConverter;
@@ -49,6 +52,7 @@ module powerbi.extensibility.visual.test {
     import valueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
     import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
 
+    // powerbi.extensibility.utils.chart
     import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
 
     export enum DateTypes {
@@ -74,22 +78,20 @@ module powerbi.extensibility.visual.test {
 
     const defaultTaskDuration: number = 1;
     const datesAmountForScroll: number = 90;
-    const millisecondsInADay: number  = 24 * 60 * 60 * 1000;
+    const millisecondsInADay: number = 24 * 60 * 60 * 1000;
 
     describe("Gantt", () => {
-        let visualBuilder: GanttBuilder,
-            visualInstance: VisualClass,
-            defaultDataViewBuilder: GanttData,
-            dataView: DataView;
+        let visualBuilder: VisualBuilder;
+        let defaultDataViewBuilder: VisualData;
+        let dataView: DataView;
 
         beforeEach(() => {
-            visualBuilder = new GanttBuilder(1000, 500);
+            visualBuilder = new VisualBuilder(1000, 500);
 
-            defaultDataViewBuilder = new GanttData();
+            defaultDataViewBuilder = new VisualData();
             dataView = defaultDataViewBuilder.getDataView();
-
-            visualInstance = visualBuilder.instance;
         });
+
         describe("DOM tests", () => {
 
             // function that uses grep to filter
@@ -122,7 +124,7 @@ module powerbi.extensibility.visual.test {
 
             it("Task Elements are presented in DOM if and only if task name is available (specified)", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnTask]);
+                    VisualData.ColumnTask]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     expect(visualBuilder.tasks.length).not.toEqual(0);
@@ -132,11 +134,11 @@ module powerbi.extensibility.visual.test {
 
             it("When Task Element is Missing, empty viewport should be created", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnType,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnResource,
-                    GanttData.ColumnCompletePrecntege]);
+                    VisualData.ColumnType,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnResource,
+                    VisualData.ColumnCompletePercentage]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let body = d3.select(visualBuilder.element.get(0));
@@ -150,11 +152,11 @@ module powerbi.extensibility.visual.test {
 
             it("When task duration is missing,  it should be set to 1", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnType,
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnResource,
-                    GanttData.ColumnCompletePrecntege]);
+                    VisualData.ColumnType,
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnResource,
+                    VisualData.ColumnCompletePercentage]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
@@ -169,19 +171,19 @@ module powerbi.extensibility.visual.test {
 
             it("When task duration is 1 or less,  it should be set to 1, not false", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnType,
-                    GanttData.ColumnTask,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnResource,
-                    GanttData.ColumnCompletePrecntege]);
+                    VisualData.ColumnType,
+                    VisualData.ColumnTask,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnResource,
+                    VisualData.ColumnCompletePercentage]);
 
                 dataView
                     .categorical
                     .values
                     .filter(x => x.source.roles.Duration)
                     .forEach((element, i) => {
-                        element.values = element.values.map((v, i) => i === 0 ? 1 : 1 / v);
+                        element.values = element.values.map((v: number, i) => i === 0 ? 1 : 1 / v);
                     });
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
@@ -196,13 +198,14 @@ module powerbi.extensibility.visual.test {
             });
 
             it("When task duration is float and duration unit 'second',  it should be round", (done) => {
-                defaultDataViewBuilder.valuesDuration = GanttData.getRandomUniqueNumbers(100, 1, 2, false);
+                defaultDataViewBuilder.valuesDuration = VisualData.getRandomUniqueNumbers(100, 1, 2, false);
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnType,
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnResource,
-                    GanttData.ColumnCompletePrecntege]);
+                    VisualData.ColumnType,
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnResource,
+                    VisualData.ColumnCompletePercentage
+                ]);
 
                 dataView.metadata.objects = {
                     general: {
@@ -223,11 +226,11 @@ module powerbi.extensibility.visual.test {
 
             it("When task start time is missing, it should be set to today date", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnType,
-                    GanttData.ColumnTask,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnResource,
-                    GanttData.ColumnCompletePrecntege]);
+                    VisualData.ColumnType,
+                    VisualData.ColumnTask,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnResource,
+                    VisualData.ColumnCompletePercentage]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
@@ -242,11 +245,11 @@ module powerbi.extensibility.visual.test {
 
             it("Task Resource is Missing, not shown on dom", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnType,
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnCompletePrecntege]);
+                    VisualData.ColumnType,
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnCompletePercentage]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let resources = d3.select(visualBuilder.element.get(0)).selectAll(".task-resource")[0];
@@ -259,11 +262,11 @@ module powerbi.extensibility.visual.test {
 
             it("Task Completion is Missing, not shown on dom", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnType,
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnResource]);
+                    VisualData.ColumnType,
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnResource]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let progressOfTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task-progress")[0];
@@ -275,7 +278,7 @@ module powerbi.extensibility.visual.test {
             });
 
             it("Task Completion width is equal task width", (done) => {
-                defaultDataViewBuilder.valuesCompletePrecntege = GanttData.getRandomUniqueNumbers(
+                defaultDataViewBuilder.valuesCompletePrecntege = VisualData.getRandomUniqueNumbers(
                     defaultDataViewBuilder.valuesTaskTypeResource.length, 0, 100
                 );
 
@@ -284,16 +287,16 @@ module powerbi.extensibility.visual.test {
                 });
 
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnCompletePrecntege]);
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnCompletePercentage]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let progressOfTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task-progress")[0];
                     progressOfTasks.forEach((e, i) => {
                         let percent: number = defaultDataViewBuilder.valuesCompletePrecntege[i];
-                        let widthOfTask: number = $(visualBuilder.taskRect[i]).attr("width");
+                        let widthOfTask: number = parseFloat($(visualBuilder.taskRect[i]).attr("width"));
                         let widthOfProgressTask: number = +$(e).attr("width");
 
                         expect(widthOfProgressTask).toEqual(widthOfTask * percent);
@@ -306,10 +309,10 @@ module powerbi.extensibility.visual.test {
             it("Verify task labels have tooltips", (done) => {
                 defaultDataViewBuilder.valuesTaskTypeResource.forEach(x => x[1] = _.repeat(x[1] + " ", 5).trim());
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnTooltips]);
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                ]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskLabelsInDom = d3.select(visualBuilder.element.get(0)).selectAll(".label title")[0];
@@ -326,12 +329,12 @@ module powerbi.extensibility.visual.test {
             });
 
             it("Verify case if duration is not integer number", (done) => {
-                defaultDataViewBuilder.valuesDuration = GanttData.getRandomUniqueNumbers(
+                defaultDataViewBuilder.valuesDuration = VisualData.getRandomUniqueNumbers(
                     defaultDataViewBuilder.valuesTaskTypeResource.length, 0, 20, false);
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration]);
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration]);
 
                 dataView.metadata.objects = {
                     general: {
@@ -343,10 +346,13 @@ module powerbi.extensibility.visual.test {
                     let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
 
                     for (let i in tasks) {
-                        const newDuration: number = tasks[i].duration;
+                        let newDuration: number = tasks[i].duration;
                         if (tasks[i].duration % 1 !== 0) {
-                            newDuration =
-                                VisualClass.transformDuration(defaultDataViewBuilder.valuesDuration[i], "minute", 2);
+                            newDuration = VisualClass["transformDuration"](
+                                defaultDataViewBuilder.valuesDuration[i],
+                                "minute",
+                                2
+                            );
                         }
 
                         expect(tasks[i].duration).toEqual(newDuration);
@@ -359,18 +365,19 @@ module powerbi.extensibility.visual.test {
 
             it("Verify tooltips have extra information", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnExtraInformation]);
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnExtraInformation]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
                     let index = 0;
                     for (let task of tasks) {
                         for (let tooltipInfo of task.tooltipInfo) {
-                            if (tooltipInfo.displayName === GanttData.ColumnExtraInformation) {
-                                let value: VisualTooltipDataItem  = tooltipInfo.value;
+                            if (tooltipInfo.displayName === VisualData.ColumnExtraInformation) {
+                                let value: string = tooltipInfo.value;
+
                                 expect(value).toEqual(defaultDataViewBuilder.valuesExtraInformation[index++]);
                             }
                         }
@@ -383,20 +390,21 @@ module powerbi.extensibility.visual.test {
             it("Verify tooltips have extra information (date type)", (done) => {
                 let host: IVisualHost = mocks.createVisualHost();
                 host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
-                let dateFormatter: IValueFormatter  = valueFormatter.create({format: null, cultureSelector: host.locale});
+                let dateFormatter: IValueFormatter = valueFormatter.create({ format: null, cultureSelector: host.locale });
 
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnExtraInformationDates]);
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnExtraInformationDates]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
                     for (let task of tasks) {
                         for (let tooltipInfo of task.tooltipInfo) {
-                            if (tooltipInfo.displayName === GanttData.ColumnExtraInformation) {
-                                let value: VisualTooltipDataItem  = tooltipInfo.value;
+                            if (tooltipInfo.displayName === VisualData.ColumnExtraInformation) {
+                                let value: string = tooltipInfo.value;
+
                                 expect(value).toEqual(dateFormatter.format(task.start));
                             }
                         }
@@ -437,10 +445,10 @@ module powerbi.extensibility.visual.test {
 
             it("Verify sub tasks", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnParent]);
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnParent]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
@@ -450,11 +458,11 @@ module powerbi.extensibility.visual.test {
                     let parentTask = visualBuilder.taskLabels.eq(parentIndex);
                     clickElement(parentTask);
 
-                    const childTaskMarginLeft: number = +visualBuilder.taskLabels.eq(++parentIndex).attr("x");
-                    expect(childTaskMarginLeft).toEqual(VisualClass.SubtasksLeftMargin);
+                    let childTaskMarginLeft: number = +visualBuilder.taskLabels.eq(++parentIndex).attr("x");
+                    expect(childTaskMarginLeft).toEqual(VisualClass["SubtasksLeftMargin"]);
 
                     childTaskMarginLeft = +visualBuilder.taskLabels.eq(++parentIndex).attr("x");
-                    expect(childTaskMarginLeft).toEqual(VisualClass.SubtasksLeftMargin);
+                    expect(childTaskMarginLeft).toEqual(VisualClass["SubtasksLeftMargin"]);
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
@@ -471,7 +479,7 @@ module powerbi.extensibility.visual.test {
                         let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
                         for (let task of tasks) {
                             for (let tooltipInfo of task.tooltipInfo) {
-                                if (tooltipInfo.displayName === GanttData.ColumnCompletePrecntege) {
+                                if (tooltipInfo.displayName === VisualData.ColumnCompletePercentage) {
                                     expect(tooltipInfo.value).toEqual(null);
                                 }
                             }
@@ -483,10 +491,10 @@ module powerbi.extensibility.visual.test {
 
                 it("TaskCompletion setting is switched off", (done) => {
                     dataView = defaultDataViewBuilder.getDataView([
-                        GanttData.ColumnTask,
-                        GanttData.ColumnStartDate,
-                        GanttData.ColumnDuration,
-                        GanttData.ColumnCompletePrecntege]);
+                        VisualData.ColumnTask,
+                        VisualData.ColumnStartDate,
+                        VisualData.ColumnDuration,
+                        VisualData.ColumnCompletePercentage]);
 
                     dataView.metadata.objects = {
                         taskCompletion: {
@@ -499,9 +507,9 @@ module powerbi.extensibility.visual.test {
 
                 it("Completion data unavailable", (done) => {
                     dataView = defaultDataViewBuilder.getDataView([
-                        GanttData.ColumnTask,
-                        GanttData.ColumnStartDate,
-                        GanttData.ColumnDuration]);
+                        VisualData.ColumnTask,
+                        VisualData.ColumnStartDate,
+                        VisualData.ColumnDuration]);
 
                     checkCompletionEqualNull(done);
                 });
@@ -521,19 +529,19 @@ module powerbi.extensibility.visual.test {
 
                 it("With parent data", (done) => {
                     dataView = defaultDataViewBuilder.getDataView([
-                        GanttData.ColumnTask,
-                        GanttData.ColumnStartDate,
-                        GanttData.ColumnDuration,
-                        GanttData.ColumnParent]);
+                        VisualData.ColumnTask,
+                        VisualData.ColumnStartDate,
+                        VisualData.ColumnDuration,
+                        VisualData.ColumnParent]);
 
                     checkTasksHaveTooltipInfo(done);
                 });
 
                 it("Without parent data", (done) => {
                     dataView = defaultDataViewBuilder.getDataView([
-                        GanttData.ColumnTask,
-                        GanttData.ColumnStartDate,
-                        GanttData.ColumnDuration]);
+                        VisualData.ColumnTask,
+                        VisualData.ColumnStartDate,
+                        VisualData.ColumnDuration]);
 
                     checkTasksHaveTooltipInfo(done);
                 });
@@ -557,7 +565,7 @@ module powerbi.extensibility.visual.test {
                         case "Second":
                         case "Minute":
                         case "Hour":
-                            defaultDataViewBuilder.valuesStartDate = GanttData.getRandomUniqueDates(
+                            defaultDataViewBuilder.valuesStartDate = VisualData.getRandomUniqueDates(
                                 defaultDataViewBuilder.valuesTaskTypeResource.length,
                                 new Date(2017, 7, 0),
                                 new Date(2017, 7, 1)
@@ -594,7 +602,7 @@ module powerbi.extensibility.visual.test {
                 startDate.setDate(startDate.getDate() - 30);
                 endDate.setDate(endDate.getDate() + 30);
 
-                defaultDataViewBuilder.valuesStartDate = GanttData.getRandomUniqueDates(
+                defaultDataViewBuilder.valuesStartDate = VisualData.getRandomUniqueDates(
                     defaultDataViewBuilder.valuesTaskTypeResource.length,
                     startDate,
                     endDate
@@ -611,24 +619,24 @@ module powerbi.extensibility.visual.test {
             it("Verify date format for culture which user have chosen", (done) => {
                 let host: IVisualHost = mocks.createVisualHost();
                 host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
-                let dateFormatter: IValueFormatter  = valueFormatter.create({format: null, cultureSelector: host.locale});
+                let dateFormatter: IValueFormatter = valueFormatter.create({ format: null, cultureSelector: host.locale });
 
-                let formattedDates: Date[] = [];
+                let formattedDates: string[] = [];
                 for (let date of defaultDataViewBuilder.valuesStartDate) {
                     formattedDates.push(dateFormatter.format(date));
                 }
 
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration]);
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
                     for (let task of tasks) {
                         for (let tooltipInfo of task.tooltipInfo) {
                             if (tooltipInfo.displayName === "Start Date") {
-                                let value: VisualTooltipDataItem  = tooltipInfo.value;
+                                let value: string = tooltipInfo.value;
                                 let idx: number = formattedDates.indexOf(value);
 
                                 expect(value).toEqual(formattedDates[idx]);
@@ -653,7 +661,7 @@ module powerbi.extensibility.visual.test {
                     for (let task of tasks) {
                         for (let tooltipInfo of task.tooltipInfo) {
                             if (tooltipInfo.displayName === "Start Date") {
-                                let value: VisualTooltipDataItem  = tooltipInfo.value;
+                                let value: VisualTooltipDataItem = tooltipInfo.value;
 
                                 expect(value).toMatch(/([a-z].)\s{1}([0-9]{2}),([0-9]{0,4})/);
                             }
@@ -667,19 +675,19 @@ module powerbi.extensibility.visual.test {
             it("Verify end date in tooltip", (done) => {
                 let host: IVisualHost = mocks.createVisualHost();
                 host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
-                let dateFormatter: IValueFormatter  = valueFormatter.create({format: null, cultureSelector: host.locale});
+                let dateFormatter: IValueFormatter = valueFormatter.create({ format: null, cultureSelector: host.locale });
 
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration]);
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration]);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
                     for (let task of tasks) {
                         for (let tooltipInfo of task.tooltipInfo) {
                             if (tooltipInfo.displayName === "End Date") {
-                               expect(tooltipInfo.value).toBe(dateFormatter.format(task.end));
+                                expect(tooltipInfo.value).toBe(dateFormatter.format(task.end));
                             }
                         }
                     }
@@ -690,10 +698,10 @@ module powerbi.extensibility.visual.test {
 
             it("Verify group tasks enabled", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnType,
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration]);
+                    VisualData.ColumnType,
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration]);
 
                 dataView.metadata.objects = { general: { groupTasks: true } };
 
@@ -710,22 +718,95 @@ module powerbi.extensibility.visual.test {
                     done();
                 });
             });
+        });
 
-            it("multi-selection test", () => {
-                visualBuilder.updateFlushAllD3Transitions(dataView);
+        describe("Selection", () => {
+            describe("Single selection", () => {
+                it("should highlight a proper data point after external filtering", () => {
+                    const selectionIds: MockISelectionId[] = [];
+                    let selectionIndex: number = -1;
 
-                let firstGroup = visualBuilder.tasks.eq(0);
-                let secondGroup = visualBuilder.tasks.eq(1);
-                let thirdGroup = visualBuilder.tasks.eq(2);
+                    const createSelectionId = powerbi.extensibility.utils.test.mocks.createSelectionId;
 
-                clickElement(firstGroup);
-                clickElement(secondGroup, true);
+                    powerbi.extensibility.utils.test.mocks.createSelectionId = () => {
+                        selectionIndex++;
 
-                expect(parseFloat(firstGroup.css("opacity"))).toBe(1);
-                expect(parseFloat(secondGroup.css("opacity"))).toBe(1);
-                expect(parseFloat(thirdGroup.css("opacity"))).toBeLessThan(1);
+                        if (selectionIds[selectionIndex]) {
+                            return selectionIds[selectionIndex];
+                        }
+
+                        const selectionId: MockISelectionId = new MockISelectionId(`${selectionIndex}`);
+
+                        selectionIds.push(selectionId);
+
+                        return selectionId;
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    // can't use lodash.deepCopy because we need to keep identity references
+                    const filteredDataView: DataView = {
+                        ...dataView,
+                        categorical: {
+                            ...dataView.categorical,
+                            categories: dataView.categorical.categories.map((category) => {
+                                return {
+                                    ...category,
+                                    values: category.values.slice(0, 2)
+                                };
+                            })
+                        }
+                    };
+
+                    selectionIndex = -1;
+
+                    visualBuilder.updateFlushAllD3Transitions(filteredDataView);
+
+                    clickElement(visualBuilder.tasks.eq(0));
+
+                    const selectedDataPoints: Task[] = getSelectedTasks(visualBuilder);
+
+                    selectionIndex = -1;
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    const selectedDataPointsAfterUpdateCall: Task[] = getSelectedTasks(visualBuilder);
+
+                    expect(selectedDataPoints.length).toBe(selectedDataPointsAfterUpdateCall.length);
+
+                    selectedDataPoints.forEach((selectedDataPoint: Task, index: number) => {
+                        const selectedDataPointAfterUpdateCall: Task = selectedDataPointsAfterUpdateCall[index];
+
+                        expect(selectedDataPoint.name).toBe(selectedDataPointAfterUpdateCall.name);
+                        expect(selectedDataPoint.resource).toBe(selectedDataPointAfterUpdateCall.resource);
+                        expect(selectedDataPoint.identity).toBe(selectedDataPointAfterUpdateCall.identity);
+                    });
+
+                    powerbi.extensibility.utils.test.mocks.createSelectionId = createSelectionId;
+                });
+
+                function getSelectedTasks(visualBuilder: VisualBuilder): Task[] {
+                    return (visualBuilder.instance["interactivityService"]["selectableDataPoints"] as Task[])
+                        .filter((task: Task) => task && task.selected);
+                }
             });
 
+            describe("Multi selection", () => {
+                it("two data points should be selected", () => {
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    let firstGroup = visualBuilder.tasks.eq(0);
+                    let secondGroup = visualBuilder.tasks.eq(1);
+                    let thirdGroup = visualBuilder.tasks.eq(2);
+
+                    clickElement(firstGroup);
+                    clickElement(secondGroup, true);
+
+                    expect(parseFloat(firstGroup.css("opacity"))).toBe(1);
+                    expect(parseFloat(secondGroup.css("opacity"))).toBe(1);
+                    expect(parseFloat(thirdGroup.css("opacity"))).toBeLessThan(1);
+                });
+            });
         });
 
         describe("Format settings test", () => {
@@ -738,7 +819,7 @@ module powerbi.extensibility.visual.test {
                     startDate.setDate(todayDate.getDate() - datesAmountForScroll);
                     endDate.setDate(todayDate.getDate() + datesAmountForScroll);
 
-                    defaultDataViewBuilder.valuesStartDate = GanttData.getRandomUniqueDates(
+                    defaultDataViewBuilder.valuesStartDate = VisualData.getRandomUniqueDates(
                         defaultDataViewBuilder.valuesTaskTypeResource.length,
                         startDate,
                         endDate
@@ -859,11 +940,11 @@ module powerbi.extensibility.visual.test {
 
             describe("Days off", () => {
                 it("color", (done) => {
-                    let color: string = GanttBuilder.getRandomHexColor();
+                    let color: string = VisualBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
                         daysOff: {
                             show: true,
-                            fill: GanttBuilder.getSolidColorStructuralObject(color)
+                            fill: VisualBuilder.getSolidColorStructuralObject(color)
                         }
                     };
 
@@ -881,10 +962,13 @@ module powerbi.extensibility.visual.test {
                     done: () => void): void {
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         visualBuilder.taskDaysOffRect.each((i, e) => {
-                            let daysOff: TaskDaysOff = e.__data__.daysOff;
+                            let daysOff: TaskDaysOff = e["__data__"].daysOff; // Takes data from an element
+
                             const amountOfWeekendDays: number = daysOff[1];
-                            const firstDayOfWeek: Date =
-                                new Date(daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay));
+
+                            const firstDayOfWeek: Date = new Date(
+                                daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay)
+                            );
 
                             expect(firstDayOfWeek.getDay()).toEqual(dayForCheck);
                         });
@@ -911,12 +995,12 @@ module powerbi.extensibility.visual.test {
                     let startDate: Date = new Date(2017, 8, 29); // Its a last day of working week
                     let endDate: Date = new Date(2017, 8, 30);
 
-                    defaultDataViewBuilder.valuesStartDate = GanttData.getRandomUniqueDates(
+                    defaultDataViewBuilder.valuesStartDate = VisualData.getRandomUniqueDates(
                         defaultDataViewBuilder.valuesTaskTypeResource.length,
                         startDate,
                         endDate
                     );
-                    defaultDataViewBuilder.valuesDuration = GanttData.getRandomUniqueNumbers(
+                    defaultDataViewBuilder.valuesDuration = VisualData.getRandomUniqueNumbers(
                         defaultDataViewBuilder.valuesTaskTypeResource.length, 30, 48);
                     dataView = defaultDataViewBuilder.getDataView();
 
@@ -941,11 +1025,11 @@ module powerbi.extensibility.visual.test {
             describe("Sub tasks", () => {
                 beforeEach(() => {
                     dataView = defaultDataViewBuilder.getDataView([
-                        GanttData.ColumnType,
-                        GanttData.ColumnTask,
-                        GanttData.ColumnStartDate,
-                        GanttData.ColumnDuration,
-                        GanttData.ColumnParent]);
+                        VisualData.ColumnType,
+                        VisualData.ColumnTask,
+                        VisualData.ColumnStartDate,
+                        VisualData.ColumnDuration,
+                        VisualData.ColumnParent]);
                 });
 
                 it("inherit parent legend", (done) => {
@@ -956,11 +1040,15 @@ module powerbi.extensibility.visual.test {
                     };
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                        const tasks = d3.select(visualBuilder.element.get(0))
+                            .selectAll(".task")
+                            .data();
+
                         tasks.forEach((task) => {
                             if (task.parent) {
                                 const parentName = task.parent.substr(0, task.parent.length - task.name.length - 1);
-                                const parentTask: string = _.find(tasks, {name: parentName});
+                                const parentTask: Task = _.find(tasks, { name: parentName });
+
                                 if (parentTask) {
                                     expect(task.taskType).toEqual(parentTask.taskType);
                                 }
@@ -980,7 +1068,7 @@ module powerbi.extensibility.visual.test {
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
-                        let {parents, children} = getChildrenAndParents(tasks);
+                        let { parents, children } = getChildrenAndParents(tasks);
 
                         parents.forEach((parent: Task) => {
                             const start: Date = (_.minBy(children[parent.name],
@@ -1008,7 +1096,7 @@ module powerbi.extensibility.visual.test {
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
-                        let {parents, children} = getChildrenAndParents(tasks);
+                        let { parents, children } = getChildrenAndParents(tasks);
 
                         parents.forEach((parent: Task) => {
                             const childrenAverageCompletion: number = children[parent.name]
@@ -1024,14 +1112,16 @@ module powerbi.extensibility.visual.test {
                 });
 
                 function getChildrenAndParents(tasks: Task[]) {
-                    let children: {[key: string]: Task[]} = {};
+                    let children: { [key: string]: Task[] } = {};
                     let parents: Task[] = [];
                     tasks.forEach((task) => {
                         if (task.parent) {
                             const parentName = task.parent.substr(0, task.parent.length - task.name.length - 1);
-                            const parentTask: string = _.find(tasks, {name: parentName});
+
+                            const parentTask: Task = _.find(tasks, { name: parentName });
+
                             if (parentTask) {
-                                if (!_.find(parents, {name: parentTask.name})) {
+                                if (!_.find(parents, { name: parentTask.name })) {
                                     parents.push(parentTask);
                                 }
 
@@ -1044,7 +1134,7 @@ module powerbi.extensibility.visual.test {
                         }
                     });
 
-                    return {parents, children};
+                    return { parents, children };
                 }
             });
 
@@ -1081,10 +1171,10 @@ module powerbi.extensibility.visual.test {
                 });
 
                 it("color", (done) => {
-                    let color: string = GanttBuilder.getRandomHexColor();
+                    let color: string = VisualBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
                         taskResource: {
-                            fill: GanttBuilder.getSolidColorStructuralObject(color)
+                            fill: VisualBuilder.getSolidColorStructuralObject(color)
                         }
                     };
 
@@ -1180,11 +1270,11 @@ module powerbi.extensibility.visual.test {
 
             describe("Task Completion", () => {
                 it("color", (done) => {
-                    let color: string = GanttBuilder.getRandomHexColor();
+                    let color: string = VisualBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
                         taskCompletion: {
                             show: true,
-                            fill: GanttBuilder.getSolidColorStructuralObject(color)
+                            fill: VisualBuilder.getSolidColorStructuralObject(color)
                         }
                     };
 
@@ -1199,56 +1289,56 @@ module powerbi.extensibility.visual.test {
 
             describe("check duration unit downgrade", () => {
                 it("check for days downgrading", () => {
-                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                    let unitMocks = VisualBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.days.data,
                         expected = unitMocks.days.expected,
                         realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
 
-                        expect(realResult).toEqual(expected);
+                    expect(realResult).toEqual(expected);
                 });
 
                 it("check for hours downgrading", () => {
-                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                    let unitMocks = VisualBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.hours.data,
                         expected = unitMocks.hours.expected,
                         realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
 
-                        expect(realResult).toEqual(expected);
+                    expect(realResult).toEqual(expected);
                 });
 
                 it("check for minutes downgrading", () => {
-                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                    let unitMocks = VisualBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.minutes.data,
                         expected = unitMocks.minutes.expected,
                         realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
 
-                        expect(realResult).toEqual(expected);
+                    expect(realResult).toEqual(expected);
                 });
 
                 it("check for hours downgrading", () => {
-                    let unitMocks = GanttBuilder.getDowngradeDurationUnitMocks(),
+                    let unitMocks = VisualBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.seconds.data,
                         expected = unitMocks.seconds.expected,
                         realResult = data.map((dataItem) => VisualClass.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
 
-                        expect(realResult).toEqual(expected);
+                    expect(realResult).toEqual(expected);
                 });
             });
 
             describe("check not existent parent deletion from tasks", () => {
                 it("check on correct parent dataset", () => {
-                    let taskMock = GanttBuilder.getTaskMockCommon(),
-                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithCorrectParentsMock"),
-                        expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithCorrectParentsMock"),
+                    let taskMock = VisualBuilder.getTaskMockCommon(),
+                        data = VisualBuilder.getTaskMockData(taskMock, "taskWithCorrectParentsMock"),
+                        expectedResult = VisualBuilder.getTaskMockExpected(taskMock, "taskWithCorrectParentsMock"),
                         realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
 
                     expectSimilarObject(expectedResult, realResult);
                 });
 
                 it("check on not existent parent dataset - parent.children", () => {
-                    let taskMock = GanttBuilder.getTaskMockCommon(),
-                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithNotExistentParentsMock"),
-                        expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithNotExistentParentsMock"),
+                    let taskMock = VisualBuilder.getTaskMockCommon(),
+                        data = VisualBuilder.getTaskMockData(taskMock, "taskWithNotExistentParentsMock"),
+                        expectedResult = VisualBuilder.getTaskMockExpected(taskMock, "taskWithNotExistentParentsMock"),
                         realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
 
                     expectSimilarObject(expectedResult, realResult);
@@ -1256,9 +1346,9 @@ module powerbi.extensibility.visual.test {
 
                 it("check on not existent in the middle parent dataset", () => {
                     // parent.nonExistentParent.children -> parent.children
-                    let taskMock = GanttBuilder.getTaskMockCommon(),
-                        data = GanttBuilder.getTaskMockData(taskMock, "taskWithNotExistentMiddleParentsMock"),
-                        expectedResult = GanttBuilder.getTaskMockExpected(taskMock, "taskWithNotExistentMiddleParentsMock"),
+                    let taskMock = VisualBuilder.getTaskMockCommon(),
+                        data = VisualBuilder.getTaskMockData(taskMock, "taskWithNotExistentMiddleParentsMock"),
+                        expectedResult = VisualBuilder.getTaskMockExpected(taskMock, "taskWithNotExistentMiddleParentsMock"),
                         realResult: Task[] = data.map((task) => VisualClass.deleteNonExistentParents(data, task));
 
                     expectSimilarObject(expectedResult, realResult);
@@ -1285,15 +1375,15 @@ module powerbi.extensibility.visual.test {
             describe("Task Settings", () => {
                 it("color", (done) => {
                     dataView = defaultDataViewBuilder.getDataView([
-                        GanttData.ColumnTask,
-                        GanttData.ColumnStartDate,
-                        GanttData.ColumnDuration,
-                        GanttData.ColumnResource]);
+                        VisualData.ColumnTask,
+                        VisualData.ColumnStartDate,
+                        VisualData.ColumnDuration,
+                        VisualData.ColumnResource]);
 
-                    let color: string = GanttBuilder.getRandomHexColor();
+                    let color: string = VisualBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
                         taskConfig: {
-                            fill: GanttBuilder.getSolidColorStructuralObject(color)
+                            fill: VisualBuilder.getSolidColorStructuralObject(color)
                         }
                     };
 
@@ -1360,10 +1450,10 @@ module powerbi.extensibility.visual.test {
                 });
 
                 it("color", (done) => {
-                    let color: string = GanttBuilder.getRandomHexColor();
+                    let color: string = VisualBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
                         taskLabels: {
-                            fill: GanttBuilder.getSolidColorStructuralObject(color)
+                            fill: VisualBuilder.getSolidColorStructuralObject(color)
                         }
                     };
 
@@ -1417,10 +1507,10 @@ module powerbi.extensibility.visual.test {
 
             describe("Gantt date types", () => {
                 it("Today color", (done) => {
-                    let color: string = GanttBuilder.getRandomHexColor();
+                    let color: string = VisualBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
                         dateType: {
-                            todayColor: GanttBuilder.getSolidColorStructuralObject(color)
+                            todayColor: VisualBuilder.getSolidColorStructuralObject(color)
                         }
                     };
 
@@ -1428,10 +1518,10 @@ module powerbi.extensibility.visual.test {
                 });
 
                 it("Axis color", (done) => {
-                    let color: string = GanttBuilder.getRandomHexColor();
+                    let color: string = VisualBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
                         dateType: {
-                            axisColor: GanttBuilder.getSolidColorStructuralObject(color)
+                            axisColor: VisualBuilder.getSolidColorStructuralObject(color)
                         }
                     };
 
@@ -1439,10 +1529,10 @@ module powerbi.extensibility.visual.test {
                 });
 
                 it("Axis text color", (done) => {
-                    let color: string = GanttBuilder.getRandomHexColor();
+                    let color: string = VisualBuilder.getRandomHexColor();
                     dataView.metadata.objects = {
                         dateType: {
-                            axisTextColor: GanttBuilder.getSolidColorStructuralObject(color)
+                            axisTextColor: VisualBuilder.getSolidColorStructuralObject(color)
                         }
                     };
 
@@ -1450,10 +1540,11 @@ module powerbi.extensibility.visual.test {
                 });
 
                 function checkColor(
-                    elements: Element[],
+                    elements: JQuery,
                     color: string,
                     cssStyle: string,
-                    done: () => void): void {
+                    done: () => void
+                ): void {
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         elements.toArray().map($).forEach(e =>
                             assertColorsMatch(e.css(cssStyle), color));

@@ -42,7 +42,7 @@ module powerbi.extensibility.visual.test {
         children: string[];
     }
 
-    export class GanttBuilder extends VisualBuilderBase<VisualClass> {
+    export class VisualBuilder extends VisualBuilderBase<VisualClass> {
         constructor(width: number, height: number) {
             super(width, height, "Gantt1448688115699");
         }
@@ -190,7 +190,7 @@ module powerbi.extensibility.visual.test {
 
         private static generateMocksCase(taskMockParams: TaskMockParamsInterface[]) {
             let result = taskMockParams.map((taskMockParamsItem) => {
-                return GanttBuilder.generateTaskWithDefaultParams(taskMockParamsItem);
+                return VisualBuilder.generateTaskWithDefaultParams(taskMockParamsItem);
             });
 
             return result;
@@ -249,25 +249,25 @@ module powerbi.extensibility.visual.test {
         public static getTaskMockCommon() {
             let taskMock = {
                 taskWithCorrectParentsMock: {
-                    "data": GanttBuilder.generateMocksCase([
+                    "data": VisualBuilder.generateMocksCase([
                         {id: 1, name: "T1", parent: "T1", children: []},
                         {id: 2, name: "Group C", parent: "Group C", children: ["T2"]},
                         {id: 3, name: "T2", parent: "Group C.T2", children: []}
                     ]),
-                    "expected" : GanttBuilder.generateMocksCase([
+                    "expected" : VisualBuilder.generateMocksCase([
                         {id: 1, name: "T1", parent: "", children: []},
                         {id: 2, name: "Group C", parent: "", children: ["T2"]},
                         {id: 3, name: "T2", parent: "Group C", children: []}
                     ])
                 },
                 taskWithNotExistentParentsMock: {
-                    "data": GanttBuilder.generateMocksCase([
+                    "data": VisualBuilder.generateMocksCase([
                         {id: 1, name: "T1", parent: "T1", children: []},
                         {id: 2, name: "Group C", parent: "Group C", children: []},
                         {id: 3, name: "T2", parent: "Group A.T2", children: []},
                         {id: 4, name: "T3", parent: "Group B.T3", children: []}
                     ]),
-                    "expected" : GanttBuilder.generateMocksCase([
+                    "expected" : VisualBuilder.generateMocksCase([
                         {id: 1, name: "T1", parent: "", children: []},
                         {id: 2, name: "Group C", parent: "", children: []},
                         {id: 3, name: "T2", parent: "", children: []},
@@ -275,12 +275,12 @@ module powerbi.extensibility.visual.test {
                     ])
                 },
                 taskWithNotExistentMiddleParentsMock: {
-                    "data": GanttBuilder.generateMocksCase([
+                    "data": VisualBuilder.generateMocksCase([
                         {id: 1, name: "T1", parent: "T1", children: []},
                         {id: 2, name: "Group C", parent: "Group C", children: ["T2"]},
                         {id: 3, name: "T2", parent: "Group C.Group M.T2", children: []}
                     ]),
-                    "expected" : GanttBuilder.generateMocksCase([
+                    "expected" : VisualBuilder.generateMocksCase([
                         {id: 1, name: "T1", parent: "", children: []},
                         {id: 2, name: "Group C", parent: "", children: ["T2"]},
                         {id: 3, name: "T2", parent: "Group C", children: []}
@@ -292,7 +292,7 @@ module powerbi.extensibility.visual.test {
         }
 
         public static getRandomHexColor(): string {
-            return GanttBuilder.getHexColorFromNumber(GanttBuilder.getRandomInteger(0, 16777215 + 1));
+            return VisualBuilder.getHexColorFromNumber(VisualBuilder.getRandomInteger(0, 16777215 + 1));
         }
 
         public static getHexColorFromNumber(value: number) {
