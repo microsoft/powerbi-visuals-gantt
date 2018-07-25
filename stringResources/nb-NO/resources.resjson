@@ -86,5 +86,7 @@
 	"Visual_Description_LegendName": "Titteltekst",
 	"Visual_Description_TaskSettings_Color": "Dette trer BARE i kraft når du ikke har angitt noen forklaring",
 	"Visual_Label_Today": "I dag",
-	"Visual_Label_Now": "Nå"
+	"Visual_Label_Now": "Nå",
+	"Gantt_Short_Description": "En stolpediagramtype som illustrerer en prosjekttidslinje eller tidsplan med ressurser",
+	"Gantt_Long_Description": "Gantt-diagram er en type stolpediagram som brukes til å illustrere en tidsplan med tidsakse. Når du plasserer Gantt-diagram sammen med andre illustrerende diagrammer på et interaktivt lerretet, kan du administrere prosjektet på helt ny måte. Når visualobjekter samhandler i Power BI, kan du ved å vise ressurstildelingen, oppgavegjennomføringen og gjenstående aktiviteter med ulike perspektiver, få god oversikt over fremdriften.\nGantt-diagram er en uunnværlig del av prosjektlederens portefølje. Prosjektledere og overordnede elsker Gantt-diagrammer fordi de raskt og effektivt viser hele tidslinjen til prosjektet, gjeldende status og fremdrift (eller mangel på fremdrift) sammen med tilordningen, med mange detaljer.\nMed dette tilpassede visualobjektet kan du angi aktiviteter, startdato, varighet og % fullført, og gjengi dem i et Gantt-diagram. Legg merke til at % fullført forventer en desimalverdi (0,85 betyr for eksempel 85 %) og startdato, et datofelt og ikke et datohierarki.\nDu kan også kontrollere fargen på feltet med en forklaring. Du kan bruke alle relevante felt fra prosjektet som forklaring, for eksempel aktivitetstype. I tillegg kan du også angi ressursfeltet som skal vises ved siden av feltet i Gantt-diagrammet.\nDette er et visualobjekt med åpen kildekode. Hent koden fra GitHub: https://github.com/Microsoft/powerbi-visuals-gantt"
 }

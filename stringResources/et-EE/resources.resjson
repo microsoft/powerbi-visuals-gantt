@@ -86,5 +86,7 @@
 	"Visual_Description_LegendName": "Pealkirja tekst",
 	"Visual_Description_TaskSettings_Color": "See jõustub AINULT siis, kui te pole legendi määranud",
 	"Visual_Label_Today": "Täna",
-	"Visual_Label_Now": "Praegu"
+	"Visual_Label_Now": "Praegu",
+	"Gantt_Short_Description": "Teatud tüüpi lintdiagramm, mis illustreerib projekti ajakava koos ressurssidega",
+	"Gantt_Long_Description": "Gantti diagramm on teatud tüüpi lintdiagramm, mis illustreerib ajakava koos ajateljega. Kui panete Gantti diagrammi koos teiste ülevaatlike diagrammide interaktiivsele lõuendile, saate hallata oma projekti täiesti uuel viisil. Kui Power BI-s visuaalid üksteisega interakteeruvad, saata vaadata oma ressursieraldust, ülesannete täitmist ja allesjäänud ülesandeid uuest vaatenurgast ning saate tulevikust selge ülevaate.\nGantti diagrammid on projektihalduse portfoolio asendamatu osa. Projektijuhtidele ja tegevjuhtidele meeldivad Gantti diagrammid väga, sest need kuvavad visuaalselt ja väga tõhusalt projekti üldise ajaskaala, praeguse oleku ja edusammud (või nende puudumise) koos ülesandega märkimisväärselt üksikasjalikult.\nSelle kohandatud visuaaliga saate määratleda ülesanded, alguskuupäeva, kestuse ja lõpule viimise protsendi nende renderdamiseks Gantti diagrammina. Pange tähele, et lõpule viimise protsent eeldab kümnendväärtust (nt, 0,85 tähendab 85%) ja alguskuupäeva, kuupäeva välja ja mitte kuupäeva hierarhiat.\nLegendiga saate ka kontrollida riba värvi. Saate legendina kasutada oma projekti mis tahes asjakohast välja, näiteks sel eesmärgil ülesande tüüpi. Saate määratleda ka ressursivälja, mis esitatakse riba kõrval Ganttis.\nSee on avatud lähtekoodiga visuaal. Hankige kood GitHubist: https://github.com/Microsoft/powerbi-visuals-gantt"
 }
