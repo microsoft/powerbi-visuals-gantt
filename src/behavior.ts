@@ -55,6 +55,10 @@ module powerbi.extensibility.visual.behavior {
             selection: d3.Selection<any>;
             callback: (groupedTask: GroupedTask) => void;
         };
+        allSubtasksCollapse: {
+            selection: d3.Selection<any>;
+            callback: () => void;
+        };
     }
 
     export class Behavior implements IInteractiveBehavior {

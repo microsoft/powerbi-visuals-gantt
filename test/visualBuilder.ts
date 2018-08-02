@@ -118,7 +118,13 @@ module powerbi.extensibility.visual.test {
         public get taskLabels() {
             return this.mainElement
                 .children("g.task-lines")
-                .children("text.label");
+                .children("g.label");
+        }
+
+        public get taskLabelsText() {
+            return this.mainElement
+                .children("g.task-lines")
+                .find("g.label text");
         }
 
         public get tasksGroups() {

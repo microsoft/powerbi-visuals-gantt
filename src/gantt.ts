@@ -352,8 +352,6 @@ module powerbi.extensibility.visual {
         private static LabelTopOffsetForPadding: number = 0.5;
         private static DeviderForCalculatingCenter: number = 2;
         private static SubtasksLeftMargin: number = 15;
-        private static ArrowSymbolLeft: string = "\u21E2";
-        private static ArrowSymbolDown: string = "\u21E3";
 
         private static get DefaultMargin(): IMargin {
             return {
@@ -386,6 +384,14 @@ module powerbi.extensibility.visual {
         private isInteractiveChart: boolean = false;
         private groupTasksPrevValue: boolean = false;
         private collapsedTasks: string[] = [];
+        private collapseAllImageConsts = {
+            plusIconEncoded: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAHdElNRQfhCRgNBR9x1hVlAAAAZklEQVQoz6WR3Q2AIAyEP4gJIzFol8JthAXOFw0RSzDx+tS/u+YKCaMiJypGAnObdxhURMZDRtSAgIAPQRxKhfIsjAyvLLJAHygIXXvqQkuG/zdsQ76vJByjGkythvbhWQnjmL/7BMyHUN2Uh8qLAAAALnpUWHRkYXRlOmNyZWF0ZQAAeNozMjA01zWw1DUyCTE0tjIwtTI21DYwsDIwAABB+AUOvqcMLQAAAC56VFh0ZGF0ZTptb2RpZnkAAHjaMzIwNNc1sNQ1MgkxNLYyMLUyNtQ2MLAyMAAAQfgFDpeYpKUAAAAASUVORK5CYII=",
+            minusIconEncoded: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAHdElNRQfhCQ8HBA+1I96wAAAAZ0lEQVQoz7WRUQqAIBBEn+FNoi/PI57OA0RnEQ8Q3UTWPoIQVCyitz/LMLsMDBgCQm6MEDCKwMJGokZj2UHw9PDIhGpeXyTUxIDvBn1vK3OhH7jXH9xfIR8YcpGjTpg1EQvdsiKjuk9mWyyGmWOVywAAAC56VFh0ZGF0ZTpjcmVhdGUAAHjaMzIwNNc1sNQ1NA0xMLcyMLEyNNU2MLAyMAAAQh8FEgMJQNYAAAAuelRYdGRhdGU6bW9kaWZ5AAB42jMyMDTXNbDUNTQNMTC3MjCxMjTVNjCwMjAAAEIfBRIqNuheAAAAAElFTkSuQmCC",
+            collapseAllFlag: "data-is-collapsed",
+        };
+        private parentLabelOffset: number = 5;
+        private groupLabelSize: number = 16;
+        private secondExpandAllIconOffset: number = 7;
 
         constructor(options: VisualConstructorOptions) {
             this.init(options);
@@ -897,8 +903,8 @@ module powerbi.extensibility.visual {
                 const resource: string = (values.Resource && values.Resource[index] as string) || "";
                 const parent: string = (values.Parent && values.Parent[index] as string) || null;
                 const startDate: Date = (values.StartDate
-                                        && Gantt.isValidDate(values.StartDate[index] as Date) && values.StartDate[index] as Date)
-                                        || new Date(Date.now());
+                    && Gantt.isValidDate(values.StartDate[index] as Date) && values.StartDate[index] as Date)
+                    || new Date(Date.now());
 
                 if (values.ExtraInformation) {
                     const extraInformationKeys: any[] = Object.keys(values.ExtraInformation);
@@ -1026,7 +1032,7 @@ module powerbi.extensibility.visual {
 
             tasks.forEach((task: Task) => {
                 if (!task.children) {
-                    task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit,  localizationManager, isEndDateFillled);
+                    task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit, localizationManager, isEndDateFillled);
                 }
             });
 
@@ -1582,60 +1588,91 @@ module powerbi.extensibility.visual {
                     .attr("width", taskLabelsWidth)
                     .attr("fill", "white");
 
+                this.lineGroup
+                    .selectAll(Selectors.Label.selector)
+                    .remove();
+
                 axisLabel = this.lineGroup
                     .selectAll(Selectors.Label.selector)
                     .data(tasks);
 
-                axisLabel
+                let axisLabelGroup = axisLabel
                     .enter()
-                    .append("text")
-                    .classed(Selectors.Label.class, true);
+                    .append("g")
+                    .classed(Selectors.Label.class, true)
+                    .attr({
+                        transform: (task: GroupedTask) => SVGUtil.translate(0, this.getTaskLabelCoordinateY(task.id))
+                    });
 
-                axisLabel
+                axisLabelGroup
+                    .append("text")
                     .attr({
                         x: (task: GroupedTask) => (Gantt.TaskLineCoordinateX +
                             (_.every(task.tasks, (task: Task) => !!task.parent)
                                 ? Gantt.SubtasksLeftMargin
-                                : 0)),
-                        y: (task: GroupedTask) => this.getTaskLabelCoordinateY(task.id),
+                                : (task.tasks[0].children && !!task.tasks[0].children.length) ? this.parentLabelOffset : 0)),
                         fill: taskLabelsColor,
                         "stroke-width": Gantt.AxisLabelStrokeWidth
                     })
                     .style("font-size", PixelConverter.fromPoint(taskLabelsFontSize))
-                    .text((task: GroupedTask) => {
-                        let hasArrowSymbol: boolean = task.tasks[0].children && !!task.tasks[0].children.length;
-                        let arrowSymbol: string = "";
-                        if (hasArrowSymbol) {
-                                arrowSymbol = !task.tasks[0].children[0].visibility
-                                    ? Gantt.ArrowSymbolLeft
-                                    : Gantt.ArrowSymbolDown;
-                        }
-
-                        return `${task.name} ${arrowSymbol}`;
-                    });
-
-                axisLabel
-                    .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis);
-
-                axisLabel
+                    .text((task: GroupedTask) => task.name)
+                    .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis)
                     .append("title")
                     .text((task: GroupedTask) => task.name);
+
+                axisLabelGroup
+                    .filter((task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length)
+                    .append("image")
+                    .attr({
+                        "xlink:href": (task: GroupedTask) => (!task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusIconEncoded : this.collapseAllImageConsts.minusIconEncoded),
+                        width: this.groupLabelSize,
+                        height: this.groupLabelSize,
+                        y: -12,
+                    });
 
                 axisLabel
                     .exit()
                     .remove();
 
                 this.collapseAllGroup
-                    .selectAll("text")
+                    .selectAll("image")
+                    .remove();
+
+                this.collapseAllGroup
+                    .selectAll("rect")
                     .remove();
 
                 if (this.viewModel.isParentFilled) {
                     this.collapseAllGroup
-                        .append("text")
+                        .append("image")
                         .classed(Selectors.CollapseAllArrow.class, true)
-                        .attr("dx", Gantt.TaskLineCoordinateX)
-                        .attr("dy", Gantt.AxisLabelClip)
-                        .text(this.collapsedTasks.length ? Gantt.ArrowSymbolLeft : Gantt.ArrowSymbolDown);
+                        .attr({
+                            "xlink:href": (this.collapsedTasks.length ? this.collapseAllImageConsts.plusIconEncoded : this.collapseAllImageConsts.minusIconEncoded),
+                            width: this.groupLabelSize,
+                            height: this.groupLabelSize
+                        })
+                        .attr(this.collapseAllImageConsts.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
+
+                    this.collapseAllGroup
+                        .append("rect")
+                        .attr({
+                            width: this.groupLabelSize,
+                            height: this.groupLabelSize,
+                            x: this.secondExpandAllIconOffset,
+                            y: this.secondExpandAllIconOffset,
+                            fill: "white"
+                        });
+                    this.collapseAllGroup
+                        .append("image")
+                        .classed(Selectors.CollapseAllArrow.class, true)
+                        .attr({
+                            "xlink:href": (this.collapsedTasks.length ? this.collapseAllImageConsts.plusIconEncoded : this.collapseAllImageConsts.minusIconEncoded),
+                            width: this.groupLabelSize,
+                            height: this.groupLabelSize,
+                            x: this.secondExpandAllIconOffset,
+                            y: this.secondExpandAllIconOffset
+                        })
+                        .attr(this.collapseAllImageConsts.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
                 }
 
             } else {
@@ -1675,11 +1712,17 @@ module powerbi.extensibility.visual {
          * callback for subtasks collapse all click event
          */
         private subTasksCollapseAll(): void {
-            const arrow: string = this.collapseAllGroup.select(Selectors.CollapseAllArrow.selector).text();
+            const collapsedAllSelector = this.collapseAllGroup.select(Selectors.CollapseAllArrow.selector);
+            const isCollapsed: string = collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag);
 
-            if (arrow === Gantt.ArrowSymbolLeft) {
+            if (isCollapsed === "1") {
                 this.collapsedTasks = [];
+                collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "0");
+                collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.minusIconEncoded);
+
             } else {
+                collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "1");
+                collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.plusIconEncoded);
                 this.viewModel.tasks.forEach((task: Task) => {
                     if (task.parent) {
                         if (task.visibility) {
@@ -1969,13 +2012,13 @@ module powerbi.extensibility.visual {
 
                 if (taskResourceWidthByTask) {
                     taskResource
-                        .each(function(task: Task, index: number, outerIndex: number) {
+                        .each(function (task: Task, index: number, outerIndex: number) {
                             const width: number = self.taskDurationToWidth(task.start, task.end);
                             AxisHelper.LabelLayoutStrategy.clip(d3.select(this), width, textMeasurementService.svgEllipsis);
                         });
                 } else if (isGroupedByTaskName) {
                     taskResource
-                        .each(function(task: Task, index: number, outerIndex: number) {
+                        .each(function (task: Task, index: number, outerIndex: number) {
                             const sameRowNextTaskStart: Date = self.getSameRowNextTaskStartDate(task, outerIndex, taskResource);
 
                             if (sameRowNextTaskStart) {
@@ -1991,7 +2034,7 @@ module powerbi.extensibility.visual {
                         });
                 } else if (!taskResourceFullText) {
                     taskResource
-                        .each(function(task: Task, index: number, outerIndex: number){
+                        .each(function (task: Task, index: number, outerIndex: number) {
                             AxisHelper.LabelLayoutStrategy.clip(d3.select(this), defaultWidth, textMeasurementService.svgEllipsis);
                         });
                 }
@@ -2008,7 +2051,7 @@ module powerbi.extensibility.visual {
             let sameRowNextTaskStart: Date;
 
             selection
-                .each(function(x: Task, y: number, i: number) {
+                .each(function (x: Task, y: number, i: number) {
                     if (index !== i &&
                         x.id === task.id &&
                         x.start >= task.start &&
@@ -2056,7 +2099,6 @@ module powerbi.extensibility.visual {
             const taskConfigHeight = settings.taskConfig.height || DefaultChartLineHeight;
             const taskYCoordinate = taskConfigHeight * taskIndex;
             const barHeight = Gantt.getBarHeight(taskConfigHeight);
-
             return taskYCoordinate + (barHeight + Gantt.BarHeightMargin - (taskConfigHeight - fontSize) / Gantt.ChartLineHeightDivider);
         }
 
@@ -2254,7 +2296,7 @@ module powerbi.extensibility.visual {
             this.lineGroup
                 .attr("transform", SVGUtil.translate(translateXValue, margin.top));
             this.collapseAllGroup
-                .attr("transform", SVGUtil.translate(translateXValue, margin.top / 2));
+                .attr("transform", SVGUtil.translate(translateXValue, margin.top / 4));
         }
 
         private getMilestoneLineLength(numOfTasks: number): number {

@@ -136,14 +136,14 @@ module powerbi.extensibility.visual.test {
                     let countOfTaskLabels = visualBuilder.tasks
                         .children(".task-resource")
                         .length;
+
                     let countOfTaskLines = visualBuilder.mainElement
                         .children("g.task-lines")
-                        .children("text")
+                        .children("g.label")
                         .length;
                     let countOfTasks = visualBuilder.tasks.length;
 
                     let uniqueParents = getUniqueParentsCount(dataView, 5);
-
                     expect(countOfTaskLabels).toEqual(dataView.table.rows.length + uniqueParents);
                     expect(countOfTaskLines).toEqual(dataView.table.rows.length + uniqueParents);
                     expect(countOfTasks).toEqual(dataView.table.rows.length + uniqueParents);
@@ -518,13 +518,13 @@ module powerbi.extensibility.visual.test {
                     expect(tasks.length).toEqual(defaultDataViewBuilder.valuesTaskTypeResource.length + uniqueParentsCount);
 
                     let parentIndex: number = 4;
-                    let parentTask = visualBuilder.taskLabels.eq(parentIndex);
+                    let parentTask = visualBuilder.taskLabelsText.eq(parentIndex);
                     clickElement(parentTask);
 
-                    let childTaskMarginLeft: number = +visualBuilder.taskLabels.eq(++parentIndex).attr("x");
+                    let childTaskMarginLeft: number = +visualBuilder.taskLabelsText.eq(++parentIndex).attr("x");
                     expect(childTaskMarginLeft).toEqual(VisualClass["SubtasksLeftMargin"]);
 
-                    childTaskMarginLeft = +visualBuilder.taskLabels.eq(++parentIndex).attr("x");
+                    childTaskMarginLeft = +visualBuilder.taskLabelsText.eq(++parentIndex).attr("x");
                     expect(childTaskMarginLeft).toEqual(VisualClass["SubtasksLeftMargin"]);
 
                     done();
@@ -533,12 +533,12 @@ module powerbi.extensibility.visual.test {
 
             it("Show collapse all arrow if parent is added", (done) => {
                 dataView = defaultDataViewBuilder.getDataView([
-                    GanttData.ColumnType,
-                    GanttData.ColumnTask,
-                    GanttData.ColumnStartDate,
-                    GanttData.ColumnDuration,
-                    GanttData.ColumnResource,
-                    GanttData.ColumnParent
+                    VisualData.ColumnType,
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnResource,
+                    VisualData.ColumnParent
                 ]);
 
                 fixDataViewDateValuesAggregation(dataView);
@@ -548,11 +548,11 @@ module powerbi.extensibility.visual.test {
                     expect(collapseArrow).toBeDefined();
 
                     dataView = defaultDataViewBuilder.getDataView([
-                        GanttData.ColumnType,
-                        GanttData.ColumnTask,
-                        GanttData.ColumnStartDate,
-                        GanttData.ColumnDuration,
-                        GanttData.ColumnResource
+                        VisualData.ColumnType,
+                        VisualData.ColumnTask,
+                        VisualData.ColumnStartDate,
+                        VisualData.ColumnDuration,
+                        VisualData.ColumnResource
                     ]);
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
@@ -651,7 +651,7 @@ module powerbi.extensibility.visual.test {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let element = d3.select(visualBuilder.element.get(0));
                     let resources = element.selectAll(".task-resource").node();
-                    let labels = element.selectAll(".label").node();
+                    let labels = element.selectAll(".label").node().childNodes[0];
 
                     expect((resources as SVGTextElement).style["font-size"]).toEqual("12px");
                     expect((labels as SVGTextElement).style["font-size"]).toEqual("12px");
@@ -813,10 +813,7 @@ module powerbi.extensibility.visual.test {
                 fixDataViewDateValuesAggregation(dataView);
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let countOfTaskLines = visualBuilder.mainElement
-                        .children("g.task-lines")
-                        .children("text")
-                        .length;
+                    let countOfTaskLines = visualBuilder.taskLabelsText.length;
                     let values = dataView.categorical.categories[1].values;
 
                     expect(values.length).toBeGreaterThan(_.uniq(values).length);
@@ -1603,7 +1600,7 @@ module powerbi.extensibility.visual.test {
                     };
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        visualBuilder.taskLabels.toArray().map($).forEach(e =>
+                        visualBuilder.taskLabelsText.toArray().map($).forEach(e =>
                             assertColorsMatch(e.css("fill"), color));
 
                         done();
