@@ -767,7 +767,7 @@ module powerbi.extensibility.visual {
             return sortingOption;
         }
 
-        private static getMinDurationUnitInMilleseconds(durationUnit: string): number {
+        private static getMinDurationUnitInMilliseconds(durationUnit: string): number {
             switch (durationUnit) {
                 case "hour":
                     return MillisecondsInAHour;
@@ -902,6 +902,7 @@ module powerbi.extensibility.visual {
                 const extraInformation: ExtraInformation[] = [];
                 const resource: string = (values.Resource && values.Resource[index] as string) || "";
                 const parent: string = (values.Parent && values.Parent[index] as string) || null;
+
                 const startDate: Date = (values.StartDate
                     && Gantt.isValidDate(values.StartDate[index] as Date) && values.StartDate[index] as Date)
                     || new Date(Date.now());
@@ -994,7 +995,7 @@ module powerbi.extensibility.visual {
 
                 if (task.end && task.start) {
                     const durationInMilliseconds: number = task.end.getTime() - task.start.getTime(),
-                        minDurationUnitInMilliseconds: number = Gantt.getMinDurationUnitInMilleseconds(durationUnit);
+                        minDurationUnitInMilliseconds: number = Gantt.getMinDurationUnitInMilliseconds(durationUnit);
 
                     task.end = durationInMilliseconds < minDurationUnitInMilliseconds ? d3.time[durationUnit].offset(task.start, task.duration) : task.end;
                 } else {

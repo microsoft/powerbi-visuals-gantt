@@ -1479,7 +1479,7 @@ module powerbi.extensibility.visual.test {
                     let unitMocks = VisualBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.days.data,
                         expected = unitMocks.days.expected,
-                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDuration(dataItem.unit, dataItem.duration));
 
                     expect(realResult).toEqual(expected);
                 });
@@ -1488,7 +1488,7 @@ module powerbi.extensibility.visual.test {
                     let unitMocks = VisualBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.hours.data,
                         expected = unitMocks.hours.expected,
-                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDuration(dataItem.unit, dataItem.duration));
 
                     expect(realResult).toEqual(expected);
                 });
@@ -1497,7 +1497,7 @@ module powerbi.extensibility.visual.test {
                     let unitMocks = VisualBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.minutes.data,
                         expected = unitMocks.minutes.expected,
-                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDuration(dataItem.unit, dataItem.duration));
 
                     expect(realResult).toEqual(expected);
                 });
@@ -1506,7 +1506,7 @@ module powerbi.extensibility.visual.test {
                     let unitMocks = VisualBuilder.getDowngradeDurationUnitMocks(),
                         data = unitMocks.seconds.data,
                         expected = unitMocks.seconds.expected,
-                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDurationFloor(dataItem.unit, dataItem.duration));
+                        realResult = data.map((dataItem) => DurationHelper.getNewUnitByFloorDuration(dataItem.unit, dataItem.duration));
 
                     expect(realResult).toEqual(expected);
                 });

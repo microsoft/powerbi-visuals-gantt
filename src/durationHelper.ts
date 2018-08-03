@@ -41,7 +41,7 @@ module powerbi.extensibility.visual {
 
     export class DurationHelper {
 
-        public static getNewUnitByFloorDurationFloor(durationUnitTypeIndex: number, duration: number): string {
+        public static getNewUnitByFloorDuration(durationUnitTypeIndex: number, duration: number): string {
             if (!durationUnitTypeIndex)
                 return GanttDurationUnitType[0];
 
@@ -58,7 +58,7 @@ module powerbi.extensibility.visual {
             }
 
             if ((duration - Math.floor(duration) !== 0) && durationUnitTypeIndex > 1 ) {
-                return DurationHelper.getNewUnitByFloorDurationFloor(durationUnitTypeIndex - 1, duration);
+                return DurationHelper.getNewUnitByFloorDuration(durationUnitTypeIndex - 1, duration);
             } else {
                 return GanttDurationUnitType[durationUnitTypeIndex - 1];
             }
@@ -67,7 +67,7 @@ module powerbi.extensibility.visual {
         public static downgradeDurationUnit(durationUnit: string, duration: number): string {
             let durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
             // if duration == 0.84 day, we need transform duration to minutes in order to get duration without extra loss
-            durationUnit = DurationHelper.getNewUnitByFloorDurationFloor(durationUnitTypeIndex, duration);
+            durationUnit = DurationHelper.getNewUnitByFloorDuration(durationUnitTypeIndex, duration);
 
             return durationUnit;
         }
@@ -96,7 +96,7 @@ module powerbi.extensibility.visual {
             newDurationUnit: string | DurationUnits,
             stepDurationTransformation: number): number {
 
-            if (!stepDurationTransformation) {
+            if (stepDurationTransformation === null || typeof stepDurationTransformation === "undefined") {
                 return Math.floor(duration);
             }
 
