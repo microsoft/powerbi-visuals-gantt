@@ -1,3 +1,8 @@
+## 1.13.0
+* Possibility to collaspse/expand all nodes
+* Collaspe/expand arrows were replaced by plus/minus icons and icons now are loacted before labels
+* Possibility to set Duration or EndDate
+
 ## 1.12.1
 * Fixes highlighting issue
 

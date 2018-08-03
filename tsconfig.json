@@ -24,6 +24,7 @@
     "node_modules/powerbi-models/dist/models-noexports.d.ts",
     "src/behavior.ts",
     "src/columns.ts",
+    "src/durationHelper.ts",
     "src/settings.ts",
     "src/gantt.ts"
   ]

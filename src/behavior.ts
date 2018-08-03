@@ -55,6 +55,10 @@ module powerbi.extensibility.visual.behavior {
             selection: d3.Selection<any>;
             callback: (groupedTask: GroupedTask) => void;
         };
+        allSubtasksCollapse: {
+            selection: d3.Selection<any>;
+            callback: () => void;
+        };
     }
 
     export class Behavior implements IInteractiveBehavior {
@@ -98,6 +102,11 @@ module powerbi.extensibility.visual.behavior {
 
                 (d3.event as MouseEvent).stopPropagation();
                 options.subTasksCollapse.callback(d);
+            });
+
+            options.allSubtasksCollapse.selection.on("click", () => {
+                (d3.event as MouseEvent).stopPropagation();
+                options.allSubtasksCollapse.callback();
             });
 
             clearCatcher.on("click", () => {
