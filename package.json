@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-gantt",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "description": "A Gantt chart is a type of bar chart which illustrates a project timeline or schedule. The Gantt Chart visual shows the Tasks, Start Dates, Durations, % Complete, and Resources for a project. The Gantt Chart visual can be used to show current schedule status using percent-complete shadings and a vertical \"TODAY\" line. The Legend may be used to group or filter tasks based upon data values.",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
     "powerbi-visuals"
   ],
   "scripts": {
-    "postinstall": "pbiviz update 1.11.0",
+    "postinstall": "pbiviz update 1.13.0",
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "package": "pbiviz package",
@@ -33,12 +33,12 @@
     "globalize": "0.1.0-a2",
     "jquery": "3.1.1",
     "lodash": "4.16.2",
-    "powerbi-visuals-utils-chartutils": "0.2.1",
-    "powerbi-visuals-utils-colorutils": "1.0.0",
+    "powerbi-visuals-utils-chartutils": "^1.7.0",
+    "powerbi-visuals-utils-colorutils": "1.1.0",
     "powerbi-visuals-utils-dataviewutils": "1.1.1",
     "powerbi-visuals-utils-formattingutils": "2.1.0",
     "powerbi-visuals-utils-interactivityutils": "3.1.0",
-    "powerbi-visuals-utils-svgutils": "0.2.1",
+    "powerbi-visuals-utils-svgutils": "1.1.0",
     "powerbi-visuals-utils-tooltiputils": "0.3.2",
     "powerbi-visuals-utils-typeutils": "1.0.0"
   },
@@ -59,7 +59,7 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript-preprocessor": "0.3.1",
     "powerbi-models": "^1.0.2",
-    "powerbi-visuals-tools": "1.11.2",
+    "powerbi-visuals-tools": "1.13.0",
     "powerbi-visuals-utils-testutils": "1.2.1",
     "puppeteer": "^1.6.0",
     "tslint": "4.5.1",

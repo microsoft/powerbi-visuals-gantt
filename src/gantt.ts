@@ -406,22 +406,22 @@ module powerbi.extensibility.visual {
             this.behavior = new Behavior();
             this.interactivityService = createInteractivityService(this.host);
 
-            this.createViewport($(options.element));
+            this.createViewport(options.element);
         }
 
         /**
          * Create the viewport area of the gantt chart
          */
-        private createViewport(element: JQuery): void {
+        private createViewport(element: HTMLElement): void {
             let self = this;
             // create div container to the whole viewport area
             this.ganttDiv = this.body.append("div")
-                .classed(Selectors.Body.class, true);
+                .classed(Selectors.Body.className, true);
 
             // create container to the svg area
             this.ganttSvg = this.ganttDiv
                 .append("svg")
-                .classed(Selectors.ClassName.class, true);
+                .classed(Selectors.ClassName.className, true);
 
             // create clear catcher
             this.clearCatcher = appendClearCatcher(this.ganttSvg);
@@ -429,22 +429,22 @@ module powerbi.extensibility.visual {
             // create chart container
             this.chartGroup = this.ganttSvg
                 .append("g")
-                .classed(Selectors.Chart.class, true);
+                .classed(Selectors.Chart.className, true);
 
             // create tasks container
             this.taskGroup = this.chartGroup
                 .append("g")
-                .classed(Selectors.Tasks.class, true);
+                .classed(Selectors.Tasks.className, true);
 
             // create tasks container
             this.taskGroup = this.chartGroup
                 .append("g")
-                .classed(Selectors.Tasks.class, true);
+                .classed(Selectors.Tasks.className, true);
 
             // create axis container
             this.axisGroup = this.ganttSvg
                 .append("g")
-                .classed(Selectors.AxisGroup.class, true);
+                .classed(Selectors.AxisGroup.className, true);
             this.axisGroup
                 .append("rect")
                 .attr("width", "100%")
@@ -454,7 +454,7 @@ module powerbi.extensibility.visual {
 
             this.collapseAllGroup = this.ganttSvg
                 .append("g")
-                .classed(Selectors.CollapseAll.class, true);
+                .classed(Selectors.CollapseAll.className, true);
 
             this.collapseAllGroup
                 .append("rect")
@@ -464,7 +464,7 @@ module powerbi.extensibility.visual {
             // create task lines container
             this.lineGroup = this.ganttSvg
                 .append("g")
-                .classed(Selectors.TaskLines.class, true);
+                .classed(Selectors.TaskLines.className, true);
 
             this.lineGroupWrapper = this.lineGroup
                 .append("rect")
@@ -472,7 +472,8 @@ module powerbi.extensibility.visual {
                 .attr("fill", "white");
 
             // create legend container
-            this.legend = createLegend(element,
+            this.legend = createLegend(
+                element,
                 this.isInteractiveChart,
                 this.interactivityService,
                 true,
@@ -503,43 +504,43 @@ module powerbi.extensibility.visual {
                 });
 
             this.body
-                .selectAll(Selectors.LegendItems.selector)
+                .selectAll(Selectors.LegendItems.selectorName)
                 .remove();
 
             this.body
-                .selectAll(Selectors.LegendTitle.selector)
+                .selectAll(Selectors.LegendTitle.selectorName)
                 .remove();
 
             this.axisGroup
-                .selectAll(Selectors.AxisTick.selector)
+                .selectAll(Selectors.AxisTick.selectorName)
                 .remove();
 
             this.axisGroup
-                .selectAll(Selectors.Domain.selector)
+                .selectAll(Selectors.Domain.selectorName)
                 .remove();
 
             this.collapseAllGroup
-                .selectAll(Selectors.CollapseAll.selector)
+                .selectAll(Selectors.CollapseAll.selectorName)
                 .remove();
 
             this.lineGroup
-                .selectAll(Selectors.TaskLabels.selector)
+                .selectAll(Selectors.TaskLabels.selectorName)
                 .remove();
 
             this.lineGroup
-                .selectAll(Selectors.Label.selector)
+                .selectAll(Selectors.Label.selectorName)
                 .remove();
 
             this.chartGroup
-                .selectAll(Selectors.ChartLine.selector)
+                .selectAll(Selectors.ChartLine.selectorName)
                 .remove();
 
             this.chartGroup
-                .selectAll(Selectors.TaskGroup.selector)
+                .selectAll(Selectors.TaskGroup.selectorName)
                 .remove();
 
             this.chartGroup
-                .selectAll(Selectors.SingleTask.selector)
+                .selectAll(Selectors.SingleTask.selectorName)
                 .remove();
         }
 
@@ -1345,15 +1346,15 @@ module powerbi.extensibility.visual {
             if (this.interactivityService) {
                 const behaviorOptions: BehaviorOptions = {
                     clearCatcher: this.clearCatcher,
-                    taskSelection: this.taskGroup.selectAll(Selectors.SingleTask.selector),
-                    legendSelection: this.body.selectAll(Selectors.LegendItems.selector),
+                    taskSelection: this.taskGroup.selectAll(Selectors.SingleTask.selectorName),
+                    legendSelection: this.body.selectAll(Selectors.LegendItems.selectorName),
                     subTasksCollapse: {
-                        selection: this.body.selectAll(Selectors.Label.selector),
+                        selection: this.body.selectAll(Selectors.Label.selectorName),
                         callback: this.subTasksCollapseCb.bind(this)
                     },
                     allSubtasksCollapse: {
                         selection: this.body
-                            .selectAll(Selectors.CollapseAllArrow.selector),
+                            .selectAll(Selectors.CollapseAllArrow.selectorName),
                         callback: this.subTasksCollapseAll.bind(this)
                     },
                     interactivityService: this.interactivityService
@@ -1590,17 +1591,17 @@ module powerbi.extensibility.visual {
                     .attr("fill", "white");
 
                 this.lineGroup
-                    .selectAll(Selectors.Label.selector)
+                    .selectAll(Selectors.Label.selectorName)
                     .remove();
 
                 axisLabel = this.lineGroup
-                    .selectAll(Selectors.Label.selector)
+                    .selectAll(Selectors.Label.selectorName)
                     .data(tasks);
 
                 let axisLabelGroup = axisLabel
                     .enter()
                     .append("g")
-                    .classed(Selectors.Label.class, true)
+                    .classed(Selectors.Label.className, true)
                     .attr({
                         transform: (task: GroupedTask) => SVGUtil.translate(0, this.getTaskLabelCoordinateY(task.id))
                     });
@@ -1646,7 +1647,7 @@ module powerbi.extensibility.visual {
                 if (this.viewModel.isParentFilled) {
                     this.collapseAllGroup
                         .append("image")
-                        .classed(Selectors.CollapseAllArrow.class, true)
+                        .classed(Selectors.CollapseAllArrow.className, true)
                         .attr({
                             "xlink:href": (this.collapsedTasks.length ? this.collapseAllImageConsts.plusIconEncoded : this.collapseAllImageConsts.minusIconEncoded),
                             width: this.groupLabelSize,
@@ -1665,7 +1666,7 @@ module powerbi.extensibility.visual {
                         });
                     this.collapseAllGroup
                         .append("image")
-                        .classed(Selectors.CollapseAllArrow.class, true)
+                        .classed(Selectors.CollapseAllArrow.className, true)
                         .attr({
                             "xlink:href": (this.collapsedTasks.length ? this.collapseAllImageConsts.plusIconEncoded : this.collapseAllImageConsts.minusIconEncoded),
                             width: this.groupLabelSize,
@@ -1681,7 +1682,7 @@ module powerbi.extensibility.visual {
                     .attr("fill", "transparent");
 
                 this.lineGroup
-                    .selectAll(Selectors.Label.selector)
+                    .selectAll(Selectors.Label.selectorName)
                     .remove();
             }
         }
@@ -1713,7 +1714,7 @@ module powerbi.extensibility.visual {
          * callback for subtasks collapse all click event
          */
         private subTasksCollapseAll(): void {
-            const collapsedAllSelector = this.collapseAllGroup.select(Selectors.CollapseAllArrow.selector);
+            const collapsedAllSelector = this.collapseAllGroup.select(Selectors.CollapseAllArrow.selectorName);
             const isCollapsed: string = collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag);
 
             if (isCollapsed === "1") {
@@ -1755,14 +1756,14 @@ module powerbi.extensibility.visual {
         private renderTasks(groupedTasks: GroupedTask[]): void {
             let taskConfigHeight: number = this.viewModel.settings.taskConfig.height || DefaultChartLineHeight;
             let taskGroupSelection: UpdateSelection<any> = this.taskGroup
-                .selectAll(Selectors.TaskGroup.selector)
+                .selectAll(Selectors.TaskGroup.selectorName)
                 .data(groupedTasks);
 
             // render task group container
             taskGroupSelection
                 .enter()
                 .append("g")
-                .classed(Selectors.TaskGroup.class, true);
+                .classed(Selectors.TaskGroup.className, true);
 
             let taskSelection: UpdateSelection<Task> = this.taskSelectionRectRender(taskGroupSelection);
             this.taskMainRectRender(taskSelection, taskConfigHeight);
@@ -1803,13 +1804,13 @@ module powerbi.extensibility.visual {
          */
         private taskSelectionRectRender(taskGroupSelection: UpdateSelection<any>) {
             let taskSelection: UpdateSelection<Task> = taskGroupSelection
-                .selectAll(Selectors.SingleTask.selector)
+                .selectAll(Selectors.SingleTask.selectorName)
                 .data((d: GroupedTask) => d.tasks);
 
             taskSelection
                 .enter()
                 .append("g")
-                .classed(Selectors.SingleTask.class, true);
+                .classed(Selectors.SingleTask.className, true);
 
             return taskSelection;
         }
@@ -1823,13 +1824,13 @@ module powerbi.extensibility.visual {
             taskSelection: UpdateSelection<Task>,
             taskConfigHeight: number): void {
             let taskRect: UpdateSelection<Task> = taskSelection
-                .selectAll(Selectors.TaskRect.selector)
+                .selectAll(Selectors.TaskRect.selectorName)
                 .data((d: Task) => [d]);
 
             taskRect
                 .enter()
                 .append("rect")
-                .classed(Selectors.TaskRect.class, true);
+                .classed(Selectors.TaskRect.className, true);
 
             taskRect
                 .attr({
@@ -1859,7 +1860,7 @@ module powerbi.extensibility.visual {
 
             if (taskDaysOffShow) {
                 let tasksDaysOff: UpdateSelection<TaskDaysOff> = taskSelection
-                    .selectAll(Selectors.TaskDaysOff.selector)
+                    .selectAll(Selectors.TaskDaysOff.selectorName)
                     .data((d: Task) => {
                         let tasksDaysOff: TaskDaysOff[] = [];
 
@@ -1878,7 +1879,7 @@ module powerbi.extensibility.visual {
                 tasksDaysOff
                     .enter()
                     .append("rect")
-                    .classed(Selectors.TaskDaysOff.class, true);
+                    .classed(Selectors.TaskDaysOff.className, true);
 
                 tasksDaysOff
                     .attr({
@@ -1918,13 +1919,13 @@ module powerbi.extensibility.visual {
 
             if (taskProgressShow) {
                 let taskProgress: UpdateSelection<Task> = taskSelection
-                    .selectAll(Selectors.TaskProgress.selector)
+                    .selectAll(Selectors.TaskProgress.selectorName)
                     .data((d: Task) => [d]);
 
                 taskProgress
                     .enter()
                     .append("rect")
-                    .classed(Selectors.TaskProgress.class, true);
+                    .classed(Selectors.TaskProgress.className, true);
 
                 taskProgress
                     .attr({
@@ -1988,13 +1989,13 @@ module powerbi.extensibility.visual {
 
             if (taskResourceShow) {
                 let taskResource: UpdateSelection<Task> = taskSelection
-                    .selectAll(Selectors.TaskResource.selector)
+                    .selectAll(Selectors.TaskResource.selectorName)
                     .data((d: Task) => [d]);
 
                 taskResource
                     .enter()
                     .append("text")
-                    .classed(Selectors.TaskResource.class, true);
+                    .classed(Selectors.TaskResource.className, true);
 
                 taskResource
                     .attr({
@@ -2233,13 +2234,13 @@ module powerbi.extensibility.visual {
             }];
 
             let chartLineSelection: UpdateSelection<Line> = this.chartGroup
-                .selectAll(Selectors.ChartLine.selector)
+                .selectAll(Selectors.ChartLine.selectorName)
                 .data(line);
 
             chartLineSelection
                 .enter()
                 .append("line")
-                .classed(Selectors.ChartLine.class, true);
+                .classed(Selectors.ChartLine.className, true);
 
             chartLineSelection
                 .attr({
@@ -2267,7 +2268,7 @@ module powerbi.extensibility.visual {
 
             if (axisLength > scrollValue) {
                 (this.body.node() as SVGSVGElement)
-                    .querySelector(Selectors.Body.selector).scrollLeft = scrollValue;
+                    .querySelector(Selectors.Body.selectorName).scrollLeft = scrollValue;
             }
         }
 

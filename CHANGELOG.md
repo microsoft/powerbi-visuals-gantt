@@ -1,3 +1,7 @@
+## 1.14.0
+* High contrast mode
+* API 1.13.0
+
 ## 1.13.0
 * Possibility to collaspse/expand all nodes
 * Collaspe/expand arrows were replaced by plus/minus icons and icons now are loacted before labels
