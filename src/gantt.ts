@@ -71,7 +71,6 @@ module powerbi.extensibility.visual {
 
     // powerbi.extensibility.utils.interactivity
     import appendClearCatcher = powerbi.extensibility.utils.interactivity.appendClearCatcher;
-    import SelectableDataPoint = powerbi.extensibility.utils.interactivity.SelectableDataPoint;
     import IInteractivityService = powerbi.extensibility.utils.interactivity.IInteractivityService;
     import createInteractivityService = powerbi.extensibility.utils.interactivity.createInteractivityService;
 
@@ -153,109 +152,9 @@ module powerbi.extensibility.visual {
         Today = <any>"Today"
     }
 
-    export interface Task extends SelectableDataPoint {
-        id: number;
-        name: string;
-        start: Date;
-        duration: number;
-        completion: number;
-        resource: string;
-        end: Date;
-        parent: string;
-        children: Task[];
-        visibility: boolean;
-        taskType: string;
-        description: string;
-        color: string;
-        tooltipInfo: VisualTooltipDataItem[];
-        extraInformation: ExtraInformation[];
-        daysOffList: DayOffData[];
-        wasDowngradeDurationUnit: boolean;
-        stepDurationTransformation?: number;
-        highlight?: boolean;
-    }
-
-    export type DayOffData = [Date, number];
-
-    export interface DaysOffDataForAddition {
-        list: DayOffData[];
-        amountOfLastDaysOff: number;
-    }
-
-    export interface TaskDaysOff {
-        id: number;
-        daysOff: DayOffData;
-    }
-
-    export interface ExtraInformation {
-        displayName: string;
-        value: string;
-    }
-
-    export interface GroupedTask {
-        id: number;
-        name: string;
-        tasks: Task[];
-    }
-
-    export interface GanttChartFormatters {
-        startDateFormatter: IValueFormatter;
-        completionFormatter: IValueFormatter;
-    }
-
     export class SortingOptions {
         isCustomSortingNeeded: boolean;
         sortingDirection: SortDirection;
-    }
-
-    export interface GanttViewModel {
-        dataView: DataView;
-        settings: GanttSettings;
-        tasks: Task[];
-        legendData: LegendData;
-        taskTypes: TaskTypes;
-        isDurationFilled: boolean;
-        isEndDateFillled: boolean;
-        isParentFilled: boolean;
-    }
-
-    export interface TaskTypes { /*TODO: change to more proper name*/
-        typeName: string;
-        types: TaskTypeMetadata[];
-    }
-
-    export interface TaskTypeMetadata {
-        name: string;
-        columnGroup: DataViewValueColumnGroup;
-        selectionColumn: DataViewCategoryColumn;
-    }
-
-    export interface GanttCalculateScaleAndDomainOptions {
-        viewport: IViewport;
-        margin: IMargin;
-        showCategoryAxisLabel: boolean;
-        showValueAxisLabel: boolean;
-        forceMerge: boolean;
-        categoryAxisScaleType: string;
-        valueAxisScaleType: string;
-        trimOrdinalDataOnOverflow: boolean;
-        forcedTickCount?: number;
-        forcedYDomain?: any[];
-        forcedXDomain?: any[];
-        ensureXDomain?: any;
-        ensureYDomain?: any;
-        categoryAxisDisplayUnits?: number;
-        categoryAxisPrecision?: number;
-        valueAxisDisplayUnits?: number;
-        valueAxisPrecision?: number;
-    }
-
-    interface Line {
-        x1: number;
-        y1: number;
-        x2: number;
-        y2: number;
-        tooltipInfo: VisualTooltipDataItem[];
     }
 
     module Selectors {

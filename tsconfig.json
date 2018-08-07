@@ -22,6 +22,7 @@
     "node_modules/powerbi-visuals-utils-chartutils/lib/index.d.ts",
     "node_modules/powerbi-models/dist/models-noexports.d.ts",
     "src/behavior.ts",
+    "src/interfaces.ts",
     "src/columns.ts",
     "src/durationHelper.ts",
     "src/settings.ts",
