@@ -33,6 +33,7 @@ module powerbi.extensibility.visual.test {
     // powerbi.extensibility.visual.test
     import VisualData = powerbi.extensibility.visual.test.VisualData;
     import VisualBuilder = powerbi.extensibility.visual.test.VisualBuilder;
+    import isColorAppliedToElements = powerbi.extensibility.visual.test.helpers.isColorAppliedToElements;
 
     // powerbi.extensibility.visual.Gantt1448688115699
     import Task = powerbi.extensibility.visual.Gantt1448688115699.Task;
@@ -1084,9 +1085,9 @@ module powerbi.extensibility.visual.test {
                             if (!isParentTask) {
                                 const amountOfWeekendDays: number = daysOff[1];
 
-                            const firstDayOfWeek: Date = new Date(
-                                daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay)
-                            );
+                                const firstDayOfWeek: Date = new Date(
+                                    daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay)
+                                );
 
                                 expect(firstDayOfWeek.getDay()).toEqual(dayForCheck);
                             }
@@ -1740,6 +1741,64 @@ module powerbi.extensibility.visual.test {
                 };
 
                 objectsChecker(jsonData);
+            });
+        });
+
+        describe("High contrast mode", () => {
+            const backgroundColor: string = "#000000";
+            const foregroundColor: string = "#ff00ff";
+
+            let taskRect: JQuery[],
+                taskLineBackgroundRect: JQuery[],
+                axisBackgroundRect: JQuery[],
+                axisTicks: JQuery[],
+                axisTicksLine: JQuery[],
+                taskLabels: JQuery[],
+                chartLine: JQuery[],
+                taskProgress: JQuery[];
+
+            beforeEach(() => {
+                visualBuilder.visualHost.colorPalette.isHighContrast = true;
+
+                visualBuilder.visualHost.colorPalette.background = { value: backgroundColor };
+                visualBuilder.visualHost.colorPalette.foreground = { value: foregroundColor };
+
+                taskRect = visualBuilder.taskRect.toArray().map($);
+                taskProgress = visualBuilder.taskProgress.toArray().map($);
+                taskLineBackgroundRect = visualBuilder.taskLineBackgroundRect.toArray().map($);
+                axisBackgroundRect = visualBuilder.axisBackgroundRect.toArray().map($);
+
+                axisTicksLine = visualBuilder.axisTicksLine.toArray().map($);
+                taskLabels = visualBuilder.taskLabels.toArray().map($);
+                chartLine = visualBuilder.chartLine.toArray().map($);
+
+            });
+
+            it("should use high contrast mode colors", (done) => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    expect(isColorAppliedToElements(chartLine, foregroundColor, "fill"));
+                    expect(isColorAppliedToElements(axisTicksLine, foregroundColor, "fill"));
+                    expect(isColorAppliedToElements(taskProgress, foregroundColor, "fill"));
+                    expect(isColorAppliedToElements(taskLabels, foregroundColor, "fill"));
+                    done();
+                });
+            });
+
+            it("should the axis and categories background color be similar to theme color", (done) => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    expect(isColorAppliedToElements(taskLineBackgroundRect, backgroundColor, "fill"));
+                    expect(isColorAppliedToElements(axisBackgroundRect, backgroundColor, "fill"));
+                    done();
+                });
+            });
+
+            it("should not use fill for task rects", (done) => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    expect(isColorAppliedToElements(taskRect, null, "fill"));
+                    expect(isColorAppliedToElements(taskRect, foregroundColor, "stroke"));
+                    expect(isColorAppliedToElements(taskRect, backgroundColor, "fill"));
+                    done();
+                });
             });
         });
     });

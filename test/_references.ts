@@ -49,3 +49,4 @@
 // Test
 /// <reference path="visualData.ts" />
 /// <reference path="visualBuilder.ts" />
+/// <reference path="helpers/helpers.ts"/>
