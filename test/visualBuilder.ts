@@ -85,6 +85,11 @@ module powerbi.extensibility.visual.test {
                 .children("g.axis");
         }
 
+        public get axisBackgroundRect() {
+            return this.axis
+                .children("rect");
+        }
+
         public get axisTicks() {
             return this.axis
                 .children("g.tick");
@@ -108,6 +113,11 @@ module powerbi.extensibility.visual.test {
         public get taskLine() {
             return this.tasks
                 .children("rect.task-lines");
+        }
+
+        public get taskLineBackgroundRect() {
+            return this.taskLine
+                .children("rect");
         }
 
         public get taskDaysOffRect() {
@@ -218,8 +228,8 @@ module powerbi.extensibility.visual.test {
             let downgradeDurationUnitMock = {
                 days: {
                     "data": [
-                        {"unit": GanttDurationUnitType.indexOf("day"), "duration": 1.5},
-                        {"unit": GanttDurationUnitType.indexOf("day"), "duration": 0.84}
+                        { "unit": GanttDurationUnitType.indexOf("day"), "duration": 1.5 },
+                        { "unit": GanttDurationUnitType.indexOf("day"), "duration": 0.84 }
                     ],
                     "expected": [
                         "hour",
@@ -228,8 +238,8 @@ module powerbi.extensibility.visual.test {
                 },
                 hours: {
                     "data": [
-                        {"unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.05},
-                        {"unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.005}
+                        { "unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.05 },
+                        { "unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.005 }
                     ],
                     "expected": [
                         "minute",
@@ -238,7 +248,7 @@ module powerbi.extensibility.visual.test {
                 },
                 minutes: {
                     "data": [
-                        {"unit": GanttDurationUnitType.indexOf("minute"), "duration": 0.01}
+                        { "unit": GanttDurationUnitType.indexOf("minute"), "duration": 0.01 }
                     ],
                     "expected": [
                         "second"
@@ -246,7 +256,7 @@ module powerbi.extensibility.visual.test {
                 },
                 seconds: {
                     "data": [
-                        {"unit": GanttDurationUnitType.indexOf("second"), "duration": 0.5}
+                        { "unit": GanttDurationUnitType.indexOf("second"), "duration": 0.5 }
                     ],
                     "expected": [
                         "second"
@@ -261,40 +271,40 @@ module powerbi.extensibility.visual.test {
             let taskMock = {
                 taskWithCorrectParentsMock: {
                     "data": VisualBuilder.generateMocksCase([
-                        {id: 1, name: "T1", parent: "T1", children: []},
-                        {id: 2, name: "Group C", parent: "Group C", children: ["T2"]},
-                        {id: 3, name: "T2", parent: "Group C.T2", children: []}
+                        { id: 1, name: "T1", parent: "T1", children: [] },
+                        { id: 2, name: "Group C", parent: "Group C", children: ["T2"] },
+                        { id: 3, name: "T2", parent: "Group C.T2", children: [] }
                     ]),
-                    "expected" : VisualBuilder.generateMocksCase([
-                        {id: 1, name: "T1", parent: "", children: []},
-                        {id: 2, name: "Group C", parent: "", children: ["T2"]},
-                        {id: 3, name: "T2", parent: "Group C", children: []}
+                    "expected": VisualBuilder.generateMocksCase([
+                        { id: 1, name: "T1", parent: "", children: [] },
+                        { id: 2, name: "Group C", parent: "", children: ["T2"] },
+                        { id: 3, name: "T2", parent: "Group C", children: [] }
                     ])
                 },
                 taskWithNotExistentParentsMock: {
                     "data": VisualBuilder.generateMocksCase([
-                        {id: 1, name: "T1", parent: "T1", children: []},
-                        {id: 2, name: "Group C", parent: "Group C", children: []},
-                        {id: 3, name: "T2", parent: "Group A.T2", children: []},
-                        {id: 4, name: "T3", parent: "Group B.T3", children: []}
+                        { id: 1, name: "T1", parent: "T1", children: [] },
+                        { id: 2, name: "Group C", parent: "Group C", children: [] },
+                        { id: 3, name: "T2", parent: "Group A.T2", children: [] },
+                        { id: 4, name: "T3", parent: "Group B.T3", children: [] }
                     ]),
-                    "expected" : VisualBuilder.generateMocksCase([
-                        {id: 1, name: "T1", parent: "", children: []},
-                        {id: 2, name: "Group C", parent: "", children: []},
-                        {id: 3, name: "T2", parent: "", children: []},
-                        {id: 4, name: "T3", parent: "", children: []}
+                    "expected": VisualBuilder.generateMocksCase([
+                        { id: 1, name: "T1", parent: "", children: [] },
+                        { id: 2, name: "Group C", parent: "", children: [] },
+                        { id: 3, name: "T2", parent: "", children: [] },
+                        { id: 4, name: "T3", parent: "", children: [] }
                     ])
                 },
                 taskWithNotExistentMiddleParentsMock: {
                     "data": VisualBuilder.generateMocksCase([
-                        {id: 1, name: "T1", parent: "T1", children: []},
-                        {id: 2, name: "Group C", parent: "Group C", children: ["T2"]},
-                        {id: 3, name: "T2", parent: "Group C.Group M.T2", children: []}
+                        { id: 1, name: "T1", parent: "T1", children: [] },
+                        { id: 2, name: "Group C", parent: "Group C", children: ["T2"] },
+                        { id: 3, name: "T2", parent: "Group C.Group M.T2", children: [] }
                     ]),
-                    "expected" : VisualBuilder.generateMocksCase([
-                        {id: 1, name: "T1", parent: "", children: []},
-                        {id: 2, name: "Group C", parent: "", children: ["T2"]},
-                        {id: 3, name: "T2", parent: "Group C", children: []}
+                    "expected": VisualBuilder.generateMocksCase([
+                        { id: 1, name: "T1", parent: "", children: [] },
+                        { id: 2, name: "Group C", parent: "", children: ["T2"] },
+                        { id: 3, name: "T2", parent: "Group C", children: [] }
                     ])
                 }
             };
