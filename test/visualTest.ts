@@ -1751,7 +1751,7 @@ module powerbi.extensibility.visual.test {
             let taskRect: JQuery[],
                 taskLineBackgroundRect: JQuery[],
                 axisBackgroundRect: JQuery[],
-                axisTicks: JQuery[],
+                axisTicksText: JQuery[],
                 axisTicksLine: JQuery[],
                 taskLabels: JQuery[],
                 chartLine: JQuery[],
@@ -1769,6 +1769,7 @@ module powerbi.extensibility.visual.test {
                 axisBackgroundRect = visualBuilder.axisBackgroundRect.toArray().map($);
 
                 axisTicksLine = visualBuilder.axisTicksLine.toArray().map($);
+                axisTicksText = visualBuilder.axisTicksLine.toArray().map($);
                 taskLabels = visualBuilder.taskLabels.toArray().map($);
                 chartLine = visualBuilder.chartLine.toArray().map($);
 
@@ -1777,14 +1778,15 @@ module powerbi.extensibility.visual.test {
             it("should use high contrast mode colors", (done) => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     expect(isColorAppliedToElements(chartLine, foregroundColor, "fill"));
-                    expect(isColorAppliedToElements(axisTicksLine, foregroundColor, "fill"));
+                    expect(isColorAppliedToElements(axisTicksLine, foregroundColor, "stroke"));
+                    expect(isColorAppliedToElements(axisTicksText, foregroundColor, "fill"));
                     expect(isColorAppliedToElements(taskProgress, foregroundColor, "fill"));
                     expect(isColorAppliedToElements(taskLabels, foregroundColor, "fill"));
                     done();
                 });
             });
 
-            it("should the axis and categories background color be similar to theme color", (done) => {
+            it("axis color and categories background should be taken from theme color", (done) => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     expect(isColorAppliedToElements(taskLineBackgroundRect, backgroundColor, "fill"));
                     expect(isColorAppliedToElements(axisBackgroundRect, backgroundColor, "fill"));

@@ -1096,8 +1096,9 @@ module powerbi.extensibility.visual {
 
         public static parseSettings(dataView: DataView, colorHelper: ColorHelper): GanttSettings {
             let settings: GanttSettings = GanttSettings.parse<GanttSettings>(dataView);
-            if (!colorHelper)
+            if (!colorHelper) {
                 return settings;
+            }
 
             if (colorHelper.isHighContrast) {
                 settings.dateType.axisColor = colorHelper.getHighContrastColor("foreground", settings.dateType.axisColor);
