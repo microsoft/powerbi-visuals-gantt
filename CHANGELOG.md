@@ -1,3 +1,7 @@
+## 1.14.1
+* Fixed bug with wrongly positioned "group expand/collapse" icon when horizontal scrolling is presented and the icon now has fixed horizontal position as for single "expand/collapse" icons
+* Fixed bug with broken removing of some important selectors 
+
 ## 1.14.0
 * High contrast mode
 * API 1.13.0

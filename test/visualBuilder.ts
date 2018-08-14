@@ -67,6 +67,7 @@ module powerbi.extensibility.visual.test {
 
         public get collapseAllRect() {
             return this.mainElement
+                .children("g.task-lines")
                 .children("g.collapse-all");
         }
 

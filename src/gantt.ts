@@ -356,15 +356,6 @@ module powerbi.extensibility.visual {
                 .attr("height", "40px")
                 .attr("fill", axisBackgroundColor);
 
-            this.collapseAllGroup = this.ganttSvg
-                .append("g")
-                .classed(Selectors.CollapseAll.className, true);
-
-            this.collapseAllGroup
-                .append("rect")
-                .attr("width", 110)
-                .attr("fill", axisBackgroundColor);
-
             // create task lines container
             this.lineGroup = this.ganttSvg
                 .append("g")
@@ -373,6 +364,16 @@ module powerbi.extensibility.visual {
             this.lineGroupWrapper = this.lineGroup
                 .append("rect")
                 .attr("height", "100%")
+                .attr("fill", axisBackgroundColor)
+                .attr("y", this.margin.top);
+
+            this.collapseAllGroup = this.lineGroup
+                .append("g")
+                .classed(Selectors.CollapseAll.className, true);
+
+            this.collapseAllGroup
+                .append("rect")
+                .attr("width", 110)
                 .attr("fill", axisBackgroundColor);
 
             // create legend container
@@ -393,7 +394,7 @@ module powerbi.extensibility.visual {
                     self.axisGroup
                         .attr("transform", SVGUtil.translate(taskLabelsWidth + self.margin.left, Gantt.TaskLabelsMarginTop + this.scrollTop));
                     self.lineGroup
-                        .attr("transform", SVGUtil.translate(this.scrollLeft, self.margin.top))
+                        .attr("transform", SVGUtil.translate(this.scrollLeft, 0))
                         .attr("height", 20);
                 }
             }, false);
@@ -1534,7 +1535,7 @@ module powerbi.extensibility.visual {
                     .append("g")
                     .classed(Selectors.Label.className, true)
                     .attr({
-                        transform: (task: GroupedTask) => SVGUtil.translate(0, this.getTaskLabelCoordinateY(task.id))
+                        transform: (task: GroupedTask) => SVGUtil.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.id))
                     });
 
                 axisLabelGroup
@@ -1611,6 +1612,14 @@ module powerbi.extensibility.visual {
             } else {
                 this.lineGroupWrapper
                     .attr("fill", "transparent");
+
+                this.collapseAllGroup
+                    .selectAll("image")
+                    .remove();
+
+                this.collapseAllGroup
+                    .selectAll("rect")
+                    .remove();
 
                 this.lineGroup
                     .selectAll(Selectors.Label.selectorName)
@@ -1711,21 +1720,6 @@ module powerbi.extensibility.visual {
 
             taskGroupSelection
                 .exit()
-                .remove();
-        }
-
-        /**
-         * Remove all by selector
-         * @param taskSelection Task Selection
-         * @param selector Selector name
-         */
-        private removeBySelectors(
-            taskSelection: UpdateSelection<Task>,
-            selector: string
-        ): void {
-
-            taskSelection
-                .selectAll(Selectors[selector].selector)
                 .remove();
         }
 
@@ -1841,7 +1835,9 @@ module powerbi.extensibility.visual {
                     .remove();
 
             } else {
-                this.removeBySelectors(taskSelection, "TaskDaysOff");
+                taskSelection
+                    .selectAll(Selectors.TaskDaysOff.selectorName)
+                    .remove();
             }
         }
 
@@ -1881,7 +1877,9 @@ module powerbi.extensibility.visual {
                     .exit()
                     .remove();
             } else {
-                this.removeBySelectors(taskSelection, "TaskProgress");
+                taskSelection
+                    .selectAll(Selectors.TaskProgress.selectorName)
+                    .remove();
             }
         }
 
@@ -1985,7 +1983,9 @@ module powerbi.extensibility.visual {
                     .exit()
                     .remove();
             } else {
-                this.removeBySelectors(taskSelection, "TaskResource");
+                taskSelection
+                    .selectAll(Selectors.TaskResource.selectorName)
+                    .remove();
             }
         }
 
@@ -2236,9 +2236,9 @@ module powerbi.extensibility.visual {
 
             translateXValue = (this.ganttDiv.node() as SVGSVGElement).scrollLeft;
             this.lineGroup
-                .attr("transform", SVGUtil.translate(translateXValue, margin.top));
+                .attr("transform", SVGUtil.translate(translateXValue, 0));
             this.collapseAllGroup
-                .attr("transform", SVGUtil.translate(translateXValue, margin.top / 4));
+                .attr("transform", SVGUtil.translate(0, margin.top / 4));
         }
 
         private getMilestoneLineLength(numOfTasks: number): number {
