@@ -1792,6 +1792,10 @@ module powerbi.extensibility.visual {
             const taskDaysOffColor: string = this.viewModel.settings.daysOff.fill;
             const taskDaysOffShow: boolean = this.viewModel.settings.daysOff.show;
 
+            taskSelection
+                .selectAll(Selectors.TaskDaysOff.selectorName)
+                .remove();
+
             if (taskDaysOffShow) {
                 let tasksDaysOff: UpdateSelection<TaskDaysOff> = taskSelection
                     .selectAll(Selectors.TaskDaysOff.selectorName)
@@ -1832,11 +1836,6 @@ module powerbi.extensibility.visual {
 
                 tasksDaysOff
                     .exit()
-                    .remove();
-
-            } else {
-                taskSelection
-                    .selectAll(Selectors.TaskDaysOff.selectorName)
                     .remove();
             }
         }
