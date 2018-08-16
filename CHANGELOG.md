@@ -1,3 +1,6 @@
+## 1.14.2
+* Fixed bug when completion line overlap day off periods in some cases
+
 ## 1.14.1
 * Fixed bug with wrongly positioned "group expand/collapse" icon when horizontal scrolling is presented and the icon now has fixed horizontal position as for single "expand/collapse" icons
 * Fixed bug with broken removing of some important selectors 
