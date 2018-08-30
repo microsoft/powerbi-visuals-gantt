@@ -73,7 +73,6 @@ module powerbi.extensibility.visual.behavior {
 
             options.taskSelection.on("click", (dataPoint: Task) => {
                 const event: MouseEvent = d3.event as MouseEvent;
-
                 selectionHandler.handleSelection(dataPoint, event.ctrlKey);
 
                 event.stopPropagation();

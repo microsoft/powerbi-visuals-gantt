@@ -176,6 +176,7 @@ module powerbi.extensibility.visual {
         export const TaskResource: ClassAndSelector = createClassAndSelector("task-resource");
         export const TaskLabels: ClassAndSelector = createClassAndSelector("task-labels");
         export const TaskLines: ClassAndSelector = createClassAndSelector("task-lines");
+        export const TaskLinesRect: ClassAndSelector = createClassAndSelector("task-lines-rect");
         export const CollapseAll: ClassAndSelector = createClassAndSelector("collapse-all");
         export const CollapseAllArrow: ClassAndSelector = createClassAndSelector("collapse-all-arrow");
         export const Label: ClassAndSelector = createClassAndSelector("label");
@@ -363,7 +364,9 @@ module powerbi.extensibility.visual {
 
             this.lineGroupWrapper = this.lineGroup
                 .append("rect")
+                .classed(Selectors.TaskLinesRect.className, true)
                 .attr("height", "100%")
+                .attr("width", "0")
                 .attr("fill", axisBackgroundColor)
                 .attr("y", this.margin.top);
 
@@ -1611,6 +1614,7 @@ module powerbi.extensibility.visual {
 
             } else {
                 this.lineGroupWrapper
+                    .attr("width", 0)
                     .attr("fill", "transparent");
 
                 this.collapseAllGroup

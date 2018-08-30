@@ -116,6 +116,12 @@ module powerbi.extensibility.visual.test {
                 .children("rect.task-lines");
         }
 
+        public get taskLineRect() {
+            return this.mainElement
+                .children("g.task-lines")
+                .children("rect.task-lines-rect");
+        }
+
         public get taskLineBackgroundRect() {
             return this.taskLine
                 .children("rect");
