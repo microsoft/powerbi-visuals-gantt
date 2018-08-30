@@ -332,7 +332,7 @@ module powerbi.extensibility.visual.test {
                     VisualData.ColumnType,
                     VisualData.ColumnStartDate,
                     VisualData.ColumnDuration,
-                    VisualData.ColumnCompletePercentage
+                    VisualData.ColumnCompletePercentage,
                     VisualData.ColumnResource]);
 
 
@@ -1562,6 +1562,7 @@ module powerbi.extensibility.visual.test {
                             show: true
                         }
                     };
+
                 });
 
                 it("show", (done) => {
@@ -1573,7 +1574,7 @@ module powerbi.extensibility.visual.test {
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         expect(visualBuilder.taskLabels).toBeInDOM();
-
+                        expect(visualBuilder.taskLineRect.attr("width")).toEqual("110");
                         done();
                     });
                 });
@@ -1587,7 +1588,7 @@ module powerbi.extensibility.visual.test {
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
                         expect(visualBuilder.taskLabels).not.toBeInDOM();
-
+                        expect(visualBuilder.taskLineRect.attr("width")).toEqual("0");
                         done();
                     });
                 });
