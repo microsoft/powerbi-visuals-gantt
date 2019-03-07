@@ -23,85 +23,85 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+// powerbi.extensibility.utils.dataview
+import { dataViewObjectsParser } from "powerbi-visuals-utils-dataviewutils";
+import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
 
-module powerbi.extensibility.visual {
-    // powerbi.extensibility.utils.dataview
-    import DataViewObjectsParser = utils.dataview.DataViewObjectsParser;
+import { DateTypes, ResourceLabelPositions } from "./gantt";
 
-    export class GanttSettings extends DataViewObjectsParser {
-        general: GeneralSettings = new GeneralSettings();
-        collapsedTasks: CollapsedTasks = new CollapsedTasks();
-        daysOff: DaysOffSettings = new DaysOffSettings();
-        legend: LegendSettings = new LegendSettings();
-        taskLabels: TaskLabelsSettings = new TaskLabelsSettings();
-        taskConfig: TaskConfigSettings = new TaskConfigSettings();
-        taskCompletion: TaskCompletionSettings = new TaskCompletionSettings();
-        taskResource: TaskResourceSettings = new TaskResourceSettings();
-        dateType: DateTypeSettings = new DateTypeSettings();
-        tooltipConfig: TooltipConfigSettings = new TooltipConfigSettings();
-    }
+export class GanttSettings extends DataViewObjectsParser {
+    general: GeneralSettings = new GeneralSettings();
+    collapsedTasks: CollapsedTasks = new CollapsedTasks();
+    daysOff: DaysOffSettings = new DaysOffSettings();
+    legend: LegendSettings = new LegendSettings();
+    taskLabels: TaskLabelsSettings = new TaskLabelsSettings();
+    taskConfig: TaskConfigSettings = new TaskConfigSettings();
+    taskCompletion: TaskCompletionSettings = new TaskCompletionSettings();
+    taskResource: TaskResourceSettings = new TaskResourceSettings();
+    dateType: DateTypeSettings = new DateTypeSettings();
+    tooltipConfig: TooltipConfigSettings = new TooltipConfigSettings();
+}
 
-    export class GeneralSettings {
-        groupTasks: boolean = false;
-        scrollToCurrentTime: boolean = false;
-        durationUnit: string = "day";
-        durationMin: number = 1;
-    }
+export class GeneralSettings {
+    groupTasks: boolean = false;
+    scrollToCurrentTime: boolean = false;
+    durationUnit: string = "day";
+    durationMin: number = 1;
+}
 
-    export class CollapsedTasks {
-        list: string = "[]";
-    }
+export class CollapsedTasks {
+    list: string = "[]";
+}
 
-    export class DaysOffSettings {
-        show: boolean = false;
-        fill: string = "#00B093";
-        firstDayOfWeek: string = "0";
-    }
+export class DaysOffSettings {
+    show: boolean = false;
+    fill: string = "#00B093";
+    firstDayOfWeek: string = "0";
+}
 
-    export class LegendSettings {
-        show: boolean = true;
-        position: string = "Right";
-        showTitle: boolean = true;
-        titleText: string = "";
-        labelColor: string = "#000000";
-        fontSize: number = 8;
-    }
+export class LegendSettings {
+    show: boolean = true;
+    position: string = "Right";
+    showTitle: boolean = true;
+    titleText: string = "";
+    labelColor: string = "#000000";
+    fontSize: number = 8;
+}
 
-    export class TaskLabelsSettings {
-        show: boolean = true;
-        fill: string = "#000000";
-        fontSize: number = 9;
-        width: number = 110;
-    }
+export class TaskLabelsSettings {
+    show: boolean = true;
+    fill: string = "#000000";
+    fontSize: number = 9;
+    width: number = 110;
+}
 
-    export class TaskConfigSettings {
-        fill: string = "#00B099";
-        height: number = 40;
-    }
+export class TaskConfigSettings {
+    fill: string = "#00B099";
+    height: number = 40;
+}
 
-    export class TaskCompletionSettings {
-        show: boolean = true;
-        fill: string = "#000000";
-    }
+export class TaskCompletionSettings {
+    show: boolean = true;
+    fill: string = "#000000";
+}
 
-    export class TaskResourceSettings {
-        show: boolean = true;
-        fill: string = "#000000";
-        fontSize: number = 9;
-        position: ResourceLabelPositions = ResourceLabelPositions.Right;
-        fullText: boolean = false;
-        widthByTask: boolean = false;
-    }
+export class TaskResourceSettings {
+    show: boolean = true;
+    fill: string = "#000000";
+    fontSize: number = 9;
+    position: ResourceLabelPositions = ResourceLabelPositions.Right;
+    fullText: boolean = false;
+    widthByTask: boolean = false;
+}
 
-    export class DateTypeSettings {
-        // tslint:disable-next-line:no-reserved-keywords
-        type: DateTypes = DateTypes.Week;
-        todayColor: string = "#000000";
-        axisColor: string = "#000000";
-        axisTextColor: string = "#000000";
-    }
+export class DateTypeSettings {
+    // tslint:disable-next-line:no-reserved-keywords
+    type: DateTypes = DateTypes.Week;
+    todayColor: string = "#000000";
+    axisColor: string = "#000000";
+    axisTextColor: string = "#000000";
+}
 
-    export class TooltipConfigSettings {
-        dateFormat: string = null;
-    }
+export class TooltipConfigSettings {
+    dateFormat: string = null;
 }

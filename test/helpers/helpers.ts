@@ -24,37 +24,29 @@
  *  THE SOFTWARE.
  */
 
-/// <reference path="../_references.ts"/>
+import { RgbColor, parseColorString } from "powerbi-visuals-utils-colorutils";
 
-module powerbi.extensibility.visual.test.helpers {
+export function areColorsEqual(firstColor: string, secondColor: string): boolean {
+    const firstConvertedColor: RgbColor = parseColorString(firstColor),
+        secondConvertedColor: RgbColor = parseColorString(secondColor);
 
-    // powerbi.extensibility.utils.test
-    import RgbColor = powerbi.extensibility.utils.test.helpers.color.RgbColor;
-    import parseColorString = powerbi.extensibility.utils.test.helpers.color.parseColorString;
+    return firstConvertedColor.R === secondConvertedColor.R
+        && firstConvertedColor.G === secondConvertedColor.G
+        && firstConvertedColor.B === secondConvertedColor.B;
+}
 
-    export function areColorsEqual(firstColor: string, secondColor: string): boolean {
-        const firstConvertedColor: RgbColor = parseColorString(firstColor),
-            secondConvertedColor: RgbColor = parseColorString(secondColor);
+export function isColorAppliedToElements(
+    elements: JQuery[],
+    color?: string,
+    colorStyleName: string = "fill"
+): boolean {
+    return elements.some((element: JQuery) => {
+        const currentColor: string = element.css(colorStyleName);
 
-        return firstConvertedColor.R === secondConvertedColor.R
-            && firstConvertedColor.G === secondConvertedColor.G
-            && firstConvertedColor.B === secondConvertedColor.B;
-    }
+        if (!currentColor || !color) {
+            return currentColor === color;
+        }
 
-    export function isColorAppliedToElements(
-        elements: JQuery[],
-        color?: string,
-        colorStyleName: string = "fill"
-    ): boolean {
-        return elements.some((element: JQuery) => {
-            const currentColor: string = element.css(colorStyleName);
-
-            if (!currentColor || !color) {
-                return currentColor === color;
-            }
-
-            return areColorsEqual(currentColor, color);
-        });
-    }
-
+        return areColorsEqual(currentColor, color);
+    });
 }

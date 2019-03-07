@@ -23,112 +23,114 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+import * as d3 from "d3";
+import * as _ from "lodash";
 
-module powerbi.extensibility.visual.behavior {
-    // powerbi.extensibility.utils.interactivity
-    import ISelectionHandler = powerbi.extensibility.utils.interactivity.ISelectionHandler;
-    import IInteractiveBehavior = powerbi.extensibility.utils.interactivity.IInteractiveBehavior;
-    import IInteractivityService = powerbi.extensibility.utils.interactivity.IInteractivityService;
+import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
+import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
+import IInteractivityService = interactivityService.IInteractivityService;
+import ISelectionHandler = interactivityService.ISelectionHandler;
 
-    export const DimmedOpacity: number = 0.4;
-    export const DefaultOpacity: number = 1.0;
+import { Task, GroupedTask } from "./interfaces";
 
-    export function getFillOpacity(
-        selected: boolean,
-        highlight: boolean,
-        hasSelection: boolean,
-        hasPartialHighlights: boolean
-    ): number {
-        if ((hasPartialHighlights && !highlight) || (hasSelection && !selected)) {
-            return DimmedOpacity;
-        }
+export const DimmedOpacity: number = 0.4;
+export const DefaultOpacity: number = 1.0;
 
-        return DefaultOpacity;
+export function getFillOpacity(
+    selected: boolean,
+    highlight: boolean,
+    hasSelection: boolean,
+    hasPartialHighlights: boolean
+): number {
+    if ((hasPartialHighlights && !highlight) || (hasSelection && !selected)) {
+        return DimmedOpacity;
     }
 
-    export interface BehaviorOptions {
-        clearCatcher: d3.Selection<any>;
-        taskSelection: d3.Selection<Task>;
-        legendSelection: d3.Selection<any>;
-        interactivityService: IInteractivityService;
-        subTasksCollapse: {
-            selection: d3.Selection<any>;
-            callback: (groupedTask: GroupedTask) => void;
-        };
-        allSubtasksCollapse: {
-            selection: d3.Selection<any>;
-            callback: () => void;
-        };
-    }
+    return DefaultOpacity;
+}
 
-    export class Behavior implements IInteractiveBehavior {
-        private options: BehaviorOptions;
+export interface BehaviorOptions {
+    clearCatcher: d3.Selection<any>;
+    taskSelection: d3.Selection<Task>;
+    legendSelection: d3.Selection<any>;
+    interactivityService: IInteractivityService;
+    subTasksCollapse: {
+        selection: d3.Selection<any>;
+        callback: (groupedTask: GroupedTask) => void;
+    };
+    allSubtasksCollapse: {
+        selection: d3.Selection<any>;
+        callback: () => void;
+    };
+}
 
-        public bindEvents(options: BehaviorOptions, selectionHandler: ISelectionHandler) {
-            this.options = options;
+export class Behavior implements IInteractiveBehavior {
+    private options: BehaviorOptions;
 
-            const {
-                clearCatcher,
-            } = options;
+    public bindEvents(options: BehaviorOptions, selectionHandler: ISelectionHandler) {
+        this.options = options;
 
-            options.taskSelection.on("click", (dataPoint: Task) => {
-                const event: MouseEvent = d3.event as MouseEvent;
-                selectionHandler.handleSelection(dataPoint, event.ctrlKey);
+        const {
+            clearCatcher,
+        } = options;
 
-                event.stopPropagation();
-            });
+        options.taskSelection.on("click", (dataPoint: Task) => {
+            const event: MouseEvent = d3.event as MouseEvent;
+            selectionHandler.handleSelection(dataPoint, event.ctrlKey);
 
-            options.legendSelection.on("click", (d: any) => {
-                if (!d.selected) {
-                    selectionHandler.handleSelection(d, true);
-                    (d3.event as MouseEvent).stopPropagation();
+            event.stopPropagation();
+        });
 
-                    let selectedType: string = d.tooltip;
-                    options.taskSelection.each((d: Task) => {
-                        if (d.taskType === selectedType && d.parent && !d.selected) {
-                            selectionHandler.handleSelection(d, true);
-                        }
-                    });
-                } else {
-                    selectionHandler.handleClearSelection();
-                }
-            });
-
-            options.subTasksCollapse.selection.on("click", (d: GroupedTask) => {
-                if (!_.flatten(d.tasks.map(task => task.children)).length) {
-                    return;
-                }
-
+        options.legendSelection.on("click", (d: any) => {
+            if (!d.selected) {
+                selectionHandler.handleSelection(d, true);
                 (d3.event as MouseEvent).stopPropagation();
-                options.subTasksCollapse.callback(d);
-            });
 
-            options.allSubtasksCollapse.selection.on("click", () => {
-                (d3.event as MouseEvent).stopPropagation();
-                options.allSubtasksCollapse.callback();
-            });
-
-            clearCatcher.on("click", () => {
+                let selectedType: string = d.tooltip;
+                options.taskSelection.each((d: Task) => {
+                    if (d.taskType === selectedType && d.parent && !d.selected) {
+                        selectionHandler.handleSelection(d, true);
+                    }
+                });
+            } else {
                 selectionHandler.handleClearSelection();
-            });
-        }
+            }
+        });
 
-        public renderSelection(hasSelection: boolean) {
-            const {
-                taskSelection,
-                interactivityService,
-            } = this.options;
+        options.subTasksCollapse.selection.on("click", (d: GroupedTask) => {
+            if (!_.flatten(d.tasks.map(task => task.children)).length) {
+                return;
+            }
 
-            const hasHighlights: boolean = interactivityService.hasSelection();
+            (d3.event as MouseEvent).stopPropagation();
+            options.subTasksCollapse.callback(d);
+        });
 
-            taskSelection.style("opacity", (dataPoint: Task) => {
-                return getFillOpacity(
-                    dataPoint.selected,
-                    dataPoint.highlight,
-                    !dataPoint.highlight && hasSelection,
-                    !dataPoint.selected && hasHighlights
-                );
-            });
-        }
+        options.allSubtasksCollapse.selection.on("click", () => {
+            (d3.event as MouseEvent).stopPropagation();
+            options.allSubtasksCollapse.callback();
+        });
+
+        clearCatcher.on("click", () => {
+            selectionHandler.handleClearSelection();
+        });
+    }
+
+    public renderSelection(hasSelection: boolean) {
+        const {
+            taskSelection,
+            interactivityService,
+        } = this.options;
+
+        const hasHighlights: boolean = interactivityService.hasSelection();
+
+        taskSelection.style("opacity", (dataPoint: Task) => {
+            return getFillOpacity(
+                dataPoint.selected,
+                dataPoint.highlight,
+                !dataPoint.highlight && hasSelection,
+                !dataPoint.selected && hasHighlights
+            );
+        });
     }
 }

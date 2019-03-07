@@ -1,3 +1,10 @@
+## 2.0.0
+* API 2.3.0
+* Webpack integration
+* IE 11 support
+* Azure Pipelines integration
+
+
 ## 1.14.2
 * Fixed bug when completion line overlap day off periods in some cases
 
