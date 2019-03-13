@@ -36,7 +36,7 @@ import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 
 import { VisualData } from "./visualData";
 import { VisualBuilder } from "./visualBuilder";
-import { isColorAppliedToElements } from "./helpers/helpers";
+import { isColorAppliedToElements, getEndDate } from "./helpers/helpers";
 import { clickElement, MockISelectionId, assertColorsMatch, createSelectionId as mockedCreateSelectionId, createVisualHost } from "powerbi-visuals-utils-testutils";
 
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
@@ -99,7 +99,7 @@ describe("Gantt", () => {
                 values[i] = new Date(stringValue.substring(0, index + 1));
             }
         }
-    };
+    }
 
     function getUniqueParentsCount(dataView, parentColumnIndex) {
         let uniqueParents: string[] = [];
@@ -166,9 +166,9 @@ describe("Gantt", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 let body = d3.select(visualBuilder.element.get(0));
 
-                expect(body.select(".axis").selectAll("*")[0].length).toEqual(1);
-                expect(body.select(".task-lines").selectAll("task-labels")[0].length).toEqual(0);
-                expect(body.select(".chart .tasks").selectAll("*")[0].length).toEqual(0);
+                expect(body.select(".axis").selectAll("*").nodes().length).toEqual(1);
+                expect(body.select(".task-lines").selectAll("task-labels").nodes().length).toEqual(0);
+                expect(body.select(".chart .tasks").selectAll("*").nodes().length).toEqual(0);
                 done();
             });
         });
@@ -184,7 +184,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
 
                 for (let task of tasks) {
                     expect(task.duration).toEqual(defaultTaskDuration);
@@ -214,7 +214,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
 
                 for (let task of tasks) {
                     expect(task.duration).toEqual(defaultTaskDuration);
@@ -243,7 +243,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
 
                 for (let task of tasks) {
                     expect(task.duration).toEqual(defaultTaskDuration);
@@ -262,7 +262,7 @@ describe("Gantt", () => {
                 VisualData.ColumnCompletePercentage]);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
 
                 for (let task of tasks) {
                     expect(task.start.toDateString()).toEqual(new Date(Date.now()).toDateString());
@@ -283,7 +283,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let resources = d3.select(visualBuilder.element.get(0)).selectAll(".task-resource")[0];
+                let resources = d3.select(visualBuilder.element.get(0)).selectAll(".task-resource").nodes();
                 let returnResource = grep(resources);
 
                 expect(returnResource.length).toEqual(resources.length);
@@ -302,7 +302,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let progressOfTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task-progress")[0];
+                let progressOfTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task-progress").nodes();
                 let returnTasks = grep(progressOfTasks);
 
                 expect(progressOfTasks.length).toEqual(returnTasks.length);
@@ -331,15 +331,17 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let progressOfTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task-progress")[0];
+                let progressOfTasks = visualBuilder.taskProgress.toArray().map($);
 
                 let skippedParents: number = 0;
                 progressOfTasks.forEach((e, i) => {
                     let percent: number = defaultDataViewBuilder.valuesCompletePrecntege[i - skippedParents];
                     let widthOfTask: number = parseFloat($(visualBuilder.taskRect[i - skippedParents]).attr("width"));
-                    let widthOfProgressTask: number = +$(e).attr("width");
+                    let widthOfProgressTask: number = e.width();
 
-                    expect(widthOfProgressTask).toEqual(widthOfTask * percent);
+                    const widthOfTaskFormatted = Math.floor((widthOfTask * percent)).toFixed(2);
+                    const widthOfProgressTaskFormatted = Math.floor(widthOfProgressTask).toFixed(2);
+                    expect(widthOfProgressTaskFormatted).toEqual(widthOfTaskFormatted);
                 });
 
                 done();
@@ -357,8 +359,8 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let taskLabelsInDom = d3.select(visualBuilder.element.get(0)).selectAll(".label title")[0];
-                let taskLabels = d3.select(visualBuilder.element.get(0)).selectAll(".label").data();
+                let taskLabelsInDom = d3.select(visualBuilder.element.get(0)).selectAll(".label title").nodes();
+                let taskLabels = d3.select(visualBuilder.element.get(0)).selectAll(".label").data() as Task[];
                 let tasks: PrimitiveValue[] = dataView.categorical.categories[0].values;
 
                 for (let i = 0; i < tasks.length; i++) {
@@ -387,7 +389,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
 
                 for (let i in tasks) {
                     let newDuration: number = tasks[i].duration;
@@ -419,7 +421,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                 let index = 0;
                 for (let task of tasks) {
                     for (let tooltipInfo of task.tooltipInfo) {
@@ -448,7 +450,7 @@ describe("Gantt", () => {
                 VisualData.ColumnExtraInformationDates]);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                 for (let task of tasks) {
                     for (let tooltipInfo of task.tooltipInfo) {
                         if (tooltipInfo.displayName === VisualData.ColumnExtraInformation) {
@@ -483,7 +485,7 @@ describe("Gantt", () => {
             };
             const localizationManager = visualBuilder.visualHost.createLocalizationManager();
 
-            const tooltips = VisualClass.getTooltipInfo(task, formatters, durationUnit, localizationManager);
+            const tooltips = VisualClass.getTooltipInfo(task, formatters, durationUnit, localizationManager, undefined);
             tooltips
                 .filter(t => t.value !== null && t.value !== undefined)
                 .forEach(t => {
@@ -560,7 +562,7 @@ describe("Gantt", () => {
         describe("Verify tooltips have no completion info", () => {
             function checkCompletionEqualNull(done: () => void) {
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                     for (let task of tasks) {
                         for (let tooltipInfo of task.tooltipInfo) {
                             if (tooltipInfo.displayName === VisualData.ColumnCompletePercentage) {
@@ -607,7 +609,7 @@ describe("Gantt", () => {
             function checkTasksHaveTooltipInfo(done: () => void) {
                 fixDataViewDateValuesAggregation(dataView);
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                     for (let task of tasks) {
                         if (!task.children) {
                             expect(task.tooltipInfo.length).not.toEqual(0);
@@ -644,7 +646,7 @@ describe("Gantt", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 let element = d3.select(visualBuilder.element.get(0));
                 let resources = element.selectAll(".task-resource").node();
-                let labels = element.selectAll(".label").node().childNodes[0];
+                let labels = (element.selectAll(".label").node() as HTMLElement).firstChild;
 
                 expect((resources as SVGTextElement).style["font-size"]).toEqual("12px");
                 expect((labels as SVGTextElement).style["font-size"]).toEqual("12px");
@@ -727,7 +729,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                 for (let task of tasks) {
                     for (let tooltipInfo of task.tooltipInfo) {
                         if (tooltipInfo.displayName === "Start Date") {
@@ -752,16 +754,17 @@ describe("Gantt", () => {
             };
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
 
                 for (let task of tasks.filter(x => x.tooltipInfo)) {
-                    for (let tooltipInfo of task) {
+                    const tooltipInfoArray = task.tooltipInfo;
+                    tooltipInfoArray.forEach((tooltipInfo: VisualTooltipDataItem) => {
                         if (tooltipInfo.displayName === "Start Date") {
-                            let value: VisualTooltipDataItem = tooltipInfo.value;
+                            let value: string = tooltipInfo.value;
 
                             expect(value).toMatch(/([a-z].)\s{1}([0-9]{2}),([0-9]{0,4})/);
                         }
-                    }
+                    });
                 }
 
                 done();
@@ -781,7 +784,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                 for (let task of tasks) {
                     for (let tooltipInfo of task.tooltipInfo) {
                         if (tooltipInfo.displayName === "End Date") {
@@ -823,9 +826,10 @@ describe("Gantt", () => {
                 const selectionIds: MockISelectionId[] = [];
                 let selectionIndex: number = -1;
 
-                const createSelectionId = mockedCreateSelectionId;
+                let realMockedCreateSelectionId = mockedCreateSelectionId;
+                let createSelectionId = realMockedCreateSelectionId;
 
-                mockedCreateSelectionId = () => {
+                realMockedCreateSelectionId = () => {
                     selectionIndex++;
 
                     if (selectionIds[selectionIndex]) {
@@ -879,7 +883,7 @@ describe("Gantt", () => {
                     expect(selectedDataPoint.identity).toBe(selectedDataPointAfterUpdateCall.identity);
                 });
 
-                mockedCreateSelectionId = createSelectionId;
+                realMockedCreateSelectionId = createSelectionId;
             });
 
             function getSelectedTasks(visualBuilder: VisualBuilder): Task[] {
@@ -940,13 +944,11 @@ describe("Gantt", () => {
                     const tasks: Task[] = d3
                         .select(visualBuilder.element.get(0))
                         .selectAll(".task")
-                        .data();
+                        .data() as Task[];
 
                     tasks.forEach(task => {
                         if (task.duration) {
-                            const dates: Date[] = d3
-                                .time[durationUnit]
-                                .range(task.start, task.end);
+                            const dates: Date[] = getEndDate(durationUnit, task.start, task.end);
                             expect(dates.length).toEqual(task.duration);
                         }
                     });
@@ -1070,8 +1072,8 @@ describe("Gantt", () => {
                 dayForCheck: number,
                 done: () => void): void {
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    visualBuilder.taskDaysOffRect.each((i, e) => {
-                        const isParentTask: boolean = !!e.__data__.children;
+                    visualBuilder.taskDaysOffRect.each((i: number, e: Element) => {
+                        const isParentTask: boolean = e.hasChildNodes();
                         let daysOff: TaskDaysOff = e["__data__"].daysOff; // Takes data from an element
 
                         if (!isParentTask) {
@@ -1161,10 +1163,10 @@ describe("Gantt", () => {
                         .selectAll(".task")
                         .data();
 
-                    tasks.forEach((task) => {
+                    tasks.forEach((task: Task) => {
                         if (task.parent) {
                             const parentName = task.parent.substr(0, task.parent.length - task.name.length - 1);
-                            const parentTask: Task = _.find(tasks, { name: parentName });
+                            const parentTask: Task = _.find(tasks, { name: parentName }) as Task;
 
                             if (parentTask) {
                                 expect(task.taskType).toEqual(parentTask.taskType);
@@ -1184,7 +1186,7 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                     let { parents, children } = getChildrenAndParents(tasks);
 
                     parents.forEach((parent: Task) => {
@@ -1196,7 +1198,7 @@ describe("Gantt", () => {
                         expect(parent.start).toEqual(start);
                         expect(parent.end).toEqual(end);
 
-                        const newDuration: number = d3.time["day"].range(start, end).length;
+                        const newDuration: number = d3.timeDay.range(start, end).length;
                         expect(parent.duration).toEqual(newDuration);
                     });
 
@@ -1212,7 +1214,7 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                     let { parents, children } = getChildrenAndParents(tasks);
 
                     parents.forEach((parent: Task) => {
@@ -1232,7 +1234,7 @@ describe("Gantt", () => {
                 dataView.metadata.columns[1].sort = 1; // 1 - ascending order
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                     assertSortingOrderAsc(tasks);
                     done();
                 });
@@ -1242,7 +1244,7 @@ describe("Gantt", () => {
                 dataView.metadata.columns[1].sort = 2; // 2 - descending order
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                     assertSortingOrderDesc(tasks);
                     done();
                 });
@@ -1253,7 +1255,7 @@ describe("Gantt", () => {
                 dataView.metadata.columns[2].sort = 1; // 1 - ascending order
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                     assertSortingOrderAsc(tasks);
                     done();
                 });
@@ -1263,7 +1265,7 @@ describe("Gantt", () => {
                 dataView.metadata.columns[2].sort = 2; // 2 - descending order
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data();
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                     assertSortingOrderDesc(tasks);
                     done();
                 });
@@ -1274,7 +1276,7 @@ describe("Gantt", () => {
 
                 for (let i = 1; i < tasks.length; ++i) {
                     if (!tasks[i].parent) {
-                        expect(tasks[i].name).toBeGreaterThan(tasks[prevIndex].name);
+                        expect(tasks[i].name >= tasks[prevIndex].name);
                         prevIndex = i;
                     }
                 }
@@ -1285,7 +1287,7 @@ describe("Gantt", () => {
 
                 for (let i = 1; i < tasks.length; ++i) {
                     if (!tasks[i].parent) {
-                        expect(tasks[i].name).toBeLessThan(tasks[prevIndex].name);
+                        expect(tasks[i].name <= tasks[prevIndex].name);
                         prevIndex = i;
                     }
                 }
@@ -1742,7 +1744,7 @@ describe("Gantt", () => {
         const foregroundColor: string = "#ff00ff";
 
         let taskRect: JQuery[],
-            taskLineBackgroundRect: JQuery[],
+            taskLineRect: JQuery[],
             axisBackgroundRect: JQuery[],
             axisTicksText: JQuery[],
             axisTicksLine: JQuery[],
@@ -1758,7 +1760,7 @@ describe("Gantt", () => {
 
             taskRect = visualBuilder.taskRect.toArray().map($);
             taskProgress = visualBuilder.taskProgress.toArray().map($);
-            taskLineBackgroundRect = visualBuilder.taskLineBackgroundRect.toArray().map($);
+            taskLineRect = visualBuilder.taskLineRect.toArray().map($);
             axisBackgroundRect = visualBuilder.axisBackgroundRect.toArray().map($);
 
             axisTicksLine = visualBuilder.axisTicksLine.toArray().map($);
@@ -1781,7 +1783,7 @@ describe("Gantt", () => {
 
         it("axis color and categories background should be taken from theme color", (done) => {
             visualBuilder.updateRenderTimeout(dataView, () => {
-                expect(isColorAppliedToElements(taskLineBackgroundRect, backgroundColor, "fill"));
+                expect(isColorAppliedToElements(taskLineRect, backgroundColor, "fill"));
                 expect(isColorAppliedToElements(axisBackgroundRect, backgroundColor, "fill"));
                 done();
             });

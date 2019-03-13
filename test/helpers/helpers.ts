@@ -23,8 +23,10 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+import * as d3 from "d3";
 
 import { RgbColor, parseColorString } from "powerbi-visuals-utils-colorutils";
+import { DurationUnits } from "../../src/gantt";
 
 export function areColorsEqual(firstColor: string, secondColor: string): boolean {
     const firstConvertedColor: RgbColor = parseColorString(firstColor),
@@ -43,10 +45,31 @@ export function isColorAppliedToElements(
     return elements.some((element: JQuery) => {
         const currentColor: string = element.css(colorStyleName);
 
+        if (currentColor === "none") return;
+
         if (!currentColor || !color) {
             return currentColor === color;
         }
 
         return areColorsEqual(currentColor, color);
     });
+}
+
+/**
+* Calculates end date from start date and offset for different durationUnits
+* @param durationUnit
+* @param start Start date
+* @param step An offset
+*/
+export function getEndDate(durationUnit: string, start: Date, end: Date): Date[] {
+    switch (durationUnit) {
+        case DurationUnits.Second.toString():
+            return d3.timeSecond.range(start, end);
+        case DurationUnits.Minute.toString():
+            return d3.timeMinute.range(start, end);
+        case DurationUnits.Hour.toString():
+            return d3.timeHour.range(start, end);
+        default:
+            return d3.timeDay.range(start, end);
+    }
 }

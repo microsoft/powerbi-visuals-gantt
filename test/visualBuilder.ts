@@ -120,11 +120,6 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
             .children("rect.task-lines-rect");
     }
 
-    public get taskLineBackgroundRect() {
-        return this.taskLine
-            .children("rect");
-    }
-
     public get taskDaysOffRect() {
         return this.tasks
             .children("rect.task-days-off");

@@ -26,6 +26,8 @@
 import * as d3 from "d3";
 import * as _ from "lodash";
 
+type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
+
 import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
 import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
 import IInteractivityService = interactivityService.IInteractivityService;
@@ -50,16 +52,16 @@ export function getFillOpacity(
 }
 
 export interface BehaviorOptions {
-    clearCatcher: d3.Selection<any>;
-    taskSelection: d3.Selection<Task>;
-    legendSelection: d3.Selection<any>;
+    clearCatcher: Selection<any>;
+    taskSelection: Selection<Task>;
+    legendSelection: Selection<any>;
     interactivityService: IInteractivityService;
     subTasksCollapse: {
-        selection: d3.Selection<any>;
+        selection: Selection<any>;
         callback: (groupedTask: GroupedTask) => void;
     };
     allSubtasksCollapse: {
-        selection: d3.Selection<any>;
+        selection: Selection<any>;
         callback: () => void;
     };
 }
