@@ -45,8 +45,6 @@ export function isColorAppliedToElements(
     return elements.some((element: JQuery) => {
         const currentColor: string = element.css(colorStyleName);
 
-        if (currentColor === "none") return;
-
         if (!currentColor || !color) {
             return currentColor === color;
         }

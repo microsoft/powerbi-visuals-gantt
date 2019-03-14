@@ -70,7 +70,7 @@
     "powerbi-models": "^1.0.2",
     "powerbi-visuals-api": "^2.3.1",
     "powerbi-visuals-tools": "^3.0.10",
-    "powerbi-visuals-utils-testutils": "^2.1.6",
+    "powerbi-visuals-utils-testutils": "^2.1.7",
     "puppeteer": "^1.7.0",
     "style-loader": "0.23.1",
     "ts-loader": "5.2.2",

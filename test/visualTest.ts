@@ -33,11 +33,12 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
+import ISelectionId = powerbi.extensibility.ISelectionId;
 
 import { VisualData } from "./visualData";
 import { VisualBuilder } from "./visualBuilder";
 import { isColorAppliedToElements, getEndDate } from "./helpers/helpers";
-import { clickElement, MockISelectionId, assertColorsMatch, createSelectionId as mockedCreateSelectionId, createVisualHost } from "powerbi-visuals-utils-testutils";
+import { clickElement, MockISelectionId, assertColorsMatch, MockISelectionIdBuilder, createSelectionId, createVisualHost } from "powerbi-visuals-utils-testutils";
 
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
 import { legendPosition as LegendPosition } from "powerbi-visuals-utils-chartutils";
@@ -48,6 +49,7 @@ import valueFormatter = vf.valueFormatter;
 import { Task, TaskDaysOff } from "../src/interfaces";
 import { DurationHelper } from "../src/durationHelper";
 import { Gantt as VisualClass } from "../src/gantt";
+import { debug } from "util";
 
 export enum DateTypes {
     Second = <any>"Second",
@@ -826,10 +828,8 @@ describe("Gantt", () => {
                 const selectionIds: MockISelectionId[] = [];
                 let selectionIndex: number = -1;
 
-                let realMockedCreateSelectionId = mockedCreateSelectionId;
-                let createSelectionId = realMockedCreateSelectionId;
-
-                realMockedCreateSelectionId = () => {
+                const customMockISelectionIdBuilder = new MockISelectionIdBuilder();
+                customMockISelectionIdBuilder.createSelectionId = () => {
                     selectionIndex++;
 
                     if (selectionIds[selectionIndex]) {
@@ -843,6 +843,7 @@ describe("Gantt", () => {
                     return selectionId;
                 };
 
+                visualBuilder.visualHost.createSelectionIdBuilder = () => customMockISelectionIdBuilder;
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 // can't use lodash.deepCopy because we need to keep identity references
@@ -882,8 +883,6 @@ describe("Gantt", () => {
                     expect(selectedDataPoint.resource).toBe(selectedDataPointAfterUpdateCall.resource);
                     expect(selectedDataPoint.identity).toBe(selectedDataPointAfterUpdateCall.identity);
                 });
-
-                realMockedCreateSelectionId = createSelectionId;
             });
 
             function getSelectedTasks(visualBuilder: VisualBuilder): Task[] {
@@ -1745,7 +1744,6 @@ describe("Gantt", () => {
 
         let taskRect: JQuery[],
             taskLineRect: JQuery[],
-            axisBackgroundRect: JQuery[],
             axisTicksText: JQuery[],
             axisTicksLine: JQuery[],
             taskLabels: JQuery[],
@@ -1761,7 +1759,6 @@ describe("Gantt", () => {
             taskRect = visualBuilder.taskRect.toArray().map($);
             taskProgress = visualBuilder.taskProgress.toArray().map($);
             taskLineRect = visualBuilder.taskLineRect.toArray().map($);
-            axisBackgroundRect = visualBuilder.axisBackgroundRect.toArray().map($);
 
             axisTicksLine = visualBuilder.axisTicksLine.toArray().map($);
             axisTicksText = visualBuilder.axisTicksLine.toArray().map($);
@@ -1784,7 +1781,6 @@ describe("Gantt", () => {
         it("axis color and categories background should be taken from theme color", (done) => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 expect(isColorAppliedToElements(taskLineRect, backgroundColor, "fill"));
-                expect(isColorAppliedToElements(axisBackgroundRect, backgroundColor, "fill"));
                 done();
             });
         });
