@@ -53,6 +53,7 @@ import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 
 import IColorPalette = powerbi.extensibility.IColorPalette;
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 
 // powerbi.visuals
@@ -262,6 +263,7 @@ export class Gantt implements IVisual {
         }
     };
 
+    private static DefaultGraphicWidthPercentage: number = 0.78;
     private static DefaultTicksLength: number = 50;
     private static DefaultDuration: number = 250;
     private static TaskLineCoordinateX: number = 15;
@@ -307,6 +309,7 @@ export class Gantt implements IVisual {
     private ganttDiv: Selection<any>;
     private behavior: Behavior;
     private interactivityService: IInteractivityService;
+    private eventService: IVisualEventService;
     private tooltipServiceWrapper: ITooltipServiceWrapper;
     private host: IVisualHost;
     private localizationManager: ILocalizationManager;
@@ -335,6 +338,7 @@ export class Gantt implements IVisual {
         this.tooltipServiceWrapper = createTooltipServiceWrapper(this.host.tooltipService, options.element);
         this.behavior = new Behavior();
         this.interactivityService = createInteractivityService(this.host);
+        this.eventService = options.host.eventService;
 
         this.createViewport(options.element);
     }
@@ -814,6 +818,9 @@ export class Gantt implements IVisual {
                         }
 
                         endDate = group.EndDate.values[index] ? group.EndDate.values[index] as Date : null;
+                        if (typeof (endDate) === "string" || typeof (endDate) === "number") {
+                            endDate = new Date(endDate);
+                        }
 
                         completion = ((group.Completion && group.Completion.values[index])
                             && taskProgressShow
@@ -1263,6 +1270,7 @@ export class Gantt implements IVisual {
         this.viewport = _.clone(options.viewport);
         this.margin = Gantt.DefaultMargin;
 
+        this.eventService.renderingStarted(options);
         this.renderLegend();
         this.updateChartSize();
 
@@ -1294,9 +1302,15 @@ export class Gantt implements IVisual {
         let dateTypeMilliseconds: number = Gantt.getDateType(settings.dateType.type);
         let ticks: number = Math.ceil(Math.round(endDate.valueOf() - startDate.valueOf()) / dateTypeMilliseconds);
         ticks = ticks < 2 ? 2 : ticks;
+
+        let fullScreenAxisLength: number = Gantt.DefaultGraphicWidthPercentage * this.viewport.width;
         let axisLength: number = ticks * Gantt.DefaultTicksLength;
+        if (axisLength < fullScreenAxisLength) {
+            axisLength = fullScreenAxisLength;
+        }
 
         let groupedTasks: GroupedTask[] = this.groupTasks(tasks);
+        // do smth with task ids
         this.setDimension(groupedTasks, axisLength, settings);
 
         let viewportIn: IViewport = {
@@ -1344,6 +1358,8 @@ export class Gantt implements IVisual {
 
             this.behavior.renderSelection(false);
         }
+
+        this.eventService.renderingFinished(options);
     }
 
     private static getDateType(dateType: DateTypes): number {
@@ -1476,15 +1492,45 @@ export class Gantt implements IVisual {
             let groupedTasks: _.Dictionary<Task[]> = _.groupBy(tasks,
                 x => (x.parent ? `${x.parent}.${x.name}` : x.name));
 
-            let result: GroupedTask[] = _.map(groupedTasks, (x, i) => {
-                let name: string = i;
-                if (groupedTasks[i][0].parent && i.indexOf(groupedTasks[i][0].parent) !== -1) {
-                    name = i.substr(groupedTasks[i][0].parent.length + 1, i.length);
+            let result: GroupedTask[] = [];
+            const taskKeys: string[] = Object.keys(groupedTasks);
+            let alreadyReviewedKeys: string[] = [];
+
+            taskKeys.forEach((key: string) => {
+                const isKeyAlreadyReviewed = _.includes(alreadyReviewedKeys, key);
+                if (!isKeyAlreadyReviewed) {
+                    let name: string = key;
+                    if (groupedTasks[key][0].parent && key.indexOf(groupedTasks[key][0].parent) !== -1) {
+                        name = key.substr(groupedTasks[key][0].parent.length + 1, key.length);
+                    }
+
+                    // add current task
+                    const taskRecord = <GroupedTask>{
+                        name,
+                        tasks: groupedTasks[key]
+                    };
+                    result.push(taskRecord);
+                    alreadyReviewedKeys.push(key);
+
+                    // see all the children and add them
+                    groupedTasks[key].forEach((task: Task) => {
+                        if (task.children) {
+                            task.children.forEach((childrenTask: Task) => {
+                                const childrenFullName = `${name}.${childrenTask.name}`;
+                                const isChildrenKeyAlreadyReviewed = _.includes(alreadyReviewedKeys, childrenFullName);
+
+                                if (!isChildrenKeyAlreadyReviewed) {
+                                    const childrenRecord = <GroupedTask>{
+                                        name: childrenTask.name,
+                                        tasks: groupedTasks[childrenFullName]
+                                    };
+                                    result.push(childrenRecord);
+                                    alreadyReviewedKeys.push(childrenFullName);
+                                }
+                            });
+                        }
+                    });
                 }
-                return <GroupedTask>{
-                    name,
-                    tasks: groupedTasks[i]
-                };
             });
 
             result.forEach((x, i) => {
