@@ -31,46 +31,78 @@
 @import (less) "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.css";
 @import (less) "node_modules/powerbi-visuals-utils-formattingutils/lib/index.css";
 
-.gantt-body {
-    overflow: auto;
-    position: absolute;
-}
-
-.gantt {
-    position: absolute;
-    .axis {
-        path, line {
-            stroke: #000;
-        }
-
-        path {
-            fill: none;
-            stroke-width: 1.5;
-        }
-
-        line {
-            stroke-width: 1;
-        }
-
-        font-size: 10px;
+.visual {
+    .gantt-body {
+        overflow: auto;
+        position: absolute;
     }
-
-    .tasks {
-        .task {
-            .task-resource {
-                font-size: medium;
-                font-weight: bold;
+    
+    .gantt {
+        position: absolute;
+        .axis {
+            path, line {
+                stroke: #000;
+            }
+    
+            path {
+                fill: none;
+                stroke-width: 1.5;
+            }
+    
+            line {
+                stroke-width: 1;
+            }
+    
+            font-size: 10px;
+        }
+    
+        .tasks {
+            .task {
+                .task-resource {
+                    font-size: medium;
+                    font-weight: bold;
+                    font-family: 'Roboto',-apple-system,BlinkMacSystemFont,sans-serif;
+                    letter-spacing: .22px;
+                }
+    
+                .task-rect {
+                    opacity: .5;
+                }
+    
+                .task-progress {    
+                    opacity: 1;
+                }
+                .task-pseudo-gradient{
+                    opacity: .4;
+                    fill: white!important;
+                }
             }
         }
-    }
+    
+        .chart-line {
+            stroke-width: 2px;
+            stroke-dasharray: 3, 3;
+            stroke: #000;
+        }
+    
+        .task-labels {
+            width: 110px;
+        }
+    
+        .task-lines{
+            .label {
+                font-family: 'Roboto',-apple-system,BlinkMacSystemFont,sans-serif;
+                font-weight: 400;
+                letter-spacing: .22px;
+                
+                .parent{
+                    font-weight: 700;
+                }
 
-    .chart-line {
-        stroke-width: 2px;
-        stroke-dasharray: 3, 3;
-        stroke: #000;
-    }
-
-    .task-labels {
-        width: 110px;
+                .child {
+                    font-style: oblique
+                }
+            }
+        }
     }
 }

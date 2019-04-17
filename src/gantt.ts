@@ -131,6 +131,7 @@ import { GanttColumns } from "./columns";
 import { GanttSettings } from "./settings";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
+const RectRound: number = 10;
 const ScrollMargin: number = 100;
 const MillisecondsInASecond: number = 1000;
 const MillisecondsInAMinute: number = 60 * MillisecondsInASecond;
@@ -203,6 +204,7 @@ module Selectors {
     export const TaskResource: ClassAndSelector = createClassAndSelector("task-resource");
     export const TaskLabels: ClassAndSelector = createClassAndSelector("task-labels");
     export const TaskLines: ClassAndSelector = createClassAndSelector("task-lines");
+    export const LabelLines: ClassAndSelector = createClassAndSelector("label-lines")
     export const TaskLinesRect: ClassAndSelector = createClassAndSelector("task-lines-rect");
     export const CollapseAll: ClassAndSelector = createClassAndSelector("collapse-all");
     export const CollapseAllArrow: ClassAndSelector = createClassAndSelector("collapse-all-arrow");
@@ -246,7 +248,7 @@ export class Gantt implements IVisual {
 
     public static DefaultValues = {
         AxisTickSize: 6,
-        ProgressBarHeight: 4,
+        BarMargin: 4,
         ResourceWidth: 100,
         TaskColor: "#00B099",
         TaskLineWidth: 15,
@@ -317,12 +319,16 @@ export class Gantt implements IVisual {
     private groupTasksPrevValue: boolean = false;
     private collapsedTasks: string[] = [];
     private collapseAllImageConsts = {
+        plusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pjxzdmcgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDggNDg7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZGlzcGxheTpub25lO30KCS5zdDF7ZmlsbDpub25lO3N0cm9rZTojMzAzMDMwO3N0cm9rZS13aWR0aDowLjc7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjEwO30KCS5zdDJ7ZmlsbDojMzAzMDMwO30KPC9zdHlsZT48ZyBjbGFzcz0ic3QwIiBpZD0iUGFkZGluZ19feDI2X19BcnRib2FyZCIvPjxnIGlkPSJJY29ucyI+PHBhdGggY2xhc3M9InN0MSIgZD0iTTMwLjEzMTEsMzUuMDk3OEgxNy44Njg5Yy0yLjc0MzAzLDAtNC45NjY3LTIuMjIzNjYtNC45NjY3LTQuOTY2N1YxNy44Njg5ICAgYzAtMi43NDMwMywyLjIyMzY3LTQuOTY2Nyw0Ljk2NjctNC45NjY3SDMwLjEzMTFjMi43NDMwMywwLDQuOTY2NywyLjIyMzY3LDQuOTY2Nyw0Ljk2NjdWMzAuMTMxMSAgIEMzNS4wOTc4LDMyLjg3NDE0LDMyLjg3NDE0LDM1LjA5NzgsMzAuMTMxMSwzNS4wOTc4eiIvPjxnPjxsaW5lIGNsYXNzPSJzdDEiIHgxPSIyNCIgeDI9IjI0IiB5MT0iMjAuMTQ3MzMiIHkyPSIyNy44NTI2NyIvPjxsaW5lIGNsYXNzPSJzdDEiIHgxPSIyMC4xNDczMyIgeDI9IjI3Ljg1MjY3IiB5MT0iMjQiIHkyPSIyNCIvPjwvZz48L2c+PC9zdmc+",
+        minusSvgEncoded: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+IDxnPiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPiAgPHJlY3QgZmlsbD0ibm9uZSIgaWQ9ImNhbnZhc19iYWNrZ3JvdW5kIiBoZWlnaHQ9IjQwMiIgd2lkdGg9IjU4MiIgeT0iLTEiIHg9Ii0xIi8+IDwvZz4gPGc+ICA8dGl0bGU+TGF5ZXIgMTwvdGl0bGU+ICA8cGF0aCBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIwLjciIHN0cm9rZT0iIzMwMzAzMCIgZmlsbD0ibm9uZSIgaWQ9InN2Z18xIiBkPSJtMzAuMTMxMSwzNS4wOTc4bC0xMi4yNjIyLDBjLTIuNzQzMDMsMCAtNC45NjY3LC0yLjIyMzY2IC00Ljk2NjcsLTQuOTY2N2wwLC0xMi4yNjIyYzAsLTIuNzQzMDMgMi4yMjM2NywtNC45NjY3IDQuOTY2NywtNC45NjY3bDEyLjI2MjIsMGMyLjc0MzAzLDAgNC45NjY3LDIuMjIzNjcgNC45NjY3LDQuOTY2N2wwLDEyLjI2MjJjMCwyLjc0MzA0IC0yLjIyMzY2LDQuOTY2NyAtNC45NjY3LDQuOTY2N3oiIGNsYXNzPSJzdDEiLz4gIDxsaW5lIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjAuNyIgc3Ryb2tlPSIjMzAzMDMwIiBmaWxsPSJub25lIiBpZD0ic3ZnXzQiIHkyPSIyNCIgeTE9IjI0IiB4Mj0iMjcuODUyNjciIHgxPSIyMC4xNDczMyIgY2xhc3M9InN0MSIvPiA8L2c+PC9zdmc+",
+        expandSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4IiB3aWR0aD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMzLjE3IDE3LjE3bC05LjE3IDkuMTctOS4xNy05LjE3LTIuODMgMi44MyAxMiAxMiAxMi0xMnoiLz48cGF0aCBkPSJNMCAwaDQ4djQ4aC00OHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=",
         plusIconEncoded: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAHdElNRQfhCRgNBR9x1hVlAAAAZklEQVQoz6WR3Q2AIAyEP4gJIzFol8JthAXOFw0RSzDx+tS/u+YKCaMiJypGAnObdxhURMZDRtSAgIAPQRxKhfIsjAyvLLJAHygIXXvqQkuG/zdsQ76vJByjGkythvbhWQnjmL/7BMyHUN2Uh8qLAAAALnpUWHRkYXRlOmNyZWF0ZQAAeNozMjA01zWw1DUyCTE0tjIwtTI21DYwsDIwAABB+AUOvqcMLQAAAC56VFh0ZGF0ZTptb2RpZnkAAHjaMzIwNNc1sNQ1MgkxNLYyMLUyNtQ2MLAyMAAAQfgFDpeYpKUAAAAASUVORK5CYII=",
+        collapseSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4IiB3aWR0aD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTI0IDE2bC0xMiAxMiAyLjgzIDIuODMgOS4xNy05LjE3IDkuMTcgOS4xNyAyLjgzLTIuODN6Ii8+PHBhdGggZD0iTTAgMGg0OHY0OGgtNDh6IiBmaWxsPSJub25lIi8+PC9zdmc+",
         minusIconEncoded: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAHdElNRQfhCQ8HBA+1I96wAAAAZ0lEQVQoz7WRUQqAIBBEn+FNoi/PI57OA0RnEQ8Q3UTWPoIQVCyitz/LMLsMDBgCQm6MEDCKwMJGokZj2UHw9PDIhGpeXyTUxIDvBn1vK3OhH7jXH9xfIR8YcpGjTpg1EQvdsiKjuk9mWyyGmWOVywAAAC56VFh0ZGF0ZTpjcmVhdGUAAHjaMzIwNNc1sNQ1NA0xMLcyMLEyNNU2MLAyMAAAQh8FEgMJQNYAAAAuelRYdGRhdGU6bW9kaWZ5AAB42jMyMDTXNbDUNTQNMTC3MjCxMjTVNjCwMjAAAEIfBRIqNuheAAAAAElFTkSuQmCC",
         collapseAllFlag: "data-is-collapsed",
     };
     private parentLabelOffset: number = 5;
-    private groupLabelSize: number = 16;
+    private groupLabelSize: number = 25;
     private secondExpandAllIconOffset: number = 7;
 
     constructor(options: VisualConstructorOptions) {
@@ -403,11 +409,6 @@ export class Gantt implements IVisual {
         this.collapseAllGroup = this.lineGroup
             .append("g")
             .classed(Selectors.CollapseAll.className, true);
-
-        this.collapseAllGroup
-            .append("rect")
-            .attr("width", 110)
-            .attr("fill", axisBackgroundColor);
 
         // create legend container
         const interactiveBehavior: IInteractiveBehavior = this.colorHelper.isHighContrast ? new OpacityLegendBehavior() : null;
@@ -1613,7 +1614,9 @@ export class Gantt implements IVisual {
         if (taskLabelsShow) {
             this.lineGroupWrapper
                 .attr("width", taskLabelsWidth)
-                .attr("fill", categoriesAreaBackgroundColor);
+                .attr("fill", "#fafafa")
+                .attr("stroke", "#ccc")
+                .attr("stroke-width", 1);
 
             this.lineGroup
                 .selectAll(Selectors.Label.selectorName)
@@ -1637,6 +1640,7 @@ export class Gantt implements IVisual {
                     (_.every(task.tasks, (task: Task) => !!task.parent)
                         ? Gantt.SubtasksLeftMargin
                         : (task.tasks[0].children && !!task.tasks[0].children.length) ? this.parentLabelOffset : 0)))
+                .attr("class", (task: GroupedTask) => task.tasks[0].children ? "parent" : task.tasks[0].parent ? "child" : "normal-node")
                 .attr("fill", taskLabelsColor)
                 .attr("stroke-width", Gantt.AxisLabelStrokeWidth)
                 .style("font-size", PixelConverter.fromPoint(taskLabelsFontSize))
@@ -1648,10 +1652,19 @@ export class Gantt implements IVisual {
             axisLabelGroup
                 .filter((task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length)
                 .append("image")
-                .attr("xlink:href", (task: GroupedTask) => (!task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusIconEncoded : this.collapseAllImageConsts.minusIconEncoded))
+                .attr("xlink:href", (task: GroupedTask) => (!task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvgEncoded : this.collapseAllImageConsts.minusSvgEncoded))
                 .attr("width", this.groupLabelSize)
                 .attr("height", this.groupLabelSize)
-                .attr("y", -12);
+                .attr("y", -17)
+                .attr("x", -Gantt.DefaultValues.BarMargin);
+
+            axisLabelGroup
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", -this.groupLabelSize)
+                .attr("width", this.viewport.width)
+                .attr("height", 1)
+                .attr("fill", "#ccc");
 
             axisLabel
                 .exit()
@@ -1662,34 +1675,27 @@ export class Gantt implements IVisual {
                 .remove();
 
             this.collapseAllGroup
-                .selectAll("rect")
+                .selectAll("text")
                 .remove();
 
             if (this.viewModel.isParentFilled) {
                 this.collapseAllGroup
                     .append("image")
                     .classed(Selectors.CollapseAllArrow.className, true)
-                    .attr("xlink:href", (this.collapsedTasks.length ? this.collapseAllImageConsts.plusIconEncoded : this.collapseAllImageConsts.minusIconEncoded))
+                    .attr("xlink:href", (this.collapsedTasks.length ? this.collapseAllImageConsts.expandSvgEncoded : this.collapseAllImageConsts.collapseSvgEncoded))
                     .attr("width", this.groupLabelSize)
                     .attr("height", this.groupLabelSize)
+                    .attr("x", this.secondExpandAllIconOffset)
+                    .attr("y", this.secondExpandAllIconOffset)
                     .attr(this.collapseAllImageConsts.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
 
                 this.collapseAllGroup
-                    .append("rect")
-                    .attr("width", this.groupLabelSize)
-                    .attr("height", this.groupLabelSize)
-                    .attr("x", this.secondExpandAllIconOffset)
-                    .attr("y", this.secondExpandAllIconOffset)
-                    .attr("fill", categoriesAreaBackgroundColor);
-                this.collapseAllGroup
-                    .append("image")
-                    .classed(Selectors.CollapseAllArrow.className, true)
-                    .attr("xlink:href", (this.collapsedTasks.length ? this.collapseAllImageConsts.plusIconEncoded : this.collapseAllImageConsts.minusIconEncoded))
-                    .attr("width", this.groupLabelSize)
-                    .attr("height", this.groupLabelSize)
-                    .attr("x", this.secondExpandAllIconOffset)
-                    .attr("y", this.secondExpandAllIconOffset)
-                    .attr(this.collapseAllImageConsts.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
+                    .append("text")
+                    .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
+                    .attr("y", this.groupLabelSize)
+                    .attr("font-size", "12px")
+                    .attr("fill", "#aaa")
+                    .text(() => this.collapsedTasks.length ? "Expand All" : "Collapse All");
             }
 
         } else {
@@ -1702,7 +1708,7 @@ export class Gantt implements IVisual {
                 .remove();
 
             this.collapseAllGroup
-                .selectAll("rect")
+                .selectAll("text")
                 .remove();
 
             this.lineGroup
@@ -1744,11 +1750,11 @@ export class Gantt implements IVisual {
         if (isCollapsed === "1") {
             this.collapsedTasks = [];
             collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "0");
-            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.minusIconEncoded);
+            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.collapseSvgEncoded);
 
         } else {
             collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "1");
-            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.plusIconEncoded);
+            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.expandSvgEncoded);
             this.viewModel.tasks.forEach((task: Task) => {
                 if (task.parent) {
                     if (task.visibility) {
@@ -1793,7 +1799,6 @@ export class Gantt implements IVisual {
 
         let taskSelection: Selection<Task> = this.taskSelectionRectRender(taskGroupSelectionMerged);
         this.taskMainRectRender(taskSelection, taskConfigHeight);
-
         this.taskProgressRender(taskSelection, taskConfigHeight);
         this.taskResourceRender(taskSelection, taskConfigHeight);
         this.taskDaysOffRender(taskSelection, taskConfigHeight);
@@ -1851,6 +1856,8 @@ export class Gantt implements IVisual {
         taskRectMerged
             .attr("x", (task: Task) => this.timeScale(task.start))
             .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
+            .attr("rx", RectRound)
+            .attr("ry", RectRound)
             .attr("width", (task: Task) => this.taskDurationToWidth(task.start, task.end))
             .attr("height", () => Gantt.getBarHeight(taskConfigHeight))
             .style("fill", (task: Task) => task.color);
@@ -1952,11 +1959,13 @@ export class Gantt implements IVisual {
 
             taskProgressMerged
                 .attr("x", (task: Task) => this.timeScale(task.start))
-                .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight)
-                    + Gantt.getBarHeight(taskConfigHeight) / 2 - Gantt.DefaultValues.ProgressBarHeight / 2)
+                .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
+                //+ Gantt.getBarHeight(taskConfigHeight) / 2 - Gantt.DefaultValues.ProgressBarHeight / 2)
+                .attr("rx", RectRound)
+                .attr("ry", RectRound)
                 .attr("width", (task: Task) => this.setTaskProgress(task))
-                .attr("height", Gantt.DefaultValues.ProgressBarHeight)
-                .style("fill", taskProgressColor);
+                .attr("height", Gantt.getBarHeight(taskConfigHeight))
+                .style("fill", (task: Task) => task.color);//taskProgressColor)//
 
             taskProgress
                 .exit()
