@@ -204,7 +204,7 @@ module Selectors {
     export const TaskResource: ClassAndSelector = createClassAndSelector("task-resource");
     export const TaskLabels: ClassAndSelector = createClassAndSelector("task-labels");
     export const TaskLines: ClassAndSelector = createClassAndSelector("task-lines");
-    export const LabelLines: ClassAndSelector = createClassAndSelector("label-lines")
+    export const LabelLines: ClassAndSelector = createClassAndSelector("label-lines");
     export const TaskLinesRect: ClassAndSelector = createClassAndSelector("task-lines-rect");
     export const CollapseAll: ClassAndSelector = createClassAndSelector("collapse-all");
     export const CollapseAllArrow: ClassAndSelector = createClassAndSelector("collapse-all-arrow");
@@ -284,7 +284,7 @@ export class Gantt implements IVisual {
     private static DeviderForCalculatingPadding: number = 4;
     private static LabelTopOffsetForPadding: number = 0.5;
     private static DeviderForCalculatingCenter: number = 2;
-    private static SubtasksLeftMargin: number = 15;
+    private static SubtasksLeftMargin: number = 10;
 
     private static get DefaultMargin(): IMargin {
         return {
@@ -322,14 +322,13 @@ export class Gantt implements IVisual {
         plusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pjxzdmcgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDggNDg7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZGlzcGxheTpub25lO30KCS5zdDF7ZmlsbDpub25lO3N0cm9rZTojMzAzMDMwO3N0cm9rZS13aWR0aDowLjc7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjEwO30KCS5zdDJ7ZmlsbDojMzAzMDMwO30KPC9zdHlsZT48ZyBjbGFzcz0ic3QwIiBpZD0iUGFkZGluZ19feDI2X19BcnRib2FyZCIvPjxnIGlkPSJJY29ucyI+PHBhdGggY2xhc3M9InN0MSIgZD0iTTMwLjEzMTEsMzUuMDk3OEgxNy44Njg5Yy0yLjc0MzAzLDAtNC45NjY3LTIuMjIzNjYtNC45NjY3LTQuOTY2N1YxNy44Njg5ICAgYzAtMi43NDMwMywyLjIyMzY3LTQuOTY2Nyw0Ljk2NjctNC45NjY3SDMwLjEzMTFjMi43NDMwMywwLDQuOTY2NywyLjIyMzY3LDQuOTY2Nyw0Ljk2NjdWMzAuMTMxMSAgIEMzNS4wOTc4LDMyLjg3NDE0LDMyLjg3NDE0LDM1LjA5NzgsMzAuMTMxMSwzNS4wOTc4eiIvPjxnPjxsaW5lIGNsYXNzPSJzdDEiIHgxPSIyNCIgeDI9IjI0IiB5MT0iMjAuMTQ3MzMiIHkyPSIyNy44NTI2NyIvPjxsaW5lIGNsYXNzPSJzdDEiIHgxPSIyMC4xNDczMyIgeDI9IjI3Ljg1MjY3IiB5MT0iMjQiIHkyPSIyNCIvPjwvZz48L2c+PC9zdmc+",
         minusSvgEncoded: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+IDxnPiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPiAgPHJlY3QgZmlsbD0ibm9uZSIgaWQ9ImNhbnZhc19iYWNrZ3JvdW5kIiBoZWlnaHQ9IjQwMiIgd2lkdGg9IjU4MiIgeT0iLTEiIHg9Ii0xIi8+IDwvZz4gPGc+ICA8dGl0bGU+TGF5ZXIgMTwvdGl0bGU+ICA8cGF0aCBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIwLjciIHN0cm9rZT0iIzMwMzAzMCIgZmlsbD0ibm9uZSIgaWQ9InN2Z18xIiBkPSJtMzAuMTMxMSwzNS4wOTc4bC0xMi4yNjIyLDBjLTIuNzQzMDMsMCAtNC45NjY3LC0yLjIyMzY2IC00Ljk2NjcsLTQuOTY2N2wwLC0xMi4yNjIyYzAsLTIuNzQzMDMgMi4yMjM2NywtNC45NjY3IDQuOTY2NywtNC45NjY3bDEyLjI2MjIsMGMyLjc0MzAzLDAgNC45NjY3LDIuMjIzNjcgNC45NjY3LDQuOTY2N2wwLDEyLjI2MjJjMCwyLjc0MzA0IC0yLjIyMzY2LDQuOTY2NyAtNC45NjY3LDQuOTY2N3oiIGNsYXNzPSJzdDEiLz4gIDxsaW5lIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjAuNyIgc3Ryb2tlPSIjMzAzMDMwIiBmaWxsPSJub25lIiBpZD0ic3ZnXzQiIHkyPSIyNCIgeTE9IjI0IiB4Mj0iMjcuODUyNjciIHgxPSIyMC4xNDczMyIgY2xhc3M9InN0MSIvPiA8L2c+PC9zdmc+",
         expandSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4IiB3aWR0aD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMzLjE3IDE3LjE3bC05LjE3IDkuMTctOS4xNy05LjE3LTIuODMgMi44MyAxMiAxMiAxMi0xMnoiLz48cGF0aCBkPSJNMCAwaDQ4djQ4aC00OHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=",
-        plusIconEncoded: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAHdElNRQfhCRgNBR9x1hVlAAAAZklEQVQoz6WR3Q2AIAyEP4gJIzFol8JthAXOFw0RSzDx+tS/u+YKCaMiJypGAnObdxhURMZDRtSAgIAPQRxKhfIsjAyvLLJAHygIXXvqQkuG/zdsQ76vJByjGkythvbhWQnjmL/7BMyHUN2Uh8qLAAAALnpUWHRkYXRlOmNyZWF0ZQAAeNozMjA01zWw1DUyCTE0tjIwtTI21DYwsDIwAABB+AUOvqcMLQAAAC56VFh0ZGF0ZTptb2RpZnkAAHjaMzIwNNc1sNQ1MgkxNLYyMLUyNtQ2MLAyMAAAQfgFDpeYpKUAAAAASUVORK5CYII=",
         collapseSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4IiB3aWR0aD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTI0IDE2bC0xMiAxMiAyLjgzIDIuODMgOS4xNy05LjE3IDkuMTcgOS4xNyAyLjgzLTIuODN6Ii8+PHBhdGggZD0iTTAgMGg0OHY0OGgtNDh6IiBmaWxsPSJub25lIi8+PC9zdmc+",
-        minusIconEncoded: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAHdElNRQfhCQ8HBA+1I96wAAAAZ0lEQVQoz7WRUQqAIBBEn+FNoi/PI57OA0RnEQ8Q3UTWPoIQVCyitz/LMLsMDBgCQm6MEDCKwMJGokZj2UHw9PDIhGpeXyTUxIDvBn1vK3OhH7jXH9xfIR8YcpGjTpg1EQvdsiKjuk9mWyyGmWOVywAAAC56VFh0ZGF0ZTpjcmVhdGUAAHjaMzIwNNc1sNQ1NA0xMLcyMLEyNNU2MLAyMAAAQh8FEgMJQNYAAAAuelRYdGRhdGU6bW9kaWZ5AAB42jMyMDTXNbDUNTQNMTC3MjCxMjTVNjCwMjAAAEIfBRIqNuheAAAAAElFTkSuQmCC",
         collapseAllFlag: "data-is-collapsed",
     };
     private parentLabelOffset: number = 5;
     private groupLabelSize: number = 25;
     private secondExpandAllIconOffset: number = 7;
+    private hasNotNullableDates: boolean = false;
 
     constructor(options: VisualConstructorOptions) {
         this.init(options);
@@ -1252,6 +1251,15 @@ export class Gantt implements IVisual {
         }
     }
 
+    private scaleAxisLength(axisLength: number): number {
+        let fullScreenAxisLength: number = Gantt.DefaultGraphicWidthPercentage * this.viewport.width;
+        if (axisLength < fullScreenAxisLength) {
+            axisLength = fullScreenAxisLength;
+        }
+
+        return axisLength;
+    }
+
     /**
     * Called on data change or resizing
     * @param options The visual option that contains the dataview and the viewport
@@ -1291,40 +1299,45 @@ export class Gantt implements IVisual {
             return;
         }
 
-        let startDate: Date = _.minBy(tasks, (t) => t.start).start;
-        let endDate: Date = _.maxBy(tasks, (t) => t.end).end;
-
-        if (startDate.toString() === endDate.toString()) {
-            endDate = new Date(endDate.valueOf() + (24 * 60 * 60 * 1000));
-        }
-
         let settings = this.viewModel.settings;
+        let axisLength: number = 0;
 
-        let dateTypeMilliseconds: number = Gantt.getDateType(settings.dateType.type);
-        let ticks: number = Math.ceil(Math.round(endDate.valueOf() - startDate.valueOf()) / dateTypeMilliseconds);
-        ticks = ticks < 2 ? 2 : ticks;
+        let minDateTask: Task = _.minBy(tasks, (t) => t.start);
+        let maxDateTask: Task = _.maxBy(tasks, (t) => t.end);
+        this.hasNotNullableDates = !!minDateTask && !!maxDateTask;
 
-        let fullScreenAxisLength: number = Gantt.DefaultGraphicWidthPercentage * this.viewport.width;
-        let axisLength: number = ticks * Gantt.DefaultTicksLength;
-        if (axisLength < fullScreenAxisLength) {
-            axisLength = fullScreenAxisLength;
+        if (this.hasNotNullableDates) {
+            let startDate: Date = minDateTask.start;
+            let endDate: Date = maxDateTask.end;
+
+            if (startDate.toString() === endDate.toString()) {
+                endDate = new Date(endDate.valueOf() + (24 * 60 * 60 * 1000));
+            }
+
+            let dateTypeMilliseconds: number = Gantt.getDateType(settings.dateType.type);
+            let ticks: number = Math.ceil(Math.round(endDate.valueOf() - startDate.valueOf()) / dateTypeMilliseconds);
+            ticks = ticks < 2 ? 2 : ticks;
+
+            axisLength = ticks * Gantt.DefaultTicksLength;
+            axisLength = this.scaleAxisLength(axisLength);
+
+            let viewportIn: IViewport = {
+                height: this.viewport.height,
+                width: axisLength
+            };
+
+            let xAxisProperties: IAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, ticks, false);
+            this.timeScale = <timeScale<Date, Date>>xAxisProperties.scale;
+
+            this.renderAxis(xAxisProperties);
         }
 
+        axisLength = this.scaleAxisLength(axisLength);
         let groupedTasks: GroupedTask[] = this.groupTasks(tasks);
         // do smth with task ids
         this.setDimension(groupedTasks, axisLength, settings);
-
-        let viewportIn: IViewport = {
-            height: this.viewport.height,
-            width: axisLength
-        };
-
-        let xAxisProperties: IAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, ticks, false);
-        this.timeScale = <timeScale<Date, Date>>xAxisProperties.scale;
-
         this.collapsedTasks = JSON.parse(settings.collapsedTasks.list);
 
-        this.renderAxis(xAxisProperties);
         this.renderTasks(groupedTasks);
         this.updateTaskLabels(groupedTasks, settings.taskLabels.width);
         this.updateElementsPositions(this.margin);
@@ -1563,15 +1576,15 @@ export class Gantt implements IVisual {
 
         this.axisGroup
             .selectAll("path")
-            .style("stroke", axisColor); // line
+            .style("stroke", axisColor);
 
         this.axisGroup
             .selectAll(".tick line")
-            .style("stroke", (timestamp: number) => this.setTickColor(timestamp, axisColor)); // ticks
+            .style("stroke", (timestamp: number) => this.setTickColor(timestamp, axisColor));
 
         this.axisGroup
             .selectAll(".tick text")
-            .style("fill", (timestamp: number) => this.setTickColor(timestamp, axisTextColor)); // text
+            .style("fill", (timestamp: number) => this.setTickColor(timestamp, axisTextColor));
     }
 
     private setTickColor(
@@ -1613,7 +1626,7 @@ export class Gantt implements IVisual {
 
         if (taskLabelsShow) {
             this.lineGroupWrapper
-                .attr("width", taskLabelsWidth)
+                .attr("width", taskLabelsWidth + .7 * Gantt.SubtasksLeftMargin)
                 .attr("fill", "#fafafa")
                 .attr("stroke", "#ccc")
                 .attr("stroke-width", 1);
@@ -1695,7 +1708,7 @@ export class Gantt implements IVisual {
                     .attr("y", this.groupLabelSize)
                     .attr("font-size", "12px")
                     .attr("fill", "#aaa")
-                    .text(() => this.collapsedTasks.length ? "Expand All" : "Collapse All");
+                    .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
             }
 
         } else {
@@ -1854,11 +1867,11 @@ export class Gantt implements IVisual {
         taskRectMerged.classed(Selectors.TaskRect.className, true);
 
         taskRectMerged
-            .attr("x", (task: Task) => this.timeScale(task.start))
+            .attr("x", (task: Task) => this.hasNotNullableDates ? this.timeScale(task.start) : 0)
             .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
             .attr("rx", RectRound)
             .attr("ry", RectRound)
-            .attr("width", (task: Task) => this.taskDurationToWidth(task.start, task.end))
+            .attr("width", (task: Task) => this.hasNotNullableDates ? this.taskDurationToWidth(task.start, task.end) : 0)
             .attr("height", () => Gantt.getBarHeight(taskConfigHeight))
             .style("fill", (task: Task) => task.color);
 
@@ -1915,9 +1928,12 @@ export class Gantt implements IVisual {
             tasksDaysOffMerged.classed(Selectors.TaskDaysOff.className, true);
 
             tasksDaysOffMerged
-                .attr("x", (task: TaskDaysOff) => this.timeScale(task.daysOff[0]))
+                .attr("x", (task: TaskDaysOff) => this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0)
                 .attr("y", (task: TaskDaysOff) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
                 .attr("width", (task: TaskDaysOff) => {
+                    if (!this.hasNotNullableDates) {
+                        return 0;
+                    }
                     const startDate: Date = task.daysOff[0];
                     const startTime: number = startDate.getTime();
                     const endDate: Date = new Date(startTime + (task.daysOff[1] * MillisecondsInADay));
@@ -1958,14 +1974,13 @@ export class Gantt implements IVisual {
             taskProgressMerged.classed(Selectors.TaskProgress.className, true);
 
             taskProgressMerged
-                .attr("x", (task: Task) => this.timeScale(task.start))
+                .attr("x", (task: Task) => this.hasNotNullableDates ? this.timeScale(task.start) : 0)
                 .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
-                //+ Gantt.getBarHeight(taskConfigHeight) / 2 - Gantt.DefaultValues.ProgressBarHeight / 2)
                 .attr("rx", RectRound)
                 .attr("ry", RectRound)
-                .attr("width", (task: Task) => this.setTaskProgress(task))
+                .attr("width", (task: Task) => this.hasNotNullableDates ? this.setTaskProgress(task) : 0)
                 .attr("height", Gantt.getBarHeight(taskConfigHeight))
-                .style("fill", (task: Task) => task.color);//taskProgressColor)//
+                .style("fill", (task: Task) => task.color); // taskProgressColor)
 
             taskProgress
                 .exit()
@@ -2040,12 +2055,13 @@ export class Gantt implements IVisual {
                 .style("font-size", PixelConverter.fromPoint(taskResourceFontSize));
 
             let self: Gantt = this;
+            let hasNotNullableDates: boolean = this.hasNotNullableDates;
             const defaultWidth: number = Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding;
 
             if (taskResourceWidthByTask) {
                 taskResourceMerged
                     .each(function (task: Task, outerIndex: number) {
-                        const width: number = self.taskDurationToWidth(task.start, task.end);
+                        const width: number = hasNotNullableDates ? self.taskDurationToWidth(task.start, task.end) : 0;
                         AxisHelper.LabelLayoutStrategy.clip(d3.select(this), width, textMeasurementService.svgEllipsis);
                     });
             } else if (isGroupedByTaskName) {
@@ -2054,8 +2070,11 @@ export class Gantt implements IVisual {
                         const sameRowNextTaskStart: Date = self.getSameRowNextTaskStartDate(task, outerIndex, taskResourceMerged);
 
                         if (sameRowNextTaskStart) {
-                            const startDate: Date = taskResourcePosition === ResourceLabelPositions.Top ? task.start : task.end,
-                                width: number = self.taskDurationToWidth(startDate, sameRowNextTaskStart);
+                            let width: number = 0;
+                            if (hasNotNullableDates) {
+                                const startDate: Date = taskResourcePosition === ResourceLabelPositions.Top ? task.start : task.end;
+                                width = self.taskDurationToWidth(startDate, sameRowNextTaskStart);
+                            }
 
                             AxisHelper.LabelLayoutStrategy.clip(d3.select(this), width, textMeasurementService.svgEllipsis);
                         } else {
@@ -2115,6 +2134,10 @@ export class Gantt implements IVisual {
         task: Task,
         taskResourceFontSize: number,
         taskResourcePosition: ResourceLabelPositions): number {
+        if (!this.hasNotNullableDates) {
+            return 0;
+        }
+
         switch (taskResourcePosition) {
             case ResourceLabelPositions.Right:
                 return this.timeScale(task.end) + (taskResourceFontSize / 2);
@@ -2255,6 +2278,9 @@ export class Gantt implements IVisual {
         tasks: GroupedTask[],
         timestamp: number = Date.now(),
         milestoneTitle?: string): void {
+        if (!this.hasNotNullableDates) {
+            return;
+        }
 
         let todayColor: string = this.viewModel.settings.dateType.todayColor;
         let line: Line[] = [{
