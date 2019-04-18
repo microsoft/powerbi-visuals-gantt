@@ -49,7 +49,6 @@ import valueFormatter = vf.valueFormatter;
 import { Task, TaskDaysOff } from "../src/interfaces";
 import { DurationHelper } from "../src/durationHelper";
 import { Gantt as VisualClass } from "../src/gantt";
-import { debug } from "util";
 
 export enum DateTypes {
     Second = <any>"Second",
@@ -519,10 +518,10 @@ describe("Gantt", () => {
                 clickElement(parentTask);
 
                 let childTaskMarginLeft: number = +visualBuilder.taskLabelsText.eq(++parentIndex).attr("x");
-                expect(childTaskMarginLeft).toEqual(VisualClass["SubtasksLeftMargin"]);
+                expect(childTaskMarginLeft).toEqual(VisualClass["DefaultValues"]["TaskLineWidth"]);
 
                 childTaskMarginLeft = +visualBuilder.taskLabelsText.eq(++parentIndex).attr("x");
-                expect(childTaskMarginLeft).toEqual(VisualClass["SubtasksLeftMargin"]);
+                expect(childTaskMarginLeft).toEqual(VisualClass["DefaultValues"]["TaskLineWidth"]);
 
                 done();
             });
@@ -1450,19 +1449,24 @@ describe("Gantt", () => {
         });
 
         describe("Task Completion", () => {
-            it("color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+            it("opacity", (done) => {
                 dataView.metadata.objects = {
                     taskCompletion: {
-                        show: true,
-                        fill: VisualBuilder.getSolidColorStructuralObject(color)
+                        show: true
                     }
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    visualBuilder.taskProgress.toArray().map($).forEach(e =>
-                        assertColorsMatch(e.css("fill"), color));
+                    visualBuilder.taskProgress.toArray().map($).forEach(e => {
+                        expect(e.css("opacity")).toBe(VisualClass["TaskOpacity"].toString())
+                    });
+                    done();
+                });
 
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    visualBuilder.taskRect.toArray().map($).forEach(e => {
+                        expect(e.css("opacity")).toBe(VisualClass["NotCompletedTaskOpacity"].toString())
+                    });
                     done();
                 });
             });
@@ -1566,8 +1570,10 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
+                    const taskLabelsWidth: number = 110;
+                    const resultTaskLabelWidth: number = taskLabelsWidth + .7 * VisualClass["SubtasksLeftMargin"];
                     expect(visualBuilder.taskLabels).toBeInDOM();
-                    expect(visualBuilder.taskLineRect.attr("width")).toEqual("110");
+                    expect(visualBuilder.taskLineRect.attr("width")).toEqual(resultTaskLabelWidth.toString());
                     done();
                 });
             });

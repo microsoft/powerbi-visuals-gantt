@@ -239,12 +239,12 @@
                             "for": {
                                 "in": "Parent"
                             }
-                        },            
+                        },
                         {
                             "for": {
                                 "in": "StartDate"
                             }
-                        },             
+                        },
                         {
                             "for": {
                                 "in": "Resource"
@@ -260,12 +260,12 @@
                 "values": {
                     "group": {
                         "by": "Legend",
-                        "select": [                       
+                        "select": [
                             {
                                 "for": {
                                     "in": "EndDate"
                                 }
-                            },                                  
+                            },
                             {
                                 "for": {
                                     "in": "Duration"
@@ -604,17 +604,6 @@
                     "type": {
                         "bool": true
                     }
-                },
-                "fill": {
-                    "displayName": "Completion color",
-                    "displayNameKey": "Visual_CompletionColor",
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
                 }
             }
         },
@@ -811,6 +800,6 @@
         }
     },
     "sorting": {
-        "default": { }
+        "default": {}
     }
 }

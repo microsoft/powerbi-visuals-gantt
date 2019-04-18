@@ -285,6 +285,8 @@ export class Gantt implements IVisual {
     private static LabelTopOffsetForPadding: number = 0.5;
     private static DeviderForCalculatingCenter: number = 2;
     private static SubtasksLeftMargin: number = 10;
+    private static NotCompletedTaskOpacity: number = .5;
+    private static TaskOpacity: number = 1;
 
     private static get DefaultMargin(): IMargin {
         return {
@@ -1158,7 +1160,6 @@ export class Gantt implements IVisual {
             settings.dateType.todayColor = colorHelper.getHighContrastColor("foreground", settings.dateType.todayColor);
 
             settings.daysOff.fill = colorHelper.getHighContrastColor("foreground", settings.daysOff.fill);
-            settings.taskCompletion.fill = colorHelper.getHighContrastColor("foreground", settings.taskCompletion.fill);
             settings.taskConfig.fill = colorHelper.getHighContrastColor("foreground", settings.taskConfig.fill);
             settings.taskLabels.fill = colorHelper.getHighContrastColor("foreground", settings.taskLabels.fill);
             settings.taskResource.fill = colorHelper.getHighContrastColor("foreground", settings.taskResource.fill);
@@ -1855,6 +1856,7 @@ export class Gantt implements IVisual {
         taskSelection: Selection<Task>,
         taskConfigHeight: number): void {
         const highContrastModeTaskRectStroke: number = 1;
+        const showTaskCompletion: boolean = this.viewModel.settings.taskCompletion.show;
         let taskRect: Selection<Task> = taskSelection
             .selectAll(Selectors.TaskRect.selectorName)
             .data((d: Task) => [d]);
@@ -1873,7 +1875,8 @@ export class Gantt implements IVisual {
             .attr("ry", RectRound)
             .attr("width", (task: Task) => this.hasNotNullableDates ? this.taskDurationToWidth(task.start, task.end) : 0)
             .attr("height", () => Gantt.getBarHeight(taskConfigHeight))
-            .style("fill", (task: Task) => task.color);
+            .style("fill", (task: Task) => task.color)
+            .attr("opacity", showTaskCompletion ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -1958,7 +1961,6 @@ export class Gantt implements IVisual {
         taskSelection: Selection<Task>,
         taskConfigHeight: number): void {
 
-        let taskProgressColor: string = this.viewModel.settings.taskCompletion.fill;
         let taskProgressShow: boolean = this.viewModel.settings.taskCompletion.show;
 
         if (taskProgressShow) {

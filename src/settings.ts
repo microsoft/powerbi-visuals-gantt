@@ -82,7 +82,6 @@ export class TaskConfigSettings {
 
 export class TaskCompletionSettings {
     show: boolean = true;
-    fill: string = "#000000";
 }
 
 export class TaskResourceSettings {
