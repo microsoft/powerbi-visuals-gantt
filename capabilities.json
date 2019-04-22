@@ -691,6 +691,11 @@
                                 "value": "Right",
                                 "displayName": "Right",
                                 "displayNameKey": "Visual_Position_Right"
+                            },
+                            {
+                                "value": "Inside",
+                                "displayName": "Inside",
+                                "displayNameKey": "Visual_Position_Inside"
                             }
                         ]
                     }

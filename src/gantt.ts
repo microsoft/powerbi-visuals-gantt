@@ -156,7 +156,8 @@ const GanttDurationUnitType = [
 
 export enum ResourceLabelPositions {
     Top = <any>"Top",
-    Right = <any>"Right"
+    Right = <any>"Right",
+    Inside = <any>"Inside"
 }
 
 export enum DurationUnits {
@@ -266,6 +267,7 @@ export class Gantt implements IVisual {
     };
 
     private static DefaultGraphicWidthPercentage: number = 0.78;
+    private static ResourceLabelDefaultDivisionCoefficient: number = 1.5;
     private static DefaultTicksLength: number = 50;
     private static DefaultDuration: number = 250;
     private static TaskLineCoordinateX: number = 15;
@@ -1672,9 +1674,16 @@ export class Gantt implements IVisual {
                 .attr("y", -17)
                 .attr("x", -Gantt.DefaultValues.BarMargin);
 
+            let parentTask: string = "";
             axisLabelGroup
                 .append("rect")
-                .attr("x", 0)
+                .attr("x", (task: GroupedTask) => {
+                    const isFirstChild: boolean = task.tasks[0].parent && task.tasks[0].parent !== parentTask;
+                    if (task.tasks[0].parent) {
+                        parentTask = task.tasks[0].parent
+                    }
+                    return !task.tasks[0].children && task.tasks[0].parent && !isFirstChild ? 25 : 0;
+                })
                 .attr("y", -this.groupLabelSize)
                 .attr("width", this.viewport.width)
                 .attr("height", 1)
@@ -1699,7 +1708,7 @@ export class Gantt implements IVisual {
                     .attr("xlink:href", (this.collapsedTasks.length ? this.collapseAllImageConsts.expandSvgEncoded : this.collapseAllImageConsts.collapseSvgEncoded))
                     .attr("width", this.groupLabelSize)
                     .attr("height", this.groupLabelSize)
-                    .attr("x", this.secondExpandAllIconOffset)
+                    .attr("x", 0)
                     .attr("y", this.secondExpandAllIconOffset)
                     .attr(this.collapseAllImageConsts.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
 
@@ -1736,6 +1745,12 @@ export class Gantt implements IVisual {
      * @param taskClicked Grouped clicked task
      */
     private subTasksCollapseCb(taskClicked: GroupedTask): void {
+        const taskIsChild: boolean = taskClicked.tasks[0].parent && !taskClicked.tasks[0].children;
+        const taskWithoutParentAndChildren: boolean = !taskClicked.tasks[0].parent && !taskClicked.tasks[0].children;
+        if (taskIsChild || taskWithoutParentAndChildren) {
+            return;
+        }
+
         const taskClickedParent: string = taskClicked.tasks[0].parent || taskClicked.tasks[0].name;
         this.viewModel.tasks.forEach((task: Task) => {
             if (task.parent === taskClickedParent &&
@@ -1861,22 +1876,49 @@ export class Gantt implements IVisual {
             .selectAll(Selectors.TaskRect.selectorName)
             .data((d: Task) => [d]);
 
+        // const taskRectMerged = taskRect
+        //     .enter()
+        //     .append("rect")
+        //     .merge(taskRect);
+
+        // taskRectMerged.classed(Selectors.TaskRect.className, true);
+
+        // taskRectMerged
+        //     .attr("x", (task: Task) => this.hasNotNullableDates ? this.timeScale(task.start) : 0)
+        //     .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
+        //     .attr("rx", RectRound)
+        //     .attr("ry", RectRound)
+        //     .attr("width", (task: Task) => this.hasNotNullableDates ? this.taskDurationToWidth(task.start, task.end) : 0)
+        //     .attr("height", () => Gantt.getBarHeight(taskConfigHeight))
+        //     .style("fill", (task: Task) => task.color)
+        //     .attr("opacity", showTaskCompletion ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
+
         const taskRectMerged = taskRect
             .enter()
-            .append("rect")
+            .append("path")
             .merge(taskRect);
 
         taskRectMerged.classed(Selectors.TaskRect.className, true);
 
+
+        const rightRoundedRect = (task: Task) => {
+
+            const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
+                y = Gantt.getBarYCoordinate(task.id, taskConfigHeight),
+                width = this.hasNotNullableDates ? this.taskDurationToWidth(task.start, task.end) : 0,
+                height = Gantt.getBarHeight(taskConfigHeight),
+                radius = 10;
+            return "M" + x + "," + y
+                + "h" + (width - radius)
+                + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
+                + "v" + (height - 2 * radius)
+                + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
+                + "h" + (radius - width)
+                + "z";
+        }
+
         taskRectMerged
-            .attr("x", (task: Task) => this.hasNotNullableDates ? this.timeScale(task.start) : 0)
-            .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
-            .attr("rx", RectRound)
-            .attr("ry", RectRound)
-            .attr("width", (task: Task) => this.hasNotNullableDates ? this.taskDurationToWidth(task.start, task.end) : 0)
-            .attr("height", () => Gantt.getBarHeight(taskConfigHeight))
-            .style("fill", (task: Task) => task.color)
-            .attr("opacity", showTaskCompletion ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
+            .attr("d", (task: Task) => rightRoundedRect(task))
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -1933,6 +1975,8 @@ export class Gantt implements IVisual {
             tasksDaysOffMerged
                 .attr("x", (task: TaskDaysOff) => this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0)
                 .attr("y", (task: TaskDaysOff) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
+                .attr("rx", RectRound)
+                .attr("ry", RectRound)
                 .attr("width", (task: TaskDaysOff) => {
                     if (!this.hasNotNullableDates) {
                         return 0;
@@ -2006,7 +2050,7 @@ export class Gantt implements IVisual {
         const groupTasks: boolean = this.viewModel.settings.general.groupTasks;
         let newLabelPosition: ResourceLabelPositions | null = null;
         if (groupTasks && !this.groupTasksPrevValue) {
-            newLabelPosition = ResourceLabelPositions.Top;
+            newLabelPosition = ResourceLabelPositions.Inside;
         }
 
         if (!groupTasks && this.groupTasksPrevValue) {
@@ -2049,7 +2093,7 @@ export class Gantt implements IVisual {
             taskResourceMerged.classed(Selectors.TaskResource.className, true);
 
             taskResourceMerged
-                .attr("x", (task: Task) => this.getResourceLabelXCoordinate(task, taskResourceFontSize, taskResourcePosition))
+                .attr("x", (task: Task) => this.getResourceLabelXCoordinate(task, taskConfigHeight, taskResourceFontSize, taskResourcePosition))
                 .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight)
                     + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition))
                 .text((task: Task) => task.resource)
@@ -2129,22 +2173,28 @@ export class Gantt implements IVisual {
                 return (barHeight / Gantt.DeviderForCalculatingCenter) + (taskResourceFontSize / Gantt.DeviderForCalculatingCenter);
             case ResourceLabelPositions.Top:
                 return -(taskResourceFontSize / Gantt.DeviderForCalculatingPadding) + Gantt.LabelTopOffsetForPadding;
+            case ResourceLabelPositions.Inside:
+                return -(taskResourceFontSize / Gantt.DeviderForCalculatingPadding) + Gantt.LabelTopOffsetForPadding + barHeight / Gantt.ResourceLabelDefaultDivisionCoefficient;
         }
     }
 
     private getResourceLabelXCoordinate(
         task: Task,
+        taskConfigHeight: number,
         taskResourceFontSize: number,
         taskResourcePosition: ResourceLabelPositions): number {
         if (!this.hasNotNullableDates) {
             return 0;
         }
 
+        const barHeight: number = Gantt.getBarHeight(taskConfigHeight);
         switch (taskResourcePosition) {
             case ResourceLabelPositions.Right:
                 return this.timeScale(task.end) + (taskResourceFontSize / 2);
             case ResourceLabelPositions.Top:
                 return this.timeScale(task.start);
+            case ResourceLabelPositions.Inside:
+                return this.timeScale(task.start) + barHeight / (2 * Gantt.ResourceLabelDefaultDivisionCoefficient);
         }
     }
 

@@ -31,6 +31,7 @@
 	"Visual_Position_Bottom": "Bottom",
 	"Visual_Position_Left": "Left",
 	"Visual_Position_Right": "Right",
+	"Visual_Position_Inside": "Inside",
 	"Visual_Position_TopCenter": "Top Center",
 	"Visual_Position_BottomCenter": "Bottom Center",
 	"Visual_Position_LeftCenter": "Left Center",
