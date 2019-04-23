@@ -96,7 +96,7 @@ import createInteractivityService = interactivityService.createInteractivityServ
 import { createTooltipServiceWrapper, TooltipEventArgs, ITooltipServiceWrapper, TooltipEnabledDataPoint } from "powerbi-visuals-utils-tooltiputils";
 
 // powerbi.extensibility.utils.color
-import { ColorHelper } from "powerbi-visuals-utils-colorutils";
+import { ColorHelper, hexToRGBString } from "powerbi-visuals-utils-colorutils";
 
 // powerbi.extensibility.utils.chart.legend
 import { legend as LegendModule, legendInterfaces, OpacityLegendBehavior, axisInterfaces, axisScale, axis as AxisHelper } from "powerbi-visuals-utils-chartutils";
@@ -1808,6 +1808,54 @@ export class Gantt implements IVisual {
         });
     }
 
+
+    private drawRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
+        if (!width || !height) {
+            return;
+        }
+        return "M" + x + "," + y
+            + "h" + (width - radius)
+            + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
+            + "v" + (height - 2 * radius)
+            + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
+            + "h" + (2 * radius - width)
+            + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + -radius
+            + "v" + (2 * radius - height)
+            + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + -radius
+            + "z";
+    }
+
+    private drawLeftRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
+        if (!width || !height) {
+            return;
+        }
+        return "M" + x + "," + y
+            + "h" + (width - radius)
+            + "h" + radius
+            + "v" + radius
+            + "v" + (height - 2 * radius)
+            + "v" + radius
+            + "h" + -radius
+            + "h" + (2 * radius - width)
+            + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + -radius
+            + "v" + (2 * radius - height)
+            + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + -radius
+            + "z";
+    }
+
+    private drawRightRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
+        if (!width || !height) {
+            return;
+        }
+        return "M" + x + "," + y
+            + "h" + (width - radius)
+            + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
+            + "v" + (height - 2 * radius)
+            + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
+            + "h" + (2 * radius - width)
+            + "z";
+    }
+
     /**
      * Render tasks
      * @param groupedTasks Grouped tasks
@@ -1876,23 +1924,6 @@ export class Gantt implements IVisual {
             .selectAll(Selectors.TaskRect.selectorName)
             .data((d: Task) => [d]);
 
-        // const taskRectMerged = taskRect
-        //     .enter()
-        //     .append("rect")
-        //     .merge(taskRect);
-
-        // taskRectMerged.classed(Selectors.TaskRect.className, true);
-
-        // taskRectMerged
-        //     .attr("x", (task: Task) => this.hasNotNullableDates ? this.timeScale(task.start) : 0)
-        //     .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
-        //     .attr("rx", RectRound)
-        //     .attr("ry", RectRound)
-        //     .attr("width", (task: Task) => this.hasNotNullableDates ? this.taskDurationToWidth(task.start, task.end) : 0)
-        //     .attr("height", () => Gantt.getBarHeight(taskConfigHeight))
-        //     .style("fill", (task: Task) => task.color)
-        //     .attr("opacity", showTaskCompletion ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
-
         const taskRectMerged = taskRect
             .enter()
             .append("path")
@@ -1900,25 +1931,21 @@ export class Gantt implements IVisual {
 
         taskRectMerged.classed(Selectors.TaskRect.className, true);
 
-
-        const rightRoundedRect = (task: Task) => {
+        const drawTaskRect = (task: Task) => {
 
             const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
                 y = Gantt.getBarYCoordinate(task.id, taskConfigHeight),
                 width = this.hasNotNullableDates ? this.taskDurationToWidth(task.start, task.end) : 0,
                 height = Gantt.getBarHeight(taskConfigHeight),
-                radius = 10;
-            return "M" + x + "," + y
-                + "h" + (width - radius)
-                + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
-                + "v" + (height - 2 * radius)
-                + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
-                + "h" + (radius - width)
-                + "z";
+                radius = RectRound;
+
+            return this.drawRoundedRectByPath(x, y, width, height, radius)
         }
 
         taskRectMerged
-            .attr("d", (task: Task) => rightRoundedRect(task))
+            .attr("d", (task: Task) => drawTaskRect(task))
+            .style("fill", (task: Task) => task.color)
+            .attr("opacity", showTaskCompletion ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -1967,27 +1994,32 @@ export class Gantt implements IVisual {
 
             const tasksDaysOffMerged = tasksDaysOff
                 .enter()
-                .append("rect")
+                .append("path")
                 .merge(tasksDaysOff);
 
             tasksDaysOffMerged.classed(Selectors.TaskDaysOff.className, true);
 
-            tasksDaysOffMerged
-                .attr("x", (task: TaskDaysOff) => this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0)
-                .attr("y", (task: TaskDaysOff) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
-                .attr("rx", RectRound)
-                .attr("ry", RectRound)
-                .attr("width", (task: TaskDaysOff) => {
-                    if (!this.hasNotNullableDates) {
-                        return 0;
-                    }
+            const drawTaskRectDaysOff = (task: TaskDaysOff) => {
+
+                const x = this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0,
+                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight),
+                    height = Gantt.getBarHeight(taskConfigHeight),
+                    radius = RectRound;
+                let width = 0;
+
+                if (this.hasNotNullableDates) {
                     const startDate: Date = task.daysOff[0];
                     const startTime: number = startDate.getTime();
                     const endDate: Date = new Date(startTime + (task.daysOff[1] * MillisecondsInADay));
 
-                    return this.taskDurationToWidth(startDate, endDate);
-                })
-                .attr("height", Gantt.getBarHeight(taskConfigHeight))
+                    width = this.taskDurationToWidth(startDate, endDate);
+                }
+
+                return this.drawRoundedRectByPath(x, y, width, height, radius)
+            }
+
+            tasksDaysOffMerged
+                .attr("d", (task: TaskDaysOff) => drawTaskRectDaysOff(task))
                 .style("fill", taskDaysOffColor);
 
             tasksDaysOff
@@ -2004,7 +2036,6 @@ export class Gantt implements IVisual {
     private taskProgressRender(
         taskSelection: Selection<Task>,
         taskConfigHeight: number): void {
-
         let taskProgressShow: boolean = this.viewModel.settings.taskCompletion.show;
 
         if (taskProgressShow) {
@@ -2014,19 +2045,27 @@ export class Gantt implements IVisual {
 
             const taskProgressMerged = taskProgress
                 .enter()
-                .append("rect")
+                .append("path")
                 .merge(taskProgress);
 
             taskProgressMerged.classed(Selectors.TaskProgress.className, true);
 
+            const drawTaskProgressRect = (task: Task) => {
+                const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
+                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight),
+                    width = this.hasNotNullableDates ? this.setTaskProgress(task) : 0,
+                    height = Gantt.getBarHeight(taskConfigHeight),
+                    radius = RectRound;
+
+                if (task.completion > 0.95) {
+                    return this.drawRoundedRectByPath(x, y, width, height, radius)
+                }
+                return this.drawLeftRoundedRectByPath(x, y, width, height, radius);
+            }
+
             taskProgressMerged
-                .attr("x", (task: Task) => this.hasNotNullableDates ? this.timeScale(task.start) : 0)
-                .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight))
-                .attr("rx", RectRound)
-                .attr("ry", RectRound)
-                .attr("width", (task: Task) => this.hasNotNullableDates ? this.setTaskProgress(task) : 0)
-                .attr("height", Gantt.getBarHeight(taskConfigHeight))
-                .style("fill", (task: Task) => task.color); // taskProgressColor)
+                .attr("d", (task: Task) => drawTaskProgressRect(task))
+                .style("fill", (task: Task) => task.color);
 
             taskProgress
                 .exit()
@@ -2443,7 +2482,7 @@ export class Gantt implements IVisual {
             return;
         }
 
-        return instanceEnumeration || [];
+        return (instanceEnumeration as VisualObjectInstanceEnumerationObject).instances || [];
     }
 
     private enumerateLegend(instanceEnumeration: VisualObjectInstanceEnumeration): VisualObjectInstance[] {

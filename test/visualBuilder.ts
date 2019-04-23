@@ -122,7 +122,7 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
 
     public get taskDaysOffRect() {
         return this.tasks
-            .children("rect.task-days-off");
+            .children("path.task-days-off");
     }
 
     public get taskLabels() {
@@ -151,7 +151,7 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
 
     public get taskRect() {
         return this.tasks
-            .children("rect.task-rect");
+            .children("path.task-rect");
     }
 
     public get taskResources() {
@@ -161,7 +161,7 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
 
     public get taskProgress() {
         return this.tasks
-            .children("rect.task-progress");
+            .children("path.task-progress");
     }
 
     public get legendGroup() {
