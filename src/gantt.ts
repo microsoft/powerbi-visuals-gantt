@@ -131,7 +131,7 @@ import { GanttColumns } from "./columns";
 import { GanttSettings } from "./settings";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
-const RectRound: number = 10;
+const RectRound: number = 7;
 const ScrollMargin: number = 100;
 const MillisecondsInASecond: number = 1000;
 const MillisecondsInAMinute: number = 60 * MillisecondsInASecond;
@@ -271,7 +271,7 @@ export class Gantt implements IVisual {
     private static DefaultTicksLength: number = 50;
     private static DefaultDuration: number = 250;
     private static TaskLineCoordinateX: number = 15;
-    private static AxisLabelClip: number = 20;
+    private static AxisLabelClip: number = 40;
     private static AxisLabelStrokeWidth: number = 1;
     private static BarHeightMargin: number = 5;
     private static ChartLineHeightDivider: number = 4;
@@ -888,6 +888,14 @@ export class Gantt implements IVisual {
                 stepDurationTransformation
             };
 
+            // hardcoded milestones tasks!!!
+            if (task.name.includes("Second stage")) {
+                task.name = "Milestone 2";
+            }
+            if (task.name.includes("First stage") && task.parent == "Painting" && task.duration == 4) {
+                task.name = "Milestone 1";
+            }
+
             if (parent) {
                 let parentTask: Task = null;
                 if (addedParents.indexOf(parent) === -1) {
@@ -1341,10 +1349,11 @@ export class Gantt implements IVisual {
         this.setDimension(groupedTasks, axisLength, settings);
         this.collapsedTasks = JSON.parse(settings.collapsedTasks.list);
 
+        this.createMilestoneLine(groupedTasks);
         this.renderTasks(groupedTasks);
         this.updateTaskLabels(groupedTasks, settings.taskLabels.width);
         this.updateElementsPositions(this.margin);
-        this.createMilestoneLine(groupedTasks);
+        //this.createMilestoneLine(groupedTasks);
 
         if (settings.general.scrollToCurrentTime) {
             this.scrollToMilestoneLine(axisLength);
@@ -1496,7 +1505,7 @@ export class Gantt implements IVisual {
         axisLength: number,
         settings: GanttSettings): void {
 
-        const height = PixelConverter.toString(groupedTasks.length * (settings.taskConfig.height || DefaultChartLineHeight) + this.margin.top);
+        const height = PixelConverter.toString(groupedTasks.length * (settings.taskConfig.height || DefaultChartLineHeight) + this.margin.top + this.getResourceLabelTopMargin());
         const width = PixelConverter.toString(this.margin.left + settings.taskLabels.width + axisLength + Gantt.DefaultValues.ResourceWidth);
 
         this.ganttSvg
@@ -1648,7 +1657,7 @@ export class Gantt implements IVisual {
                 .merge(axisLabel);
 
             axisLabelGroup.classed(Selectors.Label.className, true)
-                .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.id)));
+                .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.id)))// this.getResourceLabelTopMargin()/2));
 
             axisLabelGroup
                 .append("text")
@@ -1931,21 +1940,39 @@ export class Gantt implements IVisual {
 
         taskRectMerged.classed(Selectors.TaskRect.className, true);
 
+        const getTaskRectWidth = (task: Task) => {
+            return this.hasNotNullableDates ? this.taskDurationToWidth(task.start, task.end) : 0;
+        }
         const drawTaskRect = (task: Task) => {
 
             const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
-                y = Gantt.getBarYCoordinate(task.id, taskConfigHeight),
-                width = this.hasNotNullableDates ? this.taskDurationToWidth(task.start, task.end) : 0,
+                y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + this.getResourceLabelTopMargin(),
+                width = getTaskRectWidth(task),
                 height = Gantt.getBarHeight(taskConfigHeight),
                 radius = RectRound;
 
             return this.drawRoundedRectByPath(x, y, width, height, radius)
         }
 
+        const drawDiamond = (taskConfigHeight: number) => {
+            return `M ${taskConfigHeight/4} 0 ${taskConfigHeight/2} ${taskConfigHeight/2} ${taskConfigHeight/4} ${taskConfigHeight} 0 ${taskConfigHeight/2} Z`
+        }
+
+        const transformForDiamond = (task: Task) => {
+            return SVGManipulations.translate(this.timeScale(task.end) - Gantt.getBarHeight(taskConfigHeight)/4, Gantt.getBarYCoordinate(task.id, taskConfigHeight) + this.getResourceLabelTopMargin());
+        }
+
+        const isMilestone = (task: Task) => {
+            return task.name.includes("Milestone");
+        }
+
         taskRectMerged
-            .attr("d", (task: Task) => drawTaskRect(task))
+            .attr("d", (task: Task) => isMilestone(task) ? drawDiamond(Gantt.getBarHeight(taskConfigHeight)) : drawTaskRect(task))
+            .attr("transform", (task: Task) =>  isMilestone(task) ? transformForDiamond(task) : "")
+            .attr("width", (task: Task) => getTaskRectWidth(task))   
             .style("fill", (task: Task) => task.color)
-            .attr("opacity", showTaskCompletion ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
+            .attr("opacity", (task: Task) => showTaskCompletion && !isMilestone(task) ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
+        
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -1999,12 +2026,7 @@ export class Gantt implements IVisual {
 
             tasksDaysOffMerged.classed(Selectors.TaskDaysOff.className, true);
 
-            const drawTaskRectDaysOff = (task: TaskDaysOff) => {
-
-                const x = this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0,
-                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight),
-                    height = Gantt.getBarHeight(taskConfigHeight),
-                    radius = RectRound;
+            const getTaskRectDaysOffWidth = (task: TaskDaysOff) => {
                 let width = 0;
 
                 if (this.hasNotNullableDates) {
@@ -2015,12 +2037,23 @@ export class Gantt implements IVisual {
                     width = this.taskDurationToWidth(startDate, endDate);
                 }
 
+                return width;
+            }
+            const drawTaskRectDaysOff = (task: TaskDaysOff) => {
+
+                const x = this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0,
+                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + this.getResourceLabelTopMargin(),
+                    height = Gantt.getBarHeight(taskConfigHeight),
+                    radius = RectRound,
+                    width = getTaskRectDaysOffWidth(task);
+
                 return this.drawRoundedRectByPath(x, y, width, height, radius)
             }
 
             tasksDaysOffMerged
                 .attr("d", (task: TaskDaysOff) => drawTaskRectDaysOff(task))
-                .style("fill", taskDaysOffColor);
+                .style("fill", taskDaysOffColor)
+                .attr("width", (task: TaskDaysOff) => getTaskRectDaysOffWidth(task));
 
             tasksDaysOff
                 .exit()
@@ -2050,10 +2083,13 @@ export class Gantt implements IVisual {
 
             taskProgressMerged.classed(Selectors.TaskProgress.className, true);
 
+            const getTaskProgressRectWidth = (task: Task) => {
+                return this.hasNotNullableDates ? this.setTaskProgress(task) : 0;
+            }
             const drawTaskProgressRect = (task: Task) => {
                 const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
-                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight),
-                    width = this.hasNotNullableDates ? this.setTaskProgress(task) : 0,
+                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + this.getResourceLabelTopMargin(),
+                    width = getTaskProgressRectWidth(task),
                     height = Gantt.getBarHeight(taskConfigHeight),
                     radius = RectRound;
 
@@ -2063,8 +2099,13 @@ export class Gantt implements IVisual {
                 return this.drawLeftRoundedRectByPath(x, y, width, height, radius);
             }
 
+            const isMilestone = (task: Task) => {
+                return task.name.includes("Milestone");
+            }
+
             taskProgressMerged
-                .attr("d", (task: Task) => drawTaskProgressRect(task))
+                .attr("d", (task: Task) => !isMilestone(task) ? drawTaskProgressRect(task) : "")
+                .attr("width", (task: Task) => getTaskProgressRectWidth(task))
                 .style("fill", (task: Task) => task.color);
 
             taskProgress
@@ -2134,7 +2175,8 @@ export class Gantt implements IVisual {
             taskResourceMerged
                 .attr("x", (task: Task) => this.getResourceLabelXCoordinate(task, taskConfigHeight, taskResourceFontSize, taskResourcePosition))
                 .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight)
-                    + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition))
+                    + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition)
+                    + this.getResourceLabelTopMargin())
                 .text((task: Task) => task.resource)
                 .style("fill", taskResourceColor)
                 .style("font-size", PixelConverter.fromPoint(taskResourceFontSize));
@@ -2312,7 +2354,6 @@ export class Gantt implements IVisual {
     private static getBarYCoordinate(
         lineNumber: number,
         lineHeight: number): number {
-
         return (lineHeight * lineNumber) + PaddingTasks;
     }
 
@@ -2322,6 +2363,24 @@ export class Gantt implements IVisual {
      */
     private static getBarHeight(lineHeight: number): number {
         return lineHeight / Gantt.ChartLineProportion;
+    }
+
+    /**
+     * Get the margin that added to task rects and task category labels
+     * 
+     * depends on resource label position and resource label font size
+     */
+    private  getResourceLabelTopMargin(): number {
+        let taskResourceShow: boolean = this.viewModel.settings.taskResource.show;
+        let taskResourceFontSize: number = this.viewModel.settings.taskResource.fontSize;
+        let taskResourcePosition: ResourceLabelPositions = this.viewModel.settings.taskResource.position;
+        
+        let margin: number = 0;
+        if (taskResourceShow && taskResourcePosition === ResourceLabelPositions.Top) {
+            margin = Number(taskResourceFontSize) + Gantt.LabelTopOffsetForPadding;
+        }
+        
+        return margin;
     }
 
     /**
@@ -2374,12 +2433,22 @@ export class Gantt implements IVisual {
         }
 
         let todayColor: string = this.viewModel.settings.dateType.todayColor;
+        //hardcoded!!!
+        let jun5 = new Date(2016, 5, 5),
+        jun10 = new Date(2016,5,9);
         let line: Line[] = [{
-            x1: this.timeScale(new Date(timestamp)),
+            x1: this.timeScale(new Date(jun5)),
             y1: Gantt.MilestoneTop,
-            x2: this.timeScale(new Date(timestamp)),
+            x2: this.timeScale(new Date(jun5)),
             y2: this.getMilestoneLineLength(tasks.length),
-            tooltipInfo: this.getTooltipForMilstoneLine(timestamp, milestoneTitle)
+            tooltipInfo: this.getTooltipForMilstoneLine(jun5.getTime(), milestoneTitle)
+        },
+        {
+            x1: this.timeScale(new Date(jun10)),
+            y1: Gantt.MilestoneTop,
+            x2: this.timeScale(new Date(jun10)),
+            y2: this.getMilestoneLineLength(tasks.length),
+            tooltipInfo: this.getTooltipForMilstoneLine(jun10.getTime(), milestoneTitle)
         }];
 
         let chartLineSelection: Selection<Line> = this.chartGroup
@@ -2398,7 +2467,7 @@ export class Gantt implements IVisual {
             .attr("y1", (line: Line) => line.y1)
             .attr("x2", (line: Line) => line.x2)
             .attr("y2", (line: Line) => line.y2)
-            .style("stroke", todayColor);
+            .style("stroke", "#ccc");
 
         this.renderTooltip(chartLineSelectionMerged);
 

@@ -338,7 +338,7 @@ describe("Gantt", () => {
                 progressOfTasks.forEach((e, i) => {
                     let percent: number = defaultDataViewBuilder.valuesCompletePrecntege[i - skippedParents];
                     let widthOfTask: number = parseFloat($(visualBuilder.taskRect[i - skippedParents]).attr("width"));
-                    let widthOfProgressTask: number = e.width();
+                    let widthOfProgressTask: number = parseFloat(e.attr("width"));
 
                     const widthOfTaskFormatted = Math.floor((widthOfTask * percent)).toFixed(2);
                     const widthOfProgressTaskFormatted = Math.floor(widthOfProgressTask).toFixed(2);
@@ -1399,8 +1399,13 @@ describe("Gantt", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskRects: any[] = visualBuilder.taskRect.toArray().map($);
                     visualBuilder.taskResources.toArray().map($).forEach((e, i) => {
-                        expect(+e.attr("x")).toEqual(+taskRects[i].attr("x"));
-                        expect(+e.attr("y")).toBeLessThan(+taskRects[i].attr("y"));
+                        const taskResourcesX = +e.attr("x");
+                        const taskResourcesY = +e.attr("y");
+                        const taskRectX = taskRects[i][0].getBBox().x;
+                        const taskRectY = taskRects[i][0].getBBox().y;
+                        
+                        expect(taskResourcesX.toFixed(2)).toEqual(taskRectX.toFixed(2));
+                        expect(taskResourcesY.toFixed(2)).toBeLessThan(taskRectY.toFixed(2));
                     });
 
                     done();
