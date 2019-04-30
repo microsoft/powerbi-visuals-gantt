@@ -101,4 +101,5 @@ export class GanttColumns<T> {
     public Completion: T = null;
     public Resource: T = null;
     public ExtraInformation: T = null;
+    public Milestones: T  = null;
 }

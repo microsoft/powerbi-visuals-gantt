@@ -83,6 +83,7 @@ export interface Task extends SelectableDataPoint {
     wasDowngradeDurationUnit: boolean;
     stepDurationTransformation?: number;
     highlight?: boolean;
+    Milestone?: string;
 }
 
 export interface GroupedTask {

@@ -69,6 +69,12 @@
             "displayName": "Tooltips",
             "displayNameKey": "Role_Tooltips",
             "kind": "Grouping"
+        },
+        {
+            "name": "Milestones",
+            "displayName": "Milestones",
+            "displayNameKey": "Milestones",
+            "kind": "Grouping"
         }
     ],
     "dataViewMappings": [
@@ -110,6 +116,10 @@
                     "ExtraInformation": {
                         "min": 0,
                         "max": 3
+                    },
+                    "Milestones": {
+                        "min": 0,
+                        "max": 1
                     }
                 },
                 {
@@ -148,6 +158,10 @@
                     "ExtraInformation": {
                         "min": 0,
                         "max": 3
+                    },
+                    "Milestones": {
+                        "min": 0,
+                        "max": 1
                     }
                 },
                 {
@@ -186,6 +200,10 @@
                     "ExtraInformation": {
                         "min": 0,
                         "max": 3
+                    },
+                    "Milestones": {
+                        "min": 0,
+                        "max": 1
                     }
                 },
                 {
@@ -224,6 +242,10 @@
                     "ExtraInformation": {
                         "min": 0,
                         "max": 3
+                    },
+                    "Milestones": {
+                        "min": 0,
+                        "max": 1
                     }
                 }
             ],
@@ -253,6 +275,11 @@
                         {
                             "for": {
                                 "in": "ExtraInformation"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "Milestones"
                             }
                         }
                     ]

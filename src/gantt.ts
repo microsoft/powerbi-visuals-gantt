@@ -128,7 +128,8 @@ import {
 } from "./interfaces";
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
-import { GanttSettings } from "./settings";
+import { GanttSettings, TaskLabelsSettings } from "./settings";
+import { Group } from "three";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const RectRound: number = 7;
@@ -181,6 +182,12 @@ export enum DateTypes {
 export enum LabelsForDateTypes {
     Now = <any>"Now",
     Today = <any>"Today"
+}
+
+export enum MilestoneTypes {
+    release = "release",
+    beta = "beta",
+    alpha = "alpha"
 }
 
 export class SortingOptions {
@@ -748,6 +755,7 @@ export class Gantt implements IVisual {
             addedParents: string[] = [];
 
         const values: GanttColumns<any> = GanttColumns.getCategoricalValues(dataView);
+            debugger;
 
         if (!values.Task) {
             return tasks;
@@ -847,6 +855,8 @@ export class Gantt implements IVisual {
             const extraInformation: ExtraInformation[] = [];
             const resource: string = (values.Resource && values.Resource[index] as string) || "";
             const parent: string = (values.Parent && values.Parent[index] as string) || null;
+            const Milestone: string = (values.Milestones && !_.isEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
+            debugger;
 
             const startDate: Date = (values.StartDate && values.StartDate[index]
                 && Gantt.isValidDate(new Date(values.StartDate[index])) && new Date(values.StartDate[index]))
@@ -885,16 +895,19 @@ export class Gantt implements IVisual {
                 extraInformation,
                 daysOffList: [],
                 wasDowngradeDurationUnit,
-                stepDurationTransformation
+                stepDurationTransformation,
+                Milestone
             };
 
             // hardcoded milestones tasks!!!
-            if (task.name.includes("Second stage")) {
-                task.name = "Milestone 2";
-            }
-            if (task.name.includes("First stage") && task.parent == "Painting" && task.duration == 4) {
-                task.name = "Milestone 1";
-            }
+            // if (task.name.includes("Second stage")) {
+            //     task.name = "Milestone 2";
+            //     task.isMilestone = true;
+            // }
+            // if (task.name.includes("First stage") && task.parent == "Painting" && task.duration == 4) {
+            //     task.name = "Milestone 1";
+            //     task.isMilestone = true;
+            // }
 
             if (parent) {
                 let parentTask: Task = null;
@@ -920,7 +933,8 @@ export class Gantt implements IVisual {
                         daysOffList: null,
                         wasDowngradeDurationUnit: null,
                         selected: null,
-                        identity: selectionBuider.createSelectionId()
+                        identity: selectionBuider.createSelectionId(),
+                        Milestone
                     };
 
                     tasks.push(parentTask);
@@ -1349,11 +1363,10 @@ export class Gantt implements IVisual {
         this.setDimension(groupedTasks, axisLength, settings);
         this.collapsedTasks = JSON.parse(settings.collapsedTasks.list);
 
-        this.createMilestoneLine(groupedTasks);
         this.renderTasks(groupedTasks);
         this.updateTaskLabels(groupedTasks, settings.taskLabels.width);
         this.updateElementsPositions(this.margin);
-        //this.createMilestoneLine(groupedTasks);
+        this.createMilestoneLine(groupedTasks);
 
         if (settings.general.scrollToCurrentTime) {
             this.scrollToMilestoneLine(axisLength);
@@ -1954,6 +1967,49 @@ export class Gantt implements IVisual {
             return this.drawRoundedRectByPath(x, y, width, height, radius)
         }
 
+        const getMilestoneColor = (milestoneType: string) => {
+            let color: string;
+            switch(milestoneType) {
+                case MilestoneTypes.release:
+                    color =  "#E74C3C";
+                    break;
+                case MilestoneTypes.alpha:
+                    color = "#F39C12";
+                    break;
+                default:
+                    color =  "#3498DB";
+            };
+
+            return color;
+        }
+
+        const drawMilesone = (milestoneType: string, taskConfigHeight: number) => {
+            const convertedHeight: number = Gantt.getBarHeight(taskConfigHeight);
+            let shape: string;
+            switch(milestoneType) {
+                case MilestoneTypes.release:
+                    shape =  drawDiamond(convertedHeight);
+                    break;
+                case MilestoneTypes.alpha:
+                    shape = drawRectangle(convertedHeight);
+                    break;
+                default:
+                    shape =  drawCircle(convertedHeight);
+            };
+
+            return shape;
+        }
+
+        const drawRectangle = (taskConfigHeight: number) => {
+            const startPositions: number = 0;
+            return `M ${startPositions} 0 H ${taskConfigHeight/1.8} V ${taskConfigHeight/1.8} H ${startPositions} Z`;
+        }
+
+        const drawCircle = (taskConfigHeight: number) => {
+            const r = taskConfigHeight/3, cx = taskConfigHeight/4, cy = taskConfigHeight/2;
+            return 'M '+cx+' '+cy+' m -'+r+', 0 a '+r+','+r+' 0 1,0 '+(r*2)+',0 a '+r+','+r+' 0 1,0 -'+(r*2)+',0';
+        }
+
         const drawDiamond = (taskConfigHeight: number) => {
             return `M ${taskConfigHeight/4} 0 ${taskConfigHeight/2} ${taskConfigHeight/2} ${taskConfigHeight/4} ${taskConfigHeight} 0 ${taskConfigHeight/2} Z`
         }
@@ -1962,16 +2018,12 @@ export class Gantt implements IVisual {
             return SVGManipulations.translate(this.timeScale(task.end) - Gantt.getBarHeight(taskConfigHeight)/4, Gantt.getBarYCoordinate(task.id, taskConfigHeight) + this.getResourceLabelTopMargin());
         }
 
-        const isMilestone = (task: Task) => {
-            return task.name.includes("Milestone");
-        }
-
         taskRectMerged
-            .attr("d", (task: Task) => isMilestone(task) ? drawDiamond(Gantt.getBarHeight(taskConfigHeight)) : drawTaskRect(task))
-            .attr("transform", (task: Task) =>  isMilestone(task) ? transformForDiamond(task) : "")
+            .attr("d", (task: Task) => task.Milestone ? drawMilesone(task.Milestone, taskConfigHeight) :drawTaskRect(task))
+            .attr("transform", (task: Task) =>  task.Milestone ? transformForDiamond(task) : "")
             .attr("width", (task: Task) => getTaskRectWidth(task))   
-            .style("fill", (task: Task) => task.color)
-            .attr("opacity", (task: Task) => showTaskCompletion && !isMilestone(task) ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
+            .style("fill", (task: Task) => task.Milestone ? getMilestoneColor(task.Milestone) :task.color)
+            .attr("opacity", (task: Task) => showTaskCompletion && !task.Milestone ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
         
 
         if (this.colorHelper.isHighContrast) {
@@ -2099,12 +2151,8 @@ export class Gantt implements IVisual {
                 return this.drawLeftRoundedRectByPath(x, y, width, height, radius);
             }
 
-            const isMilestone = (task: Task) => {
-                return task.name.includes("Milestone");
-            }
-
             taskProgressMerged
-                .attr("d", (task: Task) => !isMilestone(task) ? drawTaskProgressRect(task) : "")
+                .attr("d", (task: Task) => !task.Milestone ? drawTaskProgressRect(task) : "")
                 .attr("width", (task: Task) => getTaskProgressRectWidth(task))
                 .style("fill", (task: Task) => task.color);
 
@@ -2433,23 +2481,31 @@ export class Gantt implements IVisual {
         }
 
         let todayColor: string = this.viewModel.settings.dateType.todayColor;
-        //hardcoded!!!
-        let jun5 = new Date(2016, 5, 5),
-        jun10 = new Date(2016,5,9);
-        let line: Line[] = [{
-            x1: this.timeScale(new Date(jun5)),
-            y1: Gantt.MilestoneTop,
-            x2: this.timeScale(new Date(jun5)),
-            y2: this.getMilestoneLineLength(tasks.length),
-            tooltipInfo: this.getTooltipForMilstoneLine(jun5.getTime(), milestoneTitle)
-        },
-        {
-            x1: this.timeScale(new Date(jun10)),
-            y1: Gantt.MilestoneTop,
-            x2: this.timeScale(new Date(jun10)),
-            y2: this.getMilestoneLineLength(tasks.length),
-            tooltipInfo: this.getTooltipForMilstoneLine(jun10.getTime(), milestoneTitle)
-        }];
+        let milestoneDates = [];
+        tasks.forEach((task: GroupedTask) => {
+            const subtasks: Task[] = task.tasks;
+            subtasks.forEach((task: Task) => {
+                if (task.Milestone) {
+                    if (task.end && !_.includes(milestoneDates, task.end)) {
+                        milestoneDates.push(task.end);
+                    } else if(task.start && !_.includes(milestoneDates, task.start)) {
+                        milestoneDates.push(task.start);
+                    }
+                } 
+            });
+        });
+
+        let line: Line[] = [];
+        milestoneDates.forEach((date: Date) => {
+            const lineOptions = {
+                x1: this.timeScale(date),
+                y1: Gantt.MilestoneTop,
+                x2: this.timeScale(date),
+                y2: this.getMilestoneLineLength(tasks.length),
+                tooltipInfo: this.getTooltipForMilstoneLine(date.getTime(), milestoneTitle)
+            };
+            line.push(lineOptions);
+        });
 
         let chartLineSelection: Selection<Line> = this.chartGroup
             .selectAll(Selectors.ChartLine.selectorName)
