@@ -129,7 +129,6 @@ import {
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
 import { GanttSettings, TaskLabelsSettings } from "./settings";
-import { Group } from "three";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const RectRound: number = 7;
@@ -198,6 +197,7 @@ export class SortingOptions {
 module Selectors {
     export const ClassName: ClassAndSelector = createClassAndSelector("gantt");
     export const Chart: ClassAndSelector = createClassAndSelector("chart");
+    export const ChartWrapper: ClassAndSelector = createClassAndSelector("chart-wrapper");
     export const ChartLine: ClassAndSelector = createClassAndSelector("chart-line");
     export const Body: ClassAndSelector = createClassAndSelector("gantt-body");
     export const AxisGroup: ClassAndSelector = createClassAndSelector("axis");
@@ -214,6 +214,7 @@ module Selectors {
     export const TaskLines: ClassAndSelector = createClassAndSelector("task-lines");
     export const LabelLines: ClassAndSelector = createClassAndSelector("label-lines");
     export const TaskLinesRect: ClassAndSelector = createClassAndSelector("task-lines-rect");
+    export const TaskTopLine: ClassAndSelector = createClassAndSelector("task-top-line");
     export const CollapseAll: ClassAndSelector = createClassAndSelector("collapse-all");
     export const CollapseAllArrow: ClassAndSelector = createClassAndSelector("collapse-all-arrow");
     export const Label: ClassAndSelector = createClassAndSelector("label");
@@ -259,7 +260,13 @@ export class Gantt implements IVisual {
         BarMargin: 4,
         ResourceWidth: 100,
         TaskColor: "#00B099",
+        TaskLineColor: "#ccc",
+        CollapseAllColor: "#aaa",
+        TaskCategoryLabelsRectColor: "#fafafa",
         TaskLineWidth: 15,
+        IconMargin: 17,
+        ChildTaskLeftMargin: 25,
+        ParentTaskLeftMargin: 0,
         DefaultDateType: "Week",
         DateFormatStrings: {
             Second: "HH:mm:ss",
@@ -314,6 +321,7 @@ export class Gantt implements IVisual {
     private timeScale: timeScale<any, any>;
     private collapseAllGroup: Selection<any>;
     private axisGroup: Selection<any>;
+    private chartGroupWrapper: Selection<any>;
     private chartGroup: Selection<any>;
     private taskGroup: Selection<any>;
     private lineGroup: Selection<any>;
@@ -377,8 +385,13 @@ export class Gantt implements IVisual {
         // create clear catcher
         this.clearCatcher = appendClearCatcher(this.ganttSvg);
 
+        // create chart wrapper container
+        this.chartGroupWrapper = this.ganttSvg
+            .append("g")
+            .classed(Selectors.ChartWrapper.className, true);
+
         // create chart container
-        this.chartGroup = this.ganttSvg
+        this.chartGroup = this.chartGroupWrapper
             .append("g")
             .classed(Selectors.Chart.className, true);
 
@@ -416,6 +429,14 @@ export class Gantt implements IVisual {
             .attr("fill", axisBackgroundColor)
             .attr("y", this.margin.top);
 
+        this.lineGroup
+            .append("rect")
+            .classed(Selectors.TaskTopLine.className, true)
+            .attr("width", "100%")
+            .attr("height", 1)
+            .attr("y", this.margin.top)
+            .attr("fill", Gantt.DefaultValues.TaskLineColor)
+
         this.collapseAllGroup = this.lineGroup
             .append("g")
             .classed(Selectors.CollapseAll.className, true);
@@ -436,7 +457,7 @@ export class Gantt implements IVisual {
                     ? self.viewModel.settings.taskLabels.width
                     : 0;
                 self.axisGroup
-                    .attr("transform", SVGManipulations.translate(taskLabelsWidth + self.margin.left, Gantt.TaskLabelsMarginTop + this.scrollTop));
+                    .attr("transform", SVGManipulations.translate(taskLabelsWidth + self.margin.left + Gantt.SubtasksLeftMargin, Gantt.TaskLabelsMarginTop + this.scrollTop));
                 self.lineGroup
                     .attr("transform", SVGManipulations.translate(this.scrollLeft, 0))
                     .attr("height", 20);
@@ -478,6 +499,10 @@ export class Gantt implements IVisual {
 
         this.lineGroup
             .selectAll(Selectors.Label.selectorName)
+            .remove();
+
+        this.chartGroup
+            .selectAll(Selectors.ChartWrapper.selectorName)
             .remove();
 
         this.chartGroup
@@ -755,7 +780,6 @@ export class Gantt implements IVisual {
             addedParents: string[] = [];
 
         const values: GanttColumns<any> = GanttColumns.getCategoricalValues(dataView);
-            debugger;
 
         if (!values.Task) {
             return tasks;
@@ -856,7 +880,6 @@ export class Gantt implements IVisual {
             const resource: string = (values.Resource && values.Resource[index] as string) || "";
             const parent: string = (values.Parent && values.Parent[index] as string) || null;
             const Milestone: string = (values.Milestones && !_.isEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
-            debugger;
 
             const startDate: Date = (values.StartDate && values.StartDate[index]
                 && Gantt.isValidDate(new Date(values.StartDate[index])) && new Date(values.StartDate[index]))
@@ -898,16 +921,6 @@ export class Gantt implements IVisual {
                 stepDurationTransformation,
                 Milestone
             };
-
-            // hardcoded milestones tasks!!!
-            // if (task.name.includes("Second stage")) {
-            //     task.name = "Milestone 2";
-            //     task.isMilestone = true;
-            // }
-            // if (task.name.includes("First stage") && task.parent == "Painting" && task.duration == 4) {
-            //     task.name = "Milestone 1";
-            //     task.isMilestone = true;
-            // }
 
             if (parent) {
                 let parentTask: Task = null;
@@ -1518,7 +1531,8 @@ export class Gantt implements IVisual {
         axisLength: number,
         settings: GanttSettings): void {
 
-        const height = PixelConverter.toString(groupedTasks.length * (settings.taskConfig.height || DefaultChartLineHeight) + this.margin.top + this.getResourceLabelTopMargin());
+        const fullResourceLabelMargin = groupedTasks.length * this.getResourceLabelTopMargin();
+        const height = PixelConverter.toString(groupedTasks.length * (settings.taskConfig.height || DefaultChartLineHeight) + this.margin.top + fullResourceLabelMargin);
         const width = PixelConverter.toString(this.margin.left + settings.taskLabels.width + axisLength + Gantt.DefaultValues.ResourceWidth);
 
         this.ganttSvg
@@ -1651,9 +1665,9 @@ export class Gantt implements IVisual {
 
         if (taskLabelsShow) {
             this.lineGroupWrapper
-                .attr("width", taskLabelsWidth + .7 * Gantt.SubtasksLeftMargin)
-                .attr("fill", "#fafafa")
-                .attr("stroke", "#ccc")
+                .attr("width", taskLabelsWidth)
+                .attr("fill", Gantt.DefaultValues.TaskCategoryLabelsRectColor)
+                .attr("stroke", Gantt.DefaultValues.TaskLineColor)
                 .attr("stroke-width", 1);
 
             this.lineGroup
@@ -1670,7 +1684,7 @@ export class Gantt implements IVisual {
                 .merge(axisLabel);
 
             axisLabelGroup.classed(Selectors.Label.className, true)
-                .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.id)))// this.getResourceLabelTopMargin()/2));
+                .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.id)));
 
             axisLabelGroup
                 .append("text")
@@ -1679,6 +1693,7 @@ export class Gantt implements IVisual {
                         ? Gantt.SubtasksLeftMargin
                         : (task.tasks[0].children && !!task.tasks[0].children.length) ? this.parentLabelOffset : 0)))
                 .attr("class", (task: GroupedTask) => task.tasks[0].children ? "parent" : task.tasks[0].parent ? "child" : "normal-node")
+                .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin())
                 .attr("fill", taskLabelsColor)
                 .attr("stroke-width", Gantt.AxisLabelStrokeWidth)
                 .style("font-size", PixelConverter.fromPoint(taskLabelsFontSize))
@@ -1693,23 +1708,23 @@ export class Gantt implements IVisual {
                 .attr("xlink:href", (task: GroupedTask) => (!task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvgEncoded : this.collapseAllImageConsts.minusSvgEncoded))
                 .attr("width", this.groupLabelSize)
                 .attr("height", this.groupLabelSize)
-                .attr("y", -17)
+                .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
                 .attr("x", -Gantt.DefaultValues.BarMargin);
 
             let parentTask: string = "";
             axisLabelGroup
                 .append("rect")
                 .attr("x", (task: GroupedTask) => {
-                    const isFirstChild: boolean = task.tasks[0].parent && task.tasks[0].parent !== parentTask;
+                    const isLastChild: boolean = task.tasks[0].parent && task.tasks[0].parent == parentTask;
                     if (task.tasks[0].parent) {
                         parentTask = task.tasks[0].parent
                     }
-                    return !task.tasks[0].children && task.tasks[0].parent && !isFirstChild ? 25 : 0;
+                    return !task.tasks[0].children && task.tasks[0].parent && !isLastChild ? Gantt.DefaultValues.ChildTaskLeftMargin : Gantt.DefaultValues.ParentTaskLeftMargin;
                 })
-                .attr("y", -this.groupLabelSize)
+                .attr("y", (task: GroupedTask) => Gantt.DefaultValues.TaskLineWidth + (task.id + 1) * this.getResourceLabelTopMargin())
                 .attr("width", this.viewport.width)
                 .attr("height", 1)
-                .attr("fill", "#ccc");
+                .attr("fill", Gantt.DefaultValues.TaskLineColor);
 
             axisLabel
                 .exit()
@@ -1720,10 +1735,21 @@ export class Gantt implements IVisual {
                 .remove();
 
             this.collapseAllGroup
+                .selectAll("rect")
+                .remove();
+
+            this.collapseAllGroup
                 .selectAll("text")
                 .remove();
 
             if (this.viewModel.isParentFilled) {
+                let categoryLabelsWidth: number = this.viewModel.settings.taskLabels.width;
+                this.collapseAllGroup
+                    .append("rect")
+                    .attr("width", categoryLabelsWidth)
+                    .attr("height", 2 * Gantt.TaskLabelsMarginTop)
+                    .attr("fill", categoriesAreaBackgroundColor);
+
                 this.collapseAllGroup
                     .append("image")
                     .classed(Selectors.CollapseAllArrow.className, true)
@@ -1739,7 +1765,7 @@ export class Gantt implements IVisual {
                     .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
                     .attr("y", this.groupLabelSize)
                     .attr("font-size", "12px")
-                    .attr("fill", "#aaa")
+                    .attr("fill", Gantt.DefaultValues.CollapseAllColor)
                     .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
             }
 
@@ -1750,6 +1776,10 @@ export class Gantt implements IVisual {
 
             this.collapseAllGroup
                 .selectAll("image")
+                .remove();
+
+            this.collapseAllGroup
+                .selectAll("rect")
                 .remove();
 
             this.collapseAllGroup
@@ -1852,13 +1882,9 @@ export class Gantt implements IVisual {
             return;
         }
         return "M" + x + "," + y
-            + "h" + (width - radius)
-            + "h" + radius
-            + "v" + radius
-            + "v" + (height - 2 * radius)
-            + "v" + radius
-            + "h" + -radius
-            + "h" + (2 * radius - width)
+            + "h" + width
+            + "v" + height
+            + "h" + (radius - width)
             + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + -radius
             + "v" + (2 * radius - height)
             + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + -radius
@@ -1959,7 +1985,7 @@ export class Gantt implements IVisual {
         const drawTaskRect = (task: Task) => {
 
             const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
-                y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + this.getResourceLabelTopMargin(),
+                y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
                 width = getTaskRectWidth(task),
                 height = Gantt.getBarHeight(taskConfigHeight),
                 radius = RectRound;
@@ -1969,15 +1995,15 @@ export class Gantt implements IVisual {
 
         const getMilestoneColor = (milestoneType: string) => {
             let color: string;
-            switch(milestoneType) {
+            switch (milestoneType) {
                 case MilestoneTypes.release:
-                    color =  "#E74C3C";
+                    color = "#E74C3C";
                     break;
                 case MilestoneTypes.alpha:
                     color = "#F39C12";
                     break;
                 default:
-                    color =  "#3498DB";
+                    color = "#3498DB";
             };
 
             return color;
@@ -1986,15 +2012,15 @@ export class Gantt implements IVisual {
         const drawMilesone = (milestoneType: string, taskConfigHeight: number) => {
             const convertedHeight: number = Gantt.getBarHeight(taskConfigHeight);
             let shape: string;
-            switch(milestoneType) {
+            switch (milestoneType) {
                 case MilestoneTypes.release:
-                    shape =  drawDiamond(convertedHeight);
+                    shape = drawDiamond(convertedHeight);
                     break;
                 case MilestoneTypes.alpha:
                     shape = drawRectangle(convertedHeight);
                     break;
                 default:
-                    shape =  drawCircle(convertedHeight);
+                    shape = drawCircle(convertedHeight);
             };
 
             return shape;
@@ -2002,29 +2028,29 @@ export class Gantt implements IVisual {
 
         const drawRectangle = (taskConfigHeight: number) => {
             const startPositions: number = 0;
-            return `M ${startPositions} 0 H ${taskConfigHeight/1.8} V ${taskConfigHeight/1.8} H ${startPositions} Z`;
+            return `M ${startPositions} 0 H ${taskConfigHeight / 1.8} V ${taskConfigHeight / 1.8} H ${startPositions} Z`;
         }
 
         const drawCircle = (taskConfigHeight: number) => {
-            const r = taskConfigHeight/3, cx = taskConfigHeight/4, cy = taskConfigHeight/2;
-            return 'M '+cx+' '+cy+' m -'+r+', 0 a '+r+','+r+' 0 1,0 '+(r*2)+',0 a '+r+','+r+' 0 1,0 -'+(r*2)+',0';
+            const r = taskConfigHeight / 3, cx = taskConfigHeight / 4, cy = taskConfigHeight / 2;
+            return 'M ' + cx + ' ' + cy + ' m -' + r + ', 0 a ' + r + ',' + r + ' 0 1,0 ' + (r * 2) + ',0 a ' + r + ',' + r + ' 0 1,0 -' + (r * 2) + ',0';
         }
 
         const drawDiamond = (taskConfigHeight: number) => {
-            return `M ${taskConfigHeight/4} 0 ${taskConfigHeight/2} ${taskConfigHeight/2} ${taskConfigHeight/4} ${taskConfigHeight} 0 ${taskConfigHeight/2} Z`
+            return `M ${taskConfigHeight / 4} 0 ${taskConfigHeight / 2} ${taskConfigHeight / 2} ${taskConfigHeight / 4} ${taskConfigHeight} 0 ${taskConfigHeight / 2} Z`
         }
 
         const transformForDiamond = (task: Task) => {
-            return SVGManipulations.translate(this.timeScale(task.end) - Gantt.getBarHeight(taskConfigHeight)/4, Gantt.getBarYCoordinate(task.id, taskConfigHeight) + this.getResourceLabelTopMargin());
+            return SVGManipulations.translate(this.timeScale(task.end) - Gantt.getBarHeight(taskConfigHeight) / 4, Gantt.getBarYCoordinate(task.id, taskConfigHeight) + this.getResourceLabelTopMargin());
         }
 
         taskRectMerged
-            .attr("d", (task: Task) => task.Milestone ? drawMilesone(task.Milestone, taskConfigHeight) :drawTaskRect(task))
-            .attr("transform", (task: Task) =>  task.Milestone ? transformForDiamond(task) : "")
-            .attr("width", (task: Task) => getTaskRectWidth(task))   
-            .style("fill", (task: Task) => task.Milestone ? getMilestoneColor(task.Milestone) :task.color)
+            .attr("d", (task: Task) => task.Milestone ? drawMilesone(task.Milestone, taskConfigHeight) : drawTaskRect(task))
+            .attr("transform", (task: Task) => task.Milestone ? transformForDiamond(task) : "")
+            .attr("width", (task: Task) => getTaskRectWidth(task))
+            .style("fill", (task: Task) => task.Milestone ? getMilestoneColor(task.Milestone) : task.color)
             .attr("opacity", (task: Task) => showTaskCompletion && !task.Milestone ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
-        
+
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -2094,7 +2120,7 @@ export class Gantt implements IVisual {
             const drawTaskRectDaysOff = (task: TaskDaysOff) => {
 
                 const x = this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0,
-                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + this.getResourceLabelTopMargin(),
+                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
                     height = Gantt.getBarHeight(taskConfigHeight),
                     radius = RectRound,
                     width = getTaskRectDaysOffWidth(task);
@@ -2140,7 +2166,7 @@ export class Gantt implements IVisual {
             }
             const drawTaskProgressRect = (task: Task) => {
                 const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
-                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + this.getResourceLabelTopMargin(),
+                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
                     width = getTaskProgressRectWidth(task),
                     height = Gantt.getBarHeight(taskConfigHeight),
                     radius = RectRound;
@@ -2224,7 +2250,7 @@ export class Gantt implements IVisual {
                 .attr("x", (task: Task) => this.getResourceLabelXCoordinate(task, taskConfigHeight, taskResourceFontSize, taskResourcePosition))
                 .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight)
                     + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition)
-                    + this.getResourceLabelTopMargin())
+                    + (task.id + 1) * this.getResourceLabelTopMargin())
                 .text((task: Task) => task.resource)
                 .style("fill", taskResourceColor)
                 .style("font-size", PixelConverter.fromPoint(taskResourceFontSize));
@@ -2418,16 +2444,16 @@ export class Gantt implements IVisual {
      * 
      * depends on resource label position and resource label font size
      */
-    private  getResourceLabelTopMargin(): number {
+    private getResourceLabelTopMargin(): number {
         let taskResourceShow: boolean = this.viewModel.settings.taskResource.show;
         let taskResourceFontSize: number = this.viewModel.settings.taskResource.fontSize;
         let taskResourcePosition: ResourceLabelPositions = this.viewModel.settings.taskResource.position;
-        
+
         let margin: number = 0;
         if (taskResourceShow && taskResourcePosition === ResourceLabelPositions.Top) {
             margin = Number(taskResourceFontSize) + Gantt.LabelTopOffsetForPadding;
         }
-        
+
         return margin;
     }
 
@@ -2488,10 +2514,10 @@ export class Gantt implements IVisual {
                 if (task.Milestone) {
                     if (task.end && !_.includes(milestoneDates, task.end)) {
                         milestoneDates.push(task.end);
-                    } else if(task.start && !_.includes(milestoneDates, task.start)) {
+                    } else if (task.start && !_.includes(milestoneDates, task.start)) {
                         milestoneDates.push(task.start);
                     }
-                } 
+                }
             });
         });
 
@@ -2560,7 +2586,9 @@ export class Gantt implements IVisual {
             ? settings.taskLabels.width
             : 0;
 
-        let translateXValue = taskLabelsWidth + margin.left;
+        let translateXValue = taskLabelsWidth + margin.left + Gantt.SubtasksLeftMargin;
+        this.chartGroupWrapper
+            .attr("transform", SVGManipulations.translate(0, 0));
         this.chartGroup
             .attr("transform", SVGManipulations.translate(translateXValue, margin.top));
 
