@@ -146,3 +146,8 @@ export interface Line {
     y2: number;
     tooltipInfo: VisualTooltipDataItem[];
 }
+
+export interface LinearStop {
+    completion: number;
+    color: string
+}

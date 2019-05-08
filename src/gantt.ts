@@ -115,6 +115,7 @@ import { Behavior, BehaviorOptions } from "./behavior";
 import {
     Task,
     Line,
+    LinearStop,
     ExtraInformation,
     GanttViewModel,
     DaysOffDataForAddition,
@@ -1865,7 +1866,7 @@ export class Gantt implements IVisual {
         if (!width || !height) {
             return;
         }
-        return "M" + x + "," + y
+        return "M" + (x + radius) + "," + y
             + "h" + (width - radius)
             + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
             + "v" + (height - 2 * radius)
@@ -1874,33 +1875,6 @@ export class Gantt implements IVisual {
             + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + -radius
             + "v" + (2 * radius - height)
             + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + -radius
-            + "z";
-    }
-
-    private drawLeftRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
-        if (!width || !height) {
-            return;
-        }
-        return "M" + x + "," + y
-            + "h" + width
-            + "v" + height
-            + "h" + (radius - width)
-            + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + -radius
-            + "v" + (2 * radius - height)
-            + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + -radius
-            + "z";
-    }
-
-    private drawRightRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
-        if (!width || !height) {
-            return;
-        }
-        return "M" + x + "," + y
-            + "h" + (width - radius)
-            + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
-            + "v" + (height - 2 * radius)
-            + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
-            + "h" + (2 * radius - width)
             + "z";
     }
 
@@ -1924,7 +1898,7 @@ export class Gantt implements IVisual {
 
         let taskSelection: Selection<Task> = this.taskSelectionRectRender(taskGroupSelectionMerged);
         this.taskMainRectRender(taskSelection, taskConfigHeight);
-        this.taskProgressRender(taskSelection, taskConfigHeight);
+        this.taskProgressRender(taskSelection);
         this.taskResourceRender(taskSelection, taskConfigHeight);
         this.taskDaysOffRender(taskSelection, taskConfigHeight);
 
@@ -2048,9 +2022,7 @@ export class Gantt implements IVisual {
             .attr("d", (task: Task) => task.Milestone ? drawMilesone(task.Milestone, taskConfigHeight) : drawTaskRect(task))
             .attr("transform", (task: Task) => task.Milestone ? transformForDiamond(task) : "")
             .attr("width", (task: Task) => getTaskRectWidth(task))
-            .style("fill", (task: Task) => task.Milestone ? getMilestoneColor(task.Milestone) : task.color)
-            .attr("opacity", (task: Task) => showTaskCompletion && !task.Milestone ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
-
+            .style("fill", (task: Task) => task.Milestone ? getMilestoneColor(task.Milestone) : `url(#task${task.id})`);
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -2142,54 +2114,46 @@ export class Gantt implements IVisual {
     /**
      * Render task progress rect
      * @param taskSelection Task Selection
-     * @param taskConfigHeight Task heights from settings
      */
     private taskProgressRender(
-        taskSelection: Selection<Task>,
-        taskConfigHeight: number): void {
+        taskSelection: Selection<Task>): void {
         let taskProgressShow: boolean = this.viewModel.settings.taskCompletion.show;
 
-        if (taskProgressShow) {
-            let taskProgress: Selection<Task> = taskSelection
-                .selectAll(Selectors.TaskProgress.selectorName)
-                .data((d: Task) => [d]);
+        let taskProgress: Selection<any> = taskSelection
+            .selectAll(Selectors.TaskProgress.selectorName)
+            .data((d: Task) => [{
+                key: d.id, values: <LinearStop[]>[
+                    { completion: 0, color: d.color },
+                    { completion: d.completion, color: d.color },
+                    { completion: d.completion, color: d.color },
+                    { completion: 1, color: d.color }
+                ]
+            }]);
 
-            const taskProgressMerged = taskProgress
-                .enter()
-                .append("path")
-                .merge(taskProgress);
+        const taskProgressMerged = taskProgress
+            .enter()
+            .append("linearGradient")
+            .merge(taskProgress);
 
-            taskProgressMerged.classed(Selectors.TaskProgress.className, true);
+        taskProgressMerged.classed(Selectors.TaskProgress.className, true);
 
-            const getTaskProgressRectWidth = (task: Task) => {
-                return this.hasNotNullableDates ? this.setTaskProgress(task) : 0;
-            }
-            const drawTaskProgressRect = (task: Task) => {
-                const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
-                    y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
-                    width = getTaskProgressRectWidth(task),
-                    height = Gantt.getBarHeight(taskConfigHeight),
-                    radius = RectRound;
+        taskProgressMerged
+            .attr("id", (data) => `task${data.key}`);
 
-                if (task.completion > 0.95) {
-                    return this.drawRoundedRectByPath(x, y, width, height, radius)
-                }
-                return this.drawLeftRoundedRectByPath(x, y, width, height, radius);
-            }
+        let stopsSelection = taskProgressMerged.selectAll("stop");
+        let stopsSelectionData = stopsSelection.data(gradient => <LinearStop[]>gradient.values)
 
-            taskProgressMerged
-                .attr("d", (task: Task) => !task.Milestone ? drawTaskProgressRect(task) : "")
-                .attr("width", (task: Task) => getTaskProgressRectWidth(task))
-                .style("fill", (task: Task) => task.color);
+        // draw 4 stops: 1st and 2d stops are for completed rect part; 3d and 4th ones -  for main rect
+        stopsSelectionData.enter()
+            .append("stop")
+            .merge(<any>stopsSelection)
+            .attr("offset", (data: LinearStop) => `${data.completion * 100}%`)
+            .attr("stop-color", (data: LinearStop) => data.color)
+            .attr("stop-opacity", (data: LinearStop, index: number) => (index > 1) && taskProgressShow ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
 
-            taskProgress
-                .exit()
-                .remove();
-        } else {
-            taskSelection
-                .selectAll(Selectors.TaskProgress.selectorName)
-                .remove();
-        }
+        taskProgress
+            .exit()
+            .remove();
     }
 
     /**
