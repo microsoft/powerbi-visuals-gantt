@@ -149,5 +149,5 @@ export interface Line {
 
 export interface LinearStop {
     completion: number;
-    color: string
+    color: string;
 }

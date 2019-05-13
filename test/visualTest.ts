@@ -1399,13 +1399,16 @@ describe("Gantt", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskRects: any[] = visualBuilder.taskRect.toArray().map($);
                     visualBuilder.taskResources.toArray().map($).forEach((e, i) => {
+                        const text: string = e.text();
                         const taskResourcesX = +e.attr("x");
                         const taskResourcesY = +e.attr("y");
                         const taskRectX = taskRects[i][0].getBBox().x;
                         const taskRectY = taskRects[i][0].getBBox().y;
-                        
-                        expect(taskResourcesX.toFixed(2)).toEqual(taskRectX.toFixed(2));
-                        expect(taskResourcesY.toFixed(2)).toBeLessThan(taskRectY.toFixed(2));
+
+                        if (text) {
+                            expect(taskResourcesX.toFixed(2)).toEqual(taskRectX.toFixed(2));
+                            expect(taskResourcesY.toFixed(2)).toBeLessThan(taskRectY.toFixed(2));
+                        }
                     });
 
                     done();
@@ -1463,14 +1466,14 @@ describe("Gantt", () => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     visualBuilder.taskProgress.toArray().map($).forEach(e => {
-                        expect(e.css("opacity")).toBe(VisualClass["TaskOpacity"].toString())
+                        expect(e.css("opacity")).toBe(VisualClass["TaskOpacity"].toString());
                     });
                     done();
                 });
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     visualBuilder.taskRect.toArray().map($).forEach(e => {
-                        expect(e.css("opacity")).toBe(VisualClass["NotCompletedTaskOpacity"].toString())
+                        expect(e.css("opacity")).toBe(VisualClass["NotCompletedTaskOpacity"].toString());
                     });
                     done();
                 });
@@ -1576,9 +1579,8 @@ describe("Gantt", () => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const taskLabelsWidth: number = 110;
-                    const resultTaskLabelWidth: number = taskLabelsWidth + .7 * VisualClass["SubtasksLeftMargin"];
                     expect(visualBuilder.taskLabels).toBeInDOM();
-                    expect(visualBuilder.taskLineRect.attr("width")).toEqual(resultTaskLabelWidth.toString());
+                    expect(visualBuilder.taskLineRect.attr("width")).toEqual(taskLabelsWidth.toString());
                     done();
                 });
             });
