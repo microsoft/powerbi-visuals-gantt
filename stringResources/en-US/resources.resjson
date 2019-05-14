@@ -81,5 +81,11 @@
 	"Visual_Description_LegendName": "Title text",
 	"Visual_Description_TaskSettings_Color": "This ONLY takes effect when you have no legend specified",
 	"Visual_Label_Today": "Today",
-	"Visual_Label_Now": "Now"
+	"Visual_Label_Now": "Now",
+	"Visual_Milestones": "Milestones",
+	"Visual_Shape": "Shape",
+	"Visual_Shape_Rhombus": "Rhombus",
+	"Visual_Shape_Square": "Square",
+	"Visual_Shape_Circle": "Circle",
+	"Visual_Description_Milestones": "Display milestones options"
 }

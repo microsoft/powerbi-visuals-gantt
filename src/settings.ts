@@ -40,6 +40,7 @@ export class GanttSettings extends DataViewObjectsParser {
     taskResource: TaskResourceSettings = new TaskResourceSettings();
     dateType: DateTypeSettings = new DateTypeSettings();
     tooltipConfig: TooltipConfigSettings = new TooltipConfigSettings();
+    milestones: MilestonesSettings = new MilestonesSettings();
 }
 
 export class GeneralSettings {
@@ -51,6 +52,10 @@ export class GeneralSettings {
 
 export class CollapsedTasks {
     list: string = "[]";
+}
+
+export class MilestonesSettings {
+    show: boolean = true;
 }
 
 export class DaysOffSettings {

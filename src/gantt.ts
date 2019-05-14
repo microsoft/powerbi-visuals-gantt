@@ -96,7 +96,7 @@ import createInteractivityService = interactivityService.createInteractivityServ
 import { createTooltipServiceWrapper, TooltipEventArgs, ITooltipServiceWrapper, TooltipEnabledDataPoint } from "powerbi-visuals-utils-tooltiputils";
 
 // powerbi.extensibility.utils.color
-import { ColorHelper, hexToRGBString } from "powerbi-visuals-utils-colorutils";
+import { ColorHelper } from "powerbi-visuals-utils-colorutils";
 
 // powerbi.extensibility.utils.chart.legend
 import { legend as LegendModule, legendInterfaces, OpacityLegendBehavior, axisInterfaces, axisScale, axis as AxisHelper } from "powerbi-visuals-utils-chartutils";
@@ -125,11 +125,13 @@ import {
     TaskTypes,
     GroupedTask,
     GanttCalculateScaleAndDomainOptions,
-    GanttChartFormatters
+    GanttChartFormatters,
+    MilestoneData,
+    MilestoneDataPoint
 } from "./interfaces";
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
-import { GanttSettings, TaskLabelsSettings } from "./settings";
+import { GanttSettings } from "./settings";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -189,6 +191,12 @@ export enum MilestoneTypes {
     alpha = "alpha"
 }
 
+export enum MilestoneShapeTypes {
+    Rhombus = "Rhombus",
+    Circle = "Circle",
+    Square = "Square"
+}
+
 export class SortingOptions {
     isCustomSortingNeeded: boolean;
     sortingDirection: SortDirection;
@@ -231,6 +239,7 @@ module GanttRoles {
     export const Resource: string = "Resource";
     export const Tooltips: string = "Tooltips";
     export const Parent: string = "Parent";
+    export const Milestones: string = "Milestones";
 }
 
 export class Gantt implements IVisual {
@@ -246,6 +255,11 @@ export class Gantt implements IVisual {
 
     private static LegendPropertyIdentifier: DataViewObjectPropertyIdentifier = {
         objectName: "legend",
+        propertyName: "fill"
+    };
+
+    private static MilestonesPropertyIdentifier: DataViewObjectPropertyIdentifier = {
+        objectName: "milestones",
         propertyName: "fill"
     };
 
@@ -745,6 +759,46 @@ export class Gantt implements IVisual {
         }
     }
 
+    private static createMilestones(
+        dataView: DataView,
+        host: IVisualHost,
+        oldMilestoneData: MilestoneData): MilestoneData {
+        let milestonesIndex = -1;
+        for (const index in dataView.categorical.categories) {
+            const category = dataView.categorical.categories[index];
+            if (category.source.roles.Milestones) {
+                milestonesIndex = +index;
+            }
+        }
+
+        let milestoneData: MilestoneData = {
+            dataPoints: []
+        };
+        const milestonesCategory = dataView.categorical.categories[milestonesIndex];
+        let milestones: { value: PrimitiveValue, index: number }[] = [];
+        milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
+
+        milestones.forEach((milestone) => {
+            const milestoneObjects = milestonesCategory.objects[milestone.index];
+            const selectionBuider: ISelectionIdBuilder = host
+                .createSelectionIdBuilder()
+                .withCategory(milestonesCategory, milestone.index);
+            const milestoneDataPoint: MilestoneDataPoint = {
+                name: milestone.value as string,
+                identity: selectionBuider.createSelectionId(),
+                shapeType: milestoneObjects && milestoneObjects.milestones && milestoneObjects.milestones.shapeType ?
+                    milestoneObjects.milestones.shapeType as string : MilestoneShapeTypes[0],
+                color: milestoneObjects && milestoneObjects.milestones && milestoneObjects.milestones.fill ?
+                    (milestoneObjects.milestones as any).fill.solid.color : Gantt.DefaultValues.TaskColor
+            };
+            milestoneData.dataPoints.push(milestoneDataPoint);
+        });
+
+        // check for change and update all dublicated milestones
+
+        return milestoneData;
+    }
+
     /**
     * Create task objects dataView
     * @param dataView The data Model.
@@ -838,6 +892,7 @@ export class Gantt implements IVisual {
                         taskType = _.find(taskTypes.types,
                             (typeMeta: TaskTypeMetadata) => typeMeta.name === group.EndDate.source.groupName);
 
+                        /// !!!!
                         if (taskType) {
                             selectionBuider.withCategory(taskType.selectionColumn, 0);
                             color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
@@ -1134,7 +1189,8 @@ export class Gantt implements IVisual {
         host: IVisualHost,
         colors: IColorPalette,
         colorHelper: ColorHelper,
-        localizationManager: ILocalizationManager): GanttViewModel {
+        localizationManager: ILocalizationManager,
+        oldMilestoneData?: MilestoneData): GanttViewModel {
 
         if (!dataView
             || !dataView.categorical
@@ -1144,6 +1200,7 @@ export class Gantt implements IVisual {
         }
 
         const settings: GanttSettings = this.parseSettings(dataView, colorHelper);
+        const milestoneTypes: TaskTypes = Gantt.getAllMilestonesTypes(dataView);
         const taskTypes: TaskTypes = Gantt.getAllTasksTypes(dataView);
         const formatters: GanttChartFormatters = this.getFormatters(dataView, settings, host.locale || null);
 
@@ -1151,7 +1208,8 @@ export class Gantt implements IVisual {
             isEndDateFillled: boolean = _.findIndex(dataView.metadata.columns, col => col.roles.hasOwnProperty(GanttRoles.EndDate)) !== -1,
             isParentFilled: boolean = _.findIndex(dataView.metadata.columns, col => col.roles.hasOwnProperty(GanttRoles.Parent)) !== -1;
 
-        const legendData = Gantt.createLegend(host, colors, settings, taskTypes, !isDurationFilled && !isEndDateFillled);
+        const legendData: LegendData = Gantt.createLegend(host, colors, settings, taskTypes, !isDurationFilled && !isEndDateFillled);
+        const milestonesData: MilestoneData = Gantt.createMilestones(dataView, host, oldMilestoneData);
 
         let taskColor: string = (legendData.dataPoints.length <= 1) || !isDurationFilled
             ? settings.taskConfig.fill
@@ -1169,6 +1227,7 @@ export class Gantt implements IVisual {
             taskTypes,
             tasks,
             legendData,
+            milestonesData,
             isDurationFilled,
             isEndDateFillled,
             isParentFilled
@@ -1210,6 +1269,41 @@ export class Gantt implements IVisual {
         }
 
         return value;
+    }
+
+    /**
+    * Gets all unique types from the tasks array
+    * @param dataView The data model.
+    */
+    private static getAllMilestonesTypes(dataView: DataView): TaskTypes {
+        const milestonesTypes: TaskTypes = {
+            typeName: "",
+            types: []
+        };
+        let index: number = _.findIndex(dataView.metadata.columns, col => col.roles.hasOwnProperty(GanttRoles.Milestones));
+
+        if (index !== -1) {
+            milestonesTypes.typeName = dataView.metadata.columns[index].displayName;
+            let milestonesMetaCategoryColumn: DataViewMetadataColumn = dataView.metadata.columns[index];
+            let groupValues = dataView.categorical.values.grouped();
+            milestonesTypes.types = groupValues.map((group: DataViewValueColumnGroup): TaskTypeMetadata => {
+                let column: DataViewCategoryColumn = {
+                    identity: [group.identity],
+                    source: {
+                        displayName: null,
+                        queryName: milestonesMetaCategoryColumn.queryName
+                    },
+                    values: null
+                };
+                return {
+                    name: group.name as string,
+                    selectionColumn: column,
+                    columnGroup: group
+                };
+            });
+        }
+
+        return milestonesTypes;
     }
 
     /**
@@ -1930,7 +2024,7 @@ export class Gantt implements IVisual {
         taskSelection: Selection<Task>,
         taskConfigHeight: number): void {
         const highContrastModeTaskRectStroke: number = 1;
-        const showTaskCompletion: boolean = this.viewModel.settings.taskCompletion.show;
+
         let taskRect: Selection<Task> = taskSelection
             .selectAll(Selectors.TaskRect.selectorName)
             .data((d: Task) => [d]);
@@ -2580,6 +2674,11 @@ export class Gantt implements IVisual {
             || GanttSettings.getDefault() as GanttSettings;
         const instanceEnumeration: VisualObjectInstanceEnumeration =
             GanttSettings.enumerateObjectInstances(settings, options);
+
+        if (options.objectName === Gantt.MilestonesPropertyIdentifier.objectName) {
+            this.enumerateMilestones(instanceEnumeration);
+        }
+
         if (options.objectName === Gantt.LegendPropertyIdentifier.objectName) {
             this.enumerateLegend(instanceEnumeration);
         }
@@ -2591,13 +2690,62 @@ export class Gantt implements IVisual {
         return (instanceEnumeration as VisualObjectInstanceEnumerationObject).instances || [];
     }
 
+    private enumerateMilestones(instanceEnumeration: VisualObjectInstanceEnumeration): VisualObjectInstance[] {
+        if (!this.viewModel.isDurationFilled) {
+            return;
+        }
+
+        const dataPoints: MilestoneDataPoint[] = this.viewModel && this.viewModel.milestonesData.dataPoints;
+        if (!dataPoints || !dataPoints.length) {
+            return;
+        }
+
+        dataPoints.forEach((milestone: MilestoneDataPoint) => {
+            this.addAnInstanceToEnumeration(instanceEnumeration, {
+                displayName: `${milestone.name} color`,
+                objectName: Gantt.MilestonesPropertyIdentifier.objectName,
+                selector: ColorHelper.normalizeSelector((milestone.identity as ISelectionId).getSelector(), false),
+                properties: {
+                    fill: { solid: { color: milestone.color } }
+                }
+            });
+
+            this.addAnInstanceToEnumeration(instanceEnumeration, {
+                displayName: `${milestone.name} shape`,
+                objectName: Gantt.MilestonesPropertyIdentifier.objectName,
+                selector: ColorHelper.normalizeSelector((milestone.identity as ISelectionId).getSelector(), false),
+                properties: {
+                    shapeType: {
+                        enumeration: [
+                            {
+                                "value": "Rhombus",
+                                "displayName": "Rhombus",
+                                "displayNameKey": "Visual_Shape_Rhombus"
+                            },
+                            {
+                                "value": "Circle",
+                                "displayName": "Circle",
+                                "displayNameKey": "Visual_Shape_Circle"
+                            },
+                            {
+                                "value": "Square",
+                                "displayName": "Square",
+                                "displayNameKey": "Visual_Shape_Square"
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+    }
+
     private enumerateLegend(instanceEnumeration: VisualObjectInstanceEnumeration): VisualObjectInstance[] {
         if (!this.viewModel.isDurationFilled) {
             return;
         }
 
         const dataPoints: LegendDataPoint[] = this.viewModel && this.viewModel.legendData.dataPoints;
-        if (!dataPoints || !(dataPoints.length > 0)) {
+        if (!dataPoints || !dataPoints.length) {
             return;
         }
 

@@ -30,6 +30,7 @@ import DataView = powerbi.DataView;
 import IViewport = powerbi.IViewport;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import DataViewValueColumnGroup = powerbi.DataViewValueColumnGroup;
+import ISelectionId = powerbi.visuals.ISelectionId;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 
 import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
@@ -102,6 +103,7 @@ export interface GanttViewModel {
     settings: GanttSettings;
     tasks: Task[];
     legendData: LegendData;
+    milestonesData: MilestoneData;
     taskTypes: TaskTypes;
     isDurationFilled: boolean;
     isEndDateFillled: boolean;
@@ -150,4 +152,16 @@ export interface Line {
 export interface LinearStop {
     completion: number;
     color: string;
+}
+
+
+export interface MilestoneDataPoint {
+    name: string;
+    shapeType: string;
+    color: string;
+    identity: ISelectionId;
+}
+
+export interface MilestoneData {
+    dataPoints: MilestoneDataPoint[];
 }

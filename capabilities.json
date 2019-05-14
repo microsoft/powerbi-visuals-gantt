@@ -583,6 +583,55 @@
                 }
             }
         },
+        "milestones": {
+            "displayName": "Milestones",
+            "displayNameKey": "Visual_Milestones",
+            "description": "Display milestones options",
+            "descriptionKey": "Visual_Description_Milestones",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "displayNameKey": "Visual_Show",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "fill": {
+                    "displayName": "Fill",
+                    "displayNameKey": "Visual_Fill",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "shapeType": {
+                    "displayName": "Shape",
+                    "displayNameKey": "Visual_Shape",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "Rhombus",
+                                "displayName": "Rhombus",
+                                "displayNameKey": "Visual_Shape_Rhombus"
+                            },
+                            {
+                                "value": "Circle",
+                                "displayName": "Circle",
+                                "displayNameKey": "Visual_Shape_Circle"
+                            },
+                            {
+                                "value": "Square",
+                                "displayName": "Square",
+                                "displayNameKey": "Visual_Shape_Square"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
         "taskLabels": {
             "displayName": "Category Labels",
             "displayNameKey": "Visual_CategoryLabels",
