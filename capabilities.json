@@ -589,13 +589,6 @@
             "description": "Display milestones options",
             "descriptionKey": "Visual_Description_Milestones",
             "properties": {
-                "show": {
-                    "displayName": "Show",
-                    "displayNameKey": "Visual_Show",
-                    "type": {
-                        "bool": true
-                    }
-                },
                 "fill": {
                     "displayName": "Fill",
                     "displayNameKey": "Visual_Fill",

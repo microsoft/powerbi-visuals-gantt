@@ -1402,7 +1402,7 @@ describe("Gantt", () => {
                         const text: string = e.text();
                         const taskResourcesX = +e.attr("x");
                         const taskResourcesY = +e.attr("y");
-                        const taskRectX = taskRects[i][0].getBBox().x;
+                        const taskRectX = taskRects[i][0].getBBox().x + VisualClass["RectRound"];
                         const taskRectY = taskRects[i][0].getBBox().y;
 
                         if (text) {
