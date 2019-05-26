@@ -132,7 +132,7 @@ import {
 } from "./interfaces";
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
-import { GanttSettings } from "./settings";
+import { GanttSettings, DateTypeSettings } from "./settings";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -970,7 +970,7 @@ export class Gantt implements IVisual {
                 daysOffList: [],
                 wasDowngradeDurationUnit,
                 stepDurationTransformation,
-                Milestones: Milestone && startDate ? [{ name: Milestone, start: startDate }] : []
+                Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : []
             };
 
             if (parent) {
@@ -998,7 +998,7 @@ export class Gantt implements IVisual {
                         wasDowngradeDurationUnit: null,
                         selected: null,
                         identity: selectionBuider.createSelectionId(),
-                        Milestones: Milestone && startDate ? [{ name: Milestone, start: startDate }] : []
+                        Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : []
                     };
 
                     tasks.push(parentTask);
@@ -1065,6 +1065,14 @@ export class Gantt implements IVisual {
         tasks.forEach((task: Task) => {
             if (!task.children || _.includes(collapsedTasks, task.name)) {
                 task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit, localizationManager, isEndDateFillled);
+                if (task.Milestones) {
+                    task.Milestones.forEach((milestone) => {
+                        const dateFormatted = formatters.startDateFormatter.format(task.start);
+                        const dateTypesSettings = settings.dateType;
+                        milestone.tooltipInfo = Gantt.getTooltipForMilestoneLine(dateFormatted, localizationManager, dateTypesSettings,[milestone.type], [milestone.category]);
+
+                    });
+                }
             }
         });
 
@@ -2122,17 +2130,25 @@ export class Gantt implements IVisual {
         let taskMilestones: Selection<any> = taskSelection
             .selectAll(Selectors.TaskMilestone.selectorName)
             .data((d: Task) => {
-                let milestones: MilestonePath[] = d.Milestones.map((milestone) => {
+                let updatedMilestones: MilestonePath[] = d.Milestones.map((milestone) => {
                     return {
-                        name: milestone.name,
+                        type: milestone.type,
                         start: milestone.start,
                         taskID: d.id,
-                        tooltipInfo: this.getTooltipForMilestoneLine(milestone.start.getTime(), milestone.name)
+                        tooltipInfo: milestone.tooltipInfo
                     };
                 });
 
+                // draw only one milestone for current date, but with tooltip for all 
+                if (updatedMilestones.length > 1) {
+                    let currentMilestone = updatedMilestones[0];
+                    const allTooltipInfo = updatedMilestones.map((updatedMilestone: MilestonePath) => updatedMilestone.tooltipInfo);
+                    currentMilestone.tooltipInfo = allTooltipInfo.reduce((a, b) => a.concat(b), []);
+                    updatedMilestones = [currentMilestone];
+                }
+
                 return [{
-                    key: d.id, values: <MilestonePath[]>milestones
+                    key: d.id, values: <MilestonePath[]>updatedMilestones
                 }];
             });
 
@@ -2197,9 +2213,9 @@ export class Gantt implements IVisual {
         let taskMilestonesSelectionMerged = taskMilestonesSelectionAppend
             .merge(<any>taskMilestonesSelection)
         taskMilestonesSelectionMerged
-            .attr("d", (data: MilestonePath) => drawMilestone(data.name, taskConfigHeight))
+            .attr("d", (data: MilestonePath) => { return drawMilestone(data.type, taskConfigHeight) })
             .attr("transform", (data: MilestonePath) => transformForMilestone(data.taskID, data.start))
-            .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.name));
+            .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type));
 
         this.renderTooltip(taskMilestonesSelectionMerged);
 
@@ -2603,28 +2619,40 @@ export class Gantt implements IVisual {
         return this.timeScale(end) - this.timeScale(start);
     }
 
-    private getTooltipForMilestoneLine(
-        timestamp: number,
-        milestoneTitle: string | LabelsForDateTypes): VisualTooltipDataItem[] {
-        let dateTime: string = new Date(timestamp).toLocaleDateString();
+    private static getTooltipForMilestoneLine(
+        formattedDate: string,
+        localizationManager: ILocalizationManager,
+        dateTypeSettings: DateTypeSettings,
+        milestoneTitle: string[] | LabelsForDateTypes[], milestoneCategoryName?: string[]): VisualTooltipDataItem[] {
+        let result: VisualTooltipDataItem[] = [];
 
-        if (!milestoneTitle) {
-            switch (this.viewModel.settings.dateType.type) {
-                case DateTypes.Second:
-                case DateTypes.Minute:
-                case DateTypes.Hour:
-                    milestoneTitle = this.localizationManager.getDisplayName("Visual_Label_Now");
-                    dateTime = new Date(timestamp).toLocaleString();
-                    break;
-                default:
-                    milestoneTitle = this.localizationManager.getDisplayName("Visual_Label_Today");
+        for (let i = 0; i < milestoneTitle.length; i++) {
+            if (!milestoneTitle[i]) {
+                switch (dateTypeSettings.type) {
+                    case DateTypes.Second:
+                    case DateTypes.Minute:
+                    case DateTypes.Hour:
+                        milestoneTitle[i] = localizationManager.getDisplayName("Visual_Label_Now");
+                        break;
+                    default:
+                        milestoneTitle[i] = localizationManager.getDisplayName("Visual_Label_Today");
+                }
             }
+
+            if (milestoneCategoryName) {
+                result.push({
+                    displayName: localizationManager.getDisplayName("Visual_Milestone_Name"),
+                    value: milestoneCategoryName[i]
+                });
+            }
+
+            result.push({
+                displayName: <string>milestoneTitle[i],
+                value: formattedDate
+            });
         }
 
-        return [{
-            displayName: <string>milestoneTitle,
-            value: dateTime
-        }];
+        return result;
     }
 
     /**
@@ -2658,6 +2686,7 @@ export class Gantt implements IVisual {
         });
 
         let line: Line[] = [];
+        const dateTypeSettings: DateTypeSettings = this.viewModel.settings.dateType;
         milestoneDates.forEach((date: Date) => {
             const title = date === this.timeScale(timestamp) ? milestoneTitle : "Milestone";
             const lineOptions = {
@@ -2665,7 +2694,7 @@ export class Gantt implements IVisual {
                 y1: Gantt.MilestoneTop,
                 x2: this.timeScale(date),
                 y2: this.getMilestoneLineLength(tasks.length),
-                tooltipInfo: this.getTooltipForMilestoneLine(date.getTime(), title)
+                tooltipInfo: Gantt.getTooltipForMilestoneLine(date.toLocaleDateString(), this.localizationManager, dateTypeSettings,[title])
             };
             line.push(lineOptions);
         });
