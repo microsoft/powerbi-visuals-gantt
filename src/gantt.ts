@@ -86,11 +86,11 @@ import IValueFormatter = vf.IValueFormatter;
 import textMeasurementService = tms.textMeasurementService;
 
 // powerbi.extensibility.utils.interactivity
-import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
+import { interactivityBaseService as interactivityService, interactivitySelectionService } from "powerbi-visuals-utils-interactivityutils";
 import appendClearCatcher = interactivityService.appendClearCatcher;
 import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
 import IInteractivityService = interactivityService.IInteractivityService;
-import createInteractivityService = interactivityService.createInteractivityService;
+import createInteractivityService = interactivitySelectionService.createInteractivitySelectionService;
 
 // powerbi.extensibility.utils.tooltip
 import { createTooltipServiceWrapper, TooltipEventArgs, ITooltipServiceWrapper, TooltipEnabledDataPoint } from "powerbi-visuals-utils-tooltiputils";
@@ -101,7 +101,7 @@ import { ColorHelper } from "powerbi-visuals-utils-colorutils";
 // powerbi.extensibility.utils.chart.legend
 import { legend as LegendModule, legendInterfaces, OpacityLegendBehavior, axisInterfaces, axisScale, axis as AxisHelper } from "powerbi-visuals-utils-chartutils";
 import ILegend = legendInterfaces.ILegend;
-import LegendIcon = legendInterfaces.LegendIcon;
+import LegendIcon = legendInterfaces.MarkerShape;
 import LegendPosition = legendInterfaces.LegendPosition;
 import LegendData = legendInterfaces.LegendData;
 import createLegend = LegendModule.createLegend;
@@ -339,7 +339,7 @@ export class Gantt implements IVisual {
     private clearCatcher: Selection<any>;
     private ganttDiv: Selection<any>;
     private behavior: Behavior;
-    private interactivityService: IInteractivityService;
+    private interactivityService: IInteractivityService<Task | LegendDataPoint>;
     private eventService: IVisualEventService;
     private tooltipServiceWrapper: ITooltipServiceWrapper;
     private host: IVisualHost;
@@ -716,7 +716,6 @@ export class Gantt implements IVisual {
                 return {
                     label: typeMeta.name,
                     color: color,
-                    icon: LegendIcon.Circle,
                     selected: false,
                     identity: host.createSelectionIdBuilder()
                         .withCategory(typeMeta.selectionColumn, 0)
@@ -1479,14 +1478,12 @@ export class Gantt implements IVisual {
                         .selectAll(Selectors.CollapseAllArrow.selectorName),
                     callback: this.subTasksCollapseAll.bind(this)
                 },
-                interactivityService: this.interactivityService
+                interactivityService: this.interactivityService,
+                behavior: this.behavior,
+                dataPoints: tasks
             };
 
-            this.interactivityService.bind(
-                tasks,
-                this.behavior,
-                behaviorOptions,
-            );
+            this.interactivityService.bind(behaviorOptions);
 
             this.behavior.renderSelection(false);
         }

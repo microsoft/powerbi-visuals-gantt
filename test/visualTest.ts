@@ -1755,13 +1755,13 @@ describe("Gantt", () => {
         const backgroundColor: string = "#000000";
         const foregroundColor: string = "#ff00ff";
 
-        let taskRect: JQuery[],
-            taskLineRect: JQuery[],
-            axisTicksText: JQuery[],
-            axisTicksLine: JQuery[],
-            taskLabels: JQuery[],
-            chartLine: JQuery[],
-            taskProgress: JQuery[];
+        let taskRect: JQuery<any>[],
+            taskLineRect: JQuery<any>[],
+            axisTicksText: JQuery<any>[],
+            axisTicksLine: JQuery<any>[],
+            taskLabels: JQuery<any>[],
+            chartLine: JQuery<any>[],
+            taskProgress: JQuery<any>[];
 
         beforeEach(() => {
             visualBuilder.visualHost.colorPalette.isHighContrast = true;

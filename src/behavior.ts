@@ -28,15 +28,18 @@ import * as _ from "lodash";
 
 type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
 
-import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
+import { interactivityBaseService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
 import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
 import IInteractivityService = interactivityService.IInteractivityService;
 import ISelectionHandler = interactivityService.ISelectionHandler;
 
 import { Task, GroupedTask } from "./interfaces";
+import { IBehaviorOptions } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
 
 export const DimmedOpacity: number = 0.4;
 export const DefaultOpacity: number = 1.0;
+
+const getEvent = () => require("d3-selection").event;
 
 export function getFillOpacity(
     selected: boolean,
@@ -51,11 +54,11 @@ export function getFillOpacity(
     return DefaultOpacity;
 }
 
-export interface BehaviorOptions {
+export interface BehaviorOptions extends IBehaviorOptions<Task> {
     clearCatcher: Selection<any>;
     taskSelection: Selection<Task>;
     legendSelection: Selection<any>;
-    interactivityService: IInteractivityService;
+    interactivityService: IInteractivityService<Task>;
     subTasksCollapse: {
         selection: Selection<any>;
         callback: (groupedTask: GroupedTask) => void;
@@ -85,13 +88,14 @@ export class Behavior implements IInteractiveBehavior {
 
         options.legendSelection.on("click", (d: any) => {
             if (!d.selected) {
-                selectionHandler.handleSelection(d, true);
+
+                selectionHandler.handleSelection(d, getEvent().ctrlKey);
                 (d3.event as MouseEvent).stopPropagation();
 
                 let selectedType: string = d.tooltip;
                 options.taskSelection.each((d: Task) => {
                     if (d.taskType === selectedType && d.parent && !d.selected) {
-                        selectionHandler.handleSelection(d, true);
+                        selectionHandler.handleSelection(d, getEvent().ctrlKey);
                     }
                 });
             } else {

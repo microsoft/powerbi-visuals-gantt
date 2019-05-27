@@ -33,7 +33,7 @@ import DataViewValueColumnGroup = powerbi.DataViewValueColumnGroup;
 import ISelectionId = powerbi.visuals.ISelectionId;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 
-import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
+import { interactivitySelectionService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
 import SelectableDataPoint = interactivityService.SelectableDataPoint;
 
 import { valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
