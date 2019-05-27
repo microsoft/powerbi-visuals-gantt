@@ -84,7 +84,7 @@ export interface Task extends SelectableDataPoint {
     wasDowngradeDurationUnit: boolean;
     stepDurationTransformation?: number;
     highlight?: boolean;
-    Milestones?: { type: string; start: Date; tooltipInfo: VisualTooltipDataItem[]; category?: string }[];
+    Milestones?: Milestone[];
 }
 
 export interface GroupedTask {
@@ -154,14 +154,16 @@ export interface LinearStop {
     color: string;
 }
 
-export interface MilestonePath {
+export interface Milestone {
     type: string;
     category?: string;
-    taskID: number;
     start: Date;
-    tooltipInfo: VisualTooltipDataItem[]
+    tooltipInfo: VisualTooltipDataItem[];
 }
 
+export interface MilestonePath extends Milestone {
+    taskID: number;
+}
 
 export interface MilestoneDataPoint {
     name: string;
