@@ -1371,6 +1371,7 @@ export class Gantt implements IVisual {
 
         this.viewModel = Gantt.converter(options.dataViews[0], this.host, this.colors, this.colorHelper, this.localizationManager);
 
+        debugger;
         // for dublicated milestone types
         if (this.viewModel && this.viewModel.milestonesData) {
             let newMilestoneData: MilestoneData = this.viewModel.milestonesData;
@@ -1449,12 +1450,15 @@ export class Gantt implements IVisual {
         }
 
         axisLength = this.scaleAxisLength(axisLength);
+        this.collapsedTasks = JSON.parse(settings.collapsedTasks.list);
         let groupedTasks: GroupedTask[] = this.groupTasks(tasks);
         // do smth with task ids
         this.setDimension(groupedTasks, axisLength, settings);
-        this.collapsedTasks = JSON.parse(settings.collapsedTasks.list);
+        debugger;
         this.updateCommonTasks(groupedTasks);
+        this.updateCommonMilestones(groupedTasks);
 
+        debugger;
         this.renderTasks(groupedTasks);
         this.updateTaskLabels(groupedTasks, settings.taskLabels.width);
         this.updateElementsPositions(this.margin);
@@ -1489,6 +1493,7 @@ export class Gantt implements IVisual {
         }
 
         this.eventService.renderingFinished(options);
+        debugger;
     }
 
     private static getDateType(dateType: DateTypes): number {
@@ -1644,7 +1649,7 @@ export class Gantt implements IVisual {
 
                     // see all the children and add them
                     groupedTasks[key].forEach((task: Task) => {
-                        if (task.children) {
+                        if (task.children && !_.includes(this.collapsedTasks, task.name)) {
                             task.children.forEach((childrenTask: Task) => {
                                 const childrenFullName = `${name}.${childrenTask.name}`;
                                 const isChildrenKeyAlreadyReviewed = _.includes(alreadyReviewedKeys, childrenFullName);
@@ -1789,14 +1794,24 @@ export class Gantt implements IVisual {
                 .attr("x", -Gantt.DefaultValues.BarMargin);
 
             let parentTask: string = "";
+            let childrenCount = 0;
+            let currentChildrenIndex = 0;
             axisLabelGroup
                 .append("rect")
                 .attr("x", (task: GroupedTask) => {
-                    const isLastChild: boolean = task.tasks[0].parent && task.tasks[0].parent === parentTask;
-                    if (task.tasks[0].parent) {
-                        parentTask = task.tasks[0].parent;
+                    const drawStandartMargin: boolean = !task.tasks[0].parent || task.tasks[0].parent && task.tasks[0].parent !== parentTask;
+                    parentTask = task.tasks[0].parent ? task.tasks[0].parent : task.tasks[0].name;
+                    if (task.tasks[0].children) {
+                        parentTask = task.tasks[0].name;
+                        childrenCount = task.tasks[0].children.length;
+                        currentChildrenIndex = 0;
                     }
-                    return !task.tasks[0].children && task.tasks[0].parent && !isLastChild ? Gantt.DefaultValues.ChildTaskLeftMargin : Gantt.DefaultValues.ParentTaskLeftMargin;
+
+                    if (task.tasks[0].parent === parentTask) {
+                        currentChildrenIndex++;
+                    }
+                    const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
+                    return drawStandartMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
                 })
                 .attr("y", (task: GroupedTask) => Gantt.DefaultValues.TaskLineWidth + (task.id + 1) * this.getResourceLabelTopMargin())
                 .attr("width", this.viewport.width)
@@ -1992,33 +2007,57 @@ export class Gantt implements IVisual {
 
 
     /**
-     * Render tasks
+     * Change task structure to be able for
+     * Rendering common tasks when all the children of current parent are collapsed
+     * used only the Grouping mode is OFF
      * @param groupedTasks Grouped tasks
      */
     private updateCommonTasks(groupedTasks: GroupedTask[]): void {
+        if (!this.viewModel.settings.general.groupTasks) {
+            groupedTasks.forEach((groupedTask: GroupedTask) => {
+                const currentTaskName: string = groupedTask.name;
+                if (_.includes(this.collapsedTasks, currentTaskName)) {
+                    const firstTask: Task = groupedTask.tasks && groupedTask.tasks[0];
+                    const tasks = groupedTask.tasks;
+                    tasks.forEach((task: Task) => {
+                        if (task.children) {
+                            const childrenColors = task.children.map((child: Task) => child.color).filter((color) => color);
+                            const minChildDateStart = _.min(task.children.map((child: Task) => child.start).filter((dateStart) => dateStart));
+                            const maxChildDateEnd = _.max(task.children.map((child: Task) => child.end).filter((dateStart) => dateStart));
+                            firstTask.color = !firstTask.color && task.children ? childrenColors[0] : firstTask.color;
+                            firstTask.start = _.min([firstTask.start, minChildDateStart]);
+                            firstTask.end = <any>_.max([firstTask.end, maxChildDateEnd]);
+                        }
+                    });
+
+                    groupedTask.tasks = firstTask && [firstTask] || [];
+                }
+            });
+        }
+    }
+
+    /**
+     * Change task structure to be able for
+     * Rendering common milestone when all the children of current parent are collapsed
+     * used only the Grouping mode is OFF
+     * @param groupedTasks Grouped tasks
+     */
+    private updateCommonMilestones(groupedTasks: GroupedTask[]): void {
         groupedTasks.forEach((groupedTask: GroupedTask) => {
             const currentTaskName: string = groupedTask.name;
             if (_.includes(this.collapsedTasks, currentTaskName)) {
-                const firstTask: Task = groupedTask.tasks && groupedTask.tasks[0];
+
+                const lastTask: Task = groupedTask.tasks && groupedTask.tasks[groupedTask.tasks.length - 1];
                 const tasks = groupedTask.tasks;
                 tasks.forEach((task: Task) => {
                     if (task.children) {
                         task.children.map((child: Task) => {
                             if (!_.isEmpty(child.Milestones)) {
-                                firstTask.Milestones = firstTask.Milestones.concat(child.Milestones);
+                                lastTask.Milestones = lastTask.Milestones.concat(child.Milestones);
                             }
                         });
-
-                        const childrenColors = task.children.map((child: Task) => child.color).filter((color) => color);
-                        const minChildDateStart = _.min(task.children.map((child: Task) => child.start).filter((dateStart) => dateStart));
-                        const maxChildDateEnd = _.max(task.children.map((child: Task) => child.end).filter((dateStart) => dateStart));
-                        firstTask.color = !firstTask.color && task.children ? childrenColors[0] : firstTask.color;
-                        firstTask.start = _.min([firstTask.start, minChildDateStart]);
-                        firstTask.end = <any>_.max([firstTask.end, maxChildDateEnd]);
                     }
                 });
-
-                groupedTask.tasks = firstTask && [firstTask] || [];
             }
         });
     }
@@ -2056,7 +2095,6 @@ export class Gantt implements IVisual {
      * @param taskConfigHeight
      */
     private drawTaskRect(task: Task, taskConfigHeight: number): string {
-
         const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
             y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
             width = this.getTaskRectWidth(task),
@@ -2090,7 +2128,7 @@ export class Gantt implements IVisual {
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
-            .style("fill", (task: Task) => `url(#task${task.id})`);
+            .style("fill", (task: Task) => `url(#task${task.id}-${task.taskType})`);
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -2308,7 +2346,7 @@ export class Gantt implements IVisual {
         let taskProgress: Selection<any> = taskSelection
             .selectAll(Selectors.TaskProgress.selectorName)
             .data((d: Task) => [{
-                key: d.id, values: <LinearStop[]>[
+                key: `${d.id}-${d.taskType}`, values: <LinearStop[]>[
                     { completion: 0, color: d.color },
                     { completion: d.completion, color: d.color },
                     { completion: d.completion, color: d.color },
