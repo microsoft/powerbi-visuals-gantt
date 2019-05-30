@@ -101,7 +101,6 @@ import { ColorHelper } from "powerbi-visuals-utils-colorutils";
 // powerbi.extensibility.utils.chart.legend
 import { legend as LegendModule, legendInterfaces, OpacityLegendBehavior, axisInterfaces, axisScale, axis as AxisHelper } from "powerbi-visuals-utils-chartutils";
 import ILegend = legendInterfaces.ILegend;
-import LegendIcon = legendInterfaces.MarkerShape;
 import LegendPosition = legendInterfaces.LegendPosition;
 import LegendData = legendInterfaces.LegendData;
 import createLegend = LegendModule.createLegend;
@@ -267,14 +266,16 @@ export class Gantt implements IVisual {
 
     public static DefaultValues = {
         AxisTickSize: 6,
-        BarMargin: 4,
+        BarMargin: 2,
         ResourceWidth: 100,
         TaskColor: "#00B099",
         TaskLineColor: "#ccc",
         CollapseAllColor: "#aaa",
         TaskCategoryLabelsRectColor: "#fafafa",
         TaskLineWidth: 15,
-        IconMargin: 17,
+        IconMargin: 12,
+        IconHeight: 16,
+        IconWidth: 15,
         ChildTaskLeftMargin: 25,
         ParentTaskLeftMargin: 0,
         DefaultDateType: "Week",
@@ -348,11 +349,11 @@ export class Gantt implements IVisual {
     private groupTasksPrevValue: boolean = false;
     private collapsedTasks: string[] = [];
     private collapseAllImageConsts = {
-        plusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pjxzdmcgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDggNDg7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZGlzcGxheTpub25lO30KCS5zdDF7ZmlsbDpub25lO3N0cm9rZTojMzAzMDMwO3N0cm9rZS13aWR0aDowLjc7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjEwO30KCS5zdDJ7ZmlsbDojMzAzMDMwO30KPC9zdHlsZT48ZyBjbGFzcz0ic3QwIiBpZD0iUGFkZGluZ19feDI2X19BcnRib2FyZCIvPjxnIGlkPSJJY29ucyI+PHBhdGggY2xhc3M9InN0MSIgZD0iTTMwLjEzMTEsMzUuMDk3OEgxNy44Njg5Yy0yLjc0MzAzLDAtNC45NjY3LTIuMjIzNjYtNC45NjY3LTQuOTY2N1YxNy44Njg5ICAgYzAtMi43NDMwMywyLjIyMzY3LTQuOTY2Nyw0Ljk2NjctNC45NjY3SDMwLjEzMTFjMi43NDMwMywwLDQuOTY2NywyLjIyMzY3LDQuOTY2Nyw0Ljk2NjdWMzAuMTMxMSAgIEMzNS4wOTc4LDMyLjg3NDE0LDMyLjg3NDE0LDM1LjA5NzgsMzAuMTMxMSwzNS4wOTc4eiIvPjxnPjxsaW5lIGNsYXNzPSJzdDEiIHgxPSIyNCIgeDI9IjI0IiB5MT0iMjAuMTQ3MzMiIHkyPSIyNy44NTI2NyIvPjxsaW5lIGNsYXNzPSJzdDEiIHgxPSIyMC4xNDczMyIgeDI9IjI3Ljg1MjY3IiB5MT0iMjQiIHkyPSIyNCIvPjwvZz48L2c+PC9zdmc+",
-        minusSvgEncoded: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+IDxnPiAgPHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPiAgPHJlY3QgZmlsbD0ibm9uZSIgaWQ9ImNhbnZhc19iYWNrZ3JvdW5kIiBoZWlnaHQ9IjQwMiIgd2lkdGg9IjU4MiIgeT0iLTEiIHg9Ii0xIi8+IDwvZz4gPGc+ICA8dGl0bGU+TGF5ZXIgMTwvdGl0bGU+ICA8cGF0aCBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIwLjciIHN0cm9rZT0iIzMwMzAzMCIgZmlsbD0ibm9uZSIgaWQ9InN2Z18xIiBkPSJtMzAuMTMxMSwzNS4wOTc4bC0xMi4yNjIyLDBjLTIuNzQzMDMsMCAtNC45NjY3LC0yLjIyMzY2IC00Ljk2NjcsLTQuOTY2N2wwLC0xMi4yNjIyYzAsLTIuNzQzMDMgMi4yMjM2NywtNC45NjY3IDQuOTY2NywtNC45NjY3bDEyLjI2MjIsMGMyLjc0MzAzLDAgNC45NjY3LDIuMjIzNjcgNC45NjY3LDQuOTY2N2wwLDEyLjI2MjJjMCwyLjc0MzA0IC0yLjIyMzY2LDQuOTY2NyAtNC45NjY3LDQuOTY2N3oiIGNsYXNzPSJzdDEiLz4gIDxsaW5lIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjAuNyIgc3Ryb2tlPSIjMzAzMDMwIiBmaWxsPSJub25lIiBpZD0ic3ZnXzQiIHkyPSIyNCIgeTE9IjI0IiB4Mj0iMjcuODUyNjciIHgxPSIyMC4xNDczMyIgY2xhc3M9InN0MSIvPiA8L2c+PC9zdmc+",
+        minusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxnPjxnPjxnPjxwYXRoIGQ9Ik0yMCwxN2gtOGMtMC41NTIyNDYxLDAtMS0wLjQ0NzI2NTYtMS0xczAuNDQ3NzUzOS0xLDEtMWg4YzAuNTUyMjQ2MSwwLDEsMC40NDcyNjU2LDEsMVMyMC41NTIyNDYxLDE3LDIwLDE3eiIvPjwvZz48L2c+PGc+PHBhdGggZD0iTTI0LjcxODc1LDI5SDcuMjgxMjVDNC45MjA0MTAyLDI5LDMsMjcuMDc5MTAxNiwzLDI0LjcxODc1VjcuMjgxMjVDMyw0LjkyMDg5ODQsNC45MjA0MTAyLDMsNy4yODEyNSwzaDE3LjQzNzUgICAgQzI3LjA3OTU4OTgsMywyOSw0LjkyMDg5ODQsMjksNy4yODEyNXYxNy40Mzc1QzI5LDI3LjA3OTEwMTYsMjcuMDc5NTg5OCwyOSwyNC43MTg3NSwyOXogTTcuMjgxMjUsNSAgICBDNi4wMjM0Mzc1LDUsNSw2LjAyMzQzNzUsNSw3LjI4MTI1djE3LjQzNzVDNSwyNS45NzY1NjI1LDYuMDIzNDM3NSwyNyw3LjI4MTI1LDI3aDE3LjQzNzUgICAgQzI1Ljk3NjU2MjUsMjcsMjcsMjUuOTc2NTYyNSwyNywyNC43MTg3NVY3LjI4MTI1QzI3LDYuMDIzNDM3NSwyNS45NzY1NjI1LDUsMjQuNzE4NzUsNUg3LjI4MTI1eiIvPjwvZz48L2c+PC9zdmc+",
+        plusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxnPjxnPjxnPjxwYXRoIGQ9Ik0xNiwyMWMtMC41NTIyNDYxLDAtMS0wLjQ0NzI2NTYtMS0xdi04YzAtMC41NTI3MzQ0LDAuNDQ3NzUzOS0xLDEtMXMxLDAuNDQ3MjY1NiwxLDF2OCAgICAgQzE3LDIwLjU1MjczNDQsMTYuNTUyMjQ2MSwyMSwxNiwyMXoiLz48L2c+PGc+PHBhdGggZD0iTTIwLDE3aC04Yy0wLjU1MjI0NjEsMC0xLTAuNDQ3MjY1Ni0xLTFzMC40NDc3NTM5LTEsMS0xaDhjMC41NTIyNDYxLDAsMSwwLjQ0NzI2NTYsMSwxUzIwLjU1MjI0NjEsMTcsMjAsMTd6Ii8+PC9nPjwvZz48Zz48cGF0aCBkPSJNMjQuNzE4NzUsMjlINy4yODEyNUM0LjkyMDQxMDIsMjksMywyNy4wNzkxMDE2LDMsMjQuNzE4NzVWNy4yODEyNUMzLDQuOTIwODk4NCw0LjkyMDQxMDIsMyw3LjI4MTI1LDNoMTcuNDM3NSAgICBDMjcuMDc5NTg5OCwzLDI5LDQuOTIwODk4NCwyOSw3LjI4MTI1djE3LjQzNzVDMjksMjcuMDc5MTAxNiwyNy4wNzk1ODk4LDI5LDI0LjcxODc1LDI5eiBNNy4yODEyNSw1ICAgIEM2LjAyMzQzNzUsNSw1LDYuMDIzNDM3NSw1LDcuMjgxMjV2MTcuNDM3NUM1LDI1Ljk3NjU2MjUsNi4wMjM0Mzc1LDI3LDcuMjgxMjUsMjdoMTcuNDM3NSAgICBDMjUuOTc2NTYyNSwyNywyNywyNS45NzY1NjI1LDI3LDI0LjcxODc1VjcuMjgxMjVDMjcsNi4wMjM0Mzc1LDI1Ljk3NjU2MjUsNSwyNC43MTg3NSw1SDcuMjgxMjV6Ii8+PC9nPjwvZz48L3N2Zz4=",
         expandSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4IiB3aWR0aD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMzLjE3IDE3LjE3bC05LjE3IDkuMTctOS4xNy05LjE3LTIuODMgMi44MyAxMiAxMiAxMi0xMnoiLz48cGF0aCBkPSJNMCAwaDQ4djQ4aC00OHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=",
         collapseSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4IiB3aWR0aD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTI0IDE2bC0xMiAxMiAyLjgzIDIuODMgOS4xNy05LjE3IDkuMTcgOS4xNyAyLjgzLTIuODN6Ii8+PHBhdGggZD0iTTAgMGg0OHY0OGgtNDh6IiBmaWxsPSJub25lIi8+PC9zdmc+",
-        collapseAllFlag: "data-is-collapsed",
+        collapseAllFlag: "data-is-collapsed"
     };
     private parentLabelOffset: number = 5;
     private groupLabelSize: number = 25;
@@ -1784,10 +1785,11 @@ export class Gantt implements IVisual {
                 .filter((task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length)
                 .append("image")
                 .attr("xlink:href", (task: GroupedTask) => (!task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvgEncoded : this.collapseAllImageConsts.minusSvgEncoded))
-                .attr("width", this.groupLabelSize)
-                .attr("height", this.groupLabelSize)
+                .attr("width", Gantt.DefaultValues.IconWidth)
+                .attr("height", Gantt.DefaultValues.IconHeight)
+                .attr("opacity", 0.5)
                 .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
-                .attr("x", -Gantt.DefaultValues.BarMargin);
+                .attr("x", Gantt.DefaultValues.BarMargin);
 
             let parentTask: string = "";
             let childrenCount = 0;
@@ -1795,11 +1797,12 @@ export class Gantt implements IVisual {
             axisLabelGroup
                 .append("rect")
                 .attr("x", (task: GroupedTask) => {
+                    const isGrouped = this.viewModel.settings.general.groupTasks;
                     const drawStandartMargin: boolean = !task.tasks[0].parent || task.tasks[0].parent && task.tasks[0].parent !== parentTask;
                     parentTask = task.tasks[0].parent ? task.tasks[0].parent : task.tasks[0].name;
                     if (task.tasks[0].children) {
                         parentTask = task.tasks[0].name;
-                        childrenCount = task.tasks[0].children.length;
+                        childrenCount = isGrouped ? _.uniqBy(task.tasks[0].children, "name").length : task.tasks[0].children.length;
                         currentChildrenIndex = 0;
                     }
 
@@ -2143,12 +2146,43 @@ export class Gantt implements IVisual {
      */
     private getMilestoneColor(milestoneType: string): string {
         const milestone: MilestoneDataPoint = this.viewModel.milestonesData.dataPoints.filter((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType)[0];
-
         if (this.colorHelper.isHighContrast) {
             return this.colorHelper.getHighContrastColor("foreground", milestone.color);
         }
 
         return milestone.color;
+    }
+
+    private static drawRectangle(taskConfigHeight: number): string {
+        const startPositions: number = -2;
+        return `M ${startPositions} 5 H ${taskConfigHeight / 1.8} V ${taskConfigHeight / 1.5} H ${startPositions} Z`;
+    }
+
+    private static drawCircle(taskConfigHeight: number): string {
+        const r = taskConfigHeight / 3, cx = taskConfigHeight / 4, cy = taskConfigHeight / 2;
+        return `M ${cx} ${cy}  m -${r}, 0 a ${r}, ${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0`;
+    }
+
+    private static drawDiamond(taskConfigHeight: number): string {
+        return `M ${taskConfigHeight / 4} 0 ${taskConfigHeight / 2} ${taskConfigHeight / 2} ${taskConfigHeight / 4} ${taskConfigHeight} 0 ${taskConfigHeight / 2} Z`;
+    }
+
+    private getMilestonePath(milestoneType: string, taskConfigHeight: number): string {
+        let shape: string;
+        const convertedHeight: number = Gantt.getBarHeight(taskConfigHeight);
+        const milestone: MilestoneDataPoint = this.viewModel.milestonesData.dataPoints.filter((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType)[0];
+        switch (milestone.shapeType) {
+            case MilestoneShapeTypes.Rhombus:
+                shape = Gantt.drawDiamond(convertedHeight);
+                break;
+            case MilestoneShapeTypes.Square:
+                shape = Gantt.drawRectangle(convertedHeight);
+                break;
+            case MilestoneShapeTypes.Circle:
+                shape = Gantt.drawCircle(convertedHeight);
+        }
+
+        return shape;
     }
 
     /**
@@ -2165,7 +2199,7 @@ export class Gantt implements IVisual {
                 const nestedByDate = d3.nest().key((d: Milestone) => d.start.toDateString()).entries(d.Milestones);
                 let updatedMilestones: MilestonePath[] = nestedByDate.map((nestedObj) => {
                     const oneDateMilestones = nestedObj.values;
-                    // draw only one milestone for current date, but with tooltip for all
+                    // if there 2 or more milestones for concrete date => draw only one milestone for concrete date, but with tooltip for all of them
                     let currentMilestone = [...oneDateMilestones].pop();
                     const allTooltipInfo = oneDateMilestones.map((milestone: MilestonePath) => milestone.tooltipInfo);
                     currentMilestone.tooltipInfo = allTooltipInfo.reduce((a, b) => a.concat(b), []);
@@ -2197,36 +2231,6 @@ export class Gantt implements IVisual {
 
         taskMilestonesMerged.classed(Selectors.TaskMilestone.className, true);
 
-
-        const drawMilestone = (milestoneType: string, taskConfigHeight: number) => {
-            let shape: string;
-            const convertedHeight: number = Gantt.getBarHeight(taskConfigHeight);
-            const milestone: MilestoneDataPoint = this.viewModel.milestonesData.dataPoints.filter((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType)[0];
-            switch (milestone.shapeType) {
-                case MilestoneShapeTypes.Rhombus:
-                    shape = drawDiamond(convertedHeight);
-                    break;
-                case MilestoneShapeTypes.Square:
-                    shape = drawRectangle(convertedHeight);
-                    break;
-                case MilestoneShapeTypes.Circle:
-                    shape = drawCircle(convertedHeight);
-            }
-
-            return shape;
-        };
-
-        const drawRectangle = (taskConfigHeight: number) => {
-            const startPositions: number = -2;
-            return `M ${startPositions} 5 H ${taskConfigHeight / 1.8} V ${taskConfigHeight / 1.5} H ${startPositions} Z`;
-        };
-        const drawCircle = (taskConfigHeight: number) => {
-            const r = taskConfigHeight / 3, cx = taskConfigHeight / 4, cy = taskConfigHeight / 2;
-            return `M ${cx} ${cy}  m -${r}, 0 a ${r}, ${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0`;
-        };
-        const drawDiamond = (taskConfigHeight: number) => {
-            return `M ${taskConfigHeight / 4} 0 ${taskConfigHeight / 2} ${taskConfigHeight / 2} ${taskConfigHeight / 4} ${taskConfigHeight} 0 ${taskConfigHeight / 2} Z`;
-        };
         const transformForMilestone = (id: number, start: Date) => {
             return SVGManipulations.translate(this.timeScale(start) - Gantt.getBarHeight(taskConfigHeight) / 4, Gantt.getBarYCoordinate(id, taskConfigHeight) + (id + 1) * this.getResourceLabelTopMargin());
         };
@@ -2246,12 +2250,11 @@ export class Gantt implements IVisual {
             .merge(<any>taskMilestonesSelection);
 
         taskMilestonesSelectionMerged
-            .attr("d", (data: MilestonePath) => drawMilestone(data.type, taskConfigHeight))
+            .attr("d", (data: MilestonePath) => this.getMilestonePath(data.type, taskConfigHeight))
             .attr("transform", (data: MilestonePath) => transformForMilestone(data.taskID, data.start))
             .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type));
 
         this.renderTooltip(taskMilestonesSelectionMerged);
-
     }
 
     /**

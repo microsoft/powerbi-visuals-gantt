@@ -40,6 +40,7 @@ import { Config, ConfigOptions } from "karma";
 
 module.exports = (config: Config) => {
     config.set(<ConfigOptions>{
+        mode: "development",
         browserNoActivityTimeout: 100000,
         browsers: ["ChromeHeadless"],
         colors: true,
@@ -75,8 +76,8 @@ module.exports = (config: Config) => {
                 served: true
             },
             {
-                pattern: "./capabilities.json",
-                watched: false,
+                pattern: '**/*.json',
+                watched: true,
                 served: true,
                 included: false
             }

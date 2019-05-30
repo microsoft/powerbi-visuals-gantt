@@ -16,7 +16,7 @@
     "lint": "node node_modules/tslint/bin/tslint \"+(src|test)/**/*.ts\"",
     "pretest": "pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
     "test": "karma start",
-    "cert": "pbiviz --create-cert"
+    "cert": "pbiviz --install-cert"
   },
   "author": {
     "name": "Microsoft",
@@ -59,6 +59,7 @@
     "istanbul-instrumenter-loader": "^3.0.1",
     "jasmine": "3.4.0",
     "jasmine-jquery": "2.1.1",
+    "json-loader": "^0.5.7",
     "karma": "4.1.0",
     "karma-chrome-launcher": "2.2.0",
     "karma-coverage": "1.1.2",
@@ -79,7 +80,6 @@
     "ts-loader": "6.0.1",
     "ts-node": "^8.2.0",
     "tslint": "5.16.0",
-    "tslint-microsoft-contrib": "6.2.0",
     "typescript": "3.4.5",
     "webpack": "4.32.2"
   }

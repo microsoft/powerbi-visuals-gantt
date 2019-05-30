@@ -4,7 +4,7 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "module": "es6",
-        "target": "ES6",
+        "target": "es6",
         "sourceMap": true,
         "outDir": "./.tmp/build/",
         "sourceRoot": "../../src/",

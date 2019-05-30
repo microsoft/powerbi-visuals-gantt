@@ -819,6 +819,62 @@ describe("Gantt", () => {
                 done();
             });
         });
+
+        it("Common task bar test with Grouping = OFF", (done) => {
+            debugger;
+            dataView = defaultDataViewBuilder.getDataView([
+                VisualData.ColumnType,
+                VisualData.ColumnTask,
+                VisualData.ColumnStartDate,
+                VisualData.ColumnDuration,
+                VisualData.ColumnResource,
+                VisualData.ColumnParent
+            ]);
+
+            dataView.metadata.objects = { general: { groupTasks: false } };
+            fixDataViewDateValuesAggregation(dataView);
+
+            visualBuilder.updateRenderTimeout(dataView, () => {
+
+                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data(),
+                    uniqueParentsCount: number = getUniqueParentsCount(dataView, 3);
+
+                let parentIndex: number = 4;
+                let parentTask = visualBuilder.taskLabelsText.eq(parentIndex);
+                clickElement(parentTask);
+                debugger;
+
+                done();
+            });
+
+        });
+
+        it("Common task bar test with Grouping = ON", (done) => {
+            dataView = defaultDataViewBuilder.getDataView([
+                VisualData.ColumnType,
+                VisualData.ColumnTask,
+                VisualData.ColumnStartDate,
+                VisualData.ColumnDuration,
+                VisualData.ColumnResource,
+                VisualData.ColumnParent
+            ]);
+            dataView.metadata.objects = { general: { groupTasks: true } };
+            fixDataViewDateValuesAggregation(dataView);
+
+            visualBuilder.updateRenderTimeout(dataView, () => {
+
+                done();
+            });
+        });
+
+        it("Common milestone test", (done) => {
+
+        });
+
+
+        it("Milestone test", (done) => {
+
+        });
     });
 
     describe("Selection", () => {
