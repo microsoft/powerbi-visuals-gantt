@@ -1371,7 +1371,6 @@ export class Gantt implements IVisual {
 
         this.viewModel = Gantt.converter(options.dataViews[0], this.host, this.colors, this.colorHelper, this.localizationManager);
 
-        debugger;
         // for dublicated milestone types
         if (this.viewModel && this.viewModel.milestonesData) {
             let newMilestoneData: MilestoneData = this.viewModel.milestonesData;
@@ -1454,11 +1453,9 @@ export class Gantt implements IVisual {
         let groupedTasks: GroupedTask[] = this.groupTasks(tasks);
         // do smth with task ids
         this.setDimension(groupedTasks, axisLength, settings);
-        debugger;
         this.updateCommonTasks(groupedTasks);
         this.updateCommonMilestones(groupedTasks);
 
-        debugger;
         this.renderTasks(groupedTasks);
         this.updateTaskLabels(groupedTasks, settings.taskLabels.width);
         this.updateElementsPositions(this.margin);
@@ -1493,7 +1490,6 @@ export class Gantt implements IVisual {
         }
 
         this.eventService.renderingFinished(options);
-        debugger;
     }
 
     private static getDateType(dateType: DateTypes): number {
@@ -1979,6 +1975,10 @@ export class Gantt implements IVisual {
             .selectAll(Selectors.TaskGroup.selectorName)
             .data(groupedTasks);
 
+        taskGroupSelection
+            .exit()
+            .remove();
+
         // render task group container
         const taskGroupSelectionMerged = taskGroupSelection
             .enter()
@@ -1995,14 +1995,6 @@ export class Gantt implements IVisual {
         this.taskDaysOffRender(taskSelection, taskConfigHeight);
 
         this.renderTooltip(taskSelection);
-
-        taskSelection
-            .exit()
-            .remove();
-
-        taskGroupSelection
-            .exit()
-            .remove();
     }
 
 
@@ -2070,6 +2062,10 @@ export class Gantt implements IVisual {
         let taskSelection: Selection<Task> = taskGroupSelection
             .selectAll(Selectors.SingleTask.selectorName)
             .data((d: GroupedTask) => d.tasks);
+
+        taskSelection
+            .exit()
+            .remove();
 
         const taskSelectionMerged = taskSelection
             .enter()
