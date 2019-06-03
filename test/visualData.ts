@@ -32,6 +32,7 @@ import ValueType = vt.ValueType;
 
 import { testDataViewBuilder, getRandomNumber } from "powerbi-visuals-utils-testutils";
 import TestDataViewBuilder = testDataViewBuilder.TestDataViewBuilder;
+import { TestDataViewBuilderColumnOptions, TestDataViewBuilderCategoryColumnOptions } from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/testDataViewBuilder";
 
 export class VisualData extends TestDataViewBuilder {
     public static ColumnType: string = "Type";
@@ -43,6 +44,7 @@ export class VisualData extends TestDataViewBuilder {
     public static ColumnExtraInformation: string = "Description";
     public static ColumnParent: string = "Parent";
     public static ColumnExtraInformationDates: string = "DescriptionDates";
+    public static ColumnMilestones: string = "Milestone";
 
     public valuesTaskTypeResource: string[][] = [
         ["Spec", "MOLAP connectivity", "Mey"],
@@ -100,8 +102,8 @@ export class VisualData extends TestDataViewBuilder {
         return result;
     }
 
-    public getDataView(columnNames?: string[]): DataView {
-        return this.createCategoricalDataViewBuilder([
+    public getDataView(columnNames?: string[], withMilestones?: boolean): DataView {
+        let categoriesColums: TestDataViewBuilderCategoryColumnOptions[] = [
             {
                 source: {
                     displayName: VisualData.ColumnType,
@@ -151,7 +153,23 @@ export class VisualData extends TestDataViewBuilder {
                 },
                 values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null)
             }
-        ], [
+        ];
+
+        if (withMilestones) {
+            let milestoneCategoriesColumn: TestDataViewBuilderColumnOptions = {
+                source: {
+                    displayName: VisualData.ColumnMilestones,
+                    type: ValueType.fromDescriptor({ text: true }),
+                    roles: { "Milestones": true }
+                },
+                values: this.valuesTaskTypeResource.map(x => x[3] ? "" : x[3])
+            };
+
+            categoriesColums.push(milestoneCategoriesColumn);
+        }
+
+        return this.createCategoricalDataViewBuilder(
+            categoriesColums, [
                 {
                     source: {
                         displayName: VisualData.ColumnStartDate,

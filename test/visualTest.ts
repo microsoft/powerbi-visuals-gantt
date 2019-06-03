@@ -38,7 +38,7 @@ import ISelectionId = powerbi.extensibility.ISelectionId;
 import { VisualData } from "./visualData";
 import { VisualBuilder } from "./visualBuilder";
 import { isColorAppliedToElements, getEndDate } from "./helpers/helpers";
-import { clickElement, MockISelectionId, assertColorsMatch, MockISelectionIdBuilder, createSelectionId, createVisualHost } from "powerbi-visuals-utils-testutils";
+import { clickElement, MockISelectionId, assertColorsMatch, MockISelectionIdBuilder, createSelectionId, createVisualHost, getRandomNumber } from "powerbi-visuals-utils-testutils";
 
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
 import { legendPosition as LegendPosition } from "powerbi-visuals-utils-chartutils";
@@ -810,13 +810,50 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let countOfTaskLines = visualBuilder.taskLabelsText.length;
+                let taskLinesText: JQuery<any>[] = visualBuilder.taskLabelsText.toArray().map($);
                 let values = dataView.categorical.categories[1].values;
+                let taskGroups: JQuery<any>[] = visualBuilder.tasksGroups.toArray().map($);
+                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
 
                 expect(values.length).toBeGreaterThan(_.uniq(values).length);
-                expect(countOfTaskLines).toEqual(_.uniq(values).length);
+                expect(taskLinesText.length).toEqual(_.uniq(values).length);
 
+                taskGroups.forEach((taskGroup: JQuery<any>, index: number) => {
+                    const taskName: string = (taskLinesText[index] as any).children().text();
+                    const tasksWithSameName = tasks.filter((task) => task.name === taskName);
+                    expect(taskGroup.children().length).toBe(tasksWithSameName.length);
+                });
                 done();
+            });
+        });
+
+        it("Verify group tasks enabled and then disabled", (done) => {
+
+            dataView = defaultDataViewBuilder.getDataView([
+                VisualData.ColumnType,
+                VisualData.ColumnTask,
+                VisualData.ColumnStartDate,
+                VisualData.ColumnDuration]);
+
+            dataView.metadata.objects = { general: { groupTasks: true } };
+
+            fixDataViewDateValuesAggregation(dataView);
+
+            visualBuilder.updateRenderTimeout(dataView, () => {
+                dataView.metadata.objects = { general: { groupTasks: false } };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let countOfTaskLines = visualBuilder.taskLabelsText.length;
+                    let values = dataView.categorical.categories[1].values;
+                    let taskGroups: JQuery<any>[] = visualBuilder.tasksGroups.toArray().map($);
+
+                    expect(countOfTaskLines).toEqual(values.length);
+                    // in each row only one task - all the task re-rendered right
+                    taskGroups.forEach((taskGroup) => {
+                        expect(taskGroup.children().length).toBe(1);
+                    });
+                    done();
+                });
             });
         });
 
@@ -835,18 +872,39 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
+                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                let parentTasks: Task[] = tasks.filter((task: Task) => task.children);
 
-                let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data(),
-                    uniqueParentsCount: number = getUniqueParentsCount(dataView, 3);
+                let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
+                    parentTask = parentTasks[parentIndex],
+                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
 
-                let parentIndex: number = 4;
-                let parentTask = visualBuilder.taskLabelsText.eq(parentIndex);
-                clickElement(parentTask);
+                const minChildStart = _.minBy(parentTask.children, (t: Task) => t.start).start;
+                const maxChildEnd = _.maxBy(parentTask.children, (t: Task) => t.end).end;
+                const color = parentTask.children[0].color;
+
                 debugger;
+                // Collapse
+                clickElement(parentTaskLabel);
 
-                done();
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let taskGroups: JQuery<any>[] = visualBuilder.tasksGroups.toArray().map($);
+                    tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                    const updatedParentTask = tasks[parentTask.id];
+                    debugger;
+                    clickElement(parentTaskLabel);
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        debugger;
+                        expect(updatedParentTask.start).toBe(minChildStart);
+                        expect(updatedParentTask.end).toBe(maxChildEnd);
+                        expect(updatedParentTask.children.length).toBe(1);
+                        expect(updatedParentTask.color).toBe(color);
+                        expect(taskGroups[parentTask.id].children().length).toBe(1);
+                        done();
+                    });
+
+                });
             });
-
         });
 
         it("Common task bar test with Grouping = ON", (done) => {
@@ -862,8 +920,33 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
+            let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+            let parentTasks: Task[] = tasks.filter((task: Task) => task.children);
 
-                done();
+            let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
+                parentTask = parentTasks[parentIndex],
+                parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+                // Collapse
+                clickElement(parentTaskLabel);
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let taskGroups: JQuery<any>[] = visualBuilder.tasksGroups.toArray().map($);
+                    tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                    const updatedParentTask = tasks[parentTask.id];
+                    debugger;
+                    clickElement(parentTaskLabel);
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        debugger;
+                        const tasksWithSameName = tasks.filter((task) => task.name === parentTask.name);
+                        // all params are similar because common task is not used with Grouping
+                        expect(updatedParentTask.start).toBe(parentTask.start);
+                        expect(updatedParentTask.end).toBe(parentTask.end);
+                        expect(updatedParentTask.children.length).toBeLessThanOrEqual(parentTask.children.length);
+                        expect(updatedParentTask.color).toBe(parentTask.color);
+                        expect(taskGroups[parentTask.id].children().length).toBe(tasksWithSameName.length);
+                        done();
+                    });
+                });
             });
         });
 
