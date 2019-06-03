@@ -148,6 +148,11 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
             .children("g.task");
     }
 
+    public get milestones() {
+        return this.tasks
+            .children("g.task-milestone")
+            .children("path");
+    }
 
     public get taskRect() {
         return this.tasks

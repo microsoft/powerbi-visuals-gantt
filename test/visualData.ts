@@ -162,7 +162,7 @@ export class VisualData extends TestDataViewBuilder {
                     type: ValueType.fromDescriptor({ text: true }),
                     roles: { "Milestones": true }
                 },
-                values: this.valuesTaskTypeResource.map(x => x[3] ? "" : x[3])
+                values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null)
             };
 
             categoriesColums.push(milestoneCategoriesColumn);

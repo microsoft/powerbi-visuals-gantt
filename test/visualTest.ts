@@ -46,7 +46,7 @@ import { valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
 import IValueFormatter = vf.IValueFormatter;
 import valueFormatter = vf.valueFormatter;
 
-import { Task, TaskDaysOff } from "../src/interfaces";
+import { Task, TaskDaysOff, Milestone } from "../src/interfaces";
 import { DurationHelper } from "../src/durationHelper";
 import { Gantt as VisualClass } from "../src/gantt";
 
@@ -920,12 +920,12 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-            let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-            let parentTasks: Task[] = tasks.filter((task: Task) => task.children);
+                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                let parentTasks: Task[] = tasks.filter((task: Task) => task.children);
 
-            let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
-                parentTask = parentTasks[parentIndex],
-                parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+                let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
+                    parentTask = parentTasks[parentIndex],
+                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
                 // Collapse
                 clickElement(parentTaskLabel);
 
@@ -950,14 +950,108 @@ describe("Gantt", () => {
             });
         });
 
-        it("Common milestone test", (done) => {
-
-        });
-
-
         it("Milestone test", (done) => {
+            dataView = defaultDataViewBuilder.getDataView([
+                VisualData.ColumnType,
+                VisualData.ColumnTask,
+                VisualData.ColumnStartDate,
+                VisualData.ColumnDuration,
+                VisualData.ColumnResource,
+                VisualData.ColumnParent,
+                VisualData.ColumnMilestones
+            ], true);
 
+            const milestoneColumnIndex = 4;
+            const categoriesColumn = dataView.categorical.categories[milestoneColumnIndex];
+            const uniqueMilestoneTypes = _.compact(_.uniq(categoriesColumn.values));
+
+            const randomColors = uniqueMilestoneTypes.map((t) => VisualBuilder.getRandomHexColor());
+            const randomTypes = uniqueMilestoneTypes.map((t) => {
+                const types = ["Rhombus", "Circle", "Square"];
+                return types[Math.floor(getRandomNumber(0, types.length - 1))];
+            });
+
+            if (!dataView.categorical.categories[milestoneColumnIndex].objects) {
+                dataView.categorical.categories[milestoneColumnIndex].objects = [];
+            }
+            categoriesColumn.values.forEach((value: string) => {
+                let milestoneSettingsObject = null;
+                if (value) {
+                    const index = uniqueMilestoneTypes.indexOf(value);
+                    milestoneSettingsObject = {
+                        milestones: {
+                            fill: VisualBuilder.getSolidColorStructuralObject(randomColors[index]),
+                            shapeType: randomTypes[index]
+                        }
+                    };
+                }
+                dataView.categorical.categories[milestoneColumnIndex].objects.push(milestoneSettingsObject);
+            });
+
+            // check for color and figure
+            visualBuilder.updateRenderTimeout(dataView, () => {
+                let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                const taskWithMilestones = tasks.filter((task: Task) => task.Milestones.length);
+                const milestones: JQuery<any>[] = visualBuilder.milestones.toArray().map($);
+
+                expect(milestones.length).toBe(taskWithMilestones.length);
+
+                // for each unique milestone type must be its own color and shapeType
+                tasks.forEach((task: Task) => {
+                    if (task.Milestones) {
+                        task.Milestones.forEach((milestone: Milestone) => {
+                            const index = uniqueMilestoneTypes.indexOf(milestone.type);
+                            const expectedColor = randomColors[index];
+                            const actualColor = milestones[index].attr("fill");
+                            expect(actualColor).toBe(expectedColor);
+                        });
+                    }
+                });
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                    let parentTasks: Task[] = tasks.filter((task: Task) => task.children);
+
+                    let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
+                        parentTask = parentTasks[parentIndex],
+                        parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+
+                    // get uniq by date child milestones for current parent - they should be rendered on parent task bar
+                    const childMilestones = parentTask.children.map((childTask: Task) => {
+                        if (childTask.Milestones.length) {
+                            return childTask.Milestones;
+                        }
+                    });
+                    let mergedMilestone = parentTask.Milestones;
+                    childMilestones.forEach((milestoneArr) => {
+                        mergedMilestone = mergedMilestone.concat(milestoneArr);
+                    });
+
+                    // Collapse
+                    clickElement(parentTaskLabel);
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+
+                        done();
+                    });
+                });
+            });
         });
+
+        it("Common milestone test", (done) => {
+            dataView = defaultDataViewBuilder.getDataView([
+                VisualData.ColumnType,
+                VisualData.ColumnTask,
+                VisualData.ColumnStartDate,
+                VisualData.ColumnDuration,
+                VisualData.ColumnResource,
+                VisualData.ColumnParent,
+                VisualData.ColumnMilestones
+            ], true);
+
+            done();
+        });
+
     });
 
     describe("Selection", () => {
