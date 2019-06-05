@@ -858,7 +858,6 @@ describe("Gantt", () => {
         });
 
         it("Common task bar test with Grouping = OFF", (done) => {
-            debugger;
             dataView = defaultDataViewBuilder.getDataView([
                 VisualData.ColumnType,
                 VisualData.ColumnTask,
@@ -883,26 +882,28 @@ describe("Gantt", () => {
                 const maxChildEnd = _.maxBy(parentTask.children, (t: Task) => t.end).end;
                 const color = parentTask.children[0].color;
 
-                debugger;
-                // Collapse
-                clickElement(parentTaskLabel);
+                clickElement(parentTaskLabel.parent());
+                let collapsedTasksList = visualBuilder.instance["collapsedTasks"];
+                dataView.metadata.objects = {
+                    collapsedTasks: {
+                        list: JSON.stringify(collapsedTasksList)
+                    },
+                    general: { groupTasks: false }
+                };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskGroups: JQuery<any>[] = visualBuilder.tasksGroups.toArray().map($);
-                    tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-                    const updatedParentTask = tasks[parentTask.id];
-                    debugger;
-                    clickElement(parentTaskLabel);
-                    visualBuilder.updateRenderTimeout(dataView, () => {
-                        debugger;
-                        expect(updatedParentTask.start).toBe(minChildStart);
-                        expect(updatedParentTask.end).toBe(maxChildEnd);
-                        expect(updatedParentTask.children.length).toBe(1);
-                        expect(updatedParentTask.color).toBe(color);
-                        expect(taskGroups[parentTask.id].children().length).toBe(1);
-                        done();
-                    });
+                    let updatedTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                    const updatedParentTask = updatedTasks[parentTask.id];
 
+                    expect(updatedTasks.length).toBe(tasks.length - parentTask.children.length);
+                    expect(taskGroups.length).toBe(tasks.length - parentTask.children.length);
+                    expect(taskGroups[parentTask.id].children().length).toBe(1);
+
+                    expect(updatedParentTask.start).toEqual(minChildStart);
+                    expect(updatedParentTask.end).toEqual(maxChildEnd);
+                    expect(updatedParentTask.color).toBe(color);
+                    done();
                 });
             });
         });
@@ -916,9 +917,9 @@ describe("Gantt", () => {
                 VisualData.ColumnResource,
                 VisualData.ColumnParent
             ]);
+
             dataView.metadata.objects = { general: { groupTasks: true } };
             fixDataViewDateValuesAggregation(dataView);
-
             visualBuilder.updateRenderTimeout(dataView, () => {
                 let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
                 let parentTasks: Task[] = tasks.filter((task: Task) => task.children);
@@ -926,26 +927,32 @@ describe("Gantt", () => {
                 let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
                     parentTask = parentTasks[parentIndex],
                     parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+
+                const minChildStart = _.minBy(parentTask.children, (t: Task) => t.start).start;
+                const maxChildEnd = _.maxBy(parentTask.children, (t: Task) => t.end).end;
+
                 // Collapse
-                clickElement(parentTaskLabel);
+                clickElement(parentTaskLabel.parent());
+                let collapsedTasksList = visualBuilder.instance["collapsedTasks"];
+                dataView.metadata.objects = {
+                    collapsedTasks: {
+                        list: JSON.stringify(collapsedTasksList)
+                    },
+                    general: { groupTasks: true }
+                };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskGroups: JQuery<any>[] = visualBuilder.tasksGroups.toArray().map($);
-                    tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-                    const updatedParentTask = tasks[parentTask.id];
-                    debugger;
-                    clickElement(parentTaskLabel);
-                    visualBuilder.updateRenderTimeout(dataView, () => {
-                        debugger;
-                        const tasksWithSameName = tasks.filter((task) => task.name === parentTask.name);
-                        // all params are similar because common task is not used with Grouping
-                        expect(updatedParentTask.start).toBe(parentTask.start);
-                        expect(updatedParentTask.end).toBe(parentTask.end);
-                        expect(updatedParentTask.children.length).toBeLessThanOrEqual(parentTask.children.length);
-                        expect(updatedParentTask.color).toBe(parentTask.color);
-                        expect(taskGroups[parentTask.id].children().length).toBe(tasksWithSameName.length);
-                        done();
-                    });
+                    let updatedTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                    const updatedParentTask = updatedTasks[parentTask.id];
+                    const tasksWithSameName = updatedTasks.filter((task) => task.name === parentTask.name);
+
+                    // all params are similar because common task is not used with Grouping
+                    expect(updatedParentTask.start).not.toBe(minChildStart);
+                    expect(updatedParentTask.end).not.toBe(maxChildEnd);
+                    expect(updatedParentTask.children).toBe(null);
+                    expect(taskGroups[parentTask.id].children().length).toBe(tasksWithSameName.length);
+                    done();
                 });
             });
         });
@@ -961,7 +968,7 @@ describe("Gantt", () => {
                 VisualData.ColumnMilestones
             ], true);
 
-            const milestoneColumnIndex = 4;
+            const milestoneColumnIndex = 5;
             const categoriesColumn = dataView.categorical.categories[milestoneColumnIndex];
             const uniqueMilestoneTypes = _.compact(_.uniq(categoriesColumn.values));
 
@@ -997,44 +1004,16 @@ describe("Gantt", () => {
                 expect(milestones.length).toBe(taskWithMilestones.length);
 
                 // for each unique milestone type must be its own color and shapeType
-                tasks.forEach((task: Task) => {
-                    if (task.Milestones) {
-                        task.Milestones.forEach((milestone: Milestone) => {
-                            const index = uniqueMilestoneTypes.indexOf(milestone.type);
-                            const expectedColor = randomColors[index];
-                            const actualColor = milestones[index].attr("fill");
-                            expect(actualColor).toBe(expectedColor);
-                        });
-                    }
-                });
-
-                visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-                    let parentTasks: Task[] = tasks.filter((task: Task) => task.children);
-
-                    let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
-                        parentTask = parentTasks[parentIndex],
-                        parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
-
-                    // get uniq by date child milestones for current parent - they should be rendered on parent task bar
-                    const childMilestones = parentTask.children.map((childTask: Task) => {
-                        if (childTask.Milestones.length) {
-                            return childTask.Milestones;
-                        }
-                    });
-                    let mergedMilestone = parentTask.Milestones;
-                    childMilestones.forEach((milestoneArr) => {
-                        mergedMilestone = mergedMilestone.concat(milestoneArr);
-                    });
-
-                    // Collapse
-                    clickElement(parentTaskLabel);
-
-                    visualBuilder.updateRenderTimeout(dataView, () => {
-
-                        done();
+                taskWithMilestones.forEach((task: Task) => {
+                    task.Milestones.forEach((milestone: Milestone) => {
+                        const index = uniqueMilestoneTypes.indexOf(milestone.type);
+                        const expectedColor = randomColors[index];
+                        const actualColor = milestones[index].attr("fill");
+                        expect(actualColor).toBe(expectedColor);
                     });
                 });
+
+                done();
             });
         });
 
@@ -1048,10 +1027,53 @@ describe("Gantt", () => {
                 VisualData.ColumnParent,
                 VisualData.ColumnMilestones
             ], true);
+            visualBuilder.updateRenderTimeout(dataView, () => {
+                const tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                const parentTasks: Task[] = tasks.filter((task: Task) => task.children);
+                const oldMilestones: JQuery<any>[] = visualBuilder.milestones.toArray().map($);
 
-            done();
+                let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
+                    parentTask = parentTasks[parentIndex],
+                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+
+                // get uniq by date child milestones for current parent - they should be rendered on parent task bar
+                const childMilestones = parentTask.children.map((childTask: Task) => {
+                    if (childTask.Milestones.length) {
+                        return childTask.Milestones;
+                    }
+                });
+                let mergedMilestone = parentTask.Milestones;
+                childMilestones.forEach((milestoneArr) => {
+                    mergedMilestone = mergedMilestone.concat(milestoneArr);
+                });
+
+                // Collapse
+                clickElement(parentTaskLabel.parent());
+                let collapsedTasksList = visualBuilder.instance["collapsedTasks"];
+                dataView.metadata.objects = {
+                    collapsedTasks: {
+                        list: JSON.stringify(collapsedTasksList)
+                    }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                    const taskWithMilestones = tasks.filter((task: Task) => task.Milestones.length);
+                    const milestones: JQuery<any>[] = visualBuilder.milestones.toArray().map($);
+
+                    expect(milestones.length).toBeLessThanOrEqual(oldMilestones.length);
+
+                    // for each unique milestone type must be its own color and shapeType
+                    taskWithMilestones.forEach((task: Task) => {
+                        task.Milestones.forEach((milestone: Milestone) => {
+
+                        });
+                    });
+
+                    done();
+                });
+            });
         });
-
     });
 
     describe("Selection", () => {

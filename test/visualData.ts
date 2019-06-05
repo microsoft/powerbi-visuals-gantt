@@ -152,6 +152,14 @@ export class VisualData extends TestDataViewBuilder {
                     roles: { "Parent": true }
                 },
                 values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null)
+            },
+            {
+                source: {
+                    displayName: VisualData.ColumnStartDate,
+                    type: ValueType.fromDescriptor({ dateTime: true }),
+                    roles: { "StartDate": true }
+                },
+                values: this.valuesStartDate
             }
         ];
 
@@ -170,14 +178,6 @@ export class VisualData extends TestDataViewBuilder {
 
         return this.createCategoricalDataViewBuilder(
             categoriesColums, [
-                {
-                    source: {
-                        displayName: VisualData.ColumnStartDate,
-                        type: ValueType.fromDescriptor({ dateTime: true }),
-                        roles: { "StartDate": true }
-                    },
-                    values: this.valuesStartDate
-                },
                 {
                     source: {
                         displayName: VisualData.ColumnDuration,
