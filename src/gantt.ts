@@ -1157,8 +1157,8 @@ export class Gantt implements IVisual {
                 ]);
             }
 
-            // Example: some task starts on Saturday 8:30 and ends on Thursday 8:30, 
-            // so it has extra duration and now will end on next Saturday 8:30 
+            // Example: some task starts on Saturday 8:30 and ends on Thursday 8:30,
+            // so it has extra duration and now will end on next Saturday 8:30
             // --- we need to add days off -- it ends on Monday 8.30
             if (!alreadyInDaysOffList && (isFirstDayOff || isSecondDayOff) && isPartlyUsed) {
                 const amount = isFirstDayOff ? 2 : 1;
@@ -2167,7 +2167,7 @@ export class Gantt implements IVisual {
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
-            .style("fill", (task: Task) => `url(#task${task.id}-${task.taskType ? task.taskType.replace(/\s+/g, "") : task.taskType})`);
+            .style("fill", (task: Task) => `url(#task${task.id}-${task.taskType ? task.taskType.toString().replace(/\s+/g, "") : task.taskType})`);
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -2385,7 +2385,7 @@ export class Gantt implements IVisual {
         let taskProgress: Selection<any> = taskSelection
             .selectAll(Selectors.TaskProgress.selectorName)
             .data((d: Task) => [{
-                key: `${d.id}-${d.taskType ? d.taskType.replace(/\s+/g, "") : d.taskType}`, values: <LinearStop[]>[
+                key: `${d.id}-${d.taskType ? d.taskType.toString().replace(/\s+/g, "") : d.taskType}`, values: <LinearStop[]>[
                     { completion: 0, color: d.color },
                     { completion: this.getDaysOffTaskProgressPercent(d), color: d.color },
                     { completion: this.getDaysOffTaskProgressPercent(d), color: d.color },
