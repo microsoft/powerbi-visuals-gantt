@@ -1042,10 +1042,12 @@ describe("Gantt", () => {
                         return childTask.Milestones;
                     }
                 });
-                let mergedMilestone = parentTask.Milestones;
+                let mergedMilestone: Milestone[] = parentTask.Milestones;
                 childMilestones.forEach((milestoneArr) => {
                     mergedMilestone = mergedMilestone.concat(milestoneArr);
                 });
+
+                const uniqDates = _.uniqBy(mergedMilestone, "start");
 
                 // Collapse
                 clickElement(parentTaskLabel.parent());
@@ -1057,17 +1059,16 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let tasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-                    const taskWithMilestones = tasks.filter((task: Task) => task.Milestones.length);
+                    const updatedTasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                    const updatedParentTask = updatedTasks[parentTask.id];
                     const milestones: JQuery<any>[] = visualBuilder.milestones.toArray().map($);
+                    const updatedTasksWithMilestones = updatedTasks.filter((t: Task) => t.Milestones.length && t.id !== parentTask.id);
 
-                    expect(milestones.length).toBeLessThanOrEqual(oldMilestones.length);
+                    expect(milestones.length).toBe(oldMilestones.length - (updatedParentTask.Milestones.length - uniqDates.length));
+                    expect(updatedParentTask.Milestones.length).toBe(mergedMilestone.length);
 
-                    // for each unique milestone type must be its own color and shapeType
-                    taskWithMilestones.forEach((task: Task) => {
-                        task.Milestones.forEach((milestone: Milestone) => {
-
-                        });
+                    updatedTasksWithMilestones.forEach((t: Task) => {
+                        expect(t.Milestones.length).toBe(1);
                     });
 
                     done();

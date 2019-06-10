@@ -1044,15 +1044,14 @@ export class Gantt implements IVisual {
                     );
 
                     if (task.daysOffList.length) {
-                        // extra duration calculating in days
-                        let extraDuration: number = task.daysOffList
-                            .map((item) => item[1])
-                            .reduce((prevValue, currentValue) => prevValue + currentValue);
+                        let extraDuration = Gantt.calculateExtraDurationDaysOff(task.daysOffList);
 
                         extraDuration = DurationHelper.transformExtraDuration(durationUnit, extraDuration);
                         task.end = Gantt.getEndDate(durationUnit, task.start, task.duration + extraDuration);
 
-                        const lastDayOff: Date = task.daysOffList[task.daysOffList.length - 1][0];
+                        const lastDayOffListItem = task.daysOffList[task.daysOffList.length - 1];
+                        const lastDayOff: Date = lastDayOffListItem[1] === 1 ? lastDayOffListItem[0]
+                            : new Date(lastDayOffListItem[0].getFullYear(), lastDayOffListItem[0].getMonth(), lastDayOffListItem[0].getDate() + 1);
                         datesDiff = Math.ceil((task.end.getTime() - lastDayOff.getTime()) / MillisecondsInADay);
                     }
                 } while (task.daysOffList.length && datesDiff - DaysInAWeekend > DaysInAWeek);
@@ -1138,11 +1137,34 @@ export class Gantt implements IVisual {
         daysOffDataForAddition.amountOfLastDaysOff = 1;
         for (let i = DaysInAWeekend; i > 0; i--) {
             let dateForCheck: Date = new Date(date.getTime() + (i * MillisecondsInADay));
-            if (dateForCheck.getDay() === +firstDayOfWeek &&
-                (!extraCondition || (extraCondition && !/00\:00\:00/g.test(dateForCheck.toTimeString())))) {
+            let alreadyInDaysOffList = false;
+            daysOffDataForAddition.list.forEach((item) => {
+                const itemDate = item[0];
+                if (itemDate.getFullYear() === date.getFullYear() && itemDate.getMonth() === date.getMonth() && itemDate.getDate() === date.getDate()) {
+                    alreadyInDaysOffList = true;
+                }
+            });
+
+            const isFirstDaysOfWeek = dateForCheck.getDay() === +firstDayOfWeek;
+            const isFirstDayOff = dateForCheck.getDay() === (+firstDayOfWeek + 5) % 7;
+            const isSecondDayOff = dateForCheck.getDay() === (+firstDayOfWeek + 6) % 7;
+            const isPartlyUsed = !/00\:00\:00/g.test(dateForCheck.toTimeString());
+
+            if (!alreadyInDaysOffList && isFirstDaysOfWeek && (!extraCondition || (extraCondition && isPartlyUsed))) {
                 daysOffDataForAddition.amountOfLastDaysOff = i;
                 daysOffDataForAddition.list.push([
                     new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0), i
+                ]);
+            }
+
+            // Example: some task starts on Saturday 8:30 and ends on Thursday 8:30, 
+            // so it has extra duration and now will end on next Saturday 8:30 
+            // --- we need to add days off -- it ends on Monday 8.30
+            if (!alreadyInDaysOffList && (isFirstDayOff || isSecondDayOff) && isPartlyUsed) {
+                const amount = isFirstDayOff ? 2 : 1;
+                daysOffDataForAddition.amountOfLastDaysOff = amount;
+                daysOffDataForAddition.list.push([
+                    new Date(dateForCheck.getFullYear(), dateForCheck.getMonth(), dateForCheck.getDate(), 0, 0, 0), amount
                 ]);
             }
         }
@@ -1191,6 +1213,24 @@ export class Gantt implements IVisual {
 
         Gantt.addNextDaysOff(tempDaysOffData, firstDayOfWeek, toDate, true);
         return tempDaysOffData.list;
+    }
+
+    private static calculateExtraDurationDaysOff(daysOffList: DayOffData[]): number {
+        let extraDuration = 0;
+        for (let i = 0; i < daysOffList.length; i++) {
+            const itemAmount = daysOffList[i][1];
+            extraDuration += itemAmount;
+            // not to count for neighbour dates
+            if (itemAmount === 2 && (i + 1) < daysOffList.length) {
+                const itemDate = daysOffList[i][0].getDate();
+                const nextDate = daysOffList[i + 1][0].getDate();
+                if (itemDate + 1 === nextDate) {
+                    i += 2;
+                }
+            }
+        }
+
+        return extraDuration;
     }
 
     /**
@@ -1994,8 +2034,8 @@ export class Gantt implements IVisual {
         this.taskMainRectRender(taskSelection, taskConfigHeight);
         this.MilestonesRender(taskSelection, taskConfigHeight);
         this.taskProgressRender(taskSelection);
-        this.taskResourceRender(taskSelection, taskConfigHeight);
         this.taskDaysOffRender(taskSelection, taskConfigHeight);
+        this.taskResourceRender(taskSelection, taskConfigHeight);
 
         this.renderTooltip(taskSelection);
     }
@@ -2127,7 +2167,7 @@ export class Gantt implements IVisual {
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
-            .style("fill", (task: Task) => `url(#task${task.id}-${task.taskType})`);
+            .style("fill", (task: Task) => `url(#task${task.id}-${task.taskType ? task.taskType.replace(/\s+/g, "") : task.taskType})`);
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -2345,10 +2385,10 @@ export class Gantt implements IVisual {
         let taskProgress: Selection<any> = taskSelection
             .selectAll(Selectors.TaskProgress.selectorName)
             .data((d: Task) => [{
-                key: `${d.id}-${d.taskType}`, values: <LinearStop[]>[
+                key: `${d.id}-${d.taskType ? d.taskType.replace(/\s+/g, "") : d.taskType}`, values: <LinearStop[]>[
                     { completion: 0, color: d.color },
-                    { completion: d.completion, color: d.color },
-                    { completion: d.completion, color: d.color },
+                    { completion: this.getDaysOffTaskProgressPercent(d), color: d.color },
+                    { completion: this.getDaysOffTaskProgressPercent(d), color: d.color },
                     { completion: 1, color: d.color }
                 ]
             }]);
@@ -2554,64 +2594,40 @@ export class Gantt implements IVisual {
     }
 
     /**
-     * Get width of days off rect for progress
-     * @param task All task attributes
-     * @param durationUnit unit Duration unit
-     */
-    private getDaysOffWidthForProgress(
-        task: Task,
-        durationUnit: string): number {
-        let daysOffDuration: number = 0;
-        let widthOfOneTick: number = 0;
-
-        if (task.daysOffList &&
-            task.daysOffList.length) {
-            const startTime: number = task.start.getTime();
-            const nextTickAfterStart: Date = Gantt.getEndDate(durationUnit, task.start, 1);
-
-            const progressLength: number = (task.end.getTime() - startTime) * task.completion;
-            const currentProgressTime: number = new Date(startTime + progressLength).getTime();
-
-            let daysOffFiltered: DayOffData[] = task.daysOffList
-                .filter((date) => startTime <= date[0].getTime() && date[0].getTime() <= currentProgressTime);
-
-            if (daysOffFiltered.length) {
-                daysOffDuration = daysOffFiltered
-                    .map(i => i[1])
-                    .reduce((i, j) => i + j);
-            }
-
-            widthOfOneTick = this.taskDurationToWidth(task.start, nextTickAfterStart);
-        }
-
-        return widthOfOneTick * DurationHelper.transformExtraDuration(durationUnit, daysOffDuration);
-    }
-
-    /**
-     * Set the task progress bar in the gantt
-     * @param task All task attributes
-     */
-    private setTaskProgress(task: Task): number {
-        let daysOffWidth: number = 0;
-        let end: Date = task.end;
+    * Get completion percent when days off feature is on
+    * @param task All task attributes
+    * @param durationUnit unit Duration unit
+    */
+    private getDaysOffTaskProgressPercent(task: Task) {
         if (this.viewModel.settings.daysOff.show) {
-            let durationUnit: string = this.viewModel.settings.general.durationUnit;
-            if (task.wasDowngradeDurationUnit) {
-                durationUnit = DurationHelper.downgradeDurationUnit(durationUnit, task.duration);
-            }
+            if (task.daysOffList && task.daysOffList.length) {
+                let durationUnit: string = this.viewModel.settings.general.durationUnit;
+                if (task.wasDowngradeDurationUnit) {
+                    durationUnit = DurationHelper.downgradeDurationUnit(durationUnit, task.duration);
+                }
+                const startTime: number = task.start.getTime();
+                const progressLength: number = (task.end.getTime() - startTime) * task.completion;
+                const currentProgressTime: number = new Date(startTime + progressLength).getTime();
 
-            daysOffWidth = this.getDaysOffWidthForProgress(task, durationUnit);
-            end = !this.viewModel.isDurationFilled ? task.end : Gantt.getEndDate(durationUnit, task.start, task.duration);
+                let daysOffFiltered: DayOffData[] = task.daysOffList
+                    .filter((date) => startTime <= date[0].getTime() && date[0].getTime() <= currentProgressTime);
+
+                let extraDuration = Gantt.calculateExtraDurationDaysOff(daysOffFiltered);
+                extraDuration = DurationHelper.transformExtraDuration(durationUnit, extraDuration);
+
+                const extraDurationPercentage = extraDuration / task.duration;
+                return task.completion + extraDurationPercentage;
+            }
         }
 
-        return (this.taskDurationToWidth(task.start, end) * task.completion) + daysOffWidth;
+        return task.completion;
     }
 
     /**
- * Get bar y coordinate
- * @param lineNumber Line number that represents the task number
- * @param lineHeight Height of task line
- */
+    * Get bar y coordinate
+    * @param lineNumber Line number that represents the task number
+    * @param lineHeight Height of task line
+    */
     private static getBarYCoordinate(
         lineNumber: number,
         lineHeight: number): number {
