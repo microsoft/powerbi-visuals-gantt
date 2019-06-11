@@ -1457,12 +1457,19 @@ export class Gantt implements IVisual {
         }
 
         let settings = this.viewModel.settings;
-        let axisLength: number = 0;
+        this.collapsedTasks = JSON.parse(settings.collapsedTasks.list);
+        let groupedTasks: GroupedTask[] = this.groupTasks(tasks);
+        // do smth with task ids
+        this.updateCommonTasks(groupedTasks);
+        this.updateCommonMilestones(groupedTasks);
 
-        let minDateTask: Task = _.minBy(tasks, (t) => t.start);
-        let maxDateTask: Task = _.maxBy(tasks, (t) => t.end);
+        let tasksAfterGrouping: Task[] = [];
+        groupedTasks.forEach((t: GroupedTask) => tasksAfterGrouping = tasksAfterGrouping.concat(t.tasks));
+        const minDateTask: Task = _.minBy(tasksAfterGrouping, (t) => t.start);
+        const maxDateTask: Task = _.maxBy(tasksAfterGrouping, (t) => t.end);
         this.hasNotNullableDates = !!minDateTask && !!maxDateTask;
 
+        let axisLength: number = 0;
         if (this.hasNotNullableDates) {
             let startDate: Date = minDateTask.start;
             let endDate: Date = maxDateTask.end;
@@ -1490,12 +1497,7 @@ export class Gantt implements IVisual {
         }
 
         axisLength = this.scaleAxisLength(axisLength);
-        this.collapsedTasks = JSON.parse(settings.collapsedTasks.list);
-        let groupedTasks: GroupedTask[] = this.groupTasks(tasks);
-        // do smth with task ids
         this.setDimension(groupedTasks, axisLength, settings);
-        this.updateCommonTasks(groupedTasks);
-        this.updateCommonMilestones(groupedTasks);
 
         this.renderTasks(groupedTasks);
         this.updateTaskLabels(groupedTasks, settings.taskLabels.width);
@@ -2384,14 +2386,17 @@ export class Gantt implements IVisual {
 
         let taskProgress: Selection<any> = taskSelection
             .selectAll(Selectors.TaskProgress.selectorName)
-            .data((d: Task) => [{
-                key: `${d.id}-${d.taskType ? d.taskType.toString().replace(/\s+/g, "") : d.taskType}`, values: <LinearStop[]>[
-                    { completion: 0, color: d.color },
-                    { completion: this.getDaysOffTaskProgressPercent(d), color: d.color },
-                    { completion: this.getDaysOffTaskProgressPercent(d), color: d.color },
-                    { completion: 1, color: d.color }
-                ]
-            }]);
+            .data((d: Task) => {
+                const taskProgressPercentage = this.getDaysOffTaskProgressPercent(d);
+                return [{
+                    key: `${d.id}-${d.taskType ? d.taskType.toString().replace(/\s+/g, "") : d.taskType}`, values: <LinearStop[]>[
+                        { completion: 0, color: d.color },
+                        { completion: taskProgressPercentage, color: d.color },
+                        { completion: taskProgressPercentage, color: d.color },
+                        { completion: 1, color: d.color }
+                    ]
+                }]
+            });
 
         const taskProgressMerged = taskProgress
             .enter()
@@ -2600,7 +2605,7 @@ export class Gantt implements IVisual {
     */
     private getDaysOffTaskProgressPercent(task: Task) {
         if (this.viewModel.settings.daysOff.show) {
-            if (task.daysOffList && task.daysOffList.length) {
+            if (task.daysOffList && task.daysOffList.length && task.duration && task.completion) {
                 let durationUnit: string = this.viewModel.settings.general.durationUnit;
                 if (task.wasDowngradeDurationUnit) {
                     durationUnit = DurationHelper.downgradeDurationUnit(durationUnit, task.duration);
