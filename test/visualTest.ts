@@ -1728,8 +1728,11 @@ describe("Gantt", () => {
                 });
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    visualBuilder.taskRect.toArray().map($).forEach(e => {
-                        expect(e.css("opacity")).toBe(VisualClass["NotCompletedTaskOpacity"].toString());
+                    let tasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
+                    visualBuilder.taskRect.toArray().map($).forEach((e, i) => {
+                        // if completion is null (no info about completion) - task expected to be completed
+                        const expectedOpacity = tasks[i].completion ? VisualClass["NotCompletedTaskOpacity"].toString() : VisualClass["TaskOpacity"].toString();
+                        expect(e.css("opacity")).toBe(expectedOpacity);
                     });
                     done();
                 });
