@@ -69,6 +69,12 @@
             "displayName": "Tooltips",
             "displayNameKey": "Role_Tooltips",
             "kind": "Grouping"
+        },
+        {
+            "name": "Milestones",
+            "displayName": "Milestones",
+            "displayNameKey": "Milestones",
+            "kind": "Grouping"
         }
     ],
     "dataViewMappings": [
@@ -110,6 +116,10 @@
                     "ExtraInformation": {
                         "min": 0,
                         "max": 3
+                    },
+                    "Milestones": {
+                        "min": 0,
+                        "max": 1
                     }
                 },
                 {
@@ -148,6 +158,10 @@
                     "ExtraInformation": {
                         "min": 0,
                         "max": 3
+                    },
+                    "Milestones": {
+                        "min": 0,
+                        "max": 1
                     }
                 },
                 {
@@ -186,6 +200,10 @@
                     "ExtraInformation": {
                         "min": 0,
                         "max": 3
+                    },
+                    "Milestones": {
+                        "min": 0,
+                        "max": 1
                     }
                 },
                 {
@@ -224,6 +242,10 @@
                     "ExtraInformation": {
                         "min": 0,
                         "max": 3
+                    },
+                    "Milestones": {
+                        "min": 0,
+                        "max": 1
                     }
                 }
             ],
@@ -239,12 +261,12 @@
                             "for": {
                                 "in": "Parent"
                             }
-                        },            
+                        },
                         {
                             "for": {
                                 "in": "StartDate"
                             }
-                        },             
+                        },
                         {
                             "for": {
                                 "in": "Resource"
@@ -254,18 +276,23 @@
                             "for": {
                                 "in": "ExtraInformation"
                             }
+                        },
+                        {
+                            "for": {
+                                "in": "Milestones"
+                            }
                         }
                     ]
                 },
                 "values": {
                     "group": {
                         "by": "Legend",
-                        "select": [                       
+                        "select": [
                             {
                                 "for": {
                                     "in": "EndDate"
                                 }
-                            },                                  
+                            },
                             {
                                 "for": {
                                     "in": "Duration"
@@ -556,6 +583,48 @@
                 }
             }
         },
+        "milestones": {
+            "displayName": "Milestones",
+            "displayNameKey": "Visual_Milestones",
+            "description": "Display milestones options",
+            "descriptionKey": "Visual_Description_Milestones",
+            "properties": {
+                "fill": {
+                    "displayName": "Fill",
+                    "displayNameKey": "Visual_Fill",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "shapeType": {
+                    "displayName": "Shape",
+                    "displayNameKey": "Visual_Shape",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "Rhombus",
+                                "displayName": "Rhombus",
+                                "displayNameKey": "Visual_Shape_Rhombus"
+                            },
+                            {
+                                "value": "Circle",
+                                "displayName": "Circle",
+                                "displayNameKey": "Visual_Shape_Circle"
+                            },
+                            {
+                                "value": "Square",
+                                "displayName": "Square",
+                                "displayNameKey": "Visual_Shape_Square"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
         "taskLabels": {
             "displayName": "Category Labels",
             "displayNameKey": "Visual_CategoryLabels",
@@ -603,17 +672,6 @@
                 "show": {
                     "type": {
                         "bool": true
-                    }
-                },
-                "fill": {
-                    "displayName": "Completion color",
-                    "displayNameKey": "Visual_CompletionColor",
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
                     }
                 }
             }
@@ -702,6 +760,11 @@
                                 "value": "Right",
                                 "displayName": "Right",
                                 "displayNameKey": "Visual_Position_Right"
+                            },
+                            {
+                                "value": "Inside",
+                                "displayName": "Inside",
+                                "displayNameKey": "Visual_Position_Inside"
                             }
                         ]
                     }
@@ -811,6 +874,6 @@
         }
     },
     "sorting": {
-        "default": { }
+        "default": {}
     }
 }
