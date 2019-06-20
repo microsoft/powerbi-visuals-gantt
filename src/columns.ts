@@ -24,36 +24,49 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
-    import converterHelper = powerbi.extensibility.utils.dataview.converterHelper;
-    import ValueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
+import powerbi from "powerbi-visuals-api";
+import * as _ from "lodash";
 
-    const extraInformationRole = "ExtraInformation";
+import DataView = powerbi.DataView;
+import DataViewValueColumn = powerbi.DataViewValueColumn;
+import DataViewCategorical = powerbi.DataViewCategorical;
+import DataViewValueColumns = powerbi.DataViewValueColumns;
+import DataViewValueColumnGroup = powerbi.DataViewValueColumnGroup;
+import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
+import PrimitiveValue = powerbi.PrimitiveValue;
 
-    export class GanttColumns<T> {
+import { valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
+import ValueFormatter = vf.valueFormatter;
 
-        public static getGroupedValueColumns(dataView: DataView): GanttColumns<DataViewValueColumn>[] {
-            let categorical: DataViewCategorical = dataView && dataView.categorical;
-            let values: DataViewValueColumns = categorical && categorical.values;
-            let grouped: DataViewValueColumnGroup[] = values && values.grouped();
-            return grouped && grouped.map(g => _.mapValues(
-                new this<DataViewValueColumn>(),
-                (n, i) => g.values.filter(v => v.source.roles[i])[0]));
-        }
+import { converterHelper as ch } from "powerbi-visuals-utils-dataviewutils";
+import converterHelper = ch.converterHelper;
 
-        public static getCategoricalValues(dataView: DataView): GanttColumns<any> {
-            let categorical: DataViewCategorical = dataView && dataView.categorical;
-            let categories: DataViewCategoricalColumn[] = categorical && categorical.categories || [];
-            let values: DataViewValueColumns = categorical && categorical.values || <DataViewValueColumns>[];
-            let series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
+const extraInformationRole = "ExtraInformation";
 
-            return categorical && _.mapValues(new this<any[]>(), (n, i) => {
-               let  columns: PrimitiveValue[] | { [x: string]: PrimitiveValue[]; };
-               (<DataViewValueColumn[]>_.toArray(categories))
-                  .concat(_.toArray(values))
-                  .filter(x => x.source.roles && x.source.roles[i])
-                  .forEach(x => {
-                     if (i === extraInformationRole &&  x.source.roles && x.source.roles[extraInformationRole]) {
+export class GanttColumns<T> {
+
+    public static getGroupedValueColumns(dataView: DataView): GanttColumns<DataViewValueColumn>[] {
+        let categorical: DataViewCategorical = dataView && dataView.categorical;
+        let values: DataViewValueColumns = categorical && categorical.values;
+        let grouped: DataViewValueColumnGroup[] = values && values.grouped();
+        return grouped && grouped.map(g => _.mapValues(
+            new this<DataViewValueColumn>(),
+            (n, i) => g.values.filter(v => v.source.roles[i])[0]));
+    }
+
+    public static getCategoricalValues(dataView: DataView): GanttColumns<any> {
+        let categorical: DataViewCategorical = dataView && dataView.categorical;
+        let categories: DataViewCategoricalColumn[] = categorical && categorical.categories || [];
+        let values: DataViewValueColumns = categorical && categorical.values || <DataViewValueColumns>[];
+        let series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
+
+        return categorical && _.mapValues(new this<any[]>(), (n, i) => {
+            let columns: PrimitiveValue[] | { [x: string]: PrimitiveValue[]; };
+            (<DataViewValueColumn[]>_.toArray(categories))
+                .concat(_.toArray(values))
+                .filter(x => x.source.roles && x.source.roles[i])
+                .forEach(x => {
+                    if (i === extraInformationRole && x.source.roles && x.source.roles[extraInformationRole]) {
                         if (!columns) {
                             columns = {};
                         }
@@ -64,29 +77,29 @@ module powerbi.extensibility.visual {
                         } else {
                             columns[x.source.displayName] = x.values;
                         }
-                     } else {
-                         columns = x.values;
-                     }
-                  });
+                    } else {
+                        columns = x.values;
+                    }
+                });
 
-                return columns || values.source && values.source.roles && values.source.roles[i] && series;
-            });
-        }
-
-        public static getSeriesValues(dataView: DataView): PrimitiveValue[] {
-            return dataView && dataView.categorical && dataView.categorical.values
-                && dataView.categorical.values.map(x => converterHelper.getSeriesName(x.source));
-        }
-
-        // Data Roles
-        public Legend: T = null;
-        public Task: T = null;
-        public Parent: T = null;
-        public StartDate: T = null;
-        public EndDate: T = null;
-        public Duration: T = null;
-        public Completion: T = null;
-        public Resource: T = null;
-        public ExtraInformation: T = null;
+            return columns || values.source && values.source.roles && values.source.roles[i] && series;
+        });
     }
+
+    public static getSeriesValues(dataView: DataView): PrimitiveValue[] {
+        return dataView && dataView.categorical && dataView.categorical.values
+            && dataView.categorical.values.map(x => converterHelper.getSeriesName(x.source));
+    }
+
+    // Data Roles
+    public Legend: T = null;
+    public Task: T = null;
+    public Parent: T = null;
+    public StartDate: T = null;
+    public EndDate: T = null;
+    public Duration: T = null;
+    public Completion: T = null;
+    public Resource: T = null;
+    public ExtraInformation: T = null;
+    public Milestones: T  = null;
 }

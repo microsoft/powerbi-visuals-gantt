@@ -24,162 +24,165 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
-    const GanttDurationUnitType = [
-        "second",
-        "minute",
-        "hour",
-        "day",
-    ];
+import powerbi from "powerbi-visuals-api";
 
-    const HoursInADay: number = 24;
-    const MinutesInAHour: number = 60;
-    const SecondsInAMinute: number = 60;
-    const MinutesInADay: number = 24 * MinutesInAHour;
-    const SecondsInADay: number = 60 * MinutesInADay;
-    const SecondsInAHour: number = MinutesInAHour * SecondsInAMinute;
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+import { DurationUnits } from "./gantt";
 
-    export class DurationHelper {
+const GanttDurationUnitType = [
+    "second",
+    "minute",
+    "hour",
+    "day",
+];
 
-        public static getNewUnitByFloorDuration(durationUnitTypeIndex: number, duration: number): string {
-            if (!durationUnitTypeIndex)
-                return GanttDurationUnitType[0];
+const HoursInADay: number = 24;
+const MinutesInAHour: number = 60;
+const SecondsInAMinute: number = 60;
+const MinutesInADay: number = 24 * MinutesInAHour;
+const SecondsInADay: number = 60 * MinutesInADay;
+const SecondsInAHour: number = MinutesInAHour * SecondsInAMinute;
 
-            switch (durationUnitTypeIndex) {
-                case  GanttDurationUnitType.indexOf("day"):
-                    duration = duration * HoursInADay;
-                    break;
-                case GanttDurationUnitType.indexOf("hour"):
-                    duration = duration * MinutesInAHour;
-                    break;
-                case GanttDurationUnitType.indexOf("minute"):
-                    duration = duration * SecondsInAMinute;
-                    break;
-            }
+export class DurationHelper {
 
-            if ((duration - Math.floor(duration) !== 0) && durationUnitTypeIndex > 1 ) {
-                return DurationHelper.getNewUnitByFloorDuration(durationUnitTypeIndex - 1, duration);
-            } else {
-                return GanttDurationUnitType[durationUnitTypeIndex - 1];
-            }
+    public static getNewUnitByFloorDuration(durationUnitTypeIndex: number, duration: number): string {
+        if (!durationUnitTypeIndex)
+            return GanttDurationUnitType[0];
+
+        switch (durationUnitTypeIndex) {
+            case GanttDurationUnitType.indexOf("day"):
+                duration = duration * HoursInADay;
+                break;
+            case GanttDurationUnitType.indexOf("hour"):
+                duration = duration * MinutesInAHour;
+                break;
+            case GanttDurationUnitType.indexOf("minute"):
+                duration = duration * SecondsInAMinute;
+                break;
         }
 
-        public static downgradeDurationUnit(durationUnit: string, duration: number): string {
-            let durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
-            // if duration == 0.84 day, we need transform duration to minutes in order to get duration without extra loss
-            durationUnit = DurationHelper.getNewUnitByFloorDuration(durationUnitTypeIndex, duration);
+        if ((duration - Math.floor(duration) !== 0) && durationUnitTypeIndex > 1) {
+            return DurationHelper.getNewUnitByFloorDuration(durationUnitTypeIndex - 1, duration);
+        } else {
+            return GanttDurationUnitType[durationUnitTypeIndex - 1];
+        }
+    }
 
-            return durationUnit;
+    public static downgradeDurationUnit(durationUnit: string, duration: number): string {
+        let durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
+        // if duration == 0.84 day, we need transform duration to minutes in order to get duration without extra loss
+        durationUnit = DurationHelper.getNewUnitByFloorDuration(durationUnitTypeIndex, duration);
+
+        return durationUnit;
+    }
+
+    public static transformExtraDuration(
+        durationUnit: string | DurationUnits,
+        duration: number): number {
+        switch (durationUnit) {
+            case DurationUnits.Hour:
+                return HoursInADay * duration;
+
+            case DurationUnits.Minute:
+                return MinutesInADay * duration;
+
+            case DurationUnits.Second:
+                return SecondsInADay * duration;
+
+            default:
+                return duration;
         }
 
-        public static transformExtraDuration(
-            durationUnit: string | DurationUnits,
-            duration: number): number {
-            switch (durationUnit) {
-                case DurationUnits.Hour:
-                    return HoursInADay * duration;
+    }
 
-                case DurationUnits.Minute:
-                    return MinutesInADay * duration;
+    public static transformDuration(
+        duration: number,
+        newDurationUnit: string | DurationUnits,
+        stepDurationTransformation: number): number {
 
-                case DurationUnits.Second:
-                    return SecondsInADay * duration;
-
-                default:
-                    return duration;
-            }
-
+        if (stepDurationTransformation === null || typeof stepDurationTransformation === "undefined") {
+            return Math.floor(duration);
         }
 
-        public static transformDuration(
-            duration: number,
-            newDurationUnit: string | DurationUnits,
-            stepDurationTransformation: number): number {
-
-            if (stepDurationTransformation === null || typeof stepDurationTransformation === "undefined") {
-                return Math.floor(duration);
-            }
-
-            let transformedDuration: number = duration;
-            switch (newDurationUnit) {
-                case DurationUnits.Hour:
-                    transformedDuration = duration * HoursInADay;
-                    break;
-                case DurationUnits.Minute:
-                    transformedDuration = duration * (stepDurationTransformation === 2
-                            ? MinutesInADay
-                            : MinutesInAHour);
-                    break;
-                case DurationUnits.Second:
-                    transformedDuration = duration * (stepDurationTransformation === 3 ? SecondsInADay
-                        : stepDurationTransformation === 2 ? SecondsInAHour
-                            : SecondsInAMinute);
-                    break;
-            }
-
-            return Math.floor(transformedDuration);
+        let transformedDuration: number = duration;
+        switch (newDurationUnit) {
+            case DurationUnits.Hour:
+                transformedDuration = duration * HoursInADay;
+                break;
+            case DurationUnits.Minute:
+                transformedDuration = duration * (stepDurationTransformation === 2
+                    ? MinutesInADay
+                    : MinutesInAHour);
+                break;
+            case DurationUnits.Second:
+                transformedDuration = duration * (stepDurationTransformation === 3 ? SecondsInADay
+                    : stepDurationTransformation === 2 ? SecondsInAHour
+                        : SecondsInAMinute);
+                break;
         }
 
-        /**
-         * Generate 'Duration' label for tooltip
-         * @param duration The duration of task
-         * @param durationUnit The duration unit for chart
-         */
-        public static generateLabelForDuration(
-            duration: number,
-            durationUnit: string | DurationUnits,
-            localizationManager: ILocalizationManager): string {
+        return Math.floor(transformedDuration);
+    }
 
-            let oneDayDuration: number = HoursInADay;
-            let oneHourDuration: number = MinutesInAHour;
-            let oneMinuteDuration: number = 1;
-            switch (durationUnit) {
-                case DurationUnits.Hour:
-                    oneHourDuration = 1;
-                    break;
-                case DurationUnits.Minute:
-                    oneDayDuration = MinutesInADay;
-                    break;
-                case DurationUnits.Second:
-                    oneDayDuration = SecondsInADay;
-                    oneHourDuration = SecondsInAHour;
-                    oneMinuteDuration = SecondsInAMinute;
-                    break;
-            }
+    /**
+     * Generate 'Duration' label for tooltip
+     * @param duration The duration of task
+     * @param durationUnit The duration unit for chart
+     */
+    public static generateLabelForDuration(
+        duration: number,
+        durationUnit: string | DurationUnits,
+        localizationManager: ILocalizationManager): string {
 
-            let label: string = "";
-            const days: number = Math.floor(duration / oneDayDuration);
-            label += days ? `${days} ${localizationManager.getDisplayName("Visual_DurationUnit_Days")} ` : ``;
-            if (durationUnit === DurationUnits.Day) {
-                return `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Days")} `;
-            }
+        let oneDayDuration: number = HoursInADay;
+        let oneHourDuration: number = MinutesInAHour;
+        let oneMinuteDuration: number = 1;
+        switch (durationUnit) {
+            case DurationUnits.Hour:
+                oneHourDuration = 1;
+                break;
+            case DurationUnits.Minute:
+                oneDayDuration = MinutesInADay;
+                break;
+            case DurationUnits.Second:
+                oneDayDuration = SecondsInADay;
+                oneHourDuration = SecondsInAHour;
+                oneMinuteDuration = SecondsInAMinute;
+                break;
+        }
 
-            let timeDelta: number = days * oneDayDuration;
-            const hours: number = Math.floor((duration - timeDelta) / oneHourDuration);
-            label += hours ? `${hours} ${localizationManager.getDisplayName("Visual_DurationUnit_Hours")} ` : ``;
-            if (durationUnit === DurationUnits.Hour) {
-                return duration >= 24
-                    ? label
-                    : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Hours")}`;
-            }
+        let label: string = "";
+        const days: number = Math.floor(duration / oneDayDuration);
+        label += days ? `${days} ${localizationManager.getDisplayName("Visual_DurationUnit_Days")} ` : ``;
+        if (durationUnit === DurationUnits.Day) {
+            return `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Days")} `;
+        }
 
-            timeDelta = (days * oneDayDuration) + (hours * oneHourDuration);
-            const minutes: number = Math.floor((duration - timeDelta) / oneMinuteDuration);
-            label += minutes ? `${minutes} ${localizationManager.getDisplayName("Visual_DurationUnit_Minutes")} ` : ``;
-            if (durationUnit === DurationUnits.Minute) {
-                return duration >= 60
-                    ? label
-                    : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Minutes")} `;
-            }
+        let timeDelta: number = days * oneDayDuration;
+        const hours: number = Math.floor((duration - timeDelta) / oneHourDuration);
+        label += hours ? `${hours} ${localizationManager.getDisplayName("Visual_DurationUnit_Hours")} ` : ``;
+        if (durationUnit === DurationUnits.Hour) {
+            return duration >= 24
+                ? label
+                : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Hours")}`;
+        }
 
-            timeDelta = (days * oneDayDuration) + (hours * oneHourDuration) + (minutes * oneMinuteDuration);
-            const seconds: number = Math.floor(duration - timeDelta);
-            label += seconds ? `${seconds} ${localizationManager.getDisplayName("Visual_DurationUnit_Seconds")} ` : ``;
-            if (durationUnit === DurationUnits.Second) {
-                return duration >= 60
-                    ? label
-                    : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Seconds")} `;
-            }
+        timeDelta = (days * oneDayDuration) + (hours * oneHourDuration);
+        const minutes: number = Math.floor((duration - timeDelta) / oneMinuteDuration);
+        label += minutes ? `${minutes} ${localizationManager.getDisplayName("Visual_DurationUnit_Minutes")} ` : ``;
+        if (durationUnit === DurationUnits.Minute) {
+            return duration >= 60
+                ? label
+                : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Minutes")} `;
+        }
+
+        timeDelta = (days * oneDayDuration) + (hours * oneHourDuration) + (minutes * oneMinuteDuration);
+        const seconds: number = Math.floor(duration - timeDelta);
+        label += seconds ? `${seconds} ${localizationManager.getDisplayName("Visual_DurationUnit_Seconds")} ` : ``;
+        if (durationUnit === DurationUnits.Second) {
+            return duration >= 60
+                ? label
+                : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Seconds")} `;
         }
     }
 }

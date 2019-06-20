@@ -23,38 +23,51 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+import * as d3 from "d3";
 
-/// <reference path="../_references.ts"/>
+import { RgbColor, parseColorString } from "powerbi-visuals-utils-colorutils";
+import { DurationUnits } from "../../src/gantt";
 
-module powerbi.extensibility.visual.test.helpers {
+export function areColorsEqual(firstColor: string, secondColor: string): boolean {
+    const firstConvertedColor: RgbColor = parseColorString(firstColor),
+        secondConvertedColor: RgbColor = parseColorString(secondColor);
 
-    // powerbi.extensibility.utils.test
-    import RgbColor = powerbi.extensibility.utils.test.helpers.color.RgbColor;
-    import parseColorString = powerbi.extensibility.utils.test.helpers.color.parseColorString;
+    return firstConvertedColor.R === secondConvertedColor.R
+        && firstConvertedColor.G === secondConvertedColor.G
+        && firstConvertedColor.B === secondConvertedColor.B;
+}
 
-    export function areColorsEqual(firstColor: string, secondColor: string): boolean {
-        const firstConvertedColor: RgbColor = parseColorString(firstColor),
-            secondConvertedColor: RgbColor = parseColorString(secondColor);
+export function isColorAppliedToElements(
+    elements: JQuery[],
+    color?: string,
+    colorStyleName: string = "fill"
+): boolean {
+    return elements.some((element: JQuery) => {
+        const currentColor: string = element.css(colorStyleName);
 
-        return firstConvertedColor.R === secondConvertedColor.R
-            && firstConvertedColor.G === secondConvertedColor.G
-            && firstConvertedColor.B === secondConvertedColor.B;
+        if (!currentColor || !color) {
+            return currentColor === color;
+        }
+
+        return areColorsEqual(currentColor, color);
+    });
+}
+
+/**
+* Calculates end date from start date and offset for different durationUnits
+* @param durationUnit
+* @param start Start date
+* @param step An offset
+*/
+export function getEndDate(durationUnit: string, start: Date, end: Date): Date[] {
+    switch (durationUnit) {
+        case DurationUnits.Second.toString():
+            return d3.timeSecond.range(start, end);
+        case DurationUnits.Minute.toString():
+            return d3.timeMinute.range(start, end);
+        case DurationUnits.Hour.toString():
+            return d3.timeHour.range(start, end);
+        default:
+            return d3.timeDay.range(start, end);
     }
-
-    export function isColorAppliedToElements(
-        elements: JQuery[],
-        color?: string,
-        colorStyleName: string = "fill"
-    ): boolean {
-        return elements.some((element: JQuery) => {
-            const currentColor: string = element.css(colorStyleName);
-
-            if (!currentColor || !color) {
-                return currentColor === color;
-            }
-
-            return areColorsEqual(currentColor, color);
-        });
-    }
-
 }

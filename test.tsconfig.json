@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "allowJs": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "module": "es6",
+        "target": "es6",
+        "sourceMap": true,
+        "outDir": "./.tmp/build/",
+        "sourceRoot": "../../src/",
+        "moduleResolution": "node",
+        "declaration": true,
+        "lib": [
+            "es2015",
+            "dom"
+        ]
+    },
+    "files": [
+        "./test/visualTest.ts"
+    ],
+    "include": [
+        "src/*.ts"
+    ]
+}
