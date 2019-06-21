@@ -26,7 +26,9 @@
 
 import "./../style/gantt.less";
 
-import "@babel/polyfill";
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+
 import * as d3 from "d3";
 import * as _ from "lodash";
 import powerbi from "powerbi-visuals-api";
@@ -361,6 +363,10 @@ export class Gantt implements IVisual {
     private hasNotNullableDates: boolean = false;
 
     constructor(options: VisualConstructorOptions) {
+        if (window.location !== window.parent.location) {
+            require("core-js/stable");
+        }
+
         this.init(options);
     }
 

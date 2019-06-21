@@ -1,8 +1,18 @@
+## 2.0.1
+* `@babel/polyfill` replacement by `core-js/stable`
+* Conditional loading of `core-js/stable` only for sandbox mode
+
 ## 2.0.0
-* API 2.3.0
+* API 2.6.0
 * Webpack integration
 * IE 11 support
 * Azure Pipelines integration
+* Milestones feature
+* UI improvement
+* Fixed bugs related to Grouping option
+* Fixed bugs related to expand/collapse
+* Fixed bug with Days Off extra duration calculation
+* Common task bar and common milestones features
 
 
 ## 1.14.2
