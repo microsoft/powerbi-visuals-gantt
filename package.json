@@ -16,7 +16,9 @@
     "lint": "node node_modules/tslint/bin/tslint \"+(src|test)/**/*.ts\"",
     "pretest": "pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
     "test": "karma start",
-    "cert": "pbiviz --install-cert"
+    "cert": "pbiviz --install-cert",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": {
     "name": "Microsoft",
@@ -40,7 +42,8 @@
     "powerbi-visuals-utils-interactivityutils": "5.5.0",
     "powerbi-visuals-utils-svgutils": "2.2.0",
     "powerbi-visuals-utils-tooltiputils": "2.2.0",
-    "powerbi-visuals-utils-typeutils": "2.2.0"
+    "powerbi-visuals-utils-typeutils": "2.2.0",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@types/d3": "5.7.2",
@@ -79,5 +82,6 @@
     "tslint": "5.16.0",
     "typescript": "3.4.5",
     "webpack": "4.32.2"
-  }
+  },
+  "snyk": true
 }
