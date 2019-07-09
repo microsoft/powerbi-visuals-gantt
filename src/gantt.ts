@@ -791,13 +791,13 @@ export class Gantt implements IVisual {
             milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
             milestones.forEach((milestone) => {
                 const milestoneObjects = milestonesCategory.objects && milestonesCategory.objects[milestone.index];
-                const selectionBuider: ISelectionIdBuilder = host
+                const selectionBuilder: ISelectionIdBuilder = host
                     .createSelectionIdBuilder()
                     .withCategory(milestonesCategory, milestone.index);
 
                 const milestoneDataPoint: MilestoneDataPoint = {
                     name: milestone.value as string,
-                    identity: selectionBuider.createSelectionId(),
+                    identity: selectionBuilder.createSelectionId(),
                     shapeType: milestoneObjects && milestoneObjects.milestones && milestoneObjects.milestones.shapeType ?
                         milestoneObjects.milestones.shapeType as string : MilestoneShapeTypes.Rhombus,
                     color: milestoneObjects && milestoneObjects.milestones && milestoneObjects.milestones.fill ?
@@ -859,7 +859,7 @@ export class Gantt implements IVisual {
             let tooltips: VisualTooltipDataItem[] = [];
             let stepDurationTransformation: number = 0;
 
-            const selectionBuider: ISelectionIdBuilder = host
+            const selectionBuilder: ISelectionIdBuilder = host
                 .createSelectionIdBuilder()
                 .withCategory(dataView.categorical.categories[0], index);
 
@@ -870,7 +870,7 @@ export class Gantt implements IVisual {
                             (typeMeta: TaskTypeMetadata) => typeMeta.name === group.Duration.source.groupName);
 
                         if (taskType) {
-                            selectionBuider.withCategory(taskType.selectionColumn, 0);
+                            selectionBuilder.withCategory(taskType.selectionColumn, 0);
                             color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
                         }
 
@@ -904,7 +904,7 @@ export class Gantt implements IVisual {
                             (typeMeta: TaskTypeMetadata) => typeMeta.name === group.EndDate.source.groupName);
 
                         if (taskType) {
-                            selectionBuider.withCategory(taskType.selectionColumn, 0);
+                            selectionBuilder.withCategory(taskType.selectionColumn, 0);
                             color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
                         }
 
@@ -930,7 +930,7 @@ export class Gantt implements IVisual {
                 });
             }
 
-            const selectionId: powerbi.extensibility.ISelectionId = selectionBuider.createSelectionId();
+            const selectionId: powerbi.extensibility.ISelectionId = selectionBuilder.createSelectionId();
             const extraInformation: ExtraInformation[] = [];
             const resource: string = (values.Resource && values.Resource[index] as string) || "";
             const parent: string = (values.Parent && values.Parent[index] as string) || null;
@@ -1001,7 +1001,7 @@ export class Gantt implements IVisual {
                         daysOffList: null,
                         wasDowngradeDurationUnit: null,
                         selected: null,
-                        identity: selectionBuider.createSelectionId(),
+                        identity: selectionBuilder.createSelectionId(),
                         Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : []
                     };
 
@@ -2088,7 +2088,7 @@ export class Gantt implements IVisual {
         this.taskDaysOffRender(taskSelection, taskConfigHeight);
         this.taskResourceRender(taskSelection, taskConfigHeight);
 
-        this.renderTooltip(taskSelection);
+        this.renderTooltipReportPage(taskSelection);
     }
 
 
@@ -2850,6 +2850,12 @@ export class Gantt implements IVisual {
             });
     }
 
+    private renderTooltipReportPage(selection: Selection<Line | Task | MilestonePath>): void {
+        this.tooltipServiceWrapper.addTooltip(selection,
+            (tooltipEvent: TooltipEventArgs<TooltipEnabledDataPoint>) => { return tooltipEvent.data.tooltipInfo },
+            (tooltipEvent: TooltipEventArgs<TooltipEnabledDataPoint>) => { return tooltipEvent.data.identity }
+        );
+    }
     private updateElementsPositions(margin: IMargin): void {
         let settings = this.viewModel.settings;
         const taskLabelsWidth: number = settings.taskLabels.show

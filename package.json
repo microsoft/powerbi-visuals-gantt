@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-gantt",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "A Gantt chart is a type of bar chart which illustrates a project timeline or schedule. The Gantt Chart visual shows the Tasks, Start Dates, Durations, % Complete, and Resources for a project. The Gantt Chart visual can be used to show current schedule status using percent-complete shadings and a vertical \"TODAY\" line. The Legend may be used to group or filter tasks based upon data values.",
   "repository": {
     "type": "git",
@@ -33,13 +33,13 @@
     "del-cli": "1.1.0",
     "jquery": "3.4.1",
     "lodash": "4.17.11",
-    "powerbi-visuals-utils-chartutils": "2.4.0",
-    "powerbi-visuals-utils-colorutils": "2.2.0",
+    "powerbi-visuals-utils-chartutils": "^2.4.0",
+    "powerbi-visuals-utils-colorutils": "^2.2.0",
     "powerbi-visuals-utils-dataviewutils": "2.2.0",
     "powerbi-visuals-utils-formattingutils": "4.3.0",
-    "powerbi-visuals-utils-interactivityutils": "5.5.0",
-    "powerbi-visuals-utils-svgutils": "2.2.0",
-    "powerbi-visuals-utils-tooltiputils": "2.2.0",
+    "powerbi-visuals-utils-interactivityutils": "^5.5.1",
+    "powerbi-visuals-utils-svgutils": "^2.2.0",
+    "powerbi-visuals-utils-tooltiputils": "^2.2.0",
     "powerbi-visuals-utils-typeutils": "2.2.0"
   },
   "devDependencies": {
@@ -66,10 +66,10 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript": "4.0.0",
     "karma-typescript-preprocessor": "0.4.0",
-    "karma-webpack": "3.0.5",
+    "karma-webpack": "^3.0.5",
     "less": "3.9.0",
-    "powerbi-models": "1.2.0",
-    "powerbi-visuals-api": "^2.6.0",
+    "powerbi-models": "^1.2.0",
+    "powerbi-visuals-api": "^2.6.1",
     "powerbi-visuals-tools": "^3.1.2",
     "powerbi-visuals-utils-testutils": "2.2.0",
     "puppeteer": "^1.7.0",
@@ -78,6 +78,6 @@
     "ts-node": "^8.2.0",
     "tslint": "5.16.0",
     "typescript": "3.4.5",
-    "webpack": "4.32.2"
+    "webpack": "^4.32.2"
   }
 }

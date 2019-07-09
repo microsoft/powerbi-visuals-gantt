@@ -873,6 +873,24 @@
             }
         }
     },
+    "tooltips": {
+        "supportedTypes": {
+            "default": true,
+            "canvas": true
+        },
+        "properties": {
+            "dateFormat": {
+                "displayName": "Date format",
+                "displayNameKey": "Visual_TooltipSettings_DateFormat",
+                "type": {
+                    "text": true
+                }
+            }
+        },
+        "roles": [
+            "tooltips"
+        ]
+    },
     "sorting": {
         "default": {}
     }
