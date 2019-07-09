@@ -1662,7 +1662,7 @@ describe("Gantt", () => {
                         const taskRectY = taskRects[i][0].getBBox().y;
 
                         if (text) {
-                            expect(taskResourcesX.toFixed(2)).toEqual(taskRectX.toFixed(2));
+                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2));
                             expect(taskResourcesY.toFixed(2)).toBeLessThan(taskRectY.toFixed(2));
                         }
                     });
