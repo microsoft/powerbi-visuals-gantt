@@ -1830,6 +1830,7 @@ export class Gantt implements IVisual {
         let taskLabelsColor: string = this.viewModel.settings.taskLabels.fill;
         let taskLabelsFontSize: number = this.viewModel.settings.taskLabels.fontSize;
         let taskLabelsWidth: number = this.viewModel.settings.taskLabels.width;
+        let taskConfigHeight: number = this.viewModel.settings.taskConfig.height || DefaultChartLineHeight;
         const categoriesAreaBackgroundColor: string = this.colorHelper.getThemeColor();
 
         if (taskLabelsShow) {
@@ -1902,7 +1903,7 @@ export class Gantt implements IVisual {
                     const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
                     return drawStandartMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
                 })
-                .attr("y", (task: GroupedTask) => Gantt.DefaultValues.TaskLineWidth + (task.id + 1) * this.getResourceLabelTopMargin())
+                .attr("y", () => (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2) // y is a relative positioning
                 .attr("width", this.viewport.width)
                 .attr("height", 1)
                 .attr("fill", Gantt.DefaultValues.TaskLineColor);
