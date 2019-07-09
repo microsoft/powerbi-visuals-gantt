@@ -1903,7 +1903,7 @@ export class Gantt implements IVisual {
                     const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
                     return drawStandartMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
                 })
-                .attr("y", (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2) // y is a relative positioning
+                .attr("y", () => (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2) // y is a relative positioning
                 .attr("width", this.viewport.width)
                 .attr("height", 1)
                 .attr("fill", Gantt.DefaultValues.TaskLineColor);
