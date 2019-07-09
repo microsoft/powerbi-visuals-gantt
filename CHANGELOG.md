@@ -1,3 +1,7 @@
+## 2.0.2
+* Following #153 https://github.com/microsoft/powerbi-visuals-gantt/issues/153 made the adjustement that resolves the described issue of the horizontal lines overlapping the bars.
+* It now also works while scaling the Task height 
+
 ## 2.0.1
 * `@babel/polyfill` replacement by `core-js/stable`
 * Conditional loading of `core-js/stable` only for sandbox mode
