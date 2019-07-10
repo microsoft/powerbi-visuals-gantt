@@ -1,3 +1,7 @@
+## 2.0.3
+* Fixed typo: SelectionBuider changed into SelectionBuilder
+* Added ability to display canvas tooltips
+
 ## 2.0.2
 * Following #153 https://github.com/microsoft/powerbi-visuals-gantt/issues/153 made the adjustement that resolves the described issue of the horizontal lines overlapping the bars.
 * It now also works while scaling the Task height 

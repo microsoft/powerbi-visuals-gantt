@@ -32,6 +32,7 @@ import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import DataViewValueColumnGroup = powerbi.DataViewValueColumnGroup;
 import ISelectionId = powerbi.visuals.ISelectionId;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
+import { TooltipEnabledDataPoint } from "powerbi-visuals-utils-tooltiputils";
 
 import { interactivitySelectionService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
 import SelectableDataPoint = interactivityService.SelectableDataPoint;
@@ -85,6 +86,10 @@ export interface Task extends SelectableDataPoint {
     stepDurationTransformation?: number;
     highlight?: boolean;
     Milestones?: Milestone[];
+}
+
+export interface TooltipReportPageEnabledDataPoint extends TooltipEnabledDataPoint {
+    identity?: ISelectionId;
 }
 
 export interface GroupedTask {
