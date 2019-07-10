@@ -223,6 +223,8 @@ module Selectors {
     export const Label: ClassAndSelector = createClassAndSelector("label");
     export const LegendItems: ClassAndSelector = createClassAndSelector("legendItem");
     export const LegendTitle: ClassAndSelector = createClassAndSelector("legendTitle");
+    export const backGroundbarsOdd: ClassAndSelector = createClassAndSelector("backGroundbarsOdd");
+    export const backGroundbarsEven: ClassAndSelector = createClassAndSelector("backGroundbarsEven");
 }
 
 module GanttRoles {
@@ -337,6 +339,8 @@ export class Gantt implements IVisual {
     private taskGroup: Selection<any>;
     private lineGroup: Selection<any>;
     private lineGroupWrapper: Selection<any>;
+    private backGroundbarsOdd: Selection<any>;
+    private backGroundbarsEven: Selection<any>;
     private clearCatcher: Selection<any>;
     private ganttDiv: Selection<any>;
     private behavior: Behavior;
@@ -405,6 +409,21 @@ export class Gantt implements IVisual {
             .append("g")
             .classed(Selectors.Chart.className, true);
 
+        // create background for the plot area
+        this.backGroundbarsOdd = this.chartGroup
+            .classed(Selectors.backGroundbarsOdd.className, true)
+            .append("g")
+            .append("path")
+            .attr("d", "M 0 0 h 200 v 300")
+            .attr("fill", "#ffff00");
+
+        this.backGroundbarsEven = this.chartGroup
+            .classed(Selectors.backGroundbarsEven.className, true)
+            .append("g")
+            .append("path")
+            .attr("d", "M 10 10 h 200 v 300")
+            .attr("fill", "#ff00ff");
+
         // create tasks container
         this.taskGroup = this.chartGroup
             .append("g")
@@ -424,7 +443,7 @@ export class Gantt implements IVisual {
             .attr("width", "100%")
             .attr("y", "-20")
             .attr("height", "40px")
-            .attr("fill", axisBackgroundColor);
+            .attr("fill", axisBackgroundColor); // background colour of the top X axis
 
         // create task lines container
         this.lineGroup = this.ganttSvg
@@ -442,7 +461,7 @@ export class Gantt implements IVisual {
         this.lineGroup
             .append("rect")
             .classed(Selectors.TaskTopLine.className, true)
-            .attr("width", "100%")
+            .attr("width", "100%") // line between X-axis and first category
             .attr("height", 1)
             .attr("y", this.margin.top)
             .attr("fill", Gantt.DefaultValues.TaskLineColor);
@@ -522,6 +541,14 @@ export class Gantt implements IVisual {
         this.chartGroup
             .selectAll(Selectors.SingleTask.selectorName)
             .remove();
+
+        this.backGroundbarsOdd
+            .selectAll(Selectors.backGroundbarsOdd.selectorName)
+            .remove();
+
+        this.backGroundbarsEven
+            .selectAll(Selectors.backGroundbarsEven.selectorName)
+            .remove();
     }
 
     /**
@@ -543,7 +570,7 @@ export class Gantt implements IVisual {
     }
 
     /**
-    * Get the tooltip info (data display names & formated values)
+    * Get the tooltip info (data display names & formatted values)
     * @param task All task attributes.
     * @param formatters Formatting options for gantt attributes.
     * @param durationUnit Duration unit option
@@ -677,15 +704,15 @@ export class Gantt implements IVisual {
         if (cultureSelector) {
             dateFormat = null;
         }
-
-        if (!settings.tooltipConfig.dateFormat) {
-            settings.tooltipConfig.dateFormat = dateFormat;
+        let TT_dateFormat = settings.tooltipConfig.dateFormat;
+        if (!TT_dateFormat) {
+            TT_dateFormat = dateFormat;
         }
 
-        if (settings.tooltipConfig.dateFormat &&
-            settings.tooltipConfig.dateFormat !== dateFormat) {
+        if (TT_dateFormat &&
+            TT_dateFormat !== dateFormat) {
 
-            dateFormat = settings.tooltipConfig.dateFormat;
+            dateFormat = TT_dateFormat;
         }
 
         return <GanttChartFormatters>{
@@ -1343,8 +1370,8 @@ export class Gantt implements IVisual {
         }
 
         if (colorHelper.isHighContrast) {
-            settings.dateType.axisColor = colorHelper.getHighContrastColor("foreground", settings.dateType.axisColor);
-            settings.dateType.axisTextColor = colorHelper.getHighContrastColor("foreground", settings.dateType.axisTextColor);
+            settings.xaxis.axisColor = colorHelper.getHighContrastColor("foreground", settings.xaxis.axisColor);
+            settings.xaxis.axisTextColor = colorHelper.getHighContrastColor("foreground", settings.xaxis.axisTextColor);
             settings.dateType.todayColor = colorHelper.getHighContrastColor("foreground", settings.dateType.todayColor);
 
             settings.daysOff.fill = colorHelper.getHighContrastColor("foreground", settings.daysOff.fill);
@@ -1442,6 +1469,8 @@ export class Gantt implements IVisual {
 
     private scaleAxisLength(axisLength: number): number {
         let fullScreenAxisLength: number = Gantt.DefaultGraphicWidthPercentage * this.viewport.width;
+        fullScreenAxisLength = this.viewport.width - this.margin.left - this.margin.right - this.viewModel.settings.taskLabels.width - Gantt.DefaultValues.ResourceWidth;
+
         if (axisLength < fullScreenAxisLength) {
             axisLength = fullScreenAxisLength;
         }
@@ -1519,9 +1548,103 @@ export class Gantt implements IVisual {
         this.hasNotNullableDates = !!minDateTask && !!maxDateTask;
 
         let axisLength: number = 0;
-        if (this.hasNotNullableDates) {
+        if (this.hasNotNullableDates) {            //possible start date in capabilities:
+            //      auto (default) = earliest until latest
+            //      absolute = filled in dates
+            //      relative 
+            //      relative_start = now - units * scaletype 
+            //      relative_end = now + units * scaletype
+
+            /*
             let startDate: Date = minDateTask.start;
             let endDate: Date = maxDateTask.end;
+            */
+            let startDate: Date;
+            let endDate: Date;
+
+            switch (this.viewModel.settings.xaxis.axisRangeType) {
+                case "auto": {
+                    startDate = minDateTask.start;
+                    endDate = maxDateTask.end;
+                    break;
+                }
+                case "absolute": {
+                    startDate = new Date(this.viewModel.settings.xaxis.axisRangeTypeAbsoluteStartDate);
+                    endDate = new Date(this.viewModel.settings.xaxis.axisRangeTypeAbsoluteEndDate);
+                    break;
+                }
+                case "relative": {
+                    let refDate = new Date(Date.now());
+                    let refDateMethod: string = (this.viewModel.settings.xaxis.axisRangeTypeRelativeReferenceDateMethod);
+
+                    switch (refDateMethod) {
+                        case "MonthStart": {
+                            refDate = new Date(refDate.getFullYear(), refDate.getMonth(), 1);
+                            break;
+
+                        }
+                        case "MonthMiddle": {
+                            refDate = new Date(refDate.getFullYear(), refDate.getMonth(), 14);
+                            break;
+                        }
+                        case "MonthEnd": {
+                            refDate = new Date(refDate.getFullYear(), refDate.getMonth(), 28);
+                            break;
+                        }
+                        case "QuarterStart": {
+                            let CurrentQ: number = Math.floor((this.getMonthNumber(refDate) - 0.1) / 3) + 1;
+                            refDate = new Date(refDate.getFullYear(), (3 * CurrentQ) - 3, 1);
+                            //console.log("***", CurrentQ, "***", refDate.getFullYear(), this.getMonthNumber(refDate), refDate.getDate(), "***");
+                            break;
+                        }
+                        case "QuarterMiddle": {
+                            let CurrentQ: number = Math.floor((this.getMonthNumber(refDate) - 0.1) / 3) + 1;
+                            refDate = new Date(refDate.getFullYear(), (3 * CurrentQ) - 2, 14);
+                            //console.log("***", CurrentQ, "***", refDate.getFullYear(), this.getMonthNumber(refDate), refDate.getDate(), "***");
+                            break;
+                        }
+                        case "QuarterEnd": {
+                            let CurrentQ: number = Math.floor((this.getMonthNumber(refDate) - 0.1) / 3) + 1;
+                            refDate = new Date(refDate.getFullYear(), (3 * CurrentQ) - 1, 28);
+                            //console.log("***", CurrentQ, "***", refDate.getFullYear(), this.getMonthNumber(refDate), refDate.getDate(), "***");
+                            break;
+                        }
+                        default: {
+                            refDate = new Date(Date.now());
+                            break;
+                        }
+                    }
+
+                    //console.log("In section relative selecting the refDateMethod:", refDateMethod, " refDate:", refDate.getFullYear(), this.getMonthNumber(refDate), refDate.getDate());
+
+
+                    let dateTypeMilliseconds: number = Gantt.getDateType(settings.dateType.type)
+                    startDate = new Date(refDate.valueOf() + this.viewModel.settings.xaxis.axisRangeTypeRelativeStartInt * dateTypeMilliseconds);
+                    endDate = new Date(refDate.valueOf() + this.viewModel.settings.xaxis.axisRangeTypeRelativeEndInt * dateTypeMilliseconds);
+                    break;
+                }
+                default: {
+                    startDate = minDateTask.start;
+                    endDate = maxDateTask.end;
+                    break;
+                }
+            }
+
+            switch (String(this.viewModel.settings.dateType.type)) {
+                case "Quarter": {
+                    //we want it to start and end on the exact quarters, determine the start of the quarter for the startDate
+                    let StartQ: number = Math.floor((this.getMonthNumber(startDate) - 0.1) / 3) + 1;
+                    let EndQ: number = Math.floor((this.getMonthNumber(endDate) - 0.1) / 3) + 1;
+                    startDate = new Date(startDate.getFullYear(), (3 * StartQ) - 3, 1);
+                    endDate = new Date(endDate.getFullYear(), (3 * EndQ) - 1, 32);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+            //console.log('start*', startDate.getFullYear(), this.getMonthNumber(startDate), startDate.getDate());
+            //console.log('end  *', endDate.getFullYear(), this.getMonthNumber(endDate), endDate.getDate());
 
             if (startDate.toString() === endDate.toString()) {
                 endDate = new Date(endDate.valueOf() + (24 * 60 * 60 * 1000));
@@ -1536,13 +1659,14 @@ export class Gantt implements IVisual {
 
             let viewportIn: IViewport = {
                 height: this.viewport.height,
-                width: axisLength
+                width: axisLength + this.margin.right
             };
 
             let xAxisProperties: IAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, ticks, false);
             this.timeScale = <timeScale<Date, Date>>xAxisProperties.scale;
 
             this.renderAxis(xAxisProperties);
+            this.renderPlotBackground(axisLength + this.margin.right, ticks);
         }
 
         axisLength = this.scaleAxisLength(axisLength);
@@ -1772,8 +1896,9 @@ export class Gantt implements IVisual {
     }
 
     private renderAxis(xAxisProperties: IAxisProperties, duration: number = Gantt.DefaultDuration): void {
-        const axisColor: string = this.viewModel.settings.dateType.axisColor;
-        const axisTextColor: string = this.viewModel.settings.dateType.axisTextColor;
+        const axisColor: string = this.viewModel.settings.xaxis.axisColor;
+        const axisTextColor: string = this.viewModel.settings.xaxis.axisTextColor;
+        const axisShow: boolean = this.viewModel.settings.xaxis.show;
 
         let xAxis = xAxisProperties.axis;
         this.axisGroup.call(xAxis.tickSizeOuter(xAxisProperties.outerPadding));
@@ -1794,6 +1919,58 @@ export class Gantt implements IVisual {
         this.axisGroup
             .selectAll(".tick text")
             .style("fill", (timestamp: number) => this.setTickColor(timestamp, axisTextColor));
+
+        if (axisShow) {
+            this.axisGroup.style("opacity", 1);
+        } else {
+            this.axisGroup.style("opacity", 0);
+        }
+    }
+
+    private renderPlotBackground(
+        axisLength: number,
+        tickscount: number
+    ): void {
+
+        if (!this.viewModel.settings.pasettings.show) {
+            this.backGroundbarsOdd
+                .attr("opacity", 0);
+            this.backGroundbarsEven
+                .attr("opacity", 0);
+        } else {
+
+
+            let pathWidth: number = axisLength / (tickscount - 1); //width of each bar
+            let pathHeight: string = "99999"; //ideally match the height of the chart
+
+            let pathStringOdd: string = "M 0 0"; // start at point 0(x) 0(y)
+            let pathStringEven: string = "M " + pathWidth + " 0"; // start at point 0(x) 0(y)
+
+            let i: number = 1;
+            while (i < (tickscount)) {
+                //console.log("i", i, "tickscount", tickscount);
+                if (i % 2 === 0) {
+                    //even
+                    pathStringEven += "h" + pathWidth + "v" + pathHeight + "h-" + pathWidth + "v-" + pathHeight + "m" + 2 * pathWidth + " 0";
+                } else {
+                    pathStringOdd += "h" + pathWidth + "v" + pathHeight + "h-" + pathWidth + "v-" + pathHeight + "m" + 2 * pathWidth + " 0";
+                }
+                i++;
+            }
+
+            this.backGroundbarsOdd
+                .attr("opacity", 1)
+                .attr("d", pathStringOdd)
+                .attr("fill", this.viewModel.settings.pasettings.paColorOdd)
+                .attr("fill-opacity", (100 - this.viewModel.settings.pasettings.transparency) / 100)
+                ;
+            this.backGroundbarsEven
+                .attr("opacity", 1)
+                .attr("d", pathStringEven)
+                .attr("fill", this.viewModel.settings.pasettings.paColorEven)
+                .attr("fill-opacity", (100 - this.viewModel.settings.pasettings.transparency) / 100)
+                ;
+        }
     }
 
     private setTickColor(
@@ -1854,26 +2031,26 @@ export class Gantt implements IVisual {
                 .append("g")
                 .merge(axisLabel);
 
-            axisLabelGroup.classed(Selectors.Label.className, true)
+            axisLabelGroup.classed(Selectors.Label.className, true) // position the labels of the tasks
                 .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.id)));
 
-            axisLabelGroup
+            axisLabelGroup // labels of the tasks and parent tasks
                 .append("text")
-                .attr("x", (task: GroupedTask) => (Gantt.TaskLineCoordinateX +
+                .attr("x", (task: GroupedTask) => (Gantt.TaskLineCoordinateX + // x-position of the label
                     (_.every(task.tasks, (task: Task) => !!task.parent)
                         ? Gantt.SubtasksLeftMargin
                         : (task.tasks[0].children && !!task.tasks[0].children.length) ? this.parentLabelOffset : 0)))
                 .attr("class", (task: GroupedTask) => task.tasks[0].children ? "parent" : task.tasks[0].parent ? "child" : "normal-node")
-                .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin())
+                .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin()) // y-position of the label
                 .attr("fill", taskLabelsColor)
                 .attr("stroke-width", Gantt.AxisLabelStrokeWidth)
                 .style("font-size", PixelConverter.fromPoint(taskLabelsFontSize))
                 .text((task: GroupedTask) => task.name)
-                .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis)
+                .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis) //original
                 .append("title")
                 .text((task: GroupedTask) => task.name);
 
-            axisLabelGroup
+            axisLabelGroup // positioning of the expand/collapse icon
                 .filter((task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length)
                 .append("image")
                 .attr("xlink:href", (task: GroupedTask) => (!task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvgEncoded : this.collapseAllImageConsts.minusSvgEncoded))
@@ -1886,7 +2063,7 @@ export class Gantt implements IVisual {
             let parentTask: string = "";
             let childrenCount = 0;
             let currentChildrenIndex = 0;
-            axisLabelGroup
+            axisLabelGroup // lines between the tasks
                 .append("rect")
                 .attr("x", (task: GroupedTask) => {
                     const isGrouped = this.viewModel.settings.general.groupTasks;
@@ -1905,7 +2082,7 @@ export class Gantt implements IVisual {
                     return drawStandartMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
                 })
                 .attr("y", () => (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2) // y is a relative positioning
-                .attr("width", this.viewport.width)
+                .attr("width", "100%")
                 .attr("height", 1)
                 .attr("fill", Gantt.DefaultValues.TaskLineColor);
 
@@ -2983,6 +3160,16 @@ export class Gantt implements IVisual {
         } else {
             (instanceEnumeration as VisualObjectInstance[]).push(instance);
         }
+    }
+
+    /**
+    * Typescript getMonth function returns 0...11 for January .... December
+    * Sometimes it is easier to calculate with Calendar months
+    * ONLY USE THIS WHEN DISPLAYING OR CALCULATING!
+    * @param funcstrDate the date to return the calendar month for
+    */
+    private getMonthNumber(funcstrDate: Date) {
+        return 1 + funcstrDate.getMonth();
     }
 
 }

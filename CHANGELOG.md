@@ -1,3 +1,8 @@
+## 2.0.4
+* Added ability to display bandedcolumns as plotbackground
+* Added the option to more precisely configure the X-axis
+* Added the ability to show a certain timeframe (fixed size or relative)
+
 ## 2.0.3
 * Fixed typo: SelectionBuider changed into SelectionBuilder
 * Added ability to display canvas tooltips

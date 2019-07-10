@@ -38,7 +38,9 @@ export class GanttSettings extends DataViewObjectsParser {
     taskConfig: TaskConfigSettings = new TaskConfigSettings();
     taskCompletion: TaskCompletionSettings = new TaskCompletionSettings();
     taskResource: TaskResourceSettings = new TaskResourceSettings();
+    pasettings: PlotAreaSettings = new PlotAreaSettings();
     dateType: DateTypeSettings = new DateTypeSettings();
+    xaxis: customXaxisSettings = new customXaxisSettings();
     tooltipConfig: TooltipConfigSettings = new TooltipConfigSettings();
     milestones: MilestonesSettings = new MilestonesSettings();
 }
@@ -77,6 +79,7 @@ export class TaskLabelsSettings {
     show: boolean = true;
     fill: string = "#000000";
     fontSize: number = 9;
+    wordWrap: boolean = true;
     width: number = 110;
 }
 
@@ -102,8 +105,26 @@ export class DateTypeSettings {
     // tslint:disable-next-line:no-reserved-keywords
     type: DateTypes = DateTypes.Week;
     todayColor: string = "#000000";
+}
+
+export class customXaxisSettings {
+    show: boolean = true;
+    axisRangeType: string = "auto";
+    axisRangeTypeAbsoluteStartDate: string = "1 Jan 2018";
+    axisRangeTypeAbsoluteEndDate: string = "31 Dec 2020";
+    axisRangeTypeRelativeReferenceDateMethod: string = "Current date";
+    axisRangeTypeRelativeStartInt: number = -1;
+    axisRangeTypeRelativeEndInt: number = 3;
+    axisShow: boolean = true;
     axisColor: string = "#000000";
     axisTextColor: string = "#000000";
+}
+export class PlotAreaSettings {
+    show: boolean = true;
+    paShowBandedColumns: boolean = false;
+    paColorOdd: string = "#ff0000";
+    paColorEven: string = "#00ff00";
+    transparency: number = 20;
 }
 
 export class TooltipConfigSettings {
