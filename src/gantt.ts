@@ -2855,7 +2855,7 @@ export class Gantt implements IVisual {
         this.tooltipServiceWrapper.addTooltip(selection,
             (tooltipEvent: TooltipEventArgs<TooltipReportPageEnabledDataPoint>) => { return tooltipEvent.data.tooltipInfo },
             (tooltipEvent: TooltipEventArgs<TooltipReportPageEnabledDataPoint>) => { return tooltipEvent.data.identity }
-        )
+        );
     }
 
     private updateElementsPositions(margin: IMargin): void {
