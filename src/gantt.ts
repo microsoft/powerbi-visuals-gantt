@@ -2853,8 +2853,8 @@ export class Gantt implements IVisual {
 
     private renderTooltipReportPage(selection: Selection<Line | Task | MilestonePath>): void {
         this.tooltipServiceWrapper.addTooltip(selection,
-            (tooltipEvent: TooltipEventArgs<TooltipReportPageEnabledDataPoint>) => { return tooltipEvent.data.tooltipInfo },
-            (tooltipEvent: TooltipEventArgs<TooltipReportPageEnabledDataPoint>) => { return tooltipEvent.data.identity }
+            (tooltipEvent: TooltipEventArgs<TooltipReportPageEnabledDataPoint>) => { return tooltipEvent.data.tooltipInfo ;},
+            (tooltipEvent: TooltipEventArgs<TooltipReportPageEnabledDataPoint>) => { return tooltipEvent.data.identity ;}
         );
     }
 
