@@ -551,8 +551,9 @@
                     "suppressFormatPainterCopy": true
                 },
                 "labelColor": {
-                    "displayName": "Color",
+                    "displayName": "Legend Text Color",
                     "displayNameKey": "Visual_Color",
+                    "description": "Legend Text Color",
                     "type": {
                         "fill": {
                             "solid": {
@@ -654,6 +655,13 @@
                         "formatting": {
                             "fontSize": true
                         }
+                    }
+                },
+                "wordWrap": {
+                    "displayName": "Word wrap",
+                    "displayNameKey": "Visual_wordWrap",
+                    "type": {
+                        "bool": true
                     }
                 },
                 "width": {
@@ -785,12 +793,54 @@
                 }
             }
         },
+        "pasettings": {
+            "displayName": "Plot Area",
+            "displayNameKey": "Visual_PlotArea",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "displayNameKey": "Visual_Show",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "paColorOdd": {
+                    "displayName": "Color Columns Odd",
+                    "displayNameKey": "Visual_Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "paColorEven": {
+                    "displayName": "Color Columns Even",
+                    "displayNameKey": "Visual_Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "transparency": {
+                    "displayName": "Transparency",
+                    "description": "Transparency of the color columns",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
         "dateType": {
             "displayName": "Date type",
             "displayNameKey": "Visual_DateType",
             "properties": {
                 "type": {
-                    "displayName": "Type",
+                    "displayName": "Interval",
                     "displayNameKey": "Visual_Type",
                     "type": {
                         "enumeration": [
@@ -847,6 +897,127 @@
                             }
                         }
                     }
+                }
+            }
+        },
+        "xaxis": {
+            "displayName": "X-axis",
+            "displayNameKey": "Visual_Xaxis",
+            "description": "Display X-axis options",
+            "descriptionKey": "Visual_Description_Xaxis",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "displayNameKey": "Visual_show",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "axisRangeType": {
+                    "displayName": "Axis range type",
+                    "displayNameKey": "Visual_Xaxis_AxisRangeType",
+                    "description": "Choose the type of scale of the X-axis. Automatically based on first start date and last end date",
+                    "descriptionKey": "Visual_Description_Xaxis_AxisRangeType",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "auto",
+                                "displayName": "auto (default)",
+                                "displayNameKey": "Visual_Xaxis_AxisRangeType_auto"
+                            },
+                            {
+                                "value": "absolute",
+                                "displayName": "absolute",
+                                "displayNameKey": "Visual_Xaxis_AxisRangeType_absolute"
+                            },
+                            {
+                                "value": "relative",
+                                "displayName": "relative",
+                                "displayNameKey": "Visual_Xaxis_AxisRangeType_relative"
+                            }
+                        ]
+                    }
+                },
+                "axisRangeTypeAbsoluteStartDate": {
+                    "displayName": "Abs start date",
+                    "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_absolute_StartDate",
+                    "type": {
+                        "text": true
+                    },
+                    "description": "Enter the absolute start day (absolute must be selected)",
+                    "descriptionKey": "Visual_Description_Xaxis_AxisRangeTypeAbsoluteStartDate"
+                },
+                "axisRangeTypeAbsoluteEndDate": {
+                    "displayName": "Abs end date",
+                    "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_absolute_EndDate",
+                    "type": {
+                        "text": true
+                    },
+                    "description": "Enter the absolute end day (absolute must be selected)",
+                    "descriptionKey": "Visual_Description_Xaxis_AxisRangeTypeAbsoluteEndDate"
+                },
+                "axisRangeTypeRelativeReferenceDateMethod": {
+                    "displayName": "Method to determine the reference date used with the relative option",
+                    "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_relative_ReferenceDate",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "MonthStart",
+                                "displayName": "Current month start",
+                                "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_relative_ReferenceDate_MonthStart"
+                            },
+                            {
+                                "value": "MonthMiddle",
+                                "displayName": "Current month middle",
+                                "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_relative_ReferenceDate_MonthMiddle"
+                            },
+                            {
+                                "value": "MonthEnd",
+                                "displayName": "Current month end",
+                                "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_relative_ReferenceDate_MonthEnd"
+                            },
+                            {
+                                "value": "QuarterStart",
+                                "displayName": "Current quarter start",
+                                "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_relative_ReferenceDate_QuarterStart"
+                            },
+                            {
+                                "value": "QuarterMiddle",
+                                "displayName": "Current quarter middle",
+                                "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_relative_ReferenceDate_QuarterMiddle"
+                            },
+                            {
+                                "value": "QuarterEnd",
+                                "displayName": "Current quarter end",
+                                "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_relative_ReferenceDate_QuarterEnd"
+                            },
+                            {
+                                "value": "Current date",
+                                "displayName": "Current date",
+                                "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_relative_ReferenceDate_Current"
+                            }
+                        ]
+                    },
+                    "description": "Enter the reference start day (relative must be selected)",
+                    "descriptionKey": "Visual_Description_Xaxis_AxisRangeTypeRelativeReferenceDate"
+                },
+                "axisRangeTypeRelativeStartInt": {
+                    "displayName": "Units relative start date",
+                    "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_relative_StartInt",
+                    "type": {
+                        "numeric": true
+                    },
+                    "description": "Enter the amount of intervals (specified in Date type) for the start of the X-axis (relative must be selected)",
+                    "descriptionKey": "Visual_Description_Xaxis_AxisRangeTypeRelativeStartInt"
+                },
+                "axisRangeTypeRelativeEndInt": {
+                    "displayName": "Units relative end date",
+                    "displayNameKey": "Visual_Description_Xaxis_AxisRangeType_relative_StartInt",
+                    "type": {
+                        "numeric": true
+                    },
+                    "description": "Enter the amount of intervals (specified in Date type) for the end of the X-axis (relative must be selected)",
+                    "descriptionKey": "Visual_Description_Xaxis_AxisRangeTypeRelativeStartInt"
                 },
                 "axisColor": {
                     "displayName": "Axis Color",
