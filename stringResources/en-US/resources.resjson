@@ -19,6 +19,7 @@
 	"Visual_Day_Thursday": "Thursday",
 	"Visual_Day_Friday": "Friday",
 	"Visual_Day_Saturday": "Saturday",
+	"Visual_DisplayGridLines": "Display grid lines",
 	"Visual_FirstDayOfWeek": "First day of week",
 	"Visual_Legend": "Legend",
 	"Visual_LegendName": "Legend Name",

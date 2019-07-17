@@ -328,6 +328,13 @@
                         "bool": true
                     }
                 },
+                "displayGridLines": {
+                    "displayName": "Display grid lines",
+                    "displayNameKey": "Visual_DisplayGridLines",
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "durationUnit": {
                     "displayName": "Duration unit",
                     "displayNameKey": "Visual_DurationUnit",

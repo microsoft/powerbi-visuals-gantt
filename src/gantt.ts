@@ -1827,6 +1827,7 @@ export class Gantt implements IVisual {
 
         let axisLabel: Selection<any>;
         let taskLabelsShow: boolean = this.viewModel.settings.taskLabels.show;
+        let displayGridLines: boolean = this.viewModel.settings.general.displayGridLines;
         let taskLabelsColor: string = this.viewModel.settings.taskLabels.fill;
         let taskLabelsFontSize: number = this.viewModel.settings.taskLabels.fontSize;
         let taskLabelsWidth: number = this.viewModel.settings.taskLabels.width;
@@ -1903,8 +1904,9 @@ export class Gantt implements IVisual {
                     const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
                     return drawStandartMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
                 })
+                //.attr("y", (task: GroupedTask) => Gantt.DefaultValues.TaskLineWidth + (task.id + 1) * this.getResourceLabelTopMargin()) ???
                 .attr("y", () => (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2) // y is a relative positioning
-                .attr("width", this.viewport.width)
+                .attr("width", (task: GroupedTask, index: number) => displayGridLines ? this.viewport.width : 0)
                 .attr("height", 1)
                 .attr("fill", Gantt.DefaultValues.TaskLineColor);
 
@@ -2218,7 +2220,7 @@ export class Gantt implements IVisual {
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
-            .style("fill", (task: Task) => `url(#task${task.id}-${task.taskType ? task.taskType.toString().replace(/\s+/g, "") : task.taskType})`);
+            .style("fill", (task: Task) => `url(#task${task.id}-${window.btoa(task.taskType)}`);
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -2438,7 +2440,7 @@ export class Gantt implements IVisual {
             .data((d: Task) => {
                 const taskProgressPercentage = this.getDaysOffTaskProgressPercent(d);
                 return [{
-                    key: `${d.id}-${d.taskType ? d.taskType.toString().replace(/\s+/g, "") : d.taskType}`, values: <LinearStop[]>[
+                    key: `${d.id}-${window.btoa(d.taskType)}`, values: <LinearStop[]>[
                         { completion: 0, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
@@ -2872,7 +2874,7 @@ export class Gantt implements IVisual {
     }
 
     private getMilestoneLineLength(numOfTasks: number): number {
-        return numOfTasks * (this.viewModel.settings.taskConfig.height || DefaultChartLineHeight);
+        return numOfTasks * ((this.viewModel.settings.taskConfig.height || DefaultChartLineHeight) + (1 + numOfTasks) * this.getResourceLabelTopMargin() / 2);
     }
 
     public static downgradeDurationUnitIfNeeded(tasks: Task[], durationUnit: string) {
@@ -2912,7 +2914,7 @@ export class Gantt implements IVisual {
     }
 
     private enumerateMilestones(instanceEnumeration: VisualObjectInstanceEnumeration): VisualObjectInstance[] {
-        if (!this.viewModel.isDurationFilled) {
+        if (!this.viewModel.isDurationFilled && !this.viewModel.isEndDateFillled) {
             return;
         }
 
@@ -2943,7 +2945,7 @@ export class Gantt implements IVisual {
     }
 
     private enumerateLegend(instanceEnumeration: VisualObjectInstanceEnumeration): VisualObjectInstance[] {
-        if (!this.viewModel.isDurationFilled) {
+        if (!this.viewModel.isDurationFilled && !this.viewModel.isEndDateFillled) {
             return;
         }
 
