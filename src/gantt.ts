@@ -1701,8 +1701,16 @@ export class Gantt implements IVisual {
         settings: GanttSettings): void {
 
         const fullResourceLabelMargin = groupedTasks.length * this.getResourceLabelTopMargin();
+        let widthBeforeConvertion = this.margin.left + settings.taskLabels.width + axisLength;
+
+        if (settings.taskResource.show && settings.taskResource.position === ResourceLabelPositions.Right) {
+            widthBeforeConvertion += Gantt.DefaultValues.ResourceWidth;
+        } else {
+            widthBeforeConvertion += Gantt.DefaultValues.ResourceWidth / 2;
+        }
+
         const height = PixelConverter.toString(groupedTasks.length * (settings.taskConfig.height || DefaultChartLineHeight) + this.margin.top + fullResourceLabelMargin);
-        const width = PixelConverter.toString(this.margin.left + settings.taskLabels.width + axisLength + Gantt.DefaultValues.ResourceWidth);
+        const width = PixelConverter.toString(widthBeforeConvertion);
 
         this.ganttSvg
             .attr("height", height)
