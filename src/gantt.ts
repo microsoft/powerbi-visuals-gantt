@@ -132,6 +132,7 @@ import {
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
 import { GanttSettings, DateTypeSettings } from "./settings";
+import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle } from "./utils";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -887,7 +888,7 @@ export class Gantt implements IVisual {
 
                         completion = ((group.Completion && group.Completion.values[index])
                             && taskProgressShow
-                            && Gantt.convertToDecimal(group.Completion.values[index] as number)) || null;
+                            && Gantt.convertToDecimal(group.Completion.values[index] as number, settings.taskCompletion.maxCompletion)) || null;
 
                         if (completion !== null) {
                             if (completion < Gantt.ComplectionMin) {
@@ -915,7 +916,7 @@ export class Gantt implements IVisual {
 
                         completion = ((group.Completion && group.Completion.values[index])
                             && taskProgressShow
-                            && Gantt.convertToDecimal(group.Completion.values[index] as number)) || null;
+                            && Gantt.convertToDecimal(group.Completion.values[index] as number, settings.taskCompletion.maxCompletion)) || null;
 
                         if (completion !== null) {
                             if (completion < Gantt.ComplectionMin) {
@@ -1341,6 +1342,10 @@ export class Gantt implements IVisual {
             return settings;
         }
 
+        if (settings.taskCompletion.maxCompletion < Gantt.ComplectionMin || settings.taskCompletion.maxCompletion > Gantt.ComplectionTotal) {
+            settings.taskCompletion.maxCompletion = Gantt.ComplectionTotal;
+        }
+
         if (colorHelper.isHighContrast) {
             settings.dateType.axisColor = colorHelper.getHighContrastColor("foreground", settings.dateType.axisColor);
             settings.dateType.axisTextColor = colorHelper.getHighContrastColor("foreground", settings.dateType.axisTextColor);
@@ -1364,12 +1369,8 @@ export class Gantt implements IVisual {
         return !isNaN(date.getTime());
     }
 
-    private static convertToDecimal(value: number): number {
-        if (!((value >= Gantt.ComplectionMin) && (value <= Gantt.ComplectionMax))) {
-            return (value / Gantt.ComplectionTotal);
-        }
-
-        return value;
+    private static convertToDecimal(value: number, maxCompletion: number): number {
+        return value / maxCompletion;
     }
 
     /**
@@ -2052,23 +2053,6 @@ export class Gantt implements IVisual {
         });
     }
 
-
-    private drawRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
-        if (!width || !height) {
-            return;
-        }
-        return "M" + x + "," + y
-            + "h" + (width - radius)
-            + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
-            + "v" + (height - 2 * radius)
-            + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
-            + "h" + (2 * radius - width)
-            + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + -radius
-            + "v" + (2 * radius - height)
-            + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + -radius
-            + "z";
-    }
-
     /**
      * Render tasks
      * @param groupedTasks Grouped tasks
@@ -2201,7 +2185,10 @@ export class Gantt implements IVisual {
             height = Gantt.getBarHeight(taskConfigHeight),
             radius = Gantt.RectRound;
 
-        return this.drawRoundedRectByPath(x, y, width, height, radius);
+        if (width < 2 * radius) {
+            return drawNotRoundedRectByPath(x, y, width, height);
+        }
+        return drawRoundedRectByPath(x, y, width, height, radius);
     }
 
     /**
@@ -2254,33 +2241,19 @@ export class Gantt implements IVisual {
         return milestone.color;
     }
 
-    private static drawRectangle(taskConfigHeight: number): string {
-        const startPositions: number = -2;
-        return `M ${startPositions} 5 H ${taskConfigHeight / 1.8} V ${taskConfigHeight / 1.5} H ${startPositions} Z`;
-    }
-
-    private static drawCircle(taskConfigHeight: number): string {
-        const r = taskConfigHeight / 3, cx = taskConfigHeight / 4, cy = taskConfigHeight / 2;
-        return `M ${cx} ${cy}  m -${r}, 0 a ${r}, ${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0`;
-    }
-
-    private static drawDiamond(taskConfigHeight: number): string {
-        return `M ${taskConfigHeight / 4} 0 ${taskConfigHeight / 2} ${taskConfigHeight / 2} ${taskConfigHeight / 4} ${taskConfigHeight} 0 ${taskConfigHeight / 2} Z`;
-    }
-
     private getMilestonePath(milestoneType: string, taskConfigHeight: number): string {
         let shape: string;
         const convertedHeight: number = Gantt.getBarHeight(taskConfigHeight);
         const milestone: MilestoneDataPoint = this.viewModel.milestonesData.dataPoints.filter((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType)[0];
         switch (milestone.shapeType) {
             case MilestoneShapeTypes.Rhombus:
-                shape = Gantt.drawDiamond(convertedHeight);
+                shape = drawDiamond(convertedHeight);
                 break;
             case MilestoneShapeTypes.Square:
-                shape = Gantt.drawRectangle(convertedHeight);
+                shape = drawRectangle(convertedHeight);
                 break;
             case MilestoneShapeTypes.Circle:
-                shape = Gantt.drawCircle(convertedHeight);
+                shape = drawCircle(convertedHeight);
         }
 
         return shape;
@@ -2421,7 +2394,11 @@ export class Gantt implements IVisual {
                     radius = Gantt.RectRound,
                     width = getTaskRectDaysOffWidth(task);
 
-                return this.drawRoundedRectByPath(x, y, width, height, radius);
+                if (width < 2 * radius) {
+                    return drawNotRoundedRectByPath(x, y, width, height);
+                }
+
+                return drawRoundedRectByPath(x, y, width, height, radius);
             };
 
             tasksDaysOffMerged

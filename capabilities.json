@@ -680,6 +680,15 @@
                     "type": {
                         "bool": true
                     }
+                },
+                "maxCompletion": {
+                    "displayName": "Max completion",
+                    "displayNameKey": "Visual_MaxCompletion",
+                    "description": "Completion is in range from 0 to max completion value",
+                    "descriptionKey": "Visual_Description_MaxCompletion",
+                    "type": {
+                        "numeric": true
+                    }
                 }
             }
         },
