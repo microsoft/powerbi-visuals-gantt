@@ -1308,7 +1308,8 @@ export class Gantt implements IVisual {
 
         const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => col.roles.hasOwnProperty(GanttRoles.Duration)) !== -1,
             isEndDateFillled: boolean = _.findIndex(dataView.metadata.columns, col => col.roles.hasOwnProperty(GanttRoles.EndDate)) !== -1,
-            isParentFilled: boolean = _.findIndex(dataView.metadata.columns, col => col.roles.hasOwnProperty(GanttRoles.Parent)) !== -1;
+            isParentFilled: boolean = _.findIndex(dataView.metadata.columns, col => col.roles.hasOwnProperty(GanttRoles.Parent)) !== -1,
+            isResourcesFilled: boolean = _.findIndex(dataView.metadata.columns, col => col.roles.hasOwnProperty(GanttRoles.Resource)) !== -1;
 
         const legendData: LegendData = Gantt.createLegend(host, colors, settings, taskTypes, !isDurationFilled && !isEndDateFillled);
         const milestonesData: MilestoneData = Gantt.createMilestones(dataView, host);
@@ -1332,7 +1333,8 @@ export class Gantt implements IVisual {
             milestonesData,
             isDurationFilled,
             isEndDateFillled,
-            isParentFilled
+            isParentFilled,
+            isResourcesFilled
         };
     }
 
@@ -2704,12 +2706,13 @@ export class Gantt implements IVisual {
      * depends on resource label position and resource label font size
      */
     private getResourceLabelTopMargin(): number {
-        let taskResourceShow: boolean = this.viewModel.settings.taskResource.show;
-        let taskResourceFontSize: number = this.viewModel.settings.taskResource.fontSize;
-        let taskResourcePosition: ResourceLabelPositions = this.viewModel.settings.taskResource.position;
+        const isResourcesFilled: boolean = this.viewModel.isResourcesFilled;
+        const taskResourceShow: boolean = this.viewModel.settings.taskResource.show;
+        const taskResourceFontSize: number = this.viewModel.settings.taskResource.fontSize;
+        const taskResourcePosition: ResourceLabelPositions = this.viewModel.settings.taskResource.position;
 
         let margin: number = 0;
-        if (taskResourceShow && taskResourcePosition === ResourceLabelPositions.Top) {
+        if (isResourcesFilled && taskResourceShow && taskResourcePosition === ResourceLabelPositions.Top) {
             margin = Number(taskResourceFontSize) + Gantt.LabelTopOffsetForPadding;
         }
 

@@ -32,14 +32,14 @@
     "d3": "5.7.0",
     "del-cli": "1.1.0",
     "jquery": "3.4.1",
-    "lodash": "4.17.11",
+    "lodash": "^4.17.15",
     "powerbi-visuals-utils-chartutils": "2.4.0",
     "powerbi-visuals-utils-colorutils": "2.2.0",
     "powerbi-visuals-utils-dataviewutils": "2.2.0",
     "powerbi-visuals-utils-formattingutils": "4.3.0",
     "powerbi-visuals-utils-interactivityutils": "5.5.0",
     "powerbi-visuals-utils-svgutils": "2.2.0",
-    "powerbi-visuals-utils-tooltiputils": "2.2.0",
+    "powerbi-visuals-utils-tooltiputils": "^2.3.0",
     "powerbi-visuals-utils-typeutils": "2.2.0"
   },
   "devDependencies": {

@@ -108,6 +108,7 @@ export interface GanttViewModel {
     isDurationFilled: boolean;
     isEndDateFillled: boolean;
     isParentFilled: boolean;
+    isResourcesFilled: boolean;
 }
 
 export interface TaskTypes { /*TODO: change to more proper name*/
