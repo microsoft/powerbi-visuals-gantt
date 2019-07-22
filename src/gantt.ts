@@ -1913,9 +1913,8 @@ export class Gantt implements IVisual {
                     const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
                     return drawStandartMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
                 })
-                //.attr("y", (task: GroupedTask) => Gantt.DefaultValues.TaskLineWidth + (task.id + 1) * this.getResourceLabelTopMargin()) ???
-                .attr("y", () => (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2) // y is a relative positioning
-                .attr("width", (task: GroupedTask, index: number) => displayGridLines ? this.viewport.width : 0)
+                .attr("y", (task: GroupedTask) => (task.id + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2)
+                .attr("width", () => displayGridLines ? this.viewport.width : 0)
                 .attr("height", 1)
                 .attr("fill", Gantt.DefaultValues.TaskLineColor);
 
@@ -2212,10 +2211,20 @@ export class Gantt implements IVisual {
 
         taskRectMerged.classed(Selectors.TaskRect.className, true);
 
+        let index = 0, groupedTaskIndex = 0;
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
-            .style("fill", (task: Task) => `url(#task${task.id}-${window.btoa(task.taskType)}`);
+            .style("fill", (task: Task) => {
+                // logic used for grouped tasks, when there are several bars related to one category
+                if (index === task.id) {
+                    groupedTaskIndex++;
+                } else {
+                    groupedTaskIndex = 0;
+                    index = task.id;
+                }
+                return `url(#task${task.id}-${groupedTaskIndex}-${window.btoa(task.taskType)}`;
+            });
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -2420,12 +2429,20 @@ export class Gantt implements IVisual {
         taskSelection: Selection<Task>): void {
         let taskProgressShow: boolean = this.viewModel.settings.taskCompletion.show;
 
+        let index = 0, groupedTaskIndex = 0;
         let taskProgress: Selection<any> = taskSelection
             .selectAll(Selectors.TaskProgress.selectorName)
-            .data((d: Task) => {
+            .data((d: Task, i: number) => {
                 const taskProgressPercentage = this.getDaysOffTaskProgressPercent(d);
+                // logic used for grouped tasks, when there are several bars related to one category
+                if (index === d.id) {
+                    groupedTaskIndex++;
+                } else {
+                    groupedTaskIndex = 0;
+                    index = d.id;
+                }
                 return [{
-                    key: `${d.id}-${window.btoa(d.taskType)}`, values: <LinearStop[]>[
+                    key: `${d.id}-${groupedTaskIndex}-${window.btoa(d.taskType)}`, values: <LinearStop[]>[
                         { completion: 0, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },

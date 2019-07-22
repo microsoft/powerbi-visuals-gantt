@@ -12,7 +12,7 @@ export const drawRoundedRectByPath = (x: number, y: number, width: number, heigh
         + "v" + (2 * radius - height)
         + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + -radius
         + "z";
-}
+};
 
 export const drawNotRoundedRectByPath = (x: number, y: number, width: number, height: number) => {
     if (!width || !height) {
@@ -24,7 +24,7 @@ export const drawNotRoundedRectByPath = (x: number, y: number, width: number, he
         + "h" + (- width)
         + "v" + (- height)
         + "z";
-}
+};
 
 export function drawRectangle(taskConfigHeight: number): string {
     const startPositions: number = -2;
