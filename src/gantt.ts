@@ -259,6 +259,11 @@ export class Gantt implements IVisual {
         propertyName: "fill"
     };
 
+    private static TaskResourcePropertyIdentifier: DataViewObjectPropertyIdentifier = {
+        objectName: "taskResource",
+        propertyName: "show"
+    };
+
     private static CollapsedTasksPropertyIdentifier: DataViewObjectPropertyIdentifier = {
         objectName: "collapsedTasks",
         propertyName: "list"
@@ -2513,15 +2518,16 @@ export class Gantt implements IVisual {
 
         this.groupTasksPrevValue = groupTasks;
 
-        let taskResourceShow: boolean = this.viewModel.settings.taskResource.show;
-        let taskResourceColor: string = this.viewModel.settings.taskResource.fill;
-        let taskResourceFontSize: number = this.viewModel.settings.taskResource.fontSize;
-        let taskResourcePosition: ResourceLabelPositions = this.viewModel.settings.taskResource.position;
-        let taskResourceFullText: boolean = this.viewModel.settings.taskResource.fullText;
-        let taskResourceWidthByTask: boolean = this.viewModel.settings.taskResource.widthByTask;
-        let isGroupedByTaskName: boolean = this.viewModel.settings.general.groupTasks;
+        const isResourcesFilled: boolean = this.viewModel.isResourcesFilled;
+        const taskResourceShow: boolean = this.viewModel.settings.taskResource.show;
+        const taskResourceColor: string = this.viewModel.settings.taskResource.fill;
+        const taskResourceFontSize: number = this.viewModel.settings.taskResource.fontSize;
+        const taskResourcePosition: ResourceLabelPositions = this.viewModel.settings.taskResource.position;
+        const taskResourceFullText: boolean = this.viewModel.settings.taskResource.fullText;
+        const taskResourceWidthByTask: boolean = this.viewModel.settings.taskResource.widthByTask;
+        const isGroupedByTaskName: boolean = this.viewModel.settings.general.groupTasks;
 
-        if (taskResourceShow) {
+        if (isResourcesFilled && taskResourceShow) {
             let taskResource: Selection<Task> = taskSelection
                 .selectAll(Selectors.TaskResource.selectorName)
                 .data((d: Task) => [d]);
@@ -2912,6 +2918,10 @@ export class Gantt implements IVisual {
         }
 
         if (options.objectName === Gantt.CollapsedTasksPropertyIdentifier.objectName) {
+            return;
+        }
+
+        if (!this.viewModel.isResourcesFilled && options.objectName === Gantt.TaskResourcePropertyIdentifier.objectName) {
             return;
         }
 
