@@ -2230,7 +2230,9 @@ export class Gantt implements IVisual {
                     groupedTaskIndex = 0;
                     index = task.id;
                 }
-                return `url(#task${task.id}-${groupedTaskIndex}-${window.btoa(task.taskType)}`;
+
+                const url = `#task${task.id}-${groupedTaskIndex}-${window.btoa(task.taskType)}`;
+                return `url(${encodeURI(url)})`;
             });
 
         if (this.colorHelper.isHighContrast) {
@@ -2448,8 +2450,9 @@ export class Gantt implements IVisual {
                     groupedTaskIndex = 0;
                     index = d.id;
                 }
+                const url = `${d.id}-${groupedTaskIndex}-${window.btoa(d.taskType)}`;
                 return [{
-                    key: `${d.id}-${groupedTaskIndex}-${window.btoa(d.taskType)}`, values: <LinearStop[]>[
+                    key: `${encodeURI(url)}`, values: <LinearStop[]>[
                         { completion: 0, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
