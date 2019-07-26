@@ -307,9 +307,10 @@ export class Gantt implements IVisual {
     private static ChartLineHeightDivider: number = 4;
     private static ResourceWidthPadding: number = 10;
     private static TaskLabelsMarginTop: number = 15;
+    private static ComplectionDefault: number = null;
     private static ComplectionMax: number = 1;
     private static ComplectionMin: number = 0;
-    private static ComplectionTotal: number = 100;
+    private static ComplectionMaxInPercent: number = 100;
     private static MinTasks: number = 1;
     private static ChartLineProportion: number = 1.5;
     private static MilestoneTop: number = 0;
@@ -871,6 +872,9 @@ export class Gantt implements IVisual {
 
             if (groupValues) {
                 groupValues.forEach((group: GanttColumns<DataViewValueColumn>) => {
+                    let maxCompletionFromTasks: number = _.max(values.Completion);
+                    maxCompletionFromTasks = maxCompletionFromTasks > Gantt.ComplectionMax ? Gantt.ComplectionMaxInPercent : Gantt.ComplectionMax;
+
                     if (group.Duration && group.Duration.values[index] !== null) {
                         taskType = _.find(taskTypes.types,
                             (typeMeta: TaskTypeMetadata) => typeMeta.name === group.Duration.source.groupName);
@@ -893,7 +897,7 @@ export class Gantt implements IVisual {
 
                         completion = ((group.Completion && group.Completion.values[index])
                             && taskProgressShow
-                            && Gantt.convertToDecimal(group.Completion.values[index] as number, settings.taskCompletion.maxCompletion)) || null;
+                            && Gantt.convertToDecimal(group.Completion.values[index] as number, settings.taskCompletion.maxCompletion, maxCompletionFromTasks)) || null;
 
                         if (completion !== null) {
                             if (completion < Gantt.ComplectionMin) {
@@ -921,7 +925,7 @@ export class Gantt implements IVisual {
 
                         completion = ((group.Completion && group.Completion.values[index])
                             && taskProgressShow
-                            && Gantt.convertToDecimal(group.Completion.values[index] as number, settings.taskCompletion.maxCompletion)) || null;
+                            && Gantt.convertToDecimal(group.Completion.values[index] as number, settings.taskCompletion.maxCompletion, maxCompletionFromTasks)) || null;
 
                         if (completion !== null) {
                             if (completion < Gantt.ComplectionMin) {
@@ -1349,8 +1353,8 @@ export class Gantt implements IVisual {
             return settings;
         }
 
-        if (settings.taskCompletion.maxCompletion < Gantt.ComplectionMin || settings.taskCompletion.maxCompletion > Gantt.ComplectionTotal) {
-            settings.taskCompletion.maxCompletion = Gantt.ComplectionTotal;
+        if (settings.taskCompletion.maxCompletion < Gantt.ComplectionMin || settings.taskCompletion.maxCompletion > Gantt.ComplectionMaxInPercent) {
+            settings.taskCompletion.maxCompletion = Gantt.ComplectionDefault;
         }
 
         if (colorHelper.isHighContrast) {
@@ -1376,8 +1380,11 @@ export class Gantt implements IVisual {
         return !isNaN(date.getTime());
     }
 
-    private static convertToDecimal(value: number, maxCompletion: number): number {
-        return value / maxCompletion;
+    private static convertToDecimal(value: number, maxCompletionFromSettings: number, maxCompletionFromTasks: number): number {
+        if (maxCompletionFromSettings) {
+            return value / maxCompletionFromSettings;
+        }
+        return value / maxCompletionFromTasks;
     }
 
     /**
