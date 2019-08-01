@@ -46,6 +46,7 @@ export class GanttSettings extends DataViewObjectsParser {
 export class GeneralSettings {
     groupTasks: boolean = false;
     scrollToCurrentTime: boolean = false;
+    displayGridLines: boolean = true;
     durationUnit: string = "day";
     durationMin: number = 1;
 }
@@ -87,6 +88,7 @@ export class TaskConfigSettings {
 
 export class TaskCompletionSettings {
     show: boolean = true;
+    maxCompletion: number = 100;
 }
 
 export class TaskResourceSettings {

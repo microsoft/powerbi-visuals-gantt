@@ -1,3 +1,7 @@
+## 2.1.0
+* Legend usage without Duration filling is allowed (EndDate must be filled)
+* An option for displaying grid lines
+
 ## 2.0.2
 * Following #153 https://github.com/microsoft/powerbi-visuals-gantt/issues/153 made the adjustement that resolves the described issue of the horizontal lines overlapping the bars.
 * It now also works while scaling the Task height 
