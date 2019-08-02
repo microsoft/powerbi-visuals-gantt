@@ -88,5 +88,7 @@
 	"Visual_Shape_Square": "Square",
 	"Visual_Shape_Circle": "Circle",
 	"Visual_Description_Milestones": "Display milestones options",
-	"Milestones": "Milestones"
+	"Milestones": "Milestones",
+	"Visual_DisplayGridLines": "Display grid lines",
+	"Visual_MaxCompletion": "Max completion"
 }
