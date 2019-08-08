@@ -276,6 +276,7 @@ export class Gantt implements IVisual {
         TaskColor: "#00B099",
         TaskLineColor: "#ccc",
         CollapseAllColor: "#aaa",
+        MilestoneLineColor: "#ccc",
         TaskCategoryLabelsRectColor: "#fafafa",
         TaskLineWidth: 15,
         IconMargin: 12,
@@ -393,6 +394,7 @@ export class Gantt implements IVisual {
      */
     private createViewport(element: HTMLElement): void {
         let self = this;
+        const isHighContrast: boolean = this.colorHelper.isHighContrast;
         const axisBackgroundColor: string = this.colorHelper.getThemeColor();
         // create div container to the whole viewport area
         this.ganttDiv = this.body.append("div")
@@ -451,7 +453,7 @@ export class Gantt implements IVisual {
             .attr("width", "100%")
             .attr("height", 1)
             .attr("y", this.margin.top)
-            .attr("fill", Gantt.DefaultValues.TaskLineColor);
+            .attr("fill", isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor) : Gantt.DefaultValues.TaskLineColor);
 
         this.collapseAllGroup = this.lineGroup
             .append("g")
@@ -798,13 +800,13 @@ export class Gantt implements IVisual {
             milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
             milestones.forEach((milestone) => {
                 const milestoneObjects = milestonesCategory.objects && milestonesCategory.objects[milestone.index];
-                const selectionBuider: ISelectionIdBuilder = host
+                const selectionBuilder: ISelectionIdBuilder = host
                     .createSelectionIdBuilder()
                     .withCategory(milestonesCategory, milestone.index);
 
                 const milestoneDataPoint: MilestoneDataPoint = {
                     name: milestone.value as string,
-                    identity: selectionBuider.createSelectionId(),
+                    identity: selectionBuilder.createSelectionId(),
                     shapeType: milestoneObjects && milestoneObjects.milestones && milestoneObjects.milestones.shapeType ?
                         milestoneObjects.milestones.shapeType as string : MilestoneShapeTypes.Rhombus,
                     color: milestoneObjects && milestoneObjects.milestones && milestoneObjects.milestones.fill ?
@@ -866,7 +868,7 @@ export class Gantt implements IVisual {
             let tooltips: VisualTooltipDataItem[] = [];
             let stepDurationTransformation: number = 0;
 
-            const selectionBuider: ISelectionIdBuilder = host
+            const selectionBuilder: ISelectionIdBuilder = host
                 .createSelectionIdBuilder()
                 .withCategory(dataView.categorical.categories[0], index);
 
@@ -880,7 +882,7 @@ export class Gantt implements IVisual {
                             (typeMeta: TaskTypeMetadata) => typeMeta.name === group.Duration.source.groupName);
 
                         if (taskType) {
-                            selectionBuider.withCategory(taskType.selectionColumn, 0);
+                            selectionBuilder.withCategory(taskType.selectionColumn, 0);
                             color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
                         }
 
@@ -914,7 +916,7 @@ export class Gantt implements IVisual {
                             (typeMeta: TaskTypeMetadata) => typeMeta.name === group.EndDate.source.groupName);
 
                         if (taskType) {
-                            selectionBuider.withCategory(taskType.selectionColumn, 0);
+                            selectionBuilder.withCategory(taskType.selectionColumn, 0);
                             color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
                         }
 
@@ -940,7 +942,7 @@ export class Gantt implements IVisual {
                 });
             }
 
-            const selectionId: powerbi.extensibility.ISelectionId = selectionBuider.createSelectionId();
+            const selectionId: powerbi.extensibility.ISelectionId = selectionBuilder.createSelectionId();
             const extraInformation: ExtraInformation[] = [];
             const resource: string = (values.Resource && values.Resource[index] as string) || "";
             const parent: string = (values.Parent && values.Parent[index] as string) || null;
@@ -1011,7 +1013,7 @@ export class Gantt implements IVisual {
                         daysOffList: null,
                         wasDowngradeDurationUnit: null,
                         selected: null,
-                        identity: selectionBuider.createSelectionId(),
+                        identity: selectionBuilder.createSelectionId(),
                         Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : []
                     };
 
@@ -1856,12 +1858,13 @@ export class Gantt implements IVisual {
         let taskLabelsWidth: number = this.viewModel.settings.taskLabels.width;
         let taskConfigHeight: number = this.viewModel.settings.taskConfig.height || DefaultChartLineHeight;
         const categoriesAreaBackgroundColor: string = this.colorHelper.getThemeColor();
+        const isHighContrast: boolean = this.colorHelper.isHighContrast;
 
         if (taskLabelsShow) {
             this.lineGroupWrapper
                 .attr("width", taskLabelsWidth)
-                .attr("fill", Gantt.DefaultValues.TaskCategoryLabelsRectColor)
-                .attr("stroke", Gantt.DefaultValues.TaskLineColor)
+                .attr("fill", isHighContrast ? categoriesAreaBackgroundColor : Gantt.DefaultValues.TaskCategoryLabelsRectColor)
+                .attr("stroke", isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor) : Gantt.DefaultValues.TaskLineColor)
                 .attr("stroke-width", 1);
 
             this.lineGroup
@@ -1930,7 +1933,7 @@ export class Gantt implements IVisual {
                 .attr("y", (task: GroupedTask) => (task.id + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2)
                 .attr("width", () => displayGridLines ? this.viewport.width : 0)
                 .attr("height", 1)
-                .attr("fill", Gantt.DefaultValues.TaskLineColor);
+                .attr("fill", isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor) : Gantt.DefaultValues.TaskLineColor);
 
             axisLabel
                 .exit()
@@ -1971,7 +1974,7 @@ export class Gantt implements IVisual {
                     .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
                     .attr("y", this.groupLabelSize)
                     .attr("font-size", "12px")
-                    .attr("fill", Gantt.DefaultValues.CollapseAllColor)
+                    .attr("fill", isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor) : Gantt.DefaultValues.CollapseAllColor)
                     .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
             }
 
@@ -2238,7 +2241,7 @@ export class Gantt implements IVisual {
                     index = task.id;
                 }
 
-                const url = `#task${task.id}-${groupedTaskIndex}-${window.btoa(task.taskType)}`;
+                const url = `#task${task.id}-${groupedTaskIndex}-${task.taskType ? task.taskType.toString() : ""}`;
                 return `url(${encodeURI(url)})`;
             });
 
@@ -2443,7 +2446,8 @@ export class Gantt implements IVisual {
      */
     private taskProgressRender(
         taskSelection: Selection<Task>): void {
-        let taskProgressShow: boolean = this.viewModel.settings.taskCompletion.show;
+        const isHighContrast: boolean = this.colorHelper.isHighContrast;
+        const taskProgressShow: boolean = this.viewModel.settings.taskCompletion.show;
 
         let index = 0, groupedTaskIndex = 0;
         let taskProgress: Selection<any> = taskSelection
@@ -2457,7 +2461,7 @@ export class Gantt implements IVisual {
                     groupedTaskIndex = 0;
                     index = d.id;
                 }
-                const url = `${d.id}-${groupedTaskIndex}-${window.btoa(d.taskType)}`;
+                const url = `${d.id}-${groupedTaskIndex}-${d.taskType ? d.taskType.toString() : ""}`;
                 return [{
                     key: `${encodeURI(url)}`, values: <LinearStop[]>[
                         { completion: 0, color: d.color },
@@ -2486,7 +2490,7 @@ export class Gantt implements IVisual {
             .append("stop")
             .merge(<any>stopsSelection)
             .attr("offset", (data: LinearStop) => `${data.completion * 100}%`)
-            .attr("stop-color", (data: LinearStop) => data.color)
+            .attr("stop-color", (data: LinearStop) => isHighContrast ? this.colorHelper.getHighContrastColor("foreground", data.color) : data.color)
             .attr("stop-opacity", (data: LinearStop, index: number) => (index > 1) && taskProgressShow ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
 
         taskProgress
@@ -2797,6 +2801,7 @@ export class Gantt implements IVisual {
         }
 
         let todayColor: string = this.viewModel.settings.dateType.todayColor;
+        let isHighContrast: boolean = this.colorHelper.isHighContrast;
         // TODO: add not today milestones color
         let milestoneDates = [new Date(timestamp)];
         tasks.forEach((task: GroupedTask) => {
@@ -2842,7 +2847,10 @@ export class Gantt implements IVisual {
             .attr("y1", (line: Line) => line.y1)
             .attr("x2", (line: Line) => line.x2)
             .attr("y2", (line: Line) => line.y2)
-            .style("stroke", (line: Line) => line.x1 === this.timeScale(timestamp) ? todayColor : "#ccc");
+            .style("stroke", (line: Line) => {
+                let color = line.x1 === this.timeScale(timestamp) ? todayColor : Gantt.DefaultValues.MilestoneLineColor;
+                return isHighContrast ? this.colorHelper.getHighContrastColor("foreground", color) : color;
+            });
 
         this.renderTooltip(chartLineSelectionMerged);
 

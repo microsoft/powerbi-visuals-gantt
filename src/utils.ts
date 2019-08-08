@@ -3,7 +3,7 @@ export const drawRoundedRectByPath = (x: number, y: number, width: number, heigh
         return;
     }
     return "M" + x + "," + y
-        + "h" + (width - radius)
+        + "h" + (width - 2 * radius)
         + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
         + "v" + (height - 2 * radius)
         + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
