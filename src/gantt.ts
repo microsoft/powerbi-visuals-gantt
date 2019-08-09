@@ -132,7 +132,7 @@ import {
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
 import { GanttSettings, DateTypeSettings } from "./settings";
-import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle } from "./utils";
+import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, changeColorForEncodedSvg, isStringNotNullEmptyOrUndefined } from "./utils";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -1902,10 +1902,13 @@ export class Gantt implements IVisual {
             axisLabelGroup
                 .filter((task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length)
                 .append("image")
-                .attr("xlink:href", (task: GroupedTask) => (!task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvgEncoded : this.collapseAllImageConsts.minusSvgEncoded))
+                .attr("xlink:href", (task: GroupedTask) => {
+                    const expandCollapseXlink = !task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvgEncoded : this.collapseAllImageConsts.minusSvgEncoded;
+                    const expandCollapseXlinkWithColor = isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor) : Gantt.DefaultValues.CollapseAllColor;
+                    return changeColorForEncodedSvg(expandCollapseXlink, expandCollapseXlinkWithColor);
+                })
                 .attr("width", Gantt.DefaultValues.IconWidth)
                 .attr("height", Gantt.DefaultValues.IconHeight)
-                .attr("opacity", 0.5)
                 .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
                 .attr("x", Gantt.DefaultValues.BarMargin);
 
@@ -1959,10 +1962,12 @@ export class Gantt implements IVisual {
                     .attr("height", 2 * Gantt.TaskLabelsMarginTop)
                     .attr("fill", categoriesAreaBackgroundColor);
 
+                const collapsedAllXlink = this.collapsedTasks.length ? this.collapseAllImageConsts.expandSvgEncoded : this.collapseAllImageConsts.collapseSvgEncoded;
+                const collapseAllArrowColor = isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor) : undefined;
                 this.collapseAllGroup
                     .append("image")
                     .classed(Selectors.CollapseAllArrow.className, true)
-                    .attr("xlink:href", (this.collapsedTasks.length ? this.collapseAllImageConsts.expandSvgEncoded : this.collapseAllImageConsts.collapseSvgEncoded))
+                    .attr("xlink:href", changeColorForEncodedSvg(collapsedAllXlink, collapseAllArrowColor, true))
                     .attr("width", this.groupLabelSize)
                     .attr("height", this.groupLabelSize)
                     .attr("x", 0)
@@ -2036,15 +2041,16 @@ export class Gantt implements IVisual {
     private subTasksCollapseAll(): void {
         const collapsedAllSelector = this.collapseAllGroup.select(Selectors.CollapseAllArrow.selectorName);
         const isCollapsed: string = collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag);
+        const collapseExpandFillColor = this.colorHelper.isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor) : undefined;
 
         if (isCollapsed === "1") {
             this.collapsedTasks = [];
             collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "0");
-            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.collapseSvgEncoded);
+            collapsedAllSelector.attr("xlink:href", changeColorForEncodedSvg(this.collapseAllImageConsts.collapseSvgEncoded, collapseExpandFillColor, true));
 
         } else {
             collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "1");
-            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.expandSvgEncoded);
+            collapsedAllSelector.attr("xlink:href", changeColorForEncodedSvg(this.collapseAllImageConsts.expandSvgEncoded, collapseExpandFillColor, true));
             this.viewModel.tasks.forEach((task: Task) => {
                 if (task.parent) {
                     if (task.visibility) {
@@ -2189,6 +2195,7 @@ export class Gantt implements IVisual {
         return this.hasNotNullableDates && (taskIsCollapsed || _.isEmpty(task.Milestones)) ? this.taskDurationToWidth(task.start, task.end) : 0;
     }
 
+
     /**
      *
      * @param task
@@ -2241,7 +2248,7 @@ export class Gantt implements IVisual {
                     index = task.id;
                 }
 
-                const url = `#task${task.id}-${groupedTaskIndex}-${task.taskType ? task.taskType.toString() : ""}`;
+                const url = `#task${task.id}-${groupedTaskIndex}-${isStringNotNullEmptyOrUndefined(task.taskType) ? task.taskType.toString() : ""}`;
                 return `url(${encodeURI(url)})`;
             });
 
@@ -2461,7 +2468,7 @@ export class Gantt implements IVisual {
                     groupedTaskIndex = 0;
                     index = d.id;
                 }
-                const url = `${d.id}-${groupedTaskIndex}-${d.taskType ? d.taskType.toString() : ""}`;
+                const url = `${d.id}-${groupedTaskIndex}-${isStringNotNullEmptyOrUndefined(d.taskType) ? d.taskType.toString() : ""}`;
                 return [{
                     key: `${encodeURI(url)}`, values: <LinearStop[]>[
                         { completion: 0, color: d.color },

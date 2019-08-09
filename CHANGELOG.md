@@ -1,7 +1,6 @@
 ## 2.1.1
 * High contrast mode support fix
-* Bar fill issue fix
-* Expand\collapse issue fix
+* Black bar fill issue fix
 
 ## 2.1.0
 * Legend usage without Duration filling is allowed (EndDate must be filled)

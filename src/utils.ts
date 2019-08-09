@@ -39,3 +39,33 @@ export function drawCircle(taskConfigHeight: number): string {
 export function drawDiamond(taskConfigHeight: number): string {
     return `M ${taskConfigHeight / 4} 0 ${taskConfigHeight / 2} ${taskConfigHeight / 2} ${taskConfigHeight / 4} ${taskConfigHeight} 0 ${taskConfigHeight / 2} Z`;
 }
+
+export function changeColorForEncodedSvg(encodedDataImage: string, color: string = undefined, changeOnlyFirstPath: boolean = false): string {
+    if (!color) {
+        return encodedDataImage;
+    }
+
+    const xlinkBegin = "data:image/svg+xml;base64,";
+    const DOMParserInstance = new DOMParser();
+    const XMLSerializerInstance = new XMLSerializer();
+
+    let encodedSvg = encodedDataImage.substring(26);
+    let decoded = atob(encodedSvg);
+
+    let xml = DOMParserInstance.parseFromString(decoded, "text/xml");
+    let paths = xml.getElementsByTagName("path") as any as Array<SVGPathElement>;
+    if (changeOnlyFirstPath) {
+        paths[0].setAttribute("fill", color)
+    } else {
+        paths.forEach((path: SVGPathElement) => path.setAttribute("fill", color));
+    }
+
+    const xmlToString = XMLSerializerInstance.serializeToString(xml);
+
+    return xlinkBegin.concat(window.btoa(xmlToString));
+}
+
+export function isStringNotNullEmptyOrUndefined(str: string) {
+    const isReducableType = typeof str === "string" || typeof str === "number" || typeof str === "boolean";
+    return isReducableType && str.length > 0 && str !== undefined && str !== null;
+}
