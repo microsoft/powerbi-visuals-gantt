@@ -39,6 +39,7 @@ import DataView = powerbi.DataView;
 import IViewport = powerbi.IViewport;
 import SortDirection = powerbi.SortDirection;
 import DataViewValueColumn = powerbi.DataViewValueColumn;
+import DataViewValueColumns = powerbi.DataViewValueColumns;
 import DataViewMetadataColumn = powerbi.DataViewMetadataColumn;
 import DataViewValueColumnGroup = powerbi.DataViewValueColumnGroup;
 import PrimitiveValue = powerbi.PrimitiveValue;
@@ -132,7 +133,7 @@ import {
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
 import { GanttSettings, DateTypeSettings } from "./settings";
-import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, changeColorForEncodedSvg, isStringNotNullEmptyOrUndefined } from "./utils";
+import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, changeColorForEncodedSvg, isStringNotNullEmptyOrUndefined, isValidDate } from "./utils";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -949,7 +950,7 @@ export class Gantt implements IVisual {
             const Milestone: string = (values.Milestones && !_.isEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
 
             const startDate: Date = (values.StartDate && values.StartDate[index]
-                && Gantt.isValidDate(new Date(values.StartDate[index])) && new Date(values.StartDate[index]))
+                && isValidDate(new Date(values.StartDate[index])) && new Date(values.StartDate[index]))
                 || new Date(Date.now());
 
             if (values.ExtraInformation) {
@@ -1040,13 +1041,13 @@ export class Gantt implements IVisual {
                 return;
             }
 
-            if (task.end && task.start) {
+            if (task.end && task.start && isValidDate(task.end)) {
                 const durationInMilliseconds: number = task.end.getTime() - task.start.getTime(),
                     minDurationUnitInMilliseconds: number = Gantt.getMinDurationUnitInMilliseconds(durationUnit);
 
                 task.end = durationInMilliseconds < minDurationUnitInMilliseconds ? Gantt.getEndDate(durationUnit, task.start, task.duration) : task.end;
             } else {
-                task.end = task.end || Gantt.getEndDate(durationUnit, task.start, task.duration);
+                task.end = isValidDate(task.end) ? task.end : Gantt.getEndDate(durationUnit, task.start, task.duration);
             }
 
             if (settings.daysOff.show && duration) {
@@ -1374,14 +1375,6 @@ export class Gantt implements IVisual {
         return settings;
     }
 
-    private static isValidDate(date: Date): boolean {
-        if (Object.prototype.toString.call(date) !== "[object Date]") {
-            return false;
-        }
-
-        return !isNaN(date.getTime());
-    }
-
     private static convertToDecimal(value: number, maxCompletionFromSettings: number, maxCompletionFromTasks: number): number {
         if (maxCompletionFromSettings) {
             return value / maxCompletionFromSettings;
@@ -1403,7 +1396,8 @@ export class Gantt implements IVisual {
         if (index !== -1) {
             taskTypes.typeName = dataView.metadata.columns[index].displayName;
             let legendMetaCategoryColumn: DataViewMetadataColumn = dataView.metadata.columns[index];
-            let groupValues = dataView.categorical.values.grouped();
+            let values = dataView.categorical && dataView.categorical.values || <DataViewValueColumns>[];
+            let groupValues = values.grouped();
             taskTypes.types = groupValues.map((group: DataViewValueColumnGroup): TaskTypeMetadata => {
                 let column: DataViewCategoryColumn = {
                     identity: [group.identity],
@@ -1530,8 +1524,8 @@ export class Gantt implements IVisual {
 
         let tasksAfterGrouping: Task[] = [];
         groupedTasks.forEach((t: GroupedTask) => tasksAfterGrouping = tasksAfterGrouping.concat(t.tasks));
-        const minDateTask: Task = _.minBy(tasksAfterGrouping, (t) => t.start);
-        const maxDateTask: Task = _.maxBy(tasksAfterGrouping, (t) => t.end);
+        const minDateTask: Task = _.minBy(tasksAfterGrouping, (t) => t && t.start);
+        const maxDateTask: Task = _.maxBy(tasksAfterGrouping, (t) => t && t.end);
         this.hasNotNullableDates = !!minDateTask && !!maxDateTask;
 
         let axisLength: number = 0;
@@ -1569,7 +1563,7 @@ export class Gantt implements IVisual {
         this.updateElementsPositions(this.margin);
         this.createMilestoneLine(groupedTasks);
 
-        if (settings.general.scrollToCurrentTime) {
+        if (settings.general.scrollToCurrentTime && this.hasNotNullableDates) {
             this.scrollToMilestoneLine(axisLength);
         }
 
@@ -1747,7 +1741,7 @@ export class Gantt implements IVisual {
                 const isKeyAlreadyReviewed = _.includes(alreadyReviewedKeys, key);
                 if (!isKeyAlreadyReviewed) {
                     let name: string = key;
-                    if (groupedTasks[key][0].parent && key.indexOf(groupedTasks[key][0].parent) !== -1) {
+                    if (groupedTasks[key] && groupedTasks[key].length && groupedTasks[key][0].parent && key.indexOf(groupedTasks[key][0].parent) !== -1) {
                         name = key.substr(groupedTasks[key][0].parent.length + 1, key.length);
                     }
 
@@ -2358,10 +2352,12 @@ export class Gantt implements IVisual {
         let taskMilestonesSelectionMerged = taskMilestonesSelectionAppend
             .merge(<any>taskMilestonesSelection);
 
-        taskMilestonesSelectionMerged
-            .attr("d", (data: MilestonePath) => this.getMilestonePath(data.type, taskConfigHeight))
-            .attr("transform", (data: MilestonePath) => transformForMilestone(data.taskID, data.start))
-            .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type));
+        if (this.hasNotNullableDates) {
+            taskMilestonesSelectionMerged
+                .attr("d", (data: MilestonePath) => this.getMilestonePath(data.type, taskConfigHeight))
+                .attr("transform", (data: MilestonePath) => transformForMilestone(data.taskID, data.start))
+                .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type));
+        }
 
         this.renderTooltip(taskMilestonesSelectionMerged);
     }
@@ -2954,7 +2950,7 @@ export class Gantt implements IVisual {
     }
 
     private enumerateMilestones(instanceEnumeration: VisualObjectInstanceEnumeration): VisualObjectInstance[] {
-        if (!this.viewModel.isDurationFilled && !this.viewModel.isEndDateFillled) {
+        if (this.viewModel && !this.viewModel.isDurationFilled && !this.viewModel.isEndDateFillled) {
             return;
         }
 
@@ -2985,7 +2981,7 @@ export class Gantt implements IVisual {
     }
 
     private enumerateLegend(instanceEnumeration: VisualObjectInstanceEnumeration): VisualObjectInstance[] {
-        if (!this.viewModel.isDurationFilled && !this.viewModel.isEndDateFillled) {
+        if (this.viewModel && !this.viewModel.isDurationFilled && !this.viewModel.isEndDateFillled) {
             return;
         }
 

@@ -55,7 +55,7 @@ export function changeColorForEncodedSvg(encodedDataImage: string, color: string
     let xml = DOMParserInstance.parseFromString(decoded, "text/xml");
     let paths = xml.getElementsByTagName("path") as any as Array<SVGPathElement>;
     if (changeOnlyFirstPath) {
-        paths[0].setAttribute("fill", color)
+        paths[0].setAttribute("fill", color);
     } else {
         paths.forEach((path: SVGPathElement) => path.setAttribute("fill", color));
     }
@@ -67,5 +67,13 @@ export function changeColorForEncodedSvg(encodedDataImage: string, color: string
 
 export function isStringNotNullEmptyOrUndefined(str: string) {
     const isReducableType = typeof str === "string" || typeof str === "number" || typeof str === "boolean";
-    return isReducableType && str.length > 0 && str !== undefined && str !== null;
+    return str !== undefined && str !== null && isReducableType && str.length > 0;
+}
+
+export function isValidDate(date: Date): boolean {
+    if (Object.prototype.toString.call(date) !== "[object Date]") {
+        return false;
+    }
+
+    return !isNaN(date.getTime());
 }
