@@ -132,7 +132,7 @@ import {
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
 import { GanttSettings, DateTypeSettings } from "./settings";
-import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, changeColorForEncodedSvg, isValidDate, getRandomHexColor } from "./utils";
+import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, isValidDate, getRandomHexColor } from "./utils";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -356,10 +356,10 @@ export class Gantt implements IVisual {
     private groupTasksPrevValue: boolean = false;
     private collapsedTasks: string[] = [];
     private collapseAllImageConsts = {
-        minusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxnPjxnPjxnPjxwYXRoIGQ9Ik0yMCwxN2gtOGMtMC41NTIyNDYxLDAtMS0wLjQ0NzI2NTYtMS0xczAuNDQ3NzUzOS0xLDEtMWg4YzAuNTUyMjQ2MSwwLDEsMC40NDcyNjU2LDEsMVMyMC41NTIyNDYxLDE3LDIwLDE3eiIvPjwvZz48L2c+PGc+PHBhdGggZD0iTTI0LjcxODc1LDI5SDcuMjgxMjVDNC45MjA0MTAyLDI5LDMsMjcuMDc5MTAxNiwzLDI0LjcxODc1VjcuMjgxMjVDMyw0LjkyMDg5ODQsNC45MjA0MTAyLDMsNy4yODEyNSwzaDE3LjQzNzUgICAgQzI3LjA3OTU4OTgsMywyOSw0LjkyMDg5ODQsMjksNy4yODEyNXYxNy40Mzc1QzI5LDI3LjA3OTEwMTYsMjcuMDc5NTg5OCwyOSwyNC43MTg3NSwyOXogTTcuMjgxMjUsNSAgICBDNi4wMjM0Mzc1LDUsNSw2LjAyMzQzNzUsNSw3LjI4MTI1djE3LjQzNzVDNSwyNS45NzY1NjI1LDYuMDIzNDM3NSwyNyw3LjI4MTI1LDI3aDE3LjQzNzUgICAgQzI1Ljk3NjU2MjUsMjcsMjcsMjUuOTc2NTYyNSwyNywyNC43MTg3NVY3LjI4MTI1QzI3LDYuMDIzNDM3NSwyNS45NzY1NjI1LDUsMjQuNzE4NzUsNUg3LjI4MTI1eiIvPjwvZz48L2c+PC9zdmc+",
-        plusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaWQ9IkxheWVyXzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDMyIDMyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxnPjxnPjxnPjxwYXRoIGQ9Ik0xNiwyMWMtMC41NTIyNDYxLDAtMS0wLjQ0NzI2NTYtMS0xdi04YzAtMC41NTI3MzQ0LDAuNDQ3NzUzOS0xLDEtMXMxLDAuNDQ3MjY1NiwxLDF2OCAgICAgQzE3LDIwLjU1MjczNDQsMTYuNTUyMjQ2MSwyMSwxNiwyMXoiLz48L2c+PGc+PHBhdGggZD0iTTIwLDE3aC04Yy0wLjU1MjI0NjEsMC0xLTAuNDQ3MjY1Ni0xLTFzMC40NDc3NTM5LTEsMS0xaDhjMC41NTIyNDYxLDAsMSwwLjQ0NzI2NTYsMSwxUzIwLjU1MjI0NjEsMTcsMjAsMTd6Ii8+PC9nPjwvZz48Zz48cGF0aCBkPSJNMjQuNzE4NzUsMjlINy4yODEyNUM0LjkyMDQxMDIsMjksMywyNy4wNzkxMDE2LDMsMjQuNzE4NzVWNy4yODEyNUMzLDQuOTIwODk4NCw0LjkyMDQxMDIsMyw3LjI4MTI1LDNoMTcuNDM3NSAgICBDMjcuMDc5NTg5OCwzLDI5LDQuOTIwODk4NCwyOSw3LjI4MTI1djE3LjQzNzVDMjksMjcuMDc5MTAxNiwyNy4wNzk1ODk4LDI5LDI0LjcxODc1LDI5eiBNNy4yODEyNSw1ICAgIEM2LjAyMzQzNzUsNSw1LDYuMDIzNDM3NSw1LDcuMjgxMjV2MTcuNDM3NUM1LDI1Ljk3NjU2MjUsNi4wMjM0Mzc1LDI3LDcuMjgxMjUsMjdoMTcuNDM3NSAgICBDMjUuOTc2NTYyNSwyNywyNywyNS45NzY1NjI1LDI3LDI0LjcxODc1VjcuMjgxMjVDMjcsNi4wMjM0Mzc1LDI1Ljk3NjU2MjUsNSwyNC43MTg3NSw1SDcuMjgxMjV6Ii8+PC9nPjwvZz48L3N2Zz4=",
-        expandSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4IiB3aWR0aD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMzLjE3IDE3LjE3bC05LjE3IDkuMTctOS4xNy05LjE3LTIuODMgMi44MyAxMiAxMiAxMi0xMnoiLz48cGF0aCBkPSJNMCAwaDQ4djQ4aC00OHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=",
-        collapseSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4IiB3aWR0aD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTI0IDE2bC0xMiAxMiAyLjgzIDIuODMgOS4xNy05LjE3IDkuMTcgOS4xNyAyLjgzLTIuODN6Ii8+PHBhdGggZD0iTTAgMGg0OHY0OGgtNDh6IiBmaWxsPSJub25lIi8+PC9zdmc+",
+        minusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0iTGF5ZXJfMSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzIgMzI7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PGc+PGc+PGc+PHBhdGggZD0iTTIwLDE3aC04Yy0wLjU1MjI0NjEsMC0xLTAuNDQ3MjY1Ni0xLTFzMC40NDc3NTM5LTEsMS0xaDhjMC41NTIyNDYxLDAsMSwwLjQ0NzI2NTYsMSwxUzIwLjU1MjI0NjEsMTcsMjAsMTd6IiBmaWxsPSJ1cmwoI2xpbmVhckdyYWRpZW50Rm9yQnV0dG9ucykiLz48L2c+PC9nPjxnPjxwYXRoIGQ9Ik0yNC43MTg3NSwyOUg3LjI4MTI1QzQuOTIwNDEwMiwyOSwzLDI3LjA3OTEwMTYsMywyNC43MTg3NVY3LjI4MTI1QzMsNC45MjA4OTg0LDQuOTIwNDEwMiwzLDcuMjgxMjUsM2gxNy40Mzc1ICAgIEMyNy4wNzk1ODk4LDMsMjksNC45MjA4OTg0LDI5LDcuMjgxMjV2MTcuNDM3NUMyOSwyNy4wNzkxMDE2LDI3LjA3OTU4OTgsMjksMjQuNzE4NzUsMjl6IE03LjI4MTI1LDUgICAgQzYuMDIzNDM3NSw1LDUsNi4wMjM0Mzc1LDUsNy4yODEyNXYxNy40Mzc1QzUsMjUuOTc2NTYyNSw2LjAyMzQzNzUsMjcsNy4yODEyNSwyN2gxNy40Mzc1ICAgIEMyNS45NzY1NjI1LDI3LDI3LDI1Ljk3NjU2MjUsMjcsMjQuNzE4NzVWNy4yODEyNUMyNyw2LjAyMzQzNzUsMjUuOTc2NTYyNSw1LDI0LjcxODc1LDVINy4yODEyNXoiIGZpbGw9InVybCgjbGluZWFyR3JhZGllbnRGb3JCdXR0b25zKSIvPjwvZz48L2c+PC9zdmc+",
+        plusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0iTGF5ZXJfMSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzIgMzI7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PGc+PGc+PGc+PHBhdGggZD0iTTE2LDIxYy0wLjU1MjI0NjEsMC0xLTAuNDQ3MjY1Ni0xLTF2LThjMC0wLjU1MjczNDQsMC40NDc3NTM5LTEsMS0xczEsMC40NDcyNjU2LDEsMXY4ICAgICBDMTcsMjAuNTUyNzM0NCwxNi41NTIyNDYxLDIxLDE2LDIxeiIgZmlsbD0idXJsKCNsaW5lYXJHcmFkaWVudEZvckJ1dHRvbnMpIi8+PC9nPjxnPjxwYXRoIGQ9Ik0yMCwxN2gtOGMtMC41NTIyNDYxLDAtMS0wLjQ0NzI2NTYtMS0xczAuNDQ3NzUzOS0xLDEtMWg4YzAuNTUyMjQ2MSwwLDEsMC40NDcyNjU2LDEsMVMyMC41NTIyNDYxLDE3LDIwLDE3eiIgZmlsbD0idXJsKCNsaW5lYXJHcmFkaWVudEZvckJ1dHRvbnMpIi8+PC9nPjwvZz48Zz48cGF0aCBkPSJNMjQuNzE4NzUsMjlINy4yODEyNUM0LjkyMDQxMDIsMjksMywyNy4wNzkxMDE2LDMsMjQuNzE4NzVWNy4yODEyNUMzLDQuOTIwODk4NCw0LjkyMDQxMDIsMyw3LjI4MTI1LDNoMTcuNDM3NSAgICBDMjcuMDc5NTg5OCwzLDI5LDQuOTIwODk4NCwyOSw3LjI4MTI1djE3LjQzNzVDMjksMjcuMDc5MTAxNiwyNy4wNzk1ODk4LDI5LDI0LjcxODc1LDI5eiBNNy4yODEyNSw1ICAgIEM2LjAyMzQzNzUsNSw1LDYuMDIzNDM3NSw1LDcuMjgxMjV2MTcuNDM3NUM1LDI1Ljk3NjU2MjUsNi4wMjM0Mzc1LDI3LDcuMjgxMjUsMjdoMTcuNDM3NSAgICBDMjUuOTc2NTYyNSwyNywyNywyNS45NzY1NjI1LDI3LDI0LjcxODc1VjcuMjgxMjVDMjcsNi4wMjM0Mzc1LDI1Ljk3NjU2MjUsNSwyNC43MTg3NSw1SDcuMjgxMjV6IiBmaWxsPSJ1cmwoI2xpbmVhckdyYWRpZW50Rm9yQnV0dG9ucykiLz48L2c+PC9nPjwvc3ZnPg==",
+        expandSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjQ4Ij48cGF0aCBkPSJNMzMuMTcgMTcuMTdsLTkuMTcgOS4xNy05LjE3LTkuMTctMi44MyAyLjgzIDEyIDEyIDEyLTEyeiIgZmlsbD0idXJsKCNsaW5lYXJHcmFkaWVudEZvckJ1dHRvbnMpIi8+PHBhdGggZD0iTTAgMGg0OHY0OGgtNDh6IiBmaWxsPSJub25lIi8+PC9zdmc+",
+        collapseSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjQ4Ij48cGF0aCBkPSJNMjQgMTZsLTEyIDEyIDIuODMgMi44MyA5LjE3LTkuMTcgOS4xNyA5LjE3IDIuODMtMi44M3oiIGZpbGw9InVybCgjbGluZWFyR3JhZGllbnRGb3JCdXR0b25zKSIvPjxwYXRoIGQ9Ik0wIDBoNDh2NDhoLTQ4eiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==",
         collapseAllFlag: "data-is-collapsed"
     };
     private parentLabelOffset: number = 5;
@@ -1900,7 +1900,7 @@ export class Gantt implements IVisual {
                 .attr("xlink:href", (task: GroupedTask) => {
                     const expandCollapseXlink = !task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvgEncoded : this.collapseAllImageConsts.minusSvgEncoded;
                     const expandCollapseXlinkWithColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
-                    return changeColorForEncodedSvg(expandCollapseXlink, expandCollapseXlinkWithColor);
+                    return expandCollapseXlink;
                 })
                 .attr("width", Gantt.DefaultValues.IconWidth)
                 .attr("height", Gantt.DefaultValues.IconHeight)
@@ -1959,10 +1959,12 @@ export class Gantt implements IVisual {
 
                 const collapsedAllXlink = this.collapsedTasks.length ? this.collapseAllImageConsts.expandSvgEncoded : this.collapseAllImageConsts.collapseSvgEncoded;
                 const collapseAllArrowColor = isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor) : undefined;
+
+                debugger;
                 this.collapseAllGroup
                     .append("image")
                     .classed(Selectors.CollapseAllArrow.className, true)
-                    .attr("xlink:href", changeColorForEncodedSvg(collapsedAllXlink, collapseAllArrowColor, true))
+                    .attr("xlink:href", collapsedAllXlink)
                     .attr("width", this.groupLabelSize)
                     .attr("height", this.groupLabelSize)
                     .attr("x", 0)
@@ -1976,6 +1978,22 @@ export class Gantt implements IVisual {
                     .attr("font-size", "12px")
                     .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor))
                     .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
+
+                const linearGradientForButtons = this.collapseAllGroup
+                    .append("linearGradient")
+                    .attr("id", "linearGradientForButtons");
+
+                // TODO: stopSelectionData with .enter() .merge()
+                //let stopsSelection = linearGradientForButtons.selectAll("stop");
+
+                linearGradientForButtons
+                    .append("stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", () => this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
+                linearGradientForButtons
+                    .append("stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", () => this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
             }
 
         } else {
@@ -2041,11 +2059,13 @@ export class Gantt implements IVisual {
         if (isCollapsed === "1") {
             this.collapsedTasks = [];
             collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "0");
-            collapsedAllSelector.attr("xlink:href", changeColorForEncodedSvg(this.collapseAllImageConsts.collapseSvgEncoded, collapseExpandFillColor, true));
+            debugger;
+            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.collapseSvgEncoded);
 
         } else {
+            debugger;
             collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "1");
-            collapsedAllSelector.attr("xlink:href", changeColorForEncodedSvg(this.collapseAllImageConsts.expandSvgEncoded, collapseExpandFillColor, true));
+            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.expandSvgEncoded);
             this.viewModel.tasks.forEach((task: Task) => {
                 if (task.parent) {
                     if (task.visibility) {

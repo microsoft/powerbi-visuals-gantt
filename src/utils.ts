@@ -56,6 +56,8 @@ export function changeColorForEncodedSvg(encodedDataImage: string, color: string
     let decoded = atob(encodedSvg);
 
     let xml = DOMParserInstance.parseFromString(decoded, "text/xml");
+    debugger;
+    //color = "url(#linearGradientForButtons)";
     let paths = xml.getElementsByTagName("path") as any as Array<SVGPathElement>;
     if (changeOnlyFirstPath) {
         paths[0].setAttribute("fill", color);

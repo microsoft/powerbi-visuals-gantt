@@ -15,7 +15,8 @@
     "email": "pbicvsupport@microsoft.com"
   },
   "assets": {
-    "icon": "assets/icon.png"
+    "icon": "assets/icon.png",
+    "collapse": "assets/collapse.svg"
   },
   "externalJS": [],
   "style": "style/gantt.less",
