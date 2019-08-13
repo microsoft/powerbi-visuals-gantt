@@ -35,8 +35,7 @@ import DataViewValueColumnGroup = powerbi.DataViewValueColumnGroup;
 import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
 import PrimitiveValue = powerbi.PrimitiveValue;
 
-import { valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
-import ValueFormatter = vf.valueFormatter;
+import { valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
 
 import { converterHelper as ch } from "powerbi-visuals-utils-dataviewutils";
 import converterHelper = ch.converterHelper;
@@ -101,5 +100,5 @@ export class GanttColumns<T> {
     public Completion: T = null;
     public Resource: T = null;
     public ExtraInformation: T = null;
-    public Milestones: T  = null;
+    public Milestones: T = null;
 }

@@ -79,10 +79,9 @@ import PrimitiveType = valueType.PrimitiveType;
 import ValueType = valueType.ValueType;
 
 // powerbi.extensibility.utils.formatting
-import { textMeasurementService as tms, valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
-import ValueFormatter = vf.valueFormatter;
+import { textMeasurementService as tms, valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
 import TextProperties = tms.TextProperties;
-import IValueFormatter = vf.IValueFormatter;
+import IValueFormatter = ValueFormatter.IValueFormatter;
 import textMeasurementService = tms.textMeasurementService;
 
 // powerbi.extensibility.utils.interactivity
@@ -133,7 +132,7 @@ import {
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
 import { GanttSettings, DateTypeSettings } from "./settings";
-import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, changeColorForEncodedSvg, isStringNotNullEmptyOrUndefined, isValidDate } from "./utils";
+import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, changeColorForEncodedSvg, isValidDate, getRandomHexColor } from "./utils";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -454,7 +453,7 @@ export class Gantt implements IVisual {
             .attr("width", "100%")
             .attr("height", 1)
             .attr("y", this.margin.top)
-            .attr("fill", isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor) : Gantt.DefaultValues.TaskLineColor);
+            .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
 
         this.collapseAllGroup = this.lineGroup
             .append("g")
@@ -978,6 +977,7 @@ export class Gantt implements IVisual {
                 children: null,
                 visibility: true,
                 duration,
+                url: getRandomHexColor(),
                 taskType: taskType && taskType.name,
                 description: categoryValue as string,
                 tooltipInfo: tooltips,
@@ -1005,6 +1005,7 @@ export class Gantt implements IVisual {
                         end: null,
                         parent: null,
                         children: [task],
+                        url: getRandomHexColor(),
                         visibility: true,
                         taskType: null,
                         description: null,
@@ -1858,7 +1859,7 @@ export class Gantt implements IVisual {
             this.lineGroupWrapper
                 .attr("width", taskLabelsWidth)
                 .attr("fill", isHighContrast ? categoriesAreaBackgroundColor : Gantt.DefaultValues.TaskCategoryLabelsRectColor)
-                .attr("stroke", isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor) : Gantt.DefaultValues.TaskLineColor)
+                .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
                 .attr("stroke-width", 1);
 
             this.lineGroup
@@ -1898,7 +1899,7 @@ export class Gantt implements IVisual {
                 .append("image")
                 .attr("xlink:href", (task: GroupedTask) => {
                     const expandCollapseXlink = !task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvgEncoded : this.collapseAllImageConsts.minusSvgEncoded;
-                    const expandCollapseXlinkWithColor = isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor) : Gantt.DefaultValues.CollapseAllColor;
+                    const expandCollapseXlinkWithColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
                     return changeColorForEncodedSvg(expandCollapseXlink, expandCollapseXlinkWithColor);
                 })
                 .attr("width", Gantt.DefaultValues.IconWidth)
@@ -1930,7 +1931,7 @@ export class Gantt implements IVisual {
                 .attr("y", (task: GroupedTask) => (task.id + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2)
                 .attr("width", () => displayGridLines ? this.viewport.width : 0)
                 .attr("height", 1)
-                .attr("fill", isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor) : Gantt.DefaultValues.TaskLineColor);
+                .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
 
             axisLabel
                 .exit()
@@ -1973,7 +1974,7 @@ export class Gantt implements IVisual {
                     .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
                     .attr("y", this.groupLabelSize)
                     .attr("font-size", "12px")
-                    .attr("fill", isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor) : Gantt.DefaultValues.CollapseAllColor)
+                    .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor))
                     .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
             }
 
@@ -2229,22 +2230,10 @@ export class Gantt implements IVisual {
 
         taskRectMerged.classed(Selectors.TaskRect.className, true);
 
-        let index = 0, groupedTaskIndex = 0;
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
-            .style("fill", (task: Task) => {
-                // logic used for grouped tasks, when there are several bars related to one category
-                if (index === task.id) {
-                    groupedTaskIndex++;
-                } else {
-                    groupedTaskIndex = 0;
-                    index = task.id;
-                }
-
-                const url = `#task${task.id}-${groupedTaskIndex}-${isStringNotNullEmptyOrUndefined(task.taskType) ? task.taskType.toString() : ""}`;
-                return `url(${encodeURI(url)})`;
-            });
+            .style("fill", (task: Task) => `url(${encodeURI(`#task${task.url}`)})`);
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -2263,11 +2252,8 @@ export class Gantt implements IVisual {
      */
     private getMilestoneColor(milestoneType: string): string {
         const milestone: MilestoneDataPoint = this.viewModel.milestonesData.dataPoints.filter((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType)[0];
-        if (this.colorHelper.isHighContrast) {
-            return this.colorHelper.getHighContrastColor("foreground", milestone.color);
-        }
 
-        return milestone.color;
+        return this.colorHelper.getHighContrastColor("foreground", milestone.color);
     }
 
     private getMilestonePath(milestoneType: string, taskConfigHeight: number): string {
@@ -2449,24 +2435,14 @@ export class Gantt implements IVisual {
      */
     private taskProgressRender(
         taskSelection: Selection<Task>): void {
-        const isHighContrast: boolean = this.colorHelper.isHighContrast;
         const taskProgressShow: boolean = this.viewModel.settings.taskCompletion.show;
 
-        let index = 0, groupedTaskIndex = 0;
         let taskProgress: Selection<any> = taskSelection
             .selectAll(Selectors.TaskProgress.selectorName)
             .data((d: Task, i: number) => {
                 const taskProgressPercentage = this.getDaysOffTaskProgressPercent(d);
-                // logic used for grouped tasks, when there are several bars related to one category
-                if (index === d.id) {
-                    groupedTaskIndex++;
-                } else {
-                    groupedTaskIndex = 0;
-                    index = d.id;
-                }
-                const url = `${d.id}-${groupedTaskIndex}-${isStringNotNullEmptyOrUndefined(d.taskType) ? d.taskType.toString() : ""}`;
                 return [{
-                    key: `${encodeURI(url)}`, values: <LinearStop[]>[
+                    key: `${encodeURI(d.url)}`, values: <LinearStop[]>[
                         { completion: 0, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
@@ -2493,7 +2469,7 @@ export class Gantt implements IVisual {
             .append("stop")
             .merge(<any>stopsSelection)
             .attr("offset", (data: LinearStop) => `${data.completion * 100}%`)
-            .attr("stop-color", (data: LinearStop) => isHighContrast ? this.colorHelper.getHighContrastColor("foreground", data.color) : data.color)
+            .attr("stop-color", (data: LinearStop) => this.colorHelper.getHighContrastColor("foreground", data.color))
             .attr("stop-opacity", (data: LinearStop, index: number) => (index > 1) && taskProgressShow ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
 
         taskProgress
@@ -2804,7 +2780,6 @@ export class Gantt implements IVisual {
         }
 
         let todayColor: string = this.viewModel.settings.dateType.todayColor;
-        let isHighContrast: boolean = this.colorHelper.isHighContrast;
         // TODO: add not today milestones color
         let milestoneDates = [new Date(timestamp)];
         tasks.forEach((task: GroupedTask) => {
@@ -2852,7 +2827,7 @@ export class Gantt implements IVisual {
             .attr("y2", (line: Line) => line.y2)
             .style("stroke", (line: Line) => {
                 let color = line.x1 === this.timeScale(timestamp) ? todayColor : Gantt.DefaultValues.MilestoneLineColor;
-                return isHighContrast ? this.colorHelper.getHighContrastColor("foreground", color) : color;
+                return this.colorHelper.getHighContrastColor("foreground", color);
             });
 
         this.renderTooltip(chartLineSelectionMerged);

@@ -316,17 +316,4 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
 
         return taskMock;
     }
-
-    public static getRandomHexColor(): string {
-        return VisualBuilder.getHexColorFromNumber(VisualBuilder.getRandomInteger(0, 16777215 + 1));
-    }
-
-    public static getHexColorFromNumber(value: number) {
-        let hex = value.toString(16).toUpperCase();
-        return "#" + (hex.length === 6 ? hex : _.range(0, 6 - hex.length, 0).join("") + hex);
-    }
-
-    public static getRandomInteger(min: number, max: number, exceptionList?: number[]): number {
-        return getRandomNumber(max, min, exceptionList, Math.floor);
-    }
 }

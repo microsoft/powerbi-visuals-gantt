@@ -42,13 +42,13 @@ import { clickElement, MockISelectionId, assertColorsMatch, MockISelectionIdBuil
 
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
 import { legendPosition as LegendPosition } from "powerbi-visuals-utils-chartutils";
-import { valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
-import IValueFormatter = vf.IValueFormatter;
-import valueFormatter = vf.valueFormatter;
+import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
+import IValueFormatter = valueFormatter.IValueFormatter;
 
 import { Task, TaskDaysOff, Milestone } from "../src/interfaces";
 import { DurationHelper } from "../src/durationHelper";
 import { Gantt as VisualClass } from "../src/gantt";
+import { getRandomHexColor } from "../src/utils";
 
 export enum DateTypes {
     Second = <any>"Second",
@@ -972,7 +972,7 @@ describe("Gantt", () => {
             const categoriesColumn = dataView.categorical.categories[milestoneColumnIndex];
             const uniqueMilestoneTypes = _.compact(_.uniq(categoriesColumn.values));
 
-            const randomColors = uniqueMilestoneTypes.map((t) => VisualBuilder.getRandomHexColor());
+            const randomColors = uniqueMilestoneTypes.map((t) => getRandomHexColor());
             const randomTypes = uniqueMilestoneTypes.map((t) => {
                 const types = ["Rhombus", "Circle", "Square"];
                 return types[Math.floor(getRandomNumber(0, types.length - 1))];
@@ -1303,7 +1303,7 @@ describe("Gantt", () => {
 
         describe("Days off", () => {
             it("color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     daysOff: {
                         show: true,
@@ -1607,7 +1607,7 @@ describe("Gantt", () => {
             });
 
             it("color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     taskResource: {
                         fill: VisualBuilder.getSolidColorStructuralObject(color)
@@ -1787,7 +1787,7 @@ describe("Gantt", () => {
 
                 fixDataViewDateValuesAggregation(dataView);
 
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     taskConfig: {
                         fill: VisualBuilder.getSolidColorStructuralObject(color)
@@ -1859,7 +1859,7 @@ describe("Gantt", () => {
             });
 
             it("color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     taskLabels: {
                         fill: VisualBuilder.getSolidColorStructuralObject(color)
@@ -1916,7 +1916,7 @@ describe("Gantt", () => {
 
         describe("Gantt date types", () => {
             it("Today color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     dateType: {
                         todayColor: VisualBuilder.getSolidColorStructuralObject(color)
@@ -1927,7 +1927,7 @@ describe("Gantt", () => {
             });
 
             it("Axis color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     dateType: {
                         axisColor: VisualBuilder.getSolidColorStructuralObject(color)
@@ -1938,7 +1938,7 @@ describe("Gantt", () => {
             });
 
             it("Axis text color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     dateType: {
                         axisTextColor: VisualBuilder.getSolidColorStructuralObject(color)

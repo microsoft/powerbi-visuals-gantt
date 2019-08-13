@@ -1,3 +1,6 @@
+import * as _ from "lodash";
+import { getRandomNumber } from "powerbi-visuals-utils-testutils";
+
 export const drawRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
     if (!width || !height) {
         return;
@@ -65,9 +68,17 @@ export function changeColorForEncodedSvg(encodedDataImage: string, color: string
     return xlinkBegin.concat(window.btoa(xmlToString));
 }
 
-export function isStringNotNullEmptyOrUndefined(str: string) {
-    const isReducableType = typeof str === "string" || typeof str === "number" || typeof str === "boolean";
-    return str !== undefined && str !== null && isReducableType && str.length > 0;
+export function getRandomHexColor(): string {
+    return getHexColorFromNumber(getRandomInteger(0, 16777215 + 1));
+}
+
+export function getHexColorFromNumber(value: number) {
+    let hex = value.toString(16).toUpperCase();
+    return "#" + (hex.length === 6 ? hex : _.range(0, 6 - hex.length, 0).join("") + hex);
+}
+
+export function getRandomInteger(min: number, max: number, exceptionList?: number[]): number {
+    return getRandomNumber(max, min, exceptionList, Math.floor);
 }
 
 export function isValidDate(date: Date): boolean {
