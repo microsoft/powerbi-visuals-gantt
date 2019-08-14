@@ -223,6 +223,7 @@ module Selectors {
     export const Label: ClassAndSelector = createClassAndSelector("label");
     export const LegendItems: ClassAndSelector = createClassAndSelector("legendItem");
     export const LegendTitle: ClassAndSelector = createClassAndSelector("legendTitle");
+    export const LinearGradientForButtons: ClassAndSelector = createClassAndSelector("linear-gradient-for-buttons");
 }
 
 module GanttRoles {
@@ -355,11 +356,12 @@ export class Gantt implements IVisual {
     private isInteractiveChart: boolean = false;
     private groupTasksPrevValue: boolean = false;
     private collapsedTasks: string[] = [];
+
     private collapseAllImageConsts = {
-        minusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0iTGF5ZXJfMSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzIgMzI7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PGc+PGc+PGc+PHBhdGggZD0iTTIwLDE3aC04Yy0wLjU1MjI0NjEsMC0xLTAuNDQ3MjY1Ni0xLTFzMC40NDc3NTM5LTEsMS0xaDhjMC41NTIyNDYxLDAsMSwwLjQ0NzI2NTYsMSwxUzIwLjU1MjI0NjEsMTcsMjAsMTd6IiBmaWxsPSJ1cmwoI2xpbmVhckdyYWRpZW50Rm9yQnV0dG9ucykiLz48L2c+PC9nPjxnPjxwYXRoIGQ9Ik0yNC43MTg3NSwyOUg3LjI4MTI1QzQuOTIwNDEwMiwyOSwzLDI3LjA3OTEwMTYsMywyNC43MTg3NVY3LjI4MTI1QzMsNC45MjA4OTg0LDQuOTIwNDEwMiwzLDcuMjgxMjUsM2gxNy40Mzc1ICAgIEMyNy4wNzk1ODk4LDMsMjksNC45MjA4OTg0LDI5LDcuMjgxMjV2MTcuNDM3NUMyOSwyNy4wNzkxMDE2LDI3LjA3OTU4OTgsMjksMjQuNzE4NzUsMjl6IE03LjI4MTI1LDUgICAgQzYuMDIzNDM3NSw1LDUsNi4wMjM0Mzc1LDUsNy4yODEyNXYxNy40Mzc1QzUsMjUuOTc2NTYyNSw2LjAyMzQzNzUsMjcsNy4yODEyNSwyN2gxNy40Mzc1ICAgIEMyNS45NzY1NjI1LDI3LDI3LDI1Ljk3NjU2MjUsMjcsMjQuNzE4NzVWNy4yODEyNUMyNyw2LjAyMzQzNzUsMjUuOTc2NTYyNSw1LDI0LjcxODc1LDVINy4yODEyNXoiIGZpbGw9InVybCgjbGluZWFyR3JhZGllbnRGb3JCdXR0b25zKSIvPjwvZz48L2c+PC9zdmc+",
-        plusSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0iTGF5ZXJfMSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzIgMzI7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PGc+PGc+PGc+PHBhdGggZD0iTTE2LDIxYy0wLjU1MjI0NjEsMC0xLTAuNDQ3MjY1Ni0xLTF2LThjMC0wLjU1MjczNDQsMC40NDc3NTM5LTEsMS0xczEsMC40NDcyNjU2LDEsMXY4ICAgICBDMTcsMjAuNTUyNzM0NCwxNi41NTIyNDYxLDIxLDE2LDIxeiIgZmlsbD0idXJsKCNsaW5lYXJHcmFkaWVudEZvckJ1dHRvbnMpIi8+PC9nPjxnPjxwYXRoIGQ9Ik0yMCwxN2gtOGMtMC41NTIyNDYxLDAtMS0wLjQ0NzI2NTYtMS0xczAuNDQ3NzUzOS0xLDEtMWg4YzAuNTUyMjQ2MSwwLDEsMC40NDcyNjU2LDEsMVMyMC41NTIyNDYxLDE3LDIwLDE3eiIgZmlsbD0idXJsKCNsaW5lYXJHcmFkaWVudEZvckJ1dHRvbnMpIi8+PC9nPjwvZz48Zz48cGF0aCBkPSJNMjQuNzE4NzUsMjlINy4yODEyNUM0LjkyMDQxMDIsMjksMywyNy4wNzkxMDE2LDMsMjQuNzE4NzVWNy4yODEyNUMzLDQuOTIwODk4NCw0LjkyMDQxMDIsMyw3LjI4MTI1LDNoMTcuNDM3NSAgICBDMjcuMDc5NTg5OCwzLDI5LDQuOTIwODk4NCwyOSw3LjI4MTI1djE3LjQzNzVDMjksMjcuMDc5MTAxNiwyNy4wNzk1ODk4LDI5LDI0LjcxODc1LDI5eiBNNy4yODEyNSw1ICAgIEM2LjAyMzQzNzUsNSw1LDYuMDIzNDM3NSw1LDcuMjgxMjV2MTcuNDM3NUM1LDI1Ljk3NjU2MjUsNi4wMjM0Mzc1LDI3LDcuMjgxMjUsMjdoMTcuNDM3NSAgICBDMjUuOTc2NTYyNSwyNywyNywyNS45NzY1NjI1LDI3LDI0LjcxODc1VjcuMjgxMjVDMjcsNi4wMjM0Mzc1LDI1Ljk3NjU2MjUsNSwyNC43MTg3NSw1SDcuMjgxMjV6IiBmaWxsPSJ1cmwoI2xpbmVhckdyYWRpZW50Rm9yQnV0dG9ucykiLz48L2c+PC9nPjwvc3ZnPg==",
-        expandSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjQ4Ij48cGF0aCBkPSJNMzMuMTcgMTcuMTdsLTkuMTcgOS4xNy05LjE3LTkuMTctMi44MyAyLjgzIDEyIDEyIDEyLTEyeiIgZmlsbD0idXJsKCNsaW5lYXJHcmFkaWVudEZvckJ1dHRvbnMpIi8+PHBhdGggZD0iTTAgMGg0OHY0OGgtNDh6IiBmaWxsPSJub25lIi8+PC9zdmc+",
-        collapseSvgEncoded: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjQ4Ij48cGF0aCBkPSJNMjQgMTZsLTEyIDEyIDIuODMgMi44MyA5LjE3LTkuMTcgOS4xNyA5LjE3IDIuODMtMi44M3oiIGZpbGw9InVybCgjbGluZWFyR3JhZGllbnRGb3JCdXR0b25zKSIvPjxwYXRoIGQ9Ik0wIDBoNDh2NDhoLTQ4eiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==",
+        collapseSvg: require("../assets/collapse.svg") as string,
+        expandSvg: require("../assets/expand.svg") as string,
+        plusSvg: require("../assets/plus.svg") as string,
+        minusSvg: require("../assets/minus.svg") as string,
         collapseAllFlag: "data-is-collapsed"
     };
     private parentLabelOffset: number = 5;
@@ -1866,6 +1868,10 @@ export class Gantt implements IVisual {
                 .selectAll(Selectors.Label.selectorName)
                 .remove();
 
+            this.lineGroup
+                .selectAll(Selectors.LinearGradientForButtons.selectorName)
+                .remove();
+
             axisLabel = this.lineGroup
                 .selectAll(Selectors.Label.selectorName)
                 .data(tasks);
@@ -1894,18 +1900,58 @@ export class Gantt implements IVisual {
                 .append("title")
                 .text((task: GroupedTask) => task.name);
 
-            axisLabelGroup
+            const linearGradientForButtons = this.lineGroup
+                .append("linearGradient")
+                .attr("id", "linearGradientForButtons");
+
+            // TODO: stopSelectionData with .enter() .merge()
+            //let stopsSelection = linearGradientForButtons.selectAll("stop");
+
+            linearGradientForButtons
+                .append("stop")
+                .attr("offset", "0%")
+                .attr("stop-color", () => "#00ff00");//this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
+            linearGradientForButtons
+                .append("stop")
+                .attr("offset", "100%")
+                .attr("stop-color", () => "#00ff00");//this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
+
+            const button = axisLabelGroup
                 .filter((task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length)
-                .append("image")
-                .attr("xlink:href", (task: GroupedTask) => {
-                    const expandCollapseXlink = !task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvgEncoded : this.collapseAllImageConsts.minusSvgEncoded;
-                    const expandCollapseXlinkWithColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
-                    return expandCollapseXlink;
-                })
+                .append("svg")
+                .attr("viewBox", "0 0 32 32")
                 .attr("width", Gantt.DefaultValues.IconWidth)
                 .attr("height", Gantt.DefaultValues.IconHeight)
                 .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
-                .attr("x", Gantt.DefaultValues.BarMargin);
+                .attr("x", Gantt.DefaultValues.BarMargin)
+                .append("g");
+
+            button
+                .append("g")
+                .append("g")
+                .append("path")
+                .attr("d", "M20,17h-8c-0.5522461,0-1-0.4472656-1-1s0.4477539-1,1-1h8c0.5522461,0,1,0.4472656,1,1S20.5522461,17,20,17z")
+                .attr("fill", "#ff00ff");
+            button
+                .append("g")
+                .append("path")
+                .attr("d", `M24.71875,29H7.28125C4.9204102,29,3,27.0791016,3,24.71875V7.28125C3,4.9208984,4.9204102,3,7.28125,3h17.4375
+                C27.0795898, 3, 29, 4.9208984, 29, 7.28125v17.4375C29, 27.0791016, 27.0795898, 29, 24.71875, 29z M7.28125, 5
+                    C6.0234375, 5, 5, 6.0234375, 5, 7.28125v17.4375C5, 25.9765625, 6.0234375, 27, 7.28125, 27h17.4375
+                        C25.9765625, 27, 27, 25.9765625, 27, 24.71875V7.28125C27, 6.0234375, 25.9765625, 5, 24.71875, 5H7.28125z`)
+                .attr("fill", "#ff0000");
+
+            // .append("image")
+            // .attr("xlink:href", (task: GroupedTask) => {
+            //     const expandCollapseXlink = !task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvg : this.collapseAllImageConsts.minusSvg;
+            //     debugger;
+            //     const expandCollapseXlinkWithColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
+            //     return expandCollapseXlink;
+            // })
+            // .attr("width", Gantt.DefaultValues.IconWidth)
+            // .attr("height", Gantt.DefaultValues.IconHeight)
+            // .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
+            // .attr("x", Gantt.DefaultValues.BarMargin);
 
             let parentTask: string = "";
             let childrenCount = 0;
@@ -1957,7 +2003,7 @@ export class Gantt implements IVisual {
                     .attr("height", 2 * Gantt.TaskLabelsMarginTop)
                     .attr("fill", categoriesAreaBackgroundColor);
 
-                const collapsedAllXlink = this.collapsedTasks.length ? this.collapseAllImageConsts.expandSvgEncoded : this.collapseAllImageConsts.collapseSvgEncoded;
+                const collapsedAllXlink = this.collapsedTasks.length ? this.collapseAllImageConsts.expandSvg : this.collapseAllImageConsts.collapseSvg;
                 const collapseAllArrowColor = isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor) : undefined;
 
                 debugger;
@@ -1979,21 +2025,21 @@ export class Gantt implements IVisual {
                     .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor))
                     .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
 
-                const linearGradientForButtons = this.collapseAllGroup
-                    .append("linearGradient")
-                    .attr("id", "linearGradientForButtons");
+                // const linearGradientForButtons = this.collapseAllGroup
+                //     .append("linearGradient")
+                //     .attr("id", "linearGradientForButtons");
 
-                // TODO: stopSelectionData with .enter() .merge()
-                //let stopsSelection = linearGradientForButtons.selectAll("stop");
+                // // TODO: stopSelectionData with .enter() .merge()
+                // //let stopsSelection = linearGradientForButtons.selectAll("stop");
 
-                linearGradientForButtons
-                    .append("stop")
-                    .attr("offset", "0%")
-                    .attr("stop-color", () => this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
-                linearGradientForButtons
-                    .append("stop")
-                    .attr("offset", "100%")
-                    .attr("stop-color", () => this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
+                // linearGradientForButtons
+                //     .append("stop")
+                //     .attr("offset", "0%")
+                //     .attr("stop-color", () => "#00ff00");//this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
+                // linearGradientForButtons
+                //     .append("stop")
+                //     .attr("offset", "100%")
+                //     .attr("stop-color", () => "#00ff00");//this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
             }
 
         } else {
@@ -2060,12 +2106,12 @@ export class Gantt implements IVisual {
             this.collapsedTasks = [];
             collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "0");
             debugger;
-            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.collapseSvgEncoded);
+            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.collapseSvg);
 
         } else {
             debugger;
             collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "1");
-            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.expandSvgEncoded);
+            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.expandSvg);
             this.viewModel.tasks.forEach((task: Task) => {
                 if (task.parent) {
                     if (task.visibility) {
