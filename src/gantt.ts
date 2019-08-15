@@ -133,6 +133,7 @@ import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
 import { GanttSettings, DateTypeSettings } from "./settings";
 import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, isValidDate, getRandomHexColor } from "./utils";
+import { drawExpandButton, drawCollapseButton, drawMinusButton, drawPlusButton } from "./drawButtons";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -276,7 +277,9 @@ export class Gantt implements IVisual {
         ResourceWidth: 100,
         TaskColor: "#00B099",
         TaskLineColor: "#ccc",
-        CollapseAllColor: "#aaa",
+        CollapseAllColor: "#000",
+        PlusMinusColor: "#5F6B6D",
+        CollapseAllTextColor: "#aaa",
         MilestoneLineColor: "#ccc",
         TaskCategoryLabelsRectColor: "#fafafa",
         TaskLineWidth: 15,
@@ -356,14 +359,7 @@ export class Gantt implements IVisual {
     private isInteractiveChart: boolean = false;
     private groupTasksPrevValue: boolean = false;
     private collapsedTasks: string[] = [];
-
-    private collapseAllImageConsts = {
-        collapseSvg: require("../assets/collapse.svg") as string,
-        expandSvg: require("../assets/expand.svg") as string,
-        plusSvg: require("../assets/plus.svg") as string,
-        minusSvg: require("../assets/minus.svg") as string,
-        collapseAllFlag: "data-is-collapsed"
-    };
+    private collapseAllFlag: "data-is-collapsed";
     private parentLabelOffset: number = 5;
     private groupLabelSize: number = 25;
     private secondExpandAllIconOffset: number = 7;
@@ -1868,10 +1864,6 @@ export class Gantt implements IVisual {
                 .selectAll(Selectors.Label.selectorName)
                 .remove();
 
-            this.lineGroup
-                .selectAll(Selectors.LinearGradientForButtons.selectorName)
-                .remove();
-
             axisLabel = this.lineGroup
                 .selectAll(Selectors.Label.selectorName)
                 .data(tasks);
@@ -1900,23 +1892,7 @@ export class Gantt implements IVisual {
                 .append("title")
                 .text((task: GroupedTask) => task.name);
 
-            const linearGradientForButtons = this.lineGroup
-                .append("linearGradient")
-                .attr("id", "linearGradientForButtons");
-
-            // TODO: stopSelectionData with .enter() .merge()
-            //let stopsSelection = linearGradientForButtons.selectAll("stop");
-
-            linearGradientForButtons
-                .append("stop")
-                .attr("offset", "0%")
-                .attr("stop-color", () => "#00ff00");//this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
-            linearGradientForButtons
-                .append("stop")
-                .attr("offset", "100%")
-                .attr("stop-color", () => "#00ff00");//this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
-
-            const button = axisLabelGroup
+            const buttonSelection = axisLabelGroup
                 .filter((task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length)
                 .append("svg")
                 .attr("viewBox", "0 0 32 32")
@@ -1926,32 +1902,16 @@ export class Gantt implements IVisual {
                 .attr("x", Gantt.DefaultValues.BarMargin)
                 .append("g");
 
-            button
-                .append("g")
-                .append("g")
-                .append("path")
-                .attr("d", "M20,17h-8c-0.5522461,0-1-0.4472656-1-1s0.4477539-1,1-1h8c0.5522461,0,1,0.4472656,1,1S20.5522461,17,20,17z")
-                .attr("fill", "#ff00ff");
-            button
-                .append("g")
-                .append("path")
-                .attr("d", `M24.71875,29H7.28125C4.9204102,29,3,27.0791016,3,24.71875V7.28125C3,4.9208984,4.9204102,3,7.28125,3h17.4375
-                C27.0795898, 3, 29, 4.9208984, 29, 7.28125v17.4375C29, 27.0791016, 27.0795898, 29, 24.71875, 29z M7.28125, 5
-                    C6.0234375, 5, 5, 6.0234375, 5, 7.28125v17.4375C5, 25.9765625, 6.0234375, 27, 7.28125, 27h17.4375
-                        C25.9765625, 27, 27, 25.9765625, 27, 24.71875V7.28125C27, 6.0234375, 25.9765625, 5, 24.71875, 5H7.28125z`)
-                .attr("fill", "#ff0000");
-
-            // .append("image")
-            // .attr("xlink:href", (task: GroupedTask) => {
-            //     const expandCollapseXlink = !task.tasks[0].children[0].visibility ? this.collapseAllImageConsts.plusSvg : this.collapseAllImageConsts.minusSvg;
-            //     debugger;
-            //     const expandCollapseXlinkWithColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
-            //     return expandCollapseXlink;
-            // })
-            // .attr("width", Gantt.DefaultValues.IconWidth)
-            // .attr("height", Gantt.DefaultValues.IconHeight)
-            // .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
-            // .attr("x", Gantt.DefaultValues.BarMargin);
+            const buttonPlusMinusColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.PlusMinusColor);
+            buttonSelection
+                .each(function (task: GroupedTask) {
+                    let element = d3.select(this);
+                    if (!task.tasks[0].children[0].visibility) {
+                        drawPlusButton(element, buttonPlusMinusColor);
+                    } else {
+                        drawMinusButton(element, buttonPlusMinusColor);
+                    }
+                });
 
             let parentTask: string = "";
             let childrenCount = 0;
@@ -1984,7 +1944,7 @@ export class Gantt implements IVisual {
                 .remove();
 
             this.collapseAllGroup
-                .selectAll("image")
+                .selectAll("svg")
                 .remove();
 
             this.collapseAllGroup
@@ -2003,43 +1963,30 @@ export class Gantt implements IVisual {
                     .attr("height", 2 * Gantt.TaskLabelsMarginTop)
                     .attr("fill", categoriesAreaBackgroundColor);
 
-                const collapsedAllXlink = this.collapsedTasks.length ? this.collapseAllImageConsts.expandSvg : this.collapseAllImageConsts.collapseSvg;
-                const collapseAllArrowColor = isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor) : undefined;
-
-                debugger;
-                this.collapseAllGroup
-                    .append("image")
+                const expandCollapseButton = this.collapseAllGroup
+                    .append("svg")
                     .classed(Selectors.CollapseAllArrow.className, true)
-                    .attr("xlink:href", collapsedAllXlink)
+                    .attr("viewBox", "0 0 48 48")
                     .attr("width", this.groupLabelSize)
                     .attr("height", this.groupLabelSize)
                     .attr("x", 0)
                     .attr("y", this.secondExpandAllIconOffset)
-                    .attr(this.collapseAllImageConsts.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
+                    .attr(this.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
+
+                const buttonExpandCollapseColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
+                if (this.collapsedTasks.length) {
+                    drawExpandButton(expandCollapseButton, buttonExpandCollapseColor);
+                } else {
+                    drawCollapseButton(expandCollapseButton, buttonExpandCollapseColor);
+                }
 
                 this.collapseAllGroup
                     .append("text")
                     .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
                     .attr("y", this.groupLabelSize)
                     .attr("font-size", "12px")
-                    .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor))
+                    .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllTextColor))
                     .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
-
-                // const linearGradientForButtons = this.collapseAllGroup
-                //     .append("linearGradient")
-                //     .attr("id", "linearGradientForButtons");
-
-                // // TODO: stopSelectionData with .enter() .merge()
-                // //let stopsSelection = linearGradientForButtons.selectAll("stop");
-
-                // linearGradientForButtons
-                //     .append("stop")
-                //     .attr("offset", "0%")
-                //     .attr("stop-color", () => "#00ff00");//this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
-                // linearGradientForButtons
-                //     .append("stop")
-                //     .attr("offset", "100%")
-                //     .attr("stop-color", () => "#00ff00");//this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor));
             }
 
         } else {
@@ -2099,19 +2046,18 @@ export class Gantt implements IVisual {
      */
     private subTasksCollapseAll(): void {
         const collapsedAllSelector = this.collapseAllGroup.select(Selectors.CollapseAllArrow.selectorName);
-        const isCollapsed: string = collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag);
-        const collapseExpandFillColor = this.colorHelper.isHighContrast ? this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor) : undefined;
+        const isCollapsed: string = collapsedAllSelector.attr(this.collapseAllFlag);
+        const buttonExpandCollapseColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
 
+        collapsedAllSelector.selectAll("path").remove();
         if (isCollapsed === "1") {
             this.collapsedTasks = [];
-            collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "0");
-            debugger;
-            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.collapseSvg);
+            collapsedAllSelector.attr(this.collapseAllFlag, "0");
+            drawCollapseButton(collapsedAllSelector, buttonExpandCollapseColor);
 
         } else {
-            debugger;
-            collapsedAllSelector.attr(this.collapseAllImageConsts.collapseAllFlag, "1");
-            collapsedAllSelector.attr("xlink:href", this.collapseAllImageConsts.expandSvg);
+            collapsedAllSelector.attr(this.collapseAllFlag, "1");
+            drawExpandButton(collapsedAllSelector, buttonExpandCollapseColor);
             this.viewModel.tasks.forEach((task: Task) => {
                 if (task.parent) {
                     if (task.visibility) {
