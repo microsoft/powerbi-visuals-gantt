@@ -48,7 +48,7 @@ import IValueFormatter = valueFormatter.IValueFormatter;
 import { Task, TaskDaysOff, Milestone } from "../src/interfaces";
 import { DurationHelper } from "../src/durationHelper";
 import { Gantt as VisualClass } from "../src/gantt";
-import { getRandomHexColor } from "../src/utils";
+import { getRandomHexColor, isValidDate } from "../src/utils";
 
 export enum DateTypes {
     Second = <any>"Second",
@@ -647,7 +647,7 @@ describe("Gantt", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 let element = d3.select(visualBuilder.element.get(0));
                 let resources = element.selectAll(".task-resource").node();
-                let labels = (element.selectAll(".label").node() as HTMLElement).firstChild;
+                let labels = (element.selectAll(".label > .clickableArea").node() as HTMLElement).firstChild;
 
                 expect((resources as SVGTextElement).style["font-size"]).toEqual("12px");
                 expect((labels as SVGTextElement).style["font-size"]).toEqual("12px");
@@ -2064,6 +2064,21 @@ describe("Gantt", () => {
                 expect(isColorAppliedToElements(taskRect, backgroundColor, "fill"));
                 done();
             });
+        });
+    });
+
+    describe("IsDateValid test", () => {
+        it("test for valid Date", () => {
+            let validDate = new Date();
+            expect(isValidDate(validDate)).toBeTruthy();
+
+            validDate = new Date(13425);
+            expect(isValidDate(validDate)).toBeTruthy();
+        });
+
+        it("test for invalid Date", () => {
+            const validDate = new Date("Hello");
+            expect(isValidDate(validDate)).toBeFalsy();
         });
     });
 });

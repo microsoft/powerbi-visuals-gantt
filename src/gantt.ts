@@ -224,7 +224,7 @@ module Selectors {
     export const Label: ClassAndSelector = createClassAndSelector("label");
     export const LegendItems: ClassAndSelector = createClassAndSelector("legendItem");
     export const LegendTitle: ClassAndSelector = createClassAndSelector("legendTitle");
-    export const LinearGradientForButtons: ClassAndSelector = createClassAndSelector("linear-gradient-for-buttons");
+    export const ClickableArea: ClassAndSelector = createClassAndSelector("clickableArea");
 }
 
 module GanttRoles {
@@ -1572,7 +1572,7 @@ export class Gantt implements IVisual {
                 taskSelection: this.taskGroup.selectAll(Selectors.SingleTask.selectorName),
                 legendSelection: this.body.selectAll(Selectors.LegendItems.selectorName),
                 subTasksCollapse: {
-                    selection: this.body.selectAll(Selectors.Label.selectorName),
+                    selection: this.body.selectAll(Selectors.ClickableArea.selectorName),
                     callback: this.subTasksCollapseCb.bind(this)
                 },
                 allSubtasksCollapse: {
@@ -1876,7 +1876,12 @@ export class Gantt implements IVisual {
             axisLabelGroup.classed(Selectors.Label.className, true)
                 .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.id)));
 
-            axisLabelGroup
+            const clickableArea = axisLabelGroup
+                .append("g")
+                .classed(Selectors.ClickableArea.className, true)
+                .merge(axisLabelGroup);
+
+            clickableArea
                 .append("text")
                 .attr("x", (task: GroupedTask) => (Gantt.TaskLineCoordinateX +
                     (_.every(task.tasks, (task: Task) => !!task.parent)
@@ -1892,15 +1897,22 @@ export class Gantt implements IVisual {
                 .append("title")
                 .text((task: GroupedTask) => task.name);
 
-            const buttonSelection = axisLabelGroup
+            const buttonSelection = clickableArea
                 .filter((task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length)
                 .append("svg")
                 .attr("viewBox", "0 0 32 32")
                 .attr("width", Gantt.DefaultValues.IconWidth)
                 .attr("height", Gantt.DefaultValues.IconHeight)
                 .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
+                .attr("x", Gantt.DefaultValues.BarMargin);
+
+            clickableArea
+                .append("rect")
+                .attr("width", 2 * Gantt.DefaultValues.IconWidth)
+                .attr("height", 2 * Gantt.DefaultValues.IconWidth)
+                .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
                 .attr("x", Gantt.DefaultValues.BarMargin)
-                .append("g");
+                .attr("fill", "transparent");
 
             const buttonPlusMinusColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.PlusMinusColor);
             buttonSelection
@@ -1972,6 +1984,14 @@ export class Gantt implements IVisual {
                     .attr("x", 0)
                     .attr("y", this.secondExpandAllIconOffset)
                     .attr(this.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
+
+                expandCollapseButton
+                    .append("rect")
+                    .attr("width", this.groupLabelSize)
+                    .attr("height", this.groupLabelSize)
+                    .attr("x", 0)
+                    .attr("y", this.secondExpandAllIconOffset)
+                    .attr("fill", "transparent");
 
                 const buttonExpandCollapseColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
                 if (this.collapsedTasks.length) {
