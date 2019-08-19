@@ -88,7 +88,7 @@ export class TaskConfigSettings {
 
 export class TaskCompletionSettings {
     show: boolean = true;
-    maxCompletion: number = 100;
+    maxCompletion: number = null;
 }
 
 export class TaskResourceSettings {

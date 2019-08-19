@@ -1,9 +1,12 @@
+import * as _ from "lodash";
+import { getRandomNumber } from "powerbi-visuals-utils-testutils";
+
 export const drawRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
     if (!width || !height) {
         return;
     }
     return "M" + x + "," + y
-        + "h" + (width - radius)
+        + "h" + (width - 2 * radius)
         + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
         + "v" + (height - 2 * radius)
         + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
@@ -38,4 +41,25 @@ export function drawCircle(taskConfigHeight: number): string {
 
 export function drawDiamond(taskConfigHeight: number): string {
     return `M ${taskConfigHeight / 4} 0 ${taskConfigHeight / 2} ${taskConfigHeight / 2} ${taskConfigHeight / 4} ${taskConfigHeight} 0 ${taskConfigHeight / 2} Z`;
+}
+
+export function getRandomHexColor(): string {
+    return getHexColorFromNumber(getRandomInteger(0, 16777215 + 1));
+}
+
+export function getHexColorFromNumber(value: number) {
+    let hex = value.toString(16).toUpperCase();
+    return "#" + (hex.length === 6 ? hex : _.range(0, 6 - hex.length, 0).join("") + hex);
+}
+
+export function getRandomInteger(min: number, max: number, exceptionList?: number[]): number {
+    return getRandomNumber(max, min, exceptionList, Math.floor);
+}
+
+export function isValidDate(date: Date): boolean {
+    if (Object.prototype.toString.call(date) !== "[object Date]") {
+        return false;
+    }
+
+    return !isNaN(date.getTime());
 }

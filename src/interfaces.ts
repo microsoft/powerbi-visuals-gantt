@@ -65,13 +65,14 @@ export interface ExtraInformation {
 }
 
 export interface Task extends SelectableDataPoint {
-    id: number;
+    index: number;
     name: string;
     start: Date;
     duration: number;
     completion: number;
     resource: string;
     end: Date;
+    url: string;
     parent: string;
     children: Task[];
     visibility: boolean;
@@ -88,7 +89,7 @@ export interface Task extends SelectableDataPoint {
 }
 
 export interface GroupedTask {
-    id: number;
+    index: number;
     name: string;
     tasks: Task[];
 }

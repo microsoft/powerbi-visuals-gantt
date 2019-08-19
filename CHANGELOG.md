@@ -1,3 +1,8 @@
+## 2.2.0
+* High contrast mode support fix
+* Black bar fill issue fix
+* Telemetry errors fix
+
 ## 2.1.0
 * Legend usage without Duration filling is allowed (EndDate must be filled)
 * An option for displaying grid lines
