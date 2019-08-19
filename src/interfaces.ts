@@ -65,7 +65,7 @@ export interface ExtraInformation {
 }
 
 export interface Task extends SelectableDataPoint {
-    id: number;
+    index: number;
     name: string;
     start: Date;
     duration: number;
@@ -89,7 +89,7 @@ export interface Task extends SelectableDataPoint {
 }
 
 export interface GroupedTask {
-    id: number;
+    index: number;
     name: string;
     tasks: Task[];
 }

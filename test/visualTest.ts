@@ -876,7 +876,7 @@ describe("Gantt", () => {
 
                 let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
                     parentTask = parentTasks[parentIndex],
-                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.index);
 
                 const minChildStart = _.minBy(parentTask.children, (t: Task) => t.start).start;
                 const maxChildEnd = _.maxBy(parentTask.children, (t: Task) => t.end).end;
@@ -894,11 +894,11 @@ describe("Gantt", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskGroups: JQuery<any>[] = visualBuilder.tasksGroups.toArray().map($);
                     let updatedTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-                    const updatedParentTask = updatedTasks[parentTask.id];
+                    const updatedParentTask = updatedTasks[parentTask.index];
 
                     expect(updatedTasks.length).toBe(tasks.length - parentTask.children.length);
                     expect(taskGroups.length).toBe(tasks.length - parentTask.children.length);
-                    expect(taskGroups[parentTask.id].children().length).toBe(1);
+                    expect(taskGroups[parentTask.index].children().length).toBe(1);
 
                     expect(updatedParentTask.start).toEqual(minChildStart);
                     expect(updatedParentTask.end).toEqual(maxChildEnd);
@@ -926,7 +926,7 @@ describe("Gantt", () => {
 
                 let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
                     parentTask = parentTasks[parentIndex],
-                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.index);
 
                 const minChildStart = _.minBy(parentTask.children, (t: Task) => t.start).start;
                 const maxChildEnd = _.maxBy(parentTask.children, (t: Task) => t.end).end;
@@ -944,14 +944,14 @@ describe("Gantt", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskGroups: JQuery<any>[] = visualBuilder.tasksGroups.toArray().map($);
                     let updatedTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-                    const updatedParentTask = updatedTasks[parentTask.id];
+                    const updatedParentTask = updatedTasks[parentTask.index];
                     const tasksWithSameName = updatedTasks.filter((task) => task.name === parentTask.name);
 
                     // all params are similar because common task is not used with Grouping
                     expect(updatedParentTask.start).not.toBe(minChildStart);
                     expect(updatedParentTask.end).not.toBe(maxChildEnd);
                     expect(updatedParentTask.children).toBe(null);
-                    expect(taskGroups[parentTask.id].children().length).toBe(tasksWithSameName.length);
+                    expect(taskGroups[parentTask.index].children().length).toBe(tasksWithSameName.length);
                     done();
                 });
             });
@@ -1034,7 +1034,7 @@ describe("Gantt", () => {
 
                 let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
                     parentTask = parentTasks[parentIndex],
-                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.index);
 
                 // get uniq by date child milestones for current parent - they should be rendered on parent task bar
                 const childMilestones = parentTask.children.map((childTask: Task) => {
@@ -1060,9 +1060,9 @@ describe("Gantt", () => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const updatedTasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-                    const updatedParentTask = updatedTasks[parentTask.id];
+                    const updatedParentTask = updatedTasks[parentTask.index];
                     const milestones: JQuery<any>[] = visualBuilder.milestones.toArray().map($);
-                    const updatedTasksWithMilestones = updatedTasks.filter((t: Task) => t.Milestones.length && t.id !== parentTask.id);
+                    const updatedTasksWithMilestones = updatedTasks.filter((t: Task) => t.Milestones.length && t.index !== parentTask.index);
 
                     expect(milestones.length).toBe(oldMilestones.length - (updatedParentTask.Milestones.length - uniqDates.length));
                     expect(updatedParentTask.Milestones.length).toBe(mergedMilestone.length);

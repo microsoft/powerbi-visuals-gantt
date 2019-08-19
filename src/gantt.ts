@@ -967,7 +967,7 @@ export class Gantt implements IVisual {
                 color,
                 completion,
                 resource,
-                id: null,
+                index: null,
                 name: categoryValue as string,
                 start: startDate,
                 end: endDate,
@@ -975,7 +975,7 @@ export class Gantt implements IVisual {
                 children: null,
                 visibility: true,
                 duration,
-                url: getRandomHexColor(),
+                url: `task${getRandomHexColor()}`,
                 taskType: taskType && taskType.name,
                 description: categoryValue as string,
                 tooltipInfo: tooltips,
@@ -994,7 +994,7 @@ export class Gantt implements IVisual {
                     addedParents.push(parent);
 
                     parentTask = {
-                        id: 0,
+                        index: 0,
                         name: parent,
                         start: null,
                         duration: null,
@@ -1003,7 +1003,7 @@ export class Gantt implements IVisual {
                         end: null,
                         parent: null,
                         children: [task],
-                        url: getRandomHexColor(),
+                        url: `task${getRandomHexColor()}`,
                         visibility: true,
                         taskType: null,
                         description: null,
@@ -1020,7 +1020,7 @@ export class Gantt implements IVisual {
                     tasks.push(parentTask);
 
                 } else {
-                    parentTask = tasks.filter(x => x.id === 0 && x.name === parent)[0];
+                    parentTask = tasks.filter(x => x.index === 0 && x.name === parent)[0];
 
                     parentTask.children.push(task);
                 }
@@ -1111,8 +1111,8 @@ export class Gantt implements IVisual {
 
         let index: number = 0;
         tasks.forEach(task => {
-            if (!task.id && !task.parent) {
-                task.id = index++;
+            if (!task.index && !task.parent) {
+                task.index = index++;
 
                 if (task.children) {
                     if (sortingOptions.isCustomSortingNeeded) {
@@ -1120,7 +1120,7 @@ export class Gantt implements IVisual {
                     }
 
                     task.children.forEach(subtask => {
-                        subtask.id = subtask.id === null ? index++ : subtask.id;
+                        subtask.index = subtask.index === null ? index++ : subtask.index;
                     });
                 }
             }
@@ -1129,7 +1129,7 @@ export class Gantt implements IVisual {
         let resultTasks: Task[] = [];
 
         tasks.forEach((task) => {
-            resultTasks[task.id] = task;
+            resultTasks[task.index] = task;
         });
 
         return resultTasks;
@@ -1502,7 +1502,7 @@ export class Gantt implements IVisual {
             .filter((task: Task) => task.visibility);
         const tasks: Task[] = visibleTasks
             .map((task: Task, i: number) => {
-                task.id = i;
+                task.index = i;
                 return task;
             });
 
@@ -1774,8 +1774,8 @@ export class Gantt implements IVisual {
             });
 
             result.forEach((x, i) => {
-                x.tasks.forEach(t => t.id = i);
-                x.id = i;
+                x.tasks.forEach(t => t.index = i);
+                x.index = i;
             });
 
             return result;
@@ -1783,7 +1783,7 @@ export class Gantt implements IVisual {
 
         return tasks.map(x => <GroupedTask>{
             name: x.name,
-            id: x.id,
+            index: x.index,
             tasks: [x]
         });
     }
@@ -1874,7 +1874,7 @@ export class Gantt implements IVisual {
                 .merge(axisLabel);
 
             axisLabelGroup.classed(Selectors.Label.className, true)
-                .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.id)));
+                .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.index)));
 
             const clickableArea = axisLabelGroup
                 .append("g")
@@ -1888,7 +1888,7 @@ export class Gantt implements IVisual {
                         ? Gantt.SubtasksLeftMargin
                         : (task.tasks[0].children && !!task.tasks[0].children.length) ? this.parentLabelOffset : 0)))
                 .attr("class", (task: GroupedTask) => task.tasks[0].children ? "parent" : task.tasks[0].parent ? "child" : "normal-node")
-                .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin())
+                .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin())
                 .attr("fill", taskLabelsColor)
                 .attr("stroke-width", Gantt.AxisLabelStrokeWidth)
                 .style("font-size", PixelConverter.fromPoint(taskLabelsFontSize))
@@ -1903,14 +1903,14 @@ export class Gantt implements IVisual {
                 .attr("viewBox", "0 0 32 32")
                 .attr("width", Gantt.DefaultValues.IconWidth)
                 .attr("height", Gantt.DefaultValues.IconHeight)
-                .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
+                .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
                 .attr("x", Gantt.DefaultValues.BarMargin);
 
             clickableArea
                 .append("rect")
                 .attr("width", 2 * Gantt.DefaultValues.IconWidth)
                 .attr("height", 2 * Gantt.DefaultValues.IconWidth)
-                .attr("y", (task: GroupedTask) => (task.id + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
+                .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
                 .attr("x", Gantt.DefaultValues.BarMargin)
                 .attr("fill", "transparent");
 
@@ -1946,7 +1946,7 @@ export class Gantt implements IVisual {
                     const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
                     return drawStandartMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
                 })
-                .attr("y", (task: GroupedTask) => (task.id + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2)
+                .attr("y", (task: GroupedTask) => (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2)
                 .attr("width", () => displayGridLines ? this.viewport.width : 0)
                 .attr("height", 1)
                 .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
@@ -2230,7 +2230,7 @@ export class Gantt implements IVisual {
      */
     private drawTaskRect(task: Task, taskConfigHeight: number): string {
         const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
-            y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
+            y = Gantt.getBarYCoordinate(task.index, taskConfigHeight) + (task.index + 1) * this.getResourceLabelTopMargin(),
             width = this.getTaskRectWidth(task),
             height = Gantt.getBarHeight(taskConfigHeight),
             radius = Gantt.RectRound;
@@ -2265,7 +2265,10 @@ export class Gantt implements IVisual {
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
-            .style("fill", (task: Task) => `url(${encodeURI(`#task${task.url}`)})`);
+            .style("fill", (task: Task) => {
+                const encodedUri = encodeURI(`#` + task.url);
+                return `url(${encodedUri})`;
+            });
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -2328,13 +2331,13 @@ export class Gantt implements IVisual {
                     return {
                         type: currentMilestone.type,
                         start: currentMilestone.start,
-                        taskID: d.id,
+                        taskID: d.index,
                         tooltipInfo: currentMilestone.tooltipInfo
                     };
                 });
 
                 return [{
-                    key: d.id, values: <MilestonePath[]>updatedMilestones
+                    key: d.index, values: <MilestonePath[]>updatedMilestones
                 }];
             });
 
@@ -2405,7 +2408,7 @@ export class Gantt implements IVisual {
                     if (!d.children && d.daysOffList) {
                         for (let i = 0; i < d.daysOffList.length; i++) {
                             tasksDaysOff.push({
-                                id: d.id,
+                                id: d.index,
                                 daysOff: d.daysOffList[i]
                             });
                         }
@@ -2474,7 +2477,7 @@ export class Gantt implements IVisual {
             .data((d: Task, i: number) => {
                 const taskProgressPercentage = this.getDaysOffTaskProgressPercent(d);
                 return [{
-                    key: `${encodeURI(d.url)}`, values: <LinearStop[]>[
+                    key: encodeURI(d.url), values: <LinearStop[]>[
                         { completion: 0, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
@@ -2491,7 +2494,7 @@ export class Gantt implements IVisual {
         taskProgressMerged.classed(Selectors.TaskProgress.className, true);
 
         taskProgressMerged
-            .attr("id", (data) => `task${data.key}`);
+            .attr("id", (data) => data.key);
 
         let stopsSelection = taskProgressMerged.selectAll("stop");
         let stopsSelectionData = stopsSelection.data(gradient => <LinearStop[]>gradient.values);
@@ -2566,9 +2569,9 @@ export class Gantt implements IVisual {
 
             taskResourceMerged
                 .attr("x", (task: Task) => this.getResourceLabelXCoordinate(task, taskConfigHeight, taskResourceFontSize, taskResourcePosition))
-                .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.id, taskConfigHeight)
+                .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.index, taskConfigHeight)
                     + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition)
-                    + (task.id + 1) * this.getResourceLabelTopMargin())
+                    + (task.index + 1) * this.getResourceLabelTopMargin())
                 .text((task: Task) => _.isEmpty(task.Milestones) && task.resource || "")
                 .style("fill", taskResourceColor)
                 .style("font-size", PixelConverter.fromPoint(taskResourceFontSize));
@@ -2625,7 +2628,7 @@ export class Gantt implements IVisual {
         selection
             .each(function (x: Task, i: number) {
                 if (index !== i &&
-                    x.id === task.id &&
+                    x.index === task.index &&
                     x.start >= task.start &&
                     (!sameRowNextTaskStart || sameRowNextTaskStart < x.start)) {
 
