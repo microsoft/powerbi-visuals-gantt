@@ -59,6 +59,12 @@ export interface TaskDaysOff {
     daysOff: DayOffData;
 }
 
+export interface DaysOffInfo {
+    daysOffList: Date[];
+    extraDuration: number;
+    newEndDate: Date;
+}
+
 export interface ExtraInformation {
     displayName: string;
     value: string;

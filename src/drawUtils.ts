@@ -55,11 +55,3 @@ export function getHexColorFromNumber(value: number) {
 export function getRandomInteger(min: number, max: number, exceptionList?: number[]): number {
     return getRandomNumber(max, min, exceptionList, Math.floor);
 }
-
-export function isValidDate(date: Date): boolean {
-    if (Object.prototype.toString.call(date) !== "[object Date]") {
-        return false;
-    }
-
-    return !isNaN(date.getTime());
-}

@@ -119,6 +119,7 @@ import {
     GanttViewModel,
     DaysOffDataForAddition,
     DayOffData,
+    DaysOffInfo,
     TaskTypeMetadata,
     TaskDaysOff,
     TaskTypes,
@@ -132,7 +133,15 @@ import {
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
 import { GanttSettings, DateTypeSettings } from "./settings";
-import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, isValidDate, getRandomHexColor } from "./utils";
+import {
+    drawNotRoundedRectByPath,
+    drawRoundedRectByPath,
+    drawCircle,
+    drawDiamond,
+    drawRectangle,
+    getRandomHexColor
+} from "./drawUtils";
+import { isValidDate, isDayOff, isFirstDayOff, isSecondDayOff, isOneDay } from "./dateUtils";
 import { drawExpandButton, drawCollapseButton, drawMinusButton, drawPlusButton } from "./drawButtons";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
@@ -1049,6 +1058,14 @@ export class Gantt implements IVisual {
                 task.end = isValidDate(task.end) ? task.end : Gantt.getEndDate(durationUnit, task.start, task.duration);
             }
 
+
+            // for test
+            const startDate = new Date(2019, 7, 18, 13); // Tuesday
+            const endDate = new Date(2019, 7, 22);
+            const duration = (endDate.getTime() - startDate.getTime()) / MillisecondsInAHour;
+            debugger;
+            const result = this.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "hour");
+
             if (settings.daysOff.show && duration) {
                 let datesDiff: number = 0;
                 do {
@@ -1205,17 +1222,7 @@ export class Gantt implements IVisual {
     }
 
 
-    private static isDayOff(date: Date, firstDayOfWeek: number): boolean {
-        const isFirstDayOff = date.getDay() === (+firstDayOfWeek + 5) % 7;
-        const isSecondDayOff = date.getDay() === (+firstDayOfWeek + 6) % 7;
 
-        return isFirstDayOff || isSecondDayOff;
-    }
-
-    private static isOneDay(firstDate: Date, secondDate: Date): boolean {
-        return firstDate.getMonth() === secondDate.getMonth() && firstDate.getFullYear() === secondDate.getFullYear()
-            && firstDate.getDay() === secondDate.getDay();
-    }
 
     /**
      * Calculate days off
@@ -1232,8 +1239,8 @@ export class Gantt implements IVisual {
             amountOfLastDaysOff: 0
         };
 
-        if (Gantt.isOneDay(fromDate, toDate)) {
-            if (!Gantt.isDayOff(fromDate, +firstDayOfWeek)) {
+        if (isOneDay(fromDate, toDate)) {
+            if (!isDayOff(fromDate, +firstDayOfWeek)) {
                 return tempDaysOffData.list;
             }
         }
@@ -1261,8 +1268,83 @@ export class Gantt implements IVisual {
         }
     }
 
+    public static calculateNewEndExtraDuration(startDate: Date, endDate: Date, duration: number, firstDayOfWeek: number, durationUnit: string): DaysOffInfo {
+        let daysOffList = [];
+        let newEndDate = endDate;
+        let durationIterator = duration;
+        let currentDate = startDate;
+        debugger;
+        while (durationIterator > 0) {
+            if (!isDayOff(currentDate, firstDayOfWeek)) {
+                let diff = MillisecondsInADay;
+                // if is start day
+                if (isOneDay(currentDate, startDate)) {
+                    // delete from x to 24
+                    let nextDayTimestamp = currentDate.getTime();
+                    let nextDate = new Date(nextDayTimestamp + MillisecondsInADay);
+                    nextDate.setHours(0, 0, 0);
+
+                    // diff in milliseconds
+                    diff = nextDate.getTime() - currentDate.getTime();
+                }
+
+                if (isOneDay(currentDate, endDate)) {
+                    // delete from 0 to x
+                    let prevDayTimestamp = currentDate.getTime();
+                    let prevDate = new Date(prevDayTimestamp);
+                    prevDate.setHours(0, 0, 0);
+
+                    // diff in milliseconds
+                    diff = currentDate.getTime() - prevDate.getTime();
+                }
+
+                durationIterator -= Gantt.convertMillisecondsToDuration(diff, durationUnit);
+            } else {
+                daysOffList.push(currentDate);
+            }
+
+            // to new iteration
+            currentDate = new Date(currentDate.getTime() + MillisecondsInADay);
+            // set the same time hh:mm:ss
+            if (isOneDay(currentDate, endDate)) {
+                currentDate = endDate;
+            }
+        }
+
+        newEndDate = currentDate;
+        let extraDurationInMS = newEndDate.getTime() - endDate.getTime();
+        const extraDuration = Gantt.convertMillisecondsToDuration(extraDurationInMS, durationUnit);
+
+        return {
+            daysOffList,
+            extraDuration,
+            newEndDate
+        };
+    }
+
     private static calculateExtraDurationDaysOff(daysOffList: DayOffData[], startDate: Date, endDate: Date, firstDayOfWeek: number, durationUnit: string): number {
+        let daysOffArray = [];
         let extraDuration = 0;
+
+        let currentDay = startDate;
+        let newEndDate = endDate;
+        // while (currentDay != endDate) {
+        //     // change if first day is day off
+        //     if (isDayOff(currentDay, firstDayOfWeek) && !_.includes(daysOffArray, currentDay)) {
+        //         if (currentDay === startDate || currentDay === endDate) {
+        //             const diff = ;// from x time to EOD for startDate and from 00 to x for endDate
+        //             extraDuration += diff;
+        //             daysOffArray.push(currentDay);
+        //         }
+        //         else {
+        //             extraDuration += 1 day;
+        //         }
+
+        //         currentDay += 1; // go to the next
+        //     }
+        // }
+
+
         for (let i = 0; i < daysOffList.length; i++) {
             const itemAmount = daysOffList[i][1];
             extraDuration += itemAmount;
@@ -1277,7 +1359,7 @@ export class Gantt implements IVisual {
         }
 
         // not to add duration twice
-        if (this.isDayOff(startDate, firstDayOfWeek)) {
+        if (isDayOff(startDate, firstDayOfWeek)) {
             let prevDayTimestamp = startDate.getTime();
             let prevDate = new Date(prevDayTimestamp);
             prevDate.setHours(0, 0, 0);

@@ -47,8 +47,10 @@ import IValueFormatter = valueFormatter.IValueFormatter;
 
 import { Task, TaskDaysOff, Milestone } from "../src/interfaces";
 import { DurationHelper } from "../src/durationHelper";
-import { Gantt as VisualClass } from "../src/gantt";
-import { getRandomHexColor, isValidDate } from "../src/utils";
+import { Gantt as VisualClass, DurationUnits } from "../src/gantt";
+import { getRandomHexColor } from "../src/drawUtils";
+import { isValidDate } from "../src/dateUtils";
+import { start } from "repl";
 
 export enum DateTypes {
     Second = <any>"Second",
@@ -73,7 +75,8 @@ export enum Days {
 
 const defaultTaskDuration: number = 1;
 const datesAmountForScroll: number = 90;
-const millisecondsInADay: number = 24 * 60 * 60 * 1000;
+const millisecondsInAHour: number = 60 * 60 * 1000;
+const millisecondsInADay: number = 24 * millisecondsInAHour;
 
 describe("Gantt", () => {
     let visualBuilder: VisualBuilder;
@@ -2079,6 +2082,29 @@ describe("Gantt", () => {
         it("test for invalid Date", () => {
             const validDate = new Date("Hello");
             expect(isValidDate(validDate)).toBeFalsy();
+        });
+    });
+
+    describe("Check Days off calculation", () => {
+        it("trivial example - no days off", () => {
+            const startDate = new Date(2019, 7, 20, 13); // Tuesday
+            const endDate = new Date(2019, 7, 22); //Thursday
+            const duration = (endDate.getTime() - startDate.getTime()) / millisecondsInADay;
+            const result = VisualClass.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "day");
+            expect(result.extraDuration).toBe(0);
+            expect(result.daysOffList.length).toBe(0);
+            expect(result.newEndDate).toBe(endDate);
+        });
+        it("1 start date day off", () => {
+            const startDate = new Date(2019, 7, 18, 13); // Sunday
+            const endDate = new Date(2019, 7, 22); //Thursday
+            const duration = (endDate.getTime() - startDate.getTime()) / millisecondsInAHour;
+            const result = VisualClass.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "hour");
+            debugger;
+            expect(result.extraDuration).toBe(11);
+            expect(result.daysOffList.length).toBe(1);
+            expect(result.daysOffList[0]).toBe(startDate);
+            //expect(result.newEndDate).toBe(endDate);
         });
     });
 });
