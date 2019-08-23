@@ -1061,7 +1061,7 @@ export class Gantt implements IVisual {
 
             // for test
             const startDate = new Date(2019, 7, 18, 13); // Tuesday
-            const endDate = new Date(2019, 7, 22);
+            const endDate = new Date(2019, 7, 23, 15);
             const duration = (endDate.getTime() - startDate.getTime()) / MillisecondsInAHour;
             debugger;
             const result = this.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "hour");
@@ -1268,45 +1268,88 @@ export class Gantt implements IVisual {
         }
     }
 
+    private static convertDurationToMilliseconds(duration: number, durationUnit: string): number {
+        switch (durationUnit) {
+            case DurationUnits.Hour.toString():
+                return duration *= MillisecondsInAHour;
+            case DurationUnits.Minute.toString():
+                return duration *= MillisecondsInAMinute;
+            case DurationUnits.Second.toString():
+                return duration *= MillisecondsInASecond;
+
+            default:
+                return duration *= MillisecondsInADay;
+        }
+    }
+
+    // from x to 23.59
+    public static getDiffForNextDay(currentDate: Date): number {
+        let nextDayTimestamp = currentDate.getTime();
+        let nextDate = new Date(nextDayTimestamp + MillisecondsInADay);
+        nextDate.setHours(0, 0, 0);
+
+        // diff in milliseconds
+        return nextDate.getTime() - currentDate.getTime();
+    }
+
+    public static getDiffForPrevDay(currentDate: Date): number {
+        let prevDayTimestamp = currentDate.getTime();
+        let prevDate = new Date(prevDayTimestamp);
+        prevDate.setHours(0, 0, 0);
+
+        // diff in milliseconds
+        return currentDate.getTime() - prevDate.getTime();
+    }
+
     public static calculateNewEndExtraDuration(startDate: Date, endDate: Date, duration: number, firstDayOfWeek: number, durationUnit: string): DaysOffInfo {
         let daysOffList = [];
         let newEndDate = endDate;
         let durationIterator = duration;
         let currentDate = startDate;
+        let afterEndDate = false;
+        let extraTimeLessADay = false;
         debugger;
         while (durationIterator > 0) {
+            const currentDayIsStartDate = isOneDay(currentDate, startDate)
+            const currentDayIsEndDate = isOneDay(currentDate, endDate);
             if (!isDayOff(currentDate, firstDayOfWeek)) {
                 let diff = MillisecondsInADay;
                 // if is start day
-                if (isOneDay(currentDate, startDate)) {
+                if (currentDayIsStartDate) {
                     // delete from x to 24
-                    let nextDayTimestamp = currentDate.getTime();
-                    let nextDate = new Date(nextDayTimestamp + MillisecondsInADay);
-                    nextDate.setHours(0, 0, 0);
-
-                    // diff in milliseconds
-                    diff = nextDate.getTime() - currentDate.getTime();
+                    diff = Gantt.getDiffForNextDay(currentDate);
                 }
 
-                if (isOneDay(currentDate, endDate)) {
+                if (currentDayIsEndDate) {
                     // delete from 0 to x
-                    let prevDayTimestamp = currentDate.getTime();
-                    let prevDate = new Date(prevDayTimestamp);
-                    prevDate.setHours(0, 0, 0);
-
-                    // diff in milliseconds
-                    diff = currentDate.getTime() - prevDate.getTime();
+                    diff = Gantt.getDiffForPrevDay(currentDate);
+                    afterEndDate = true;
                 }
 
-                durationIterator -= Gantt.convertMillisecondsToDuration(diff, durationUnit);
+                if (afterEndDate && extraTimeLessADay && currentDate.getTime() !== endDate.getTime()) {
+                    durationIterator = 0;
+                } else {
+                    durationIterator -= Gantt.convertMillisecondsToDuration(diff, durationUnit);
+                }
             } else {
+                if (afterEndDate && extraTimeLessADay) {
+                    const diff = Gantt.getDiffForPrevDay(currentDate);
+                    durationIterator -= Gantt.convertMillisecondsToDuration(diff, durationUnit);
+                }
                 daysOffList.push(currentDate);
             }
 
-            // to new iteration
-            currentDate = new Date(currentDate.getTime() + MillisecondsInADay);
+            // go to new iteration
+            const durationIteratorInMS = Gantt.convertDurationToMilliseconds(durationIterator, durationUnit);
+            extraTimeLessADay = durationIteratorInMS < MillisecondsInADay;
+            if (afterEndDate && extraTimeLessADay) {
+                currentDate = new Date(currentDate.getTime() + durationIteratorInMS);
+            } else {
+                currentDate = new Date(currentDate.getTime() + MillisecondsInADay);
+            }
+
             // set the same time hh:mm:ss
-            if (isOneDay(currentDate, endDate)) {
+            if (isOneDay(currentDate, endDate) && !afterEndDate) {
                 currentDate = endDate;
             }
         }
