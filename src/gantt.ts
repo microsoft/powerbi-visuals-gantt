@@ -1060,8 +1060,8 @@ export class Gantt implements IVisual {
 
 
             // for test
-            const startDate = new Date(2019, 7, 18, 13); // Tuesday
-            const endDate = new Date(2019, 7, 23, 15);
+            const startDate = new Date(2019, 7, 24, 15); // Tuesday
+            const endDate = new Date(2019, 7, 25, 2);
             const duration = (endDate.getTime() - startDate.getTime()) / MillisecondsInAHour;
             debugger;
             const result = this.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "hour");
@@ -1308,10 +1308,11 @@ export class Gantt implements IVisual {
         let currentDate = startDate;
         let afterEndDate = false;
         let extraTimeLessADay = false;
+        const isOneDayEvent = isOneDay(startDate, endDate);
         debugger;
         while (durationIterator > 0) {
-            const currentDayIsStartDate = isOneDay(currentDate, startDate)
-            const currentDayIsEndDate = isOneDay(currentDate, endDate);
+            let currentDayIsStartDate = isOneDay(currentDate, startDate)
+            let currentDayIsEndDate = isOneDay(currentDate, endDate);
             if (!isDayOff(currentDate, firstDayOfWeek)) {
                 let diff = MillisecondsInADay;
                 // if is start day
@@ -1326,38 +1327,58 @@ export class Gantt implements IVisual {
                     afterEndDate = true;
                 }
 
-                if (afterEndDate && extraTimeLessADay && currentDate.getTime() !== endDate.getTime()) {
+                if (isOneDayEvent) {
+                    currentDate = endDate;
+                }
+
+                if ((afterEndDate && extraTimeLessADay && currentDate.getTime() !== endDate.getTime())
+                    || isOneDayEvent) {
                     durationIterator = 0;
                 } else {
                     durationIterator -= Gantt.convertMillisecondsToDuration(diff, durationUnit);
                 }
             } else {
-                if (afterEndDate && extraTimeLessADay) {
-                    const diff = Gantt.getDiffForPrevDay(currentDate);
-                    durationIterator -= Gantt.convertMillisecondsToDuration(diff, durationUnit);
+                if (currentDayIsEndDate) {
+                    afterEndDate = true;
                 }
-                daysOffList.push(currentDate);
+
+                if (!_.includes(daysOffList, currentDate)) {
+                    daysOffList.push(currentDate);
+                }
+            }
+
+            if (!durationIterator) {
+                break;
             }
 
             // go to new iteration
             const durationIteratorInMS = Gantt.convertDurationToMilliseconds(durationIterator, durationUnit);
-            extraTimeLessADay = durationIteratorInMS < MillisecondsInADay;
-            if (afterEndDate && extraTimeLessADay) {
-                currentDate = new Date(currentDate.getTime() + durationIteratorInMS);
+            extraTimeLessADay = durationIteratorInMS && durationIteratorInMS < MillisecondsInADay;
+            if (extraTimeLessADay) {
+                if (!isDayOff(currentDate, firstDayOfWeek)) {
+                    currentDate = new Date(currentDate.getTime() + durationIteratorInMS);
+                }
+
+                if (isSecondDayOff(currentDate, firstDayOfWeek)) {
+                    // set monday + durationIteration hours count
+                    currentDate.setHours(0, 0, 0);
+                    currentDate = new Date(currentDate.getTime() + durationIteratorInMS);
+                }
             } else {
                 currentDate = new Date(currentDate.getTime() + MillisecondsInADay);
             }
 
             // set the same time hh:mm:ss
-            if (isOneDay(currentDate, endDate) && !afterEndDate) {
+            if (isOneDay(currentDate, endDate) && !afterEndDate && !isDayOff(currentDate, firstDayOfWeek)) {
                 currentDate = endDate;
             }
         }
 
         newEndDate = currentDate;
         let extraDurationInMS = newEndDate.getTime() - endDate.getTime();
-        const extraDuration = Gantt.convertMillisecondsToDuration(extraDurationInMS, durationUnit);
+        const extraDuration = extraDurationInMS ? Gantt.convertMillisecondsToDuration(extraDurationInMS, durationUnit) : 0;
 
+        debugger;
         return {
             daysOffList,
             extraDuration,
