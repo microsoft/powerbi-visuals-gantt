@@ -56,11 +56,11 @@ export interface DaysOffDataForAddition {
 
 export interface TaskDaysOff {
     id: number;
-    daysOff: DayOffData;
+    daysOff: number;
 }
 
 export interface DaysOffInfo {
-    daysOffList: Date[];
+    daysOffList: number[];
     extraDuration: number;
     newEndDate: Date;
 }
@@ -87,7 +87,7 @@ export interface Task extends SelectableDataPoint {
     color: string;
     tooltipInfo: VisualTooltipDataItem[];
     extraInformation: ExtraInformation[];
-    daysOffList: DayOffData[];
+    daysOffList: number[];
     wasDowngradeDurationUnit: boolean;
     stepDurationTransformation?: number;
     highlight?: boolean;

@@ -1059,32 +1059,31 @@ export class Gantt implements IVisual {
             }
 
 
+            // const startDate = new Date(2019, 7, 20, 13); // Tuesday
+            // const endDate = new Date(2019, 7, 21, 15); //Thursday
+
+            // const startDate = new Date(2019, 7, 20, 13); // Tuesday
+            // const endDate = new Date(2019, 7, 20, 15); //Thursday
+
+            const startDate = new Date(2019, 7, 18, 13); // Sunday
+            const endDate = new Date(2019, 7, 22, 2); //Thursday
+
+            // const startDate = new Date(2019, 7, 24, 15); // Saturday
+            // const endDate = new Date(2019, 7, 24, 19);
+
+            // const startDate = new Date(2019, 7, 17, 13); // Saturday
+            // const endDate = new Date(2019, 7, 21, 2); // Friday
             // for test
-            const startDate = new Date(2019, 7, 24, 15); // Tuesday
-            const endDate = new Date(2019, 7, 25, 2);
+            // const startDate = new Date(2019, 7, 24, 15); // Tuesday
+            // const endDate = new Date(2019, 7, 25, 2);
             const duration = (endDate.getTime() - startDate.getTime()) / MillisecondsInAHour;
             debugger;
-            const result = this.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "hour");
+            const result = Gantt.calculateDaysOffInfo(startDate, endDate, duration, 1, "hour");
 
             if (settings.daysOff.show && duration) {
-                let datesDiff: number = 0;
-                do {
-                    task.daysOffList = Gantt.calculateDaysOff(
-                        +settings.daysOff.firstDayOfWeek,
-                        new Date(task.start.getTime()),
-                        new Date(task.end.getTime())
-                    );
-
-                    if (task.daysOffList.length) {
-                        let extraDuration = Gantt.calculateExtraDurationDaysOff(task.daysOffList, task.start, task.end, +settings.daysOff.firstDayOfWeek, durationUnit);
-                        task.end = Gantt.getEndDate(durationUnit, task.start, task.duration + extraDuration);
-
-                        const lastDayOffListItem = task.daysOffList[task.daysOffList.length - 1];
-                        const lastDayOff: Date = lastDayOffListItem[1] === 1 ? lastDayOffListItem[0]
-                            : new Date(lastDayOffListItem[0].getFullYear(), lastDayOffListItem[0].getMonth(), lastDayOffListItem[0].getDate() + 1);
-                        datesDiff = Math.ceil((task.end.getTime() - lastDayOff.getTime()) / MillisecondsInADay);
-                    }
-                } while (task.daysOffList.length && datesDiff - DaysInAWeekend > DaysInAWeek);
+                const { daysOffList, newEndDate } = Gantt.calculateDaysOffInfo(task.start, task.end, task.duration, +settings.daysOff.firstDayOfWeek, durationUnit);
+                task.daysOffList = daysOffList;
+                task.end = newEndDate;
             }
 
             if (task.parent) {
@@ -1153,56 +1152,6 @@ export class Gantt implements IVisual {
     }
 
     /**
-     * Calculate days off
-     * @param daysOffDataForAddition Temporary days off data for addition new one
-     * @param firstDayOfWeek First day of working week. From settings
-     * @param date Date for verifying
-     * @param extraCondition Extra condition for handle special case for last date
-     */
-    private static addNextDaysOff(
-        daysOffDataForAddition: DaysOffDataForAddition,
-        firstDayOfWeek: number,
-        date: Date,
-        extraCondition: boolean = false): DaysOffDataForAddition {
-        daysOffDataForAddition.amountOfLastDaysOff = 1;
-        for (let i = DaysInAWeekend; i > 0; i--) {
-            let dateForCheck: Date = new Date(date.getTime() + (i * MillisecondsInADay));
-            let alreadyInDaysOffList = false;
-            daysOffDataForAddition.list.forEach((item) => {
-                const itemDate = item[0];
-                if (itemDate.getFullYear() === date.getFullYear() && itemDate.getMonth() === date.getMonth() && itemDate.getDate() === date.getDate()) {
-                    alreadyInDaysOffList = true;
-                }
-            });
-
-            const isFirstDaysOfWeek = dateForCheck.getDay() === +firstDayOfWeek;
-            const isFirstDayOff = dateForCheck.getDay() === (+firstDayOfWeek + 5) % 7;
-            const isSecondDayOff = dateForCheck.getDay() === (+firstDayOfWeek + 6) % 7;
-            const isPartlyUsed = !/00\:00\:00/g.test(dateForCheck.toTimeString());
-
-            if (!alreadyInDaysOffList && isFirstDaysOfWeek && (!extraCondition || (extraCondition && isPartlyUsed))) {
-                daysOffDataForAddition.amountOfLastDaysOff = i;
-                daysOffDataForAddition.list.push([
-                    new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0), i
-                ]);
-            }
-
-            // Example: some task starts on Saturday 8:30 and ends on Thursday 8:30,
-            // so it has extra duration and now will end on next Saturday 8:30
-            // --- we need to add days off -- it ends on Monday 8.30
-            if (!alreadyInDaysOffList && (isFirstDayOff || isSecondDayOff) && isPartlyUsed) {
-                const amount = isFirstDayOff ? 2 : 1;
-                daysOffDataForAddition.amountOfLastDaysOff = amount;
-                daysOffDataForAddition.list.push([
-                    new Date(dateForCheck.getFullYear(), dateForCheck.getMonth(), dateForCheck.getDate(), 0, 0, 0), amount
-                ]);
-            }
-        }
-
-        return daysOffDataForAddition;
-    }
-
-    /**
      * Calculates end date from start date and offset for different durationUnits
      * @param durationUnit
      * @param start  Start date
@@ -1219,39 +1168,6 @@ export class Gantt implements IVisual {
             default:
                 return d3.timeDay.offset(start, step);
         }
-    }
-
-
-
-
-    /**
-     * Calculate days off
-     * @param firstDayOfWeek First day of working week. From settings
-     * @param fromDate Start of task
-     * @param toDate End of task
-     */
-    private static calculateDaysOff(
-        firstDayOfWeek: number,
-        fromDate: Date,
-        toDate: Date): DayOffData[] {
-        let tempDaysOffData: DaysOffDataForAddition = {
-            list: [],
-            amountOfLastDaysOff: 0
-        };
-
-        if (isOneDay(fromDate, toDate)) {
-            if (!isDayOff(fromDate, +firstDayOfWeek)) {
-                return tempDaysOffData.list;
-            }
-        }
-
-        while (fromDate < toDate) {
-            Gantt.addNextDaysOff(tempDaysOffData, firstDayOfWeek, fromDate);
-            fromDate.setDate(fromDate.getDate() + tempDaysOffData.amountOfLastDaysOff);
-        }
-
-        Gantt.addNextDaysOff(tempDaysOffData, firstDayOfWeek, toDate, true);
-        return tempDaysOffData.list;
     }
 
     private static convertMillisecondsToDuration(milliseconds: number, durationUnit: string): number {
@@ -1301,8 +1217,8 @@ export class Gantt implements IVisual {
         return currentDate.getTime() - prevDate.getTime();
     }
 
-    public static calculateNewEndExtraDuration(startDate: Date, endDate: Date, duration: number, firstDayOfWeek: number, durationUnit: string): DaysOffInfo {
-        let daysOffList = [];
+    public static calculateDaysOffInfo(startDate: Date, endDate: Date, duration: number, firstDayOfWeek: number, durationUnit: string): DaysOffInfo {
+        let daysOffList: number[] = [];
         let newEndDate = endDate;
         let durationIterator = duration;
         let currentDate = startDate;
@@ -1313,6 +1229,11 @@ export class Gantt implements IVisual {
         while (durationIterator > 0) {
             let currentDayIsStartDate = isOneDay(currentDate, startDate)
             let currentDayIsEndDate = isOneDay(currentDate, endDate);
+
+            if (currentDayIsEndDate) {
+                afterEndDate = true;
+            }
+
             if (!isDayOff(currentDate, firstDayOfWeek)) {
                 let diff = MillisecondsInADay;
                 // if is start day
@@ -1324,7 +1245,6 @@ export class Gantt implements IVisual {
                 if (currentDayIsEndDate) {
                     // delete from 0 to x
                     diff = Gantt.getDiffForPrevDay(currentDate);
-                    afterEndDate = true;
                 }
 
                 if (isOneDayEvent) {
@@ -1338,12 +1258,10 @@ export class Gantt implements IVisual {
                     durationIterator -= Gantt.convertMillisecondsToDuration(diff, durationUnit);
                 }
             } else {
-                if (currentDayIsEndDate) {
-                    afterEndDate = true;
-                }
-
-                if (!_.includes(daysOffList, currentDate)) {
-                    daysOffList.push(currentDate);
+                const dateForList = new Date(+currentDate);
+                dateForList.setHours(0, 0, 0);
+                if (!_.includes(daysOffList, +dateForList)) {
+                    daysOffList.push(+dateForList);
                 }
             }
 
@@ -1354,18 +1272,14 @@ export class Gantt implements IVisual {
             // go to new iteration
             const durationIteratorInMS = Gantt.convertDurationToMilliseconds(durationIterator, durationUnit);
             extraTimeLessADay = durationIteratorInMS && durationIteratorInMS < MillisecondsInADay;
-            if (extraTimeLessADay) {
-                if (!isDayOff(currentDate, firstDayOfWeek)) {
-                    currentDate = new Date(currentDate.getTime() + durationIteratorInMS);
-                }
 
-                if (isSecondDayOff(currentDate, firstDayOfWeek)) {
-                    // set monday + durationIteration hours count
-                    currentDate.setHours(0, 0, 0);
-                    currentDate = new Date(currentDate.getTime() + durationIteratorInMS);
-                }
+            if (!isDayOff(currentDate, firstDayOfWeek)) {
+                currentDate = extraTimeLessADay ? new Date(currentDate.getTime() + durationIteratorInMS) : new Date(currentDate.getTime() + MillisecondsInADay);
             } else {
-                currentDate = new Date(currentDate.getTime() + MillisecondsInADay);
+                // set firstDayOfWeek + durationIteration hours count
+                currentDate.setHours(0, 0, 0);
+                currentDate = isSecondDayOff(currentDate, firstDayOfWeek) ? new Date(currentDate.getTime() + durationIteratorInMS)
+                    : new Date(currentDate.getTime() + 2 * durationIteratorInMS);
             }
 
             // set the same time hh:mm:ss
@@ -1384,59 +1298,6 @@ export class Gantt implements IVisual {
             extraDuration,
             newEndDate
         };
-    }
-
-    private static calculateExtraDurationDaysOff(daysOffList: DayOffData[], startDate: Date, endDate: Date, firstDayOfWeek: number, durationUnit: string): number {
-        let daysOffArray = [];
-        let extraDuration = 0;
-
-        let currentDay = startDate;
-        let newEndDate = endDate;
-        // while (currentDay != endDate) {
-        //     // change if first day is day off
-        //     if (isDayOff(currentDay, firstDayOfWeek) && !_.includes(daysOffArray, currentDay)) {
-        //         if (currentDay === startDate || currentDay === endDate) {
-        //             const diff = ;// from x time to EOD for startDate and from 00 to x for endDate
-        //             extraDuration += diff;
-        //             daysOffArray.push(currentDay);
-        //         }
-        //         else {
-        //             extraDuration += 1 day;
-        //         }
-
-        //         currentDay += 1; // go to the next
-        //     }
-        // }
-
-
-        for (let i = 0; i < daysOffList.length; i++) {
-            const itemAmount = daysOffList[i][1];
-            extraDuration += itemAmount;
-            // not to count for neighbour dates
-            if (itemAmount === 2 && (i + 1) < daysOffList.length) {
-                const itemDate = daysOffList[i][0].getDate();
-                const nextDate = daysOffList[i + 1][0].getDate();
-                if (itemDate + 1 === nextDate) {
-                    i += 2;
-                }
-            }
-        }
-
-        // not to add duration twice
-        if (isDayOff(startDate, firstDayOfWeek)) {
-            let prevDayTimestamp = startDate.getTime();
-            let prevDate = new Date(prevDayTimestamp);
-            prevDate.setHours(0, 0, 0);
-
-            // in milliseconds
-            let alreadyAccountedDuration = startDate.getTime() - prevDate.getTime();
-            alreadyAccountedDuration = Gantt.convertMillisecondsToDuration(alreadyAccountedDuration, durationUnit);
-            extraDuration = DurationHelper.transformExtraDuration(durationUnit, extraDuration);
-
-            extraDuration -= alreadyAccountedDuration;
-        }
-
-        return extraDuration;
     }
 
     /**
@@ -2242,7 +2103,7 @@ export class Gantt implements IVisual {
                 objectName: "collapsedTasks",
                 selector: null,
                 properties: {
-                    list: JSON.stringify(this.collapsedTasks)
+                    list: JSON.stringify(collapsedValues)
                 }
             }]
         });
@@ -2849,11 +2710,11 @@ export class Gantt implements IVisual {
                 const progressLength: number = (task.end.getTime() - startTime) * task.completion;
                 const currentProgressTime: number = new Date(startTime + progressLength).getTime();
 
-                let daysOffFiltered: DayOffData[] = task.daysOffList
-                    .filter((date) => startTime <= date[0].getTime() && date[0].getTime() <= currentProgressTime);
+                let daysOffFiltered: number[] = task.daysOffList
+                    .filter((date) => startTime <= date && date <= currentProgressTime);
 
-                let extraDuration = Gantt.calculateExtraDurationDaysOff(daysOffFiltered, task.end, task.start, +this.viewModel.settings.daysOff.firstDayOfWeek, durationUnit);
-                const extraDurationPercentage = extraDuration / task.duration;
+                let extraDuration = Gantt.convertMillisecondsToDuration(daysOffFiltered.length * MillisecondsInADay, durationUnit);
+                const extraDurationPercentage = extraDuration / task.duration; ///????
                 return task.completion + extraDurationPercentage;
             }
         }
