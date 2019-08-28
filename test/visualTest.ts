@@ -2090,7 +2090,7 @@ describe("Gantt", () => {
             const startDate = new Date(2019, 7, 20, 13); // Tuesday
             const endDate = new Date(2019, 7, 21, 15); //Thursday
             const duration = (endDate.getTime() - startDate.getTime()) / millisecondsInADay;
-            const result = VisualClass.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "day");
+            const result = VisualClass.calculateDaysOffInfo(startDate, endDate, duration, 1, "day");
             expect(result.extraDuration).toBe(0);
             expect(result.daysOffList.length).toBe(0);
             expect(result.newEndDate).toBe(endDate);
@@ -2100,7 +2100,7 @@ describe("Gantt", () => {
             const startDate = new Date(2019, 7, 20, 13); // Tuesday
             const endDate = new Date(2019, 7, 20, 15); //Thursday
             const duration = (endDate.getTime() - startDate.getTime()) / millisecondsInADay;
-            const result = VisualClass.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "day");
+            const result = VisualClass.calculateDaysOffInfo(startDate, endDate, duration, 1, "day");
             expect(result.extraDuration).toBe(0);
             expect(result.daysOffList.length).toBe(0);
             expect(result.newEndDate).toBe(endDate);
@@ -2110,7 +2110,7 @@ describe("Gantt", () => {
             const startDate = new Date(2019, 7, 18, 13); // Sunday
             const endDate = new Date(2019, 7, 22, 2); //Thursday
             const duration = (endDate.getTime() - startDate.getTime()) / millisecondsInAHour;
-            const result = VisualClass.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "hour");
+            const result = VisualClass.calculateDaysOffInfo(startDate, endDate, duration, 1, "hour");
             debugger;
             expect(result.extraDuration).toBe(11);
             expect(result.daysOffList.length).toBe(1);
@@ -2122,7 +2122,7 @@ describe("Gantt", () => {
             const startDate = new Date(2019, 7, 24, 15); // Saturday
             const endDate = new Date(2019, 7, 24, 19);
             const duration = (endDate.getTime() - startDate.getTime()) / millisecondsInAHour;
-            const result = VisualClass.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "hour");
+            const result = VisualClass.calculateDaysOffInfo(startDate, endDate, duration, 1, "hour");
             debugger;
             expect(result.extraDuration).toBe(11);
             expect(result.daysOffList.length).toBe(2);
@@ -2135,7 +2135,7 @@ describe("Gantt", () => {
             const startDate = new Date(2019, 7, 24, 15); // Saturday and Sunday
             const endDate = new Date(2019, 7, 25, 2);
             const duration = (endDate.getTime() - startDate.getTime()) / millisecondsInAHour;
-            const result = VisualClass.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "hour");
+            const result = VisualClass.calculateDaysOffInfo(startDate, endDate, duration, 1, "hour");
             debugger;
             expect(result.extraDuration).toBe(11);
             expect(result.daysOffList.length).toBe(2);
@@ -2143,36 +2143,28 @@ describe("Gantt", () => {
             expect(result.newEndDate).toBe(new Date(2019, 7, 26, 11));
         });
 
+        it("1 startDate day off with new ", () => {
+            const startDate = new Date(2019, 7, 17, 15); // Saturday
+            const endDate = new Date(2019, 7, 23, 2); // Friday
+            const duration = (endDate.getTime() - startDate.getTime()) / millisecondsInAHour;
+            const result = VisualClass.calculateDaysOffInfo(startDate, endDate, duration, 1, "hour");
+            debugger;
+            expect(result.extraDuration).toBe(83);
+            expect(result.daysOffList.length).toBe(1);
+            expect(result.daysOffList).toBe([+startDate, new Date(2019, 7, 24).getTime(), new Date(2019, 7, 25).getTime()]);
+            expect(result.newEndDate).toBe(new Date(2019, 7, 26, 11));
+        });
+
         it("2 days off on start", () => {
             const startDate = new Date(2019, 7, 17, 13); // Saturday
             const endDate = new Date(2019, 7, 21, 2); // Friday
             const duration = (endDate.getTime() - startDate.getTime()) / millisecondsInAHour;
-            const result = VisualClass.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "hour");
+            const result = VisualClass.calculateDaysOffInfo(startDate, endDate, duration, 1, "hour");
             debugger;
             expect(result.extraDuration).toBe(11);
             expect(result.daysOffList.length).toBe(1);
             expect(result.daysOffList[0]).toBe(startDate);
             expect(result.newEndDate).toBe(new Date(2019, 7, 22, 13));
-        });
-
-        it("days off in the middle", () => {
-
-        });
-
-        it("", () => {
-
-        });
-
-        it("1 startDate day off with new ", () => {
-            const startDate = new Date(2019, 7, 17, 13); // Sunday
-            const endDate = new Date(2019, 7, 23, 15); // Friday
-            const duration = (endDate.getTime() - startDate.getTime()) / millisecondsInAHour;
-            const result = VisualClass.calculateNewEndExtraDuration(startDate, endDate, duration, 1, "hour");
-            debugger;
-            expect(result.extraDuration).toBe(83);
-            expect(result.daysOffList.length).toBe(1);
-            expect(result.daysOffList).toBe([startDate, new Date(2019, 7, 24), new Date(2019, 7, 25)]);
-            expect(result.newEndDate).toBe(new Date(2019, 7, 27, 2));
         });
     });
 });

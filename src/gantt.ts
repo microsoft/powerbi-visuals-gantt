@@ -991,7 +991,7 @@ export class Gantt implements IVisual {
                 selected: false,
                 identity: selectionId,
                 extraInformation,
-                daysOffList: [],
+                daysOffTimestampList: [],
                 wasDowngradeDurationUnit,
                 stepDurationTransformation,
                 Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : []
@@ -1019,7 +1019,7 @@ export class Gantt implements IVisual {
                         color: null,
                         tooltipInfo: null,
                         extraInformation: _.includes(collapsedTasks, parent) ? extraInformation : null,
-                        daysOffList: null,
+                        daysOffTimestampList: null,
                         wasDowngradeDurationUnit: null,
                         selected: null,
                         identity: selectionBuilder.createSelectionId(),
@@ -1058,31 +1058,9 @@ export class Gantt implements IVisual {
                 task.end = isValidDate(task.end) ? task.end : Gantt.getEndDate(durationUnit, task.start, task.duration);
             }
 
-
-            // const startDate = new Date(2019, 7, 20, 13); // Tuesday
-            // const endDate = new Date(2019, 7, 21, 15); //Thursday
-
-            // const startDate = new Date(2019, 7, 20, 13); // Tuesday
-            // const endDate = new Date(2019, 7, 20, 15); //Thursday
-
-            const startDate = new Date(2019, 7, 18, 13); // Sunday
-            const endDate = new Date(2019, 7, 22, 2); //Thursday
-
-            // const startDate = new Date(2019, 7, 24, 15); // Saturday
-            // const endDate = new Date(2019, 7, 24, 19);
-
-            // const startDate = new Date(2019, 7, 17, 13); // Saturday
-            // const endDate = new Date(2019, 7, 21, 2); // Friday
-            // for test
-            // const startDate = new Date(2019, 7, 24, 15); // Tuesday
-            // const endDate = new Date(2019, 7, 25, 2);
-            const duration = (endDate.getTime() - startDate.getTime()) / MillisecondsInAHour;
-            debugger;
-            const result = Gantt.calculateDaysOffInfo(startDate, endDate, duration, 1, "hour");
-
             if (settings.daysOff.show && duration) {
                 const { daysOffList, newEndDate } = Gantt.calculateDaysOffInfo(task.start, task.end, task.duration, +settings.daysOff.firstDayOfWeek, durationUnit);
-                task.daysOffList = daysOffList;
+                task.daysOffTimestampList = daysOffList;
                 task.end = newEndDate;
             }
 
@@ -1258,10 +1236,18 @@ export class Gantt implements IVisual {
                     durationIterator -= Gantt.convertMillisecondsToDuration(diff, durationUnit);
                 }
             } else {
-                const dateForList = new Date(+currentDate);
+                let dateForList = new Date(+currentDate);
                 dateForList.setHours(0, 0, 0);
                 if (!_.includes(daysOffList, +dateForList)) {
                     daysOffList.push(+dateForList);
+                }
+
+                if (isFirstDayOff(currentDate, firstDayOfWeek)) {
+                    dateForList = new Date(+currentDate + MillisecondsInADay);
+                    dateForList.setHours(0, 0, 0);
+                    if (!_.includes(daysOffList, +dateForList)) {
+                        daysOffList.push(+dateForList);
+                    }
                 }
             }
 
@@ -1277,9 +1263,14 @@ export class Gantt implements IVisual {
                 currentDate = extraTimeLessADay ? new Date(currentDate.getTime() + durationIteratorInMS) : new Date(currentDate.getTime() + MillisecondsInADay);
             } else {
                 // set firstDayOfWeek + durationIteration hours count
-                currentDate.setHours(0, 0, 0);
-                currentDate = isSecondDayOff(currentDate, firstDayOfWeek) ? new Date(currentDate.getTime() + durationIteratorInMS)
-                    : new Date(currentDate.getTime() + 2 * durationIteratorInMS);
+                if (extraTimeLessADay) {
+                    currentDate.setHours(0, 0, 0);
+                    currentDate = isSecondDayOff(currentDate, firstDayOfWeek) ? new Date(currentDate.getTime() + durationIteratorInMS)
+                        : new Date(currentDate.getTime() + 2 * durationIteratorInMS);
+                } else {
+                    currentDate = isSecondDayOff(currentDate, firstDayOfWeek) ? new Date(currentDate.getTime() + MillisecondsInADay)
+                        : new Date(currentDate.getTime() + 2 * MillisecondsInADay);
+                }
             }
 
             // set the same time hh:mm:ss
@@ -2412,11 +2403,11 @@ export class Gantt implements IVisual {
                 .data((d: Task) => {
                     let tasksDaysOff: TaskDaysOff[] = [];
 
-                    if (!d.children && d.daysOffList) {
-                        for (let i = 0; i < d.daysOffList.length; i++) {
+                    if (!d.children && d.daysOffTimestampList) {
+                        for (let i = 0; i < d.daysOffTimestampList.length; i++) {
                             tasksDaysOff.push({
                                 id: d.index,
-                                daysOff: d.daysOffList[i]
+                                daysOff: d.daysOffTimestampList[i]
                             });
                         }
                     }
@@ -2434,10 +2425,11 @@ export class Gantt implements IVisual {
             const getTaskRectDaysOffWidth = (task: TaskDaysOff) => {
                 let width = 0;
 
+                debugger;
                 if (this.hasNotNullableDates) {
-                    const startDate: Date = task.daysOff[0];
-                    const startTime: number = startDate.getTime();
-                    const endDate: Date = new Date(startTime + (task.daysOff[1] * MillisecondsInADay));
+                    const startDate: Date = new Date(task.daysOff);
+                    const startTime: number = task.daysOff;
+                    const endDate: Date = new Date(startTime + (1 * MillisecondsInADay));
 
                     width = this.taskDurationToWidth(startDate, endDate);
                 }
@@ -2447,7 +2439,7 @@ export class Gantt implements IVisual {
 
             const drawTaskRectDaysOff = (task: TaskDaysOff) => {
 
-                const x = this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0,
+                const x = this.hasNotNullableDates ? this.timeScale(task.daysOff) : 0,
                     y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
                     height = Gantt.getBarHeight(taskConfigHeight),
                     radius = Gantt.RectRound,
@@ -2701,7 +2693,7 @@ export class Gantt implements IVisual {
     */
     private getDaysOffTaskProgressPercent(task: Task) {
         if (this.viewModel.settings.daysOff.show) {
-            if (task.daysOffList && task.daysOffList.length && task.duration && task.completion) {
+            if (task.daysOffTimestampList && task.daysOffTimestampList.length && task.duration && task.completion) {
                 let durationUnit: string = this.viewModel.settings.general.durationUnit;
                 if (task.wasDowngradeDurationUnit) {
                     durationUnit = DurationHelper.downgradeDurationUnit(durationUnit, task.duration);
@@ -2710,7 +2702,7 @@ export class Gantt implements IVisual {
                 const progressLength: number = (task.end.getTime() - startTime) * task.completion;
                 const currentProgressTime: number = new Date(startTime + progressLength).getTime();
 
-                let daysOffFiltered: number[] = task.daysOffList
+                let daysOffFiltered: number[] = task.daysOffTimestampList
                     .filter((date) => startTime <= date && date <= currentProgressTime);
 
                 let extraDuration = Gantt.convertMillisecondsToDuration(daysOffFiltered.length * MillisecondsInADay, durationUnit);

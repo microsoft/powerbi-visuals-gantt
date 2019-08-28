@@ -87,7 +87,7 @@ export interface Task extends SelectableDataPoint {
     color: string;
     tooltipInfo: VisualTooltipDataItem[];
     extraInformation: ExtraInformation[];
-    daysOffList: number[];
+    daysOffTimestampList: number[];
     wasDowngradeDurationUnit: boolean;
     stepDurationTransformation?: number;
     highlight?: boolean;
