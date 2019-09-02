@@ -1553,7 +1553,6 @@ export class Gantt implements IVisual {
 
             let xAxisProperties: IAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, ticks, false);
             this.timeScale = <timeScale<Date, Date>>xAxisProperties.scale;
-            debugger;
 
             this.renderAxis(xAxisProperties);
         }
@@ -2456,7 +2455,9 @@ export class Gantt implements IVisual {
                     radius = Gantt.RectRound,
                     width = getTaskRectDaysOffWidth(task);
 
-                x = x - width / 2; // change ?? add conditions! 
+                if (width < radius) {
+                    x = x - width / 2;
+                }
 
                 if (width < 2 * radius) {
                     return drawNotRoundedRectByPath(x, y, width, height);
