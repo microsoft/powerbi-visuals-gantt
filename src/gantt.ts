@@ -2232,7 +2232,6 @@ export class Gantt implements IVisual {
      * @param taskConfigHeight
      */
     private drawTaskRect(task: Task, taskConfigHeight: number): string {
-        debugger;
         const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
             y = Gantt.getBarYCoordinate(task.index, taskConfigHeight) + (task.index + 1) * this.getResourceLabelTopMargin(),
             width = this.getTaskRectWidth(task),
@@ -2469,8 +2468,7 @@ export class Gantt implements IVisual {
             tasksDaysOffMerged
                 .attr("d", (task: TaskDaysOff) => drawTaskRectDaysOff(task))
                 .style("fill", taskDaysOffColor)
-                .attr("width", (task: TaskDaysOff) => getTaskRectDaysOffWidth(task))
-                .attr("date-is", (task: TaskDaysOff) => task.daysOff[0].toDateString());
+                .attr("width", (task: TaskDaysOff) => getTaskRectDaysOffWidth(task));
 
             tasksDaysOff
                 .exit()
