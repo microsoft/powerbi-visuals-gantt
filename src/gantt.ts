@@ -2447,7 +2447,6 @@ export class Gantt implements IVisual {
             };
 
             const drawTaskRectDaysOff = (task: TaskDaysOff) => {
-                debugger;
                 let x = this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0,
                     y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
                     height = Gantt.getBarHeight(taskConfigHeight),
