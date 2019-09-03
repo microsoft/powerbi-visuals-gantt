@@ -1059,8 +1059,11 @@ export class Gantt implements IVisual {
                     );
 
                     if (task.daysOffList.length) {
-                        let extraDuration = Gantt.calculateExtraDurationDaysOff(task.daysOffList, task.start, task.end, +settings.daysOff.firstDayOfWeek, durationUnit);
-                        task.end = Gantt.getEndDate(durationUnit, task.start, task.duration + extraDuration);
+                        const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => col.roles.hasOwnProperty(GanttRoles.Duration)) !== -1;
+                        if (isDurationFilled) {
+                            let extraDuration = Gantt.calculateExtraDurationDaysOff(task.daysOffList, task.start, task.end, +settings.daysOff.firstDayOfWeek, durationUnit);
+                            task.end = Gantt.getEndDate(durationUnit, task.start, task.duration + extraDuration);
+                        }
 
                         const lastDayOffListItem = task.daysOffList[task.daysOffList.length - 1];
                         const lastDayOff: Date = lastDayOffListItem[1] === 1 ? lastDayOffListItem[0]
@@ -2238,7 +2241,7 @@ export class Gantt implements IVisual {
         if (width < 2 * radius) {
             return drawNotRoundedRectByPath(x, y, width, height);
         }
-        return drawRoundedRectByPath(x, y, width, height, radius);
+        return drawRoundedRectByPath(x, y, width + Gantt.RectRound, height, radius);
     }
 
     /**
@@ -2407,10 +2410,15 @@ export class Gantt implements IVisual {
 
                     if (!d.children && d.daysOffList) {
                         for (let i = 0; i < d.daysOffList.length; i++) {
-                            tasksDaysOff.push({
-                                id: d.index,
-                                daysOff: d.daysOffList[i]
-                            });
+                            let currentDaysOffItem = d.daysOffList[i];
+                            let startOfLastDay = new Date(+d.end);
+                            startOfLastDay.setHours(0, 0, 0);
+                            if (currentDaysOffItem[0].getTime() < startOfLastDay.getTime()) {
+                                tasksDaysOff.push({
+                                    id: d.index,
+                                    daysOff: d.daysOffList[i]
+                                });
+                            }
                         }
                     }
 
@@ -2439,12 +2447,15 @@ export class Gantt implements IVisual {
             };
 
             const drawTaskRectDaysOff = (task: TaskDaysOff) => {
-
-                const x = this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0,
+                let x = this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0,
                     y = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
                     height = Gantt.getBarHeight(taskConfigHeight),
                     radius = Gantt.RectRound,
                     width = getTaskRectDaysOffWidth(task);
+
+                if (width < radius) {
+                    x = x - width / 2;
+                }
 
                 if (width < 2 * radius) {
                     return drawNotRoundedRectByPath(x, y, width, height);
