@@ -1,3 +1,6 @@
+## 2.2.1
+* Localization stringResources json error fix
+
 ## 2.2.0
 * High contrast mode support fix
 * Black bar fill issue fix
