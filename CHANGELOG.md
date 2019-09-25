@@ -1,3 +1,6 @@
+## 2.2.2
+* Random task color issue for specific cases fix
+
 ## 2.2.1
 * Localization stringResources json error fix
 
