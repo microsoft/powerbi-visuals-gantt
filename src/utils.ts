@@ -66,5 +66,5 @@ export function isValidDate(date: Date): boolean {
 
 export function isStringNotNullEmptyOrUndefined(str: string) {
     const isReducableType = typeof str === "string" || typeof str === "number" || typeof str === "boolean";
-    return str !== undefined && str !== null && isReducableType && str.length > 0;
+    return str && isReducableType;
 }
