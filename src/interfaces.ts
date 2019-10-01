@@ -72,7 +72,6 @@ export interface Task extends SelectableDataPoint {
     completion: number;
     resource: string;
     end: Date;
-    url: string;
     parent: string;
     children: Task[];
     visibility: boolean;

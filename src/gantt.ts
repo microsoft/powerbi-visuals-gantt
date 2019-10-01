@@ -132,7 +132,7 @@ import {
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
 import { GanttSettings, DateTypeSettings } from "./settings";
-import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, isValidDate, getRandomHexColor } from "./utils";
+import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, isValidDate, isStringNotNullEmptyOrUndefined } from "./utils";
 import { drawExpandButton, drawCollapseButton, drawMinusButton, drawPlusButton } from "./drawButtons";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
@@ -975,7 +975,6 @@ export class Gantt implements IVisual {
                 children: null,
                 visibility: true,
                 duration,
-                url: `task${getRandomHexColor()}`,
                 taskType: taskType && taskType.name,
                 description: categoryValue as string,
                 tooltipInfo: tooltips,
@@ -1003,7 +1002,6 @@ export class Gantt implements IVisual {
                         end: null,
                         parent: null,
                         children: [task],
-                        url: `task${getRandomHexColor()}`,
                         visibility: true,
                         taskType: null,
                         description: null,
@@ -2265,12 +2263,21 @@ export class Gantt implements IVisual {
 
         taskRectMerged.classed(Selectors.TaskRect.className, true);
 
+        let index = 0, groupedTaskIndex = 0;
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
             .style("fill", (task: Task) => {
-                const encodedUri = encodeURI(`#` + task.url);
-                return `url(${encodedUri})`;
+                // logic used for grouped tasks, when there are several bars related to one category
+                if (index === task.index) {
+                    groupedTaskIndex++;
+                } else {
+                    groupedTaskIndex = 0;
+                    index = task.index;
+                }
+
+                const url = `${task.index}-${groupedTaskIndex}-${isStringNotNullEmptyOrUndefined(task.taskType) ? task.taskType.toString() : "taskType"}`;
+                return `url(#task${encodeURI(url).replace(/[^a-z0-9\-_:\.]|^[^a-z]+/gi, "")})`;
             });
 
         if (this.colorHelper.isHighContrast) {
@@ -2483,12 +2490,22 @@ export class Gantt implements IVisual {
         taskSelection: Selection<Task>): void {
         const taskProgressShow: boolean = this.viewModel.settings.taskCompletion.show;
 
+        let index = 0, groupedTaskIndex = 0;
         let taskProgress: Selection<any> = taskSelection
             .selectAll(Selectors.TaskProgress.selectorName)
             .data((d: Task, i: number) => {
                 const taskProgressPercentage = this.getDaysOffTaskProgressPercent(d);
+                // logic used for grouped tasks, when there are several bars related to one category
+                if (index === d.index) {
+                    groupedTaskIndex++;
+                } else {
+                    groupedTaskIndex = 0;
+                    index = d.index;
+                }
+                const url = `${d.index}-${groupedTaskIndex}-${isStringNotNullEmptyOrUndefined(d.taskType) ? d.taskType.toString() : "taskType"}`;
+
                 return [{
-                    key: encodeURI(d.url), values: <LinearStop[]>[
+                    key: `task${encodeURI(url).replace(/[^a-z0-9\-_:\.]|^[^a-z]+/gi, "")}`, values: <LinearStop[]>[
                         { completion: 0, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },

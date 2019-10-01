@@ -63,3 +63,8 @@ export function isValidDate(date: Date): boolean {
 
     return !isNaN(date.getTime());
 }
+
+export function isStringNotNullEmptyOrUndefined(str: string) {
+    const isReducableType = typeof str === "string" || typeof str === "number" || typeof str === "boolean";
+    return str && isReducableType;
+}
