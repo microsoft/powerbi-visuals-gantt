@@ -132,7 +132,16 @@ import {
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
 import { GanttSettings, DateTypeSettings } from "./settings";
-import { drawNotRoundedRectByPath, drawRoundedRectByPath, drawCircle, drawDiamond, drawRectangle, isValidDate, isStringNotNullEmptyOrUndefined } from "./utils";
+import {
+    drawNotRoundedRectByPath,
+    drawRoundedRectByPath,
+    drawCircle,
+    drawDiamond,
+    drawRectangle,
+    isValidDate,
+    isStringNotNullEmptyOrUndefined,
+    hashCode
+} from "./utils";
 import { drawExpandButton, drawCollapseButton, drawMinusButton, drawPlusButton } from "./drawButtons";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
@@ -2277,7 +2286,9 @@ export class Gantt implements IVisual {
                 }
 
                 const url = `${task.index}-${groupedTaskIndex}-${isStringNotNullEmptyOrUndefined(task.taskType) ? task.taskType.toString() : "taskType"}`;
-                return `url(#task${encodeURI(url).replace(/[^a-z0-9\-_:\.]|^[^a-z]+/gi, "")})`;
+                const encodedUrl = `task${hashCode(url)}`;
+
+                return `url(#${encodedUrl})`;
             });
 
         if (this.colorHelper.isHighContrast) {
@@ -2502,10 +2513,12 @@ export class Gantt implements IVisual {
                     groupedTaskIndex = 0;
                     index = d.index;
                 }
+
                 const url = `${d.index}-${groupedTaskIndex}-${isStringNotNullEmptyOrUndefined(d.taskType) ? d.taskType.toString() : "taskType"}`;
+                const encodedUrl = `task${hashCode(url)}`;
 
                 return [{
-                    key: `task${encodeURI(url).replace(/[^a-z0-9\-_:\.]|^[^a-z]+/gi, "")}`, values: <LinearStop[]>[
+                    key: encodedUrl, values: <LinearStop[]>[
                         { completion: 0, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
                         { completion: taskProgressPercentage, color: d.color },
