@@ -1,3 +1,6 @@
+## 2.2.3
+* Completion issue fix
+
 ## 2.2.2
 * Random task color issue for specific cases fix
 
