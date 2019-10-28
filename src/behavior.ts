@@ -74,10 +74,7 @@ export class Behavior implements IInteractiveBehavior {
 
     public bindEvents(options: BehaviorOptions, selectionHandler: ISelectionHandler) {
         this.options = options;
-
-        const {
-            clearCatcher,
-        } = options;
+        let clearCatcher = options.clearCatcher;
 
         options.taskSelection.on("click", (dataPoint: Task) => {
             const event: MouseEvent = d3.event as MouseEvent;

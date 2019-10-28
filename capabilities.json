@@ -328,6 +328,13 @@
                         "bool": true
                     }
                 },
+                "displayGridLines": {
+                    "displayName": "Display grid lines",
+                    "displayNameKey": "Visual_DisplayGridLines",
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "durationUnit": {
                     "displayName": "Duration unit",
                     "displayNameKey": "Visual_DurationUnit",
@@ -672,6 +679,15 @@
                 "show": {
                     "type": {
                         "bool": true
+                    }
+                },
+                "maxCompletion": {
+                    "displayName": "Max completion",
+                    "displayNameKey": "Visual_MaxCompletion",
+                    "description": "Completion is in range from 0 to max completion value",
+                    "descriptionKey": "Visual_Description_MaxCompletion",
+                    "type": {
+                        "numeric": true
                     }
                 }
             }

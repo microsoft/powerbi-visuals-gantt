@@ -42,13 +42,13 @@ import { clickElement, MockISelectionId, assertColorsMatch, MockISelectionIdBuil
 
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
 import { legendPosition as LegendPosition } from "powerbi-visuals-utils-chartutils";
-import { valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
-import IValueFormatter = vf.IValueFormatter;
-import valueFormatter = vf.valueFormatter;
+import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
+import IValueFormatter = valueFormatter.IValueFormatter;
 
 import { Task, TaskDaysOff, Milestone } from "../src/interfaces";
 import { DurationHelper } from "../src/durationHelper";
 import { Gantt as VisualClass } from "../src/gantt";
+import { getRandomHexColor, isValidDate } from "../src/utils";
 
 export enum DateTypes {
     Second = <any>"Second",
@@ -647,7 +647,7 @@ describe("Gantt", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 let element = d3.select(visualBuilder.element.get(0));
                 let resources = element.selectAll(".task-resource").node();
-                let labels = (element.selectAll(".label").node() as HTMLElement).firstChild;
+                let labels = (element.selectAll(".label > .clickableArea").node() as HTMLElement).firstChild;
 
                 expect((resources as SVGTextElement).style["font-size"]).toEqual("12px");
                 expect((labels as SVGTextElement).style["font-size"]).toEqual("12px");
@@ -876,7 +876,7 @@ describe("Gantt", () => {
 
                 let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
                     parentTask = parentTasks[parentIndex],
-                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.index);
 
                 const minChildStart = _.minBy(parentTask.children, (t: Task) => t.start).start;
                 const maxChildEnd = _.maxBy(parentTask.children, (t: Task) => t.end).end;
@@ -894,11 +894,11 @@ describe("Gantt", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskGroups: JQuery<any>[] = visualBuilder.tasksGroups.toArray().map($);
                     let updatedTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-                    const updatedParentTask = updatedTasks[parentTask.id];
+                    const updatedParentTask = updatedTasks[parentTask.index];
 
                     expect(updatedTasks.length).toBe(tasks.length - parentTask.children.length);
                     expect(taskGroups.length).toBe(tasks.length - parentTask.children.length);
-                    expect(taskGroups[parentTask.id].children().length).toBe(1);
+                    expect(taskGroups[parentTask.index].children().length).toBe(1);
 
                     expect(updatedParentTask.start).toEqual(minChildStart);
                     expect(updatedParentTask.end).toEqual(maxChildEnd);
@@ -926,7 +926,7 @@ describe("Gantt", () => {
 
                 let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
                     parentTask = parentTasks[parentIndex],
-                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.index);
 
                 const minChildStart = _.minBy(parentTask.children, (t: Task) => t.start).start;
                 const maxChildEnd = _.maxBy(parentTask.children, (t: Task) => t.end).end;
@@ -944,14 +944,14 @@ describe("Gantt", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     let taskGroups: JQuery<any>[] = visualBuilder.tasksGroups.toArray().map($);
                     let updatedTasks = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-                    const updatedParentTask = updatedTasks[parentTask.id];
+                    const updatedParentTask = updatedTasks[parentTask.index];
                     const tasksWithSameName = updatedTasks.filter((task) => task.name === parentTask.name);
 
                     // all params are similar because common task is not used with Grouping
                     expect(updatedParentTask.start).not.toBe(minChildStart);
                     expect(updatedParentTask.end).not.toBe(maxChildEnd);
                     expect(updatedParentTask.children).toBe(null);
-                    expect(taskGroups[parentTask.id].children().length).toBe(tasksWithSameName.length);
+                    expect(taskGroups[parentTask.index].children().length).toBe(tasksWithSameName.length);
                     done();
                 });
             });
@@ -972,7 +972,7 @@ describe("Gantt", () => {
             const categoriesColumn = dataView.categorical.categories[milestoneColumnIndex];
             const uniqueMilestoneTypes = _.compact(_.uniq(categoriesColumn.values));
 
-            const randomColors = uniqueMilestoneTypes.map((t) => VisualBuilder.getRandomHexColor());
+            const randomColors = uniqueMilestoneTypes.map((t) => getRandomHexColor());
             const randomTypes = uniqueMilestoneTypes.map((t) => {
                 const types = ["Rhombus", "Circle", "Square"];
                 return types[Math.floor(getRandomNumber(0, types.length - 1))];
@@ -1034,7 +1034,7 @@ describe("Gantt", () => {
 
                 let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
                     parentTask = parentTasks[parentIndex],
-                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.id);
+                    parentTaskLabel = visualBuilder.taskLabelsText.eq(parentTask.index);
 
                 // get uniq by date child milestones for current parent - they should be rendered on parent task bar
                 const childMilestones = parentTask.children.map((childTask: Task) => {
@@ -1060,9 +1060,9 @@ describe("Gantt", () => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const updatedTasks: Task[] = d3.select(visualBuilder.element.get(0)).selectAll(".task").data() as Task[];
-                    const updatedParentTask = updatedTasks[parentTask.id];
+                    const updatedParentTask = updatedTasks[parentTask.index];
                     const milestones: JQuery<any>[] = visualBuilder.milestones.toArray().map($);
-                    const updatedTasksWithMilestones = updatedTasks.filter((t: Task) => t.Milestones.length && t.id !== parentTask.id);
+                    const updatedTasksWithMilestones = updatedTasks.filter((t: Task) => t.Milestones.length && t.index !== parentTask.index);
 
                     expect(milestones.length).toBe(oldMilestones.length - (updatedParentTask.Milestones.length - uniqDates.length));
                     expect(updatedParentTask.Milestones.length).toBe(mergedMilestone.length);
@@ -1303,7 +1303,7 @@ describe("Gantt", () => {
 
         describe("Days off", () => {
             it("color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     daysOff: {
                         show: true,
@@ -1607,7 +1607,7 @@ describe("Gantt", () => {
             });
 
             it("color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     taskResource: {
                         fill: VisualBuilder.getSolidColorStructuralObject(color)
@@ -1662,7 +1662,7 @@ describe("Gantt", () => {
                         const taskRectY = taskRects[i][0].getBBox().y;
 
                         if (text) {
-                            expect(taskResourcesX.toFixed(2)).toEqual(taskRectX.toFixed(2));
+                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2));
                             expect(taskResourcesY.toFixed(2)).toBeLessThan(taskRectY.toFixed(2));
                         }
                     });
@@ -1787,7 +1787,7 @@ describe("Gantt", () => {
 
                 fixDataViewDateValuesAggregation(dataView);
 
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     taskConfig: {
                         fill: VisualBuilder.getSolidColorStructuralObject(color)
@@ -1859,7 +1859,7 @@ describe("Gantt", () => {
             });
 
             it("color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     taskLabels: {
                         fill: VisualBuilder.getSolidColorStructuralObject(color)
@@ -1916,7 +1916,7 @@ describe("Gantt", () => {
 
         describe("Gantt date types", () => {
             it("Today color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     dateType: {
                         todayColor: VisualBuilder.getSolidColorStructuralObject(color)
@@ -1927,7 +1927,7 @@ describe("Gantt", () => {
             });
 
             it("Axis color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     dateType: {
                         axisColor: VisualBuilder.getSolidColorStructuralObject(color)
@@ -1938,7 +1938,7 @@ describe("Gantt", () => {
             });
 
             it("Axis text color", (done) => {
-                let color: string = VisualBuilder.getRandomHexColor();
+                let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     dateType: {
                         axisTextColor: VisualBuilder.getSolidColorStructuralObject(color)
@@ -2064,6 +2064,21 @@ describe("Gantt", () => {
                 expect(isColorAppliedToElements(taskRect, backgroundColor, "fill"));
                 done();
             });
+        });
+    });
+
+    describe("IsDateValid test", () => {
+        it("test for valid Date", () => {
+            let validDate = new Date();
+            expect(isValidDate(validDate)).toBeTruthy();
+
+            validDate = new Date(13425);
+            expect(isValidDate(validDate)).toBeTruthy();
+        });
+
+        it("test for invalid Date", () => {
+            const validDate = new Date("Hello");
+            expect(isValidDate(validDate)).toBeFalsy();
         });
     });
 });
