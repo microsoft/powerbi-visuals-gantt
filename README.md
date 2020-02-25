@@ -3,7 +3,7 @@
 
 > A Gantt chart is a type of bar chart which illustrates a project timeline or schedule. The Gantt Chart visual shows the Tasks, Start Dates, Durations, % Complete, and Resources for a project. The Gantt Chart visual can be used to show current schedule status using percent-complete shadings and a vertical "TODAY" line. The Legend may be used to group or filter tasks based upon data values.
 
-![Gantt chart screenshot](https://az158878.vo.msecnd.net/marketing/Partner_21474836617/Product_42949680585/Asset_d4b95705-7e6b-47a1-8bf8-cfa80a0611e8/Ganttscreenshot1.png)
+![Gantt chart screenshot](https://github.com/microsoft/powerbi-visuals-gantt/blob/master/assets/screenshot.png?raw=true)
 
 # Overview
 
