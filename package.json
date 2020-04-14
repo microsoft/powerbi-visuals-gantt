@@ -31,7 +31,7 @@
     "core-js": "^3.1.4",
     "d3": "5.9.7",
     "del-cli": "2.0.0",
-    "jquery": "3.4.1",
+    "jquery": "3.5.0",
     "lodash": "^4.17.15",
     "powerbi-visuals-utils-chartutils": "2.4.0",
     "powerbi-visuals-utils-colorutils": "2.2.0",
