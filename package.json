@@ -16,7 +16,9 @@
     "lint": "node node_modules/tslint/bin/tslint \"+(src|test)/**/*.ts\"",
     "pretest": "pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
     "test": "karma start",
-    "cert": "pbiviz --install-cert"
+    "cert": "pbiviz --install-cert",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": {
     "name": "Microsoft",
@@ -31,7 +33,7 @@
     "core-js": "^3.1.4",
     "d3": "5.9.7",
     "del-cli": "2.0.0",
-    "jquery": "3.4.1",
+    "jquery": "3.5.0",
     "lodash": "^4.17.15",
     "powerbi-visuals-utils-chartutils": "2.4.0",
     "powerbi-visuals-utils-colorutils": "2.2.0",
@@ -40,7 +42,8 @@
     "powerbi-visuals-utils-interactivityutils": "5.5.2",
     "powerbi-visuals-utils-svgutils": "2.2.0",
     "powerbi-visuals-utils-tooltiputils": "^2.3.0",
-    "powerbi-visuals-utils-typeutils": "2.2.0"
+    "powerbi-visuals-utils-typeutils": "2.2.0",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@types/d3": "5.7.2",
@@ -80,5 +83,6 @@
     "tslint": "5.18.0",
     "typescript": "3.5.3",
     "webpack": "4.39.1"
-  }
+  },
+  "snyk": true
 }
