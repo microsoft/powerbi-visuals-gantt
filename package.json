@@ -30,7 +30,7 @@
   "dependencies": {
     "core-js": "^3.1.4",
     "d3": "5.9.7",
-    "del-cli": "2.0.0",
+    "del-cli": "3.0.1",
     "jquery": "3.4.1",
     "lodash": "^4.17.15",
     "powerbi-visuals-utils-chartutils": "2.4.0",
