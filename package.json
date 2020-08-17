@@ -32,7 +32,7 @@
     "d3": "5.9.7",
     "del-cli": "2.0.0",
     "jquery": "3.4.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.20",
     "powerbi-visuals-utils-chartutils": "2.4.0",
     "powerbi-visuals-utils-colorutils": "2.2.0",
     "powerbi-visuals-utils-dataviewutils": "2.2.0",
