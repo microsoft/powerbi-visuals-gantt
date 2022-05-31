@@ -143,6 +143,7 @@ import {
     hashCode
 } from "./utils";
 import { drawExpandButton, drawCollapseButton, drawMinusButton, drawPlusButton } from "./drawButtons";
+import { delay } from "lodash";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -373,6 +374,7 @@ export class Gantt implements IVisual {
     private groupLabelSize: number = 25;
     private secondExpandAllIconOffset: number = 7;
     private hasNotNullableDates: boolean = false;
+    private lastOptions: VisualUpdateOptions;
 
     constructor(options: VisualConstructorOptions) {
         if (window.location !== window.parent.location) {
@@ -1478,6 +1480,21 @@ export class Gantt implements IVisual {
             return;
         }
 
+        if (this.lastOptions != null && this.optionsSame(options, this.lastOptions) 
+            && this.lastOptions.dataViews[0].metadata.objects != options.dataViews[0].metadata.objects)
+        {
+            this.lastOptions = options;
+        }
+
+        else
+        {
+            this.updateInternal(options);
+            this.lastOptions = options;
+        }
+    }
+
+    private updateInternal(options: VisualUpdateOptions) : void {
+
         this.viewModel = Gantt.converter(options.dataViews[0], this.host, this.colors, this.colorHelper, this.localizationManager);
 
         // for dublicated milestone types
@@ -1601,6 +1618,12 @@ export class Gantt implements IVisual {
         }
 
         this.eventService.renderingFinished(options);
+    }
+
+    private optionsSame(options1: VisualUpdateOptions, options2: VisualUpdateOptions) : boolean {
+        options1.dataViews = null;
+        options2.dataViews = null;
+        return JSON.stringify(options1) == JSON.stringify(options2);
     }
 
     private static getDateType(dateType: DateTypes): number {
