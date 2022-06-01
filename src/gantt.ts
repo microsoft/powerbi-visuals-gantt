@@ -375,6 +375,7 @@ export class Gantt implements IVisual {
     private secondExpandAllIconOffset: number = 7;
     private hasNotNullableDates: boolean = false;
     private lastOptions: VisualUpdateOptions;
+    private currentOptions: VisualUpdateOptions;
 
     constructor(options: VisualConstructorOptions) {
         if (window.location !== window.parent.location) {
@@ -1480,17 +1481,14 @@ export class Gantt implements IVisual {
             return;
         }
 
-        if (this.lastOptions != null && this.optionsSame(options, this.lastOptions) 
-            && this.lastOptions.dataViews[0].metadata.objects != options.dataViews[0].metadata.objects)
-        {
-            this.lastOptions = options;
+        this.currentOptions = options;
+
+        if (this.lastOptions!=null && this.AreEqualExceptCollapsed(this.currentOptions, this.lastOptions)){
+            return;
         }
 
-        else
-        {
-            this.updateInternal(options);
-            this.lastOptions = options;
-        }
+        this.updateInternal(options);
+        this.lastOptions = options;
     }
 
     private updateInternal(options: VisualUpdateOptions) : void {
@@ -1620,10 +1618,21 @@ export class Gantt implements IVisual {
         this.eventService.renderingFinished(options);
     }
 
-    private optionsSame(options1: VisualUpdateOptions, options2: VisualUpdateOptions) : boolean {
-        options1.dataViews = null;
-        options2.dataViews = null;
-        return JSON.stringify(options1) == JSON.stringify(options2);
+    private AreEqualExceptCollapsed(options1: VisualUpdateOptions, options2: VisualUpdateOptions) : boolean {
+
+        var options1WithoutCollapsed = {...options1};
+        options1WithoutCollapsed.dataViews[0].metadata.objects.collapsedTasks.list = null;
+        options1WithoutCollapsed["updateId"] = null;
+        
+        var options2WithoutCollapsed = {...options2};
+        options2WithoutCollapsed.dataViews[0].metadata.objects.collapsedTasks.list = null;
+        options2WithoutCollapsed["updateId"] = null;
+
+        if(options1WithoutCollapsed.type == 2){
+            options2WithoutCollapsed.type = 2;
+        }
+
+        return JSON.stringify(options1WithoutCollapsed) == JSON.stringify(options2WithoutCollapsed);
     }
 
     private static getDateType(dateType: DateTypes): number {
@@ -2133,6 +2142,18 @@ export class Gantt implements IVisual {
                 }
             }]
         });
+
+        let updatedObjects ={
+            collapsedTasks: {
+                list: JSON.stringify(this.collapsedTasks)
+            }
+        }
+
+        if (this.currentOptions.dataViews[0].metadata?.objects) {
+            this.currentOptions.dataViews[0].metadata.objects = {this:this.currentOptions.dataViews[0].metadata.objects, ...updatedObjects}
+        }
+
+        this.updateInternal(this.currentOptions);
     }
 
     /**
