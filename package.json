@@ -13,7 +13,7 @@
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "package": "pbiviz package",
-    "lint": "node node_modules/tslint/bin/tslint \"+(src|test)/**/*.ts\"",
+    "eslint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
     "pretest": "pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
     "test": "karma start",
     "cert": "pbiviz --install-cert"
@@ -28,7 +28,11 @@
   },
   "homepage": "https://github.com/Microsoft/powerbi-visuals-gantt#readme",
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
     "del-cli": "^5.0.0",
+    "eslint": "^8.36.0",
+    "eslint-plugin-powerbi-visuals": "^0.8.1",
     "powerbi-visuals-utils-chartutils": "^6.0.0",
     "powerbi-visuals-utils-colorutils": "^6.0.0",
     "powerbi-visuals-utils-dataviewutils": "^6.0.0",
