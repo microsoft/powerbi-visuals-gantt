@@ -47,8 +47,7 @@ module.exports = (config: Config) => {
         frameworks: ["jasmine"],
         reporters: [
             "progress",
-            "junit",
-            "coverage-istanbul"
+            "junit"
         ],
         junitReporter: {
             outputDir: path.join(__dirname, coverageFolder),
@@ -64,11 +63,8 @@ module.exports = (config: Config) => {
             "karma-sourcemap-loader",
             "karma-chrome-launcher",
             "karma-junit-reporter",
-            "karma-coverage-istanbul-reporter"
         ],
         files: [
-            "node_modules/jquery/dist/jquery.min.js",
-            "node_modules/jasmine-jquery/lib/jasmine-jquery.js",
             testRecursivePath,
             {
                 pattern: srcOriginalRecursivePath,
