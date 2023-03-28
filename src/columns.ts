@@ -38,27 +38,27 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 
 import { valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
 
-import { converterHelper as ch } from "powerbi-visuals-utils-dataviewutils";
-import converterHelper = ch.converterHelper;
+import { converterHelper } from "powerbi-visuals-utils-dataviewutils";
+
 
 const extraInformationRole = "ExtraInformation";
 
 export class GanttColumns<T> {
 
     public static getGroupedValueColumns(dataView: DataView): GanttColumns<DataViewValueColumn>[] {
-        let categorical: DataViewCategorical = dataView && dataView.categorical;
-        let values: DataViewValueColumns = categorical && categorical.values;
-        let grouped: DataViewValueColumnGroup[] = values && values.grouped();
+        const categorical: DataViewCategorical = dataView && dataView.categorical;
+        const values: DataViewValueColumns = categorical && categorical.values;
+        const grouped: DataViewValueColumnGroup[] = values && values.grouped();
         return grouped && grouped.map(g => lodashMapValues(
             new this<DataViewValueColumn>(),
             (n, i) => g.values.filter(v => v.source.roles[i])[0]));
     }
 
     public static getCategoricalValues(dataView: DataView): GanttColumns<any> {
-        let categorical: DataViewCategorical = dataView && dataView.categorical;
-        let categories: DataViewCategoricalColumn[] = categorical && categorical.categories || [];
-        let values: DataViewValueColumns = categorical && categorical.values || <DataViewValueColumns>[];
-        let series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
+        const categorical: DataViewCategorical = dataView && dataView.categorical;
+        const categories: DataViewCategoricalColumn[] = categorical && categorical.categories || [];
+        const values: DataViewValueColumns = categorical && categorical.values || <DataViewValueColumns>[];
+        const series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
 
         return categorical && lodashMapValues(new this<any[]>(), (n, i) => {
             let columns: PrimitiveValue[] | { [x: string]: PrimitiveValue[]; };
