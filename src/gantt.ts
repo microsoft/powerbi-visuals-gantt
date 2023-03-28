@@ -393,10 +393,6 @@ export class Gantt implements IVisual {
     private currentOptions: VisualUpdateOptions;
 
     constructor(options: VisualConstructorOptions) {
-        if (window.location !== window.parent.location) {
-            require("core-js/stable");
-        }
-
         this.init(options);
     }
 
