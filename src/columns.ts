@@ -25,7 +25,8 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import * as _ from "lodash";
+import lodashMapValues from "lodash.mapvalues";
+import lodashToArray from "lodash.toarray";
 
 import DataView = powerbi.DataView;
 import DataViewValueColumn = powerbi.DataViewValueColumn;
@@ -48,7 +49,7 @@ export class GanttColumns<T> {
         let categorical: DataViewCategorical = dataView && dataView.categorical;
         let values: DataViewValueColumns = categorical && categorical.values;
         let grouped: DataViewValueColumnGroup[] = values && values.grouped();
-        return grouped && grouped.map(g => _.mapValues(
+        return grouped && grouped.map(g => lodashMapValues(
             new this<DataViewValueColumn>(),
             (n, i) => g.values.filter(v => v.source.roles[i])[0]));
     }
@@ -59,10 +60,10 @@ export class GanttColumns<T> {
         let values: DataViewValueColumns = categorical && categorical.values || <DataViewValueColumns>[];
         let series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
 
-        return categorical && _.mapValues(new this<any[]>(), (n, i) => {
+        return categorical && lodashMapValues(new this<any[]>(), (n, i) => {
             let columns: PrimitiveValue[] | { [x: string]: PrimitiveValue[]; };
-            (<DataViewValueColumn[]>_.toArray(categories))
-                .concat(_.toArray(values))
+            (<DataViewValueColumn[]>lodashToArray(categories))
+                .concat(lodashToArray(values))
                 .filter(x => x.source.roles && x.source.roles[i])
                 .forEach(x => {
                     if (i === extraInformationRole && x.source.roles && x.source.roles[extraInformationRole]) {

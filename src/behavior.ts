@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 import { Selection as d3Selection } from "d3-selection";
-import * as _ from "lodash";
+import lodashFlatten from "lodash.flatten";
 
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
@@ -99,7 +99,7 @@ export class Behavior implements IInteractiveBehavior {
         });
 
         options.subTasksCollapse.selection.on("click", (event, d: GroupedTask) => {
-            if (!_.flatten(d.tasks.map(task => task.children)).length) {
+            if (lodashFlatten(d.tasks.map(task => task.children)).length) {
                 return;
             }
 

@@ -1,5 +1,5 @@
-import * as _ from "lodash";
 import { getRandomNumber } from "powerbi-visuals-utils-testutils";
+import lodashRange from "lodash.range";
 
 export const drawRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
     if (!width || !height) {
@@ -49,7 +49,7 @@ export function getRandomHexColor(): string {
 
 export function getHexColorFromNumber(value: number) {
     let hex = value.toString(16).toUpperCase();
-    return "#" + (hex.length === 6 ? hex : _.range(0, 6 - hex.length, 0).join("") + hex);
+    return "#" + (hex.length === 6 ? hex : lodashRange(0, 6 - hex.length, 0).join("") + hex);
 }
 
 export function getRandomInteger(min: number, max: number, exceptionList?: number[]): number {

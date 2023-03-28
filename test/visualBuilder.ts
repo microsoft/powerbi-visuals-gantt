@@ -25,7 +25,6 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import * as _ from "lodash";
 
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 
