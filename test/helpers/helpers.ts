@@ -23,7 +23,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-import * as d3 from "d3";
+import { timeSecond as d3TimeSecond, timeMinute as d3TimeMinute, timeHour as d3TimeHour, timeDay as d3TimeDay } from "d3-time";
 
 import { RgbColor, parseColorString } from "powerbi-visuals-utils-colorutils";
 import { DurationUnits } from "../../src/gantt";
@@ -38,12 +38,24 @@ export function areColorsEqual(firstColor: string, secondColor: string): boolean
 }
 
 export function isColorAppliedToElements(
-    elements: JQuery[],
+    elements: HTMLElement[],
     color?: string,
     colorStyleName: string = "fill"
 ): boolean {
-    return elements.some((element: JQuery) => {
-        const currentColor: string = element.css(colorStyleName);
+    return elements.some((element: HTMLElement) => {
+        let currentColor: string = element.style.fill;
+
+        switch (colorStyleName) {
+            case "fill":
+                break;
+
+            case "stroke":
+                currentColor = element.style.stroke;
+                break;
+
+            default:
+                break;
+        }
 
         if (!currentColor || !color) {
             return currentColor === color;
@@ -62,12 +74,12 @@ export function isColorAppliedToElements(
 export function getEndDate(durationUnit: string, start: Date, end: Date): Date[] {
     switch (durationUnit) {
         case DurationUnits.Second.toString():
-            return d3.timeSecond.range(start, end);
+            return d3TimeSecond.range(start, end);
         case DurationUnits.Minute.toString():
-            return d3.timeMinute.range(start, end);
+            return d3TimeMinute.range(start, end);
         case DurationUnits.Hour.toString():
-            return d3.timeHour.range(start, end);
+            return d3TimeHour.range(start, end);
         default:
-            return d3.timeDay.range(start, end);
+            return d3TimeDay.range(start, end);
     }
 }

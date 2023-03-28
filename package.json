@@ -30,6 +30,10 @@
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
+    "d3-collection": "^1.0.7",
+    "d3-scale": "^4.0.2",
+    "d3-selection": "^3.0.0",
+    "d3-time": "^3.1.0",
     "del-cli": "^5.0.0",
     "eslint": "^8.36.0",
     "eslint-plugin-powerbi-visuals": "^0.8.1",
@@ -43,6 +47,10 @@
     "powerbi-visuals-utils-typeutils": "^6.0.0"
   },
   "devDependencies": {
+    "@types/d3-collection": "^1.0.10",
+    "@types/d3-scale": "^4.0.3",
+    "@types/d3-selection": "^3.0.5",
+    "@types/d3-time": "^3.0.0",
     "@types/jasmine": "^4.3.1",
     "@types/karma": "^6.3.3",
     "@types/webpack": "^5.28.1",

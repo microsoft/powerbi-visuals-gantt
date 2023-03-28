@@ -26,13 +26,16 @@
 
 import "./../style/gantt.less";
 
-import * as d3 from "d3";
+import { Selection as d3Selection, select as d3Select } from "d3-selection";
+import { ScaleTime as timeScale } from "d3-scale";
+import { timeSecond as d3TimeSecond, timeMinute as d3TimeMinute, timeHour as d3TimeHour, timeDay as d3TimeDay } from "d3-time";
+import { nest as d3Nest } from "d3-collection";
+
 import * as _ from "lodash";
 import powerbi from "powerbi-visuals-api";
 
 // d3
-type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
-import timeScale = d3.ScaleTime;
+type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
 // powerbi
 import DataView = powerbi.DataView;
@@ -390,7 +393,7 @@ export class Gantt implements IVisual {
         this.localizationManager = this.host.createLocalizationManager();
         this.colors = options.host.colorPalette;
         this.colorHelper = new ColorHelper(this.colors);
-        this.body = d3.select(options.element);
+        this.body = d3Select(options.element);
         this.tooltipServiceWrapper = createTooltipServiceWrapper(this.host.tooltipService, options.element);
         this.behavior = new Behavior();
         this.interactivityService = createInteractivityService(this.host);
@@ -1207,13 +1210,13 @@ export class Gantt implements IVisual {
     public static getEndDate(durationUnit: string, start: Date, step: number): Date {
         switch (durationUnit) {
             case DurationUnits.Second.toString():
-                return d3.timeSecond.offset(start, step);
+                return d3TimeSecond.offset(start, step);
             case DurationUnits.Minute.toString():
-                return d3.timeMinute.offset(start, step);
+                return d3TimeMinute.offset(start, step);
             case DurationUnits.Hour.toString():
-                return d3.timeHour.offset(start, step);
+                return d3TimeHour.offset(start, step);
             default:
-                return d3.timeDay.offset(start, step);
+                return d3TimeDay.offset(start, step);
         }
     }
 
@@ -1959,7 +1962,7 @@ export class Gantt implements IVisual {
             const buttonPlusMinusColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.PlusMinusColor);
             buttonSelection
                 .each(function (task: GroupedTask) {
-                    let element = d3.select(this);
+                    let element = d3Select(this);
                     if (!task.tasks[0].children[0].visibility) {
                         drawPlusButton(element, buttonPlusMinusColor);
                     } else {
@@ -2385,7 +2388,7 @@ export class Gantt implements IVisual {
         let taskMilestones: Selection<any> = taskSelection
             .selectAll(Selectors.TaskMilestone.selectorName)
             .data((d: Task) => {
-                const nestedByDate = d3.nest().key((d: Milestone) => d.start.toDateString()).entries(d.Milestones);
+                const nestedByDate = d3Nest().key((d: Milestone) => d.start.toDateString()).entries(d.Milestones);
                 let updatedMilestones: MilestonePath[] = nestedByDate.map((nestedObj) => {
                     const oneDateMilestones = nestedObj.values;
                     // if there 2 or more milestones for concrete date => draw only one milestone for concrete date, but with tooltip for all of them
@@ -2669,7 +2672,7 @@ export class Gantt implements IVisual {
                 taskResourceMerged
                     .each(function (task: Task, outerIndex: number) {
                         const width: number = hasNotNullableDates ? self.taskDurationToWidth(task.start, task.end) : 0;
-                        AxisHelper.LabelLayoutStrategy.clip(d3.select(this), width, textMeasurementService.svgEllipsis);
+                        AxisHelper.LabelLayoutStrategy.clip(d3Select(this), width, textMeasurementService.svgEllipsis);
                     });
             } else if (isGroupedByTaskName) {
                 taskResourceMerged
@@ -2683,17 +2686,17 @@ export class Gantt implements IVisual {
                                 width = self.taskDurationToWidth(startDate, sameRowNextTaskStart);
                             }
 
-                            AxisHelper.LabelLayoutStrategy.clip(d3.select(this), width, textMeasurementService.svgEllipsis);
+                            AxisHelper.LabelLayoutStrategy.clip(d3Select(this), width, textMeasurementService.svgEllipsis);
                         } else {
                             if (!taskResourceFullText) {
-                                AxisHelper.LabelLayoutStrategy.clip(d3.select(this), defaultWidth, textMeasurementService.svgEllipsis);
+                                AxisHelper.LabelLayoutStrategy.clip(d3Select(this), defaultWidth, textMeasurementService.svgEllipsis);
                             }
                         }
                     });
             } else if (!taskResourceFullText) {
                 taskResourceMerged
                     .each(function (task: Task, outerIndex: number) {
-                        AxisHelper.LabelLayoutStrategy.clip(d3.select(this), defaultWidth, textMeasurementService.svgEllipsis);
+                        AxisHelper.LabelLayoutStrategy.clip(d3Select(this), defaultWidth, textMeasurementService.svgEllipsis);
                     });
             }
 
