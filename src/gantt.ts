@@ -2987,9 +2987,7 @@ export class Gantt implements IVisual {
     private renderTooltip(selection: Selection<Line | Task | MilestonePath>): void {
         this.tooltipServiceWrapper.addTooltip(
             selection,
-            (tooltipEvent: TooltipEventArgs<TooltipEnabledDataPoint>) => {
-                return tooltipEvent.data.tooltipInfo;
-            });
+            (tooltipEvent: TooltipEnabledDataPoint) => tooltipEvent.tooltipInfo);
     }
 
     private updateElementsPositions(margin: IMargin): void {
