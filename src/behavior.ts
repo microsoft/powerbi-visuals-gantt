@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 import { Selection as d3Selection } from "d3-selection";
-import lodashFlatten from "lodash.flatten";
+import * as _ from "lodash";
 
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
@@ -38,6 +38,8 @@ import { IBehaviorOptions } from "powerbi-visuals-utils-interactivityutils/lib/i
 
 export const DimmedOpacity: number = 0.4;
 export const DefaultOpacity: number = 1.0;
+
+const getEvent = () => require("d3-selection").event;
 
 export function getFillOpacity(
     selected: boolean,
@@ -72,11 +74,11 @@ export class Behavior implements IInteractiveBehavior {
 
     public bindEvents(options: BehaviorOptions, selectionHandler: ISelectionHandler) {
         this.options = options;
-        const clearCatcher: Selection<any,any> = options.clearCatcher;
+        const clearCatcher = options.clearCatcher;
 
         options.taskSelection.on("click", (mouseEvent, dataPoint: Task) => {
-            const event: MouseEvent = <MouseEvent>mouseEvent;
-            selectionHandler.handleSelection(dataPoint, (<MouseEvent>event).ctrlKey);
+            const event: MouseEvent = mouseEvent as MouseEvent;
+            selectionHandler.handleSelection(dataPoint, event.ctrlKey);
 
             event.stopPropagation();
         });
@@ -84,13 +86,13 @@ export class Behavior implements IInteractiveBehavior {
         options.legendSelection.on("click", (event, d: any) => {
             if (!d.selected) {
 
-                selectionHandler.handleSelection(d, (<MouseEvent>event).ctrlKey);
-                (<MouseEvent>event).stopPropagation();
+                selectionHandler.handleSelection(d, getEvent().ctrlKey);
+                (event as MouseEvent).stopPropagation();
 
                 const selectedType: string = d.tooltip;
                 options.taskSelection.each((d: Task) => {
                     if (d.taskType === selectedType && d.parent && !d.selected) {
-                        selectionHandler.handleSelection(d, (<MouseEvent>event).ctrlKey);
+                        selectionHandler.handleSelection(d, getEvent().ctrlKey);
                     }
                 });
             } else {
@@ -99,16 +101,16 @@ export class Behavior implements IInteractiveBehavior {
         });
 
         options.subTasksCollapse.selection.on("click", (event, d: GroupedTask) => {
-            if (lodashFlatten(d.tasks.map(task => task.children)).length) {
+            if (!_.flatten(d.tasks.map(task => task.children)).length) {
                 return;
             }
 
-            (<MouseEvent>event).stopPropagation();
+            (event as MouseEvent).stopPropagation();
             options.subTasksCollapse.callback(d);
         });
 
         options.allSubtasksCollapse.selection.on("click", (event) => {
-            (<MouseEvent>event).stopPropagation();
+            (event as MouseEvent).stopPropagation();
             options.allSubtasksCollapse.callback();
         });
 
