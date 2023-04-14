@@ -45,7 +45,7 @@ import LegendData = legendInterfaces.LegendData;
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
 import IMargin = SVGUtil.IMargin;
 
-import { GanttSettings } from "./settings";
+import { GanttChartSettingsModel } from "./ganttChartSettingsModels";
 
 export type DayOffData = [Date, number];
 
@@ -100,7 +100,7 @@ export interface GanttChartFormatters {
 
 export interface GanttViewModel {
     dataView: DataView;
-    settings: GanttSettings;
+    settings: GanttChartSettingsModel;
     tasks: Task[];
     legendData: LegendData;
     milestonesData: MilestoneData;
