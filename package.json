@@ -71,7 +71,7 @@
     "powerbi-models": "1.2.1",
     "powerbi-visuals-api": "^2.6.0",
     "powerbi-visuals-tools": "^3.1.2",
-    "powerbi-visuals-utils-testutils": "2.2.0",
+    "powerbi-visuals-utils-testutils": "2.6.0",
     "puppeteer": "^1.7.0",
     "regenerator-runtime": "0.13.3",
     "style-loader": "1.0.0",
