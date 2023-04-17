@@ -55,6 +55,7 @@ import IColorPalette = powerbi.extensibility.IColorPalette;
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
+import ISelectionManager = powerbi.extensibility.ISelectionManager;
 
 // powerbi.visuals
 import ISelectionIdBuilder = powerbi.visuals.ISelectionIdBuilder;
@@ -364,6 +365,7 @@ export class Gantt implements IVisual {
     private behavior: Behavior;
     private interactivityService: IInteractivityService<Task | LegendDataPoint>;
     private eventService: IVisualEventService;
+    private selectionManager: ISelectionManager;
     private tooltipServiceWrapper: ITooltipServiceWrapper;
     private host: IVisualHost;
     private localizationManager: ILocalizationManager;
@@ -380,6 +382,7 @@ export class Gantt implements IVisual {
 
     constructor(options: VisualConstructorOptions) {
         this.init(options);
+        this.handleContextMenu();
     }
 
     private init(options: VisualConstructorOptions): void {
@@ -393,8 +396,20 @@ export class Gantt implements IVisual {
         this.behavior = new Behavior();
         this.interactivityService = createInteractivityService(this.host);
         this.eventService = options.host.eventService;
+        this.selectionManager = options.host.createSelectionManager();
 
         this.createViewport(options.element);
+    }
+
+    public handleContextMenu() {
+        this.ganttSvg.on('contextmenu', (event) => {
+            const dataPoint: any = d3Select(event.target).datum();
+            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
+                x: event.clientX,
+                y: event.clientY
+            });
+            event.preventDefault();
+        });
     }
 
     /**

@@ -86,10 +86,10 @@ export class Behavior implements IInteractiveBehavior {
         options.legendSelection.on("click", (event, d: any) => {
             if (!d.selected) {
 
-                selectionHandler.handleSelection(d, getEvent().ctrlKey);
+                selectionHandler.handleSelection(d, event.ctrlKey);
                 (event as MouseEvent).stopPropagation();
 
-                const selectedType: string = d.tooltip;
+                const selectedType: string = d.tooltipInfo;
                 options.taskSelection.each((d: Task) => {
                     if (d.taskType === selectedType && d.parent && !d.selected) {
                         selectionHandler.handleSelection(d, getEvent().ctrlKey);

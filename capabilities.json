@@ -609,5 +609,6 @@
     "sorting": {
         "default": {}
     },
-    "privileges": []
+    "privileges": [],
+    "supportsHighlight": true
 }
