@@ -347,6 +347,8 @@ export class Gantt implements IVisual {
 
     private formattingSettings: GanttChartSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
+    
+    private hasHighlights: boolean;
 
     private margin: IMargin = Gantt.DefaultMargin;
 
@@ -862,8 +864,10 @@ export class Gantt implements IVisual {
         settings: GanttChartSettingsModel,
         taskColor: string,
         localizationManager: ILocalizationManager,
-        isEndDateFillled: boolean): Task[] {
-
+        isEndDateFillled: boolean,
+        hasHighlights: boolean): Task[] {
+        const categoricalValues: DataViewValueColumns = dataView.categorical && dataView.categorical.values;
+        
         let tasks: Task[] = [];
         const addedParents: string[] = [];
 
@@ -892,6 +896,7 @@ export class Gantt implements IVisual {
             let wasDowngradeDurationUnit: boolean = false;
             const tooltips: VisualTooltipDataItem[] = [];
             let stepDurationTransformation: number = 0;
+            let highlight: number = null;
 
             const selectionBuilder: ISelectionIdBuilder = host
                 .createSelectionIdBuilder()
@@ -990,6 +995,11 @@ export class Gantt implements IVisual {
                 }
             }
 
+            if (hasHighlights && categoricalValues) {
+                const notNullIndex = categoricalValues.findIndex(value => value.highlights && value.values[index] != null);
+                if (notNullIndex != -1) highlight = <number>categoricalValues[notNullIndex].highlights[index];
+            }
+
             const task: Task = {
                 color,
                 completion,
@@ -1011,7 +1021,8 @@ export class Gantt implements IVisual {
                 daysOffList: [],
                 wasDowngradeDurationUnit,
                 stepDurationTransformation,
-                Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : []
+                Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : [],
+                highlight: highlight !== null
             };
 
             if (parent) {
@@ -1039,7 +1050,8 @@ export class Gantt implements IVisual {
                         wasDowngradeDurationUnit: null,
                         selected: null,
                         identity: selectionBuilder.createSelectionId(),
-                        Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : []
+                        Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : [],
+                        highlight: highlight !== null
                     };
 
                     tasks.push(parentTask);
@@ -1342,7 +1354,7 @@ export class Gantt implements IVisual {
 
         const settings: GanttChartSettingsModel = this.parseSettings(dataView, colorHelper);
         
-        const taskTypes: TaskTypes = Gantt.getAllTasksTypes(dataView);
+        const taskTypes: TaskTypes = this.getAllTasksTypes(dataView);
         const formatters: GanttChartFormatters = this.getFormatters(dataView, settings, host.locale || null);
 
         const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => Object.prototype.hasOwnProperty.call(col.roles, GanttRoles.Duration)) !== -1,
@@ -1357,7 +1369,7 @@ export class Gantt implements IVisual {
             ? settings.taskConfigCardSettings.fill.value.value
             : null;
 
-        const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFillled);
+        const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFillled, this.hasHighlights);
 
         // Remove empty legend if tasks isn't exist
         const types = _.groupBy(tasks, x => x.taskType);
@@ -1416,7 +1428,7 @@ export class Gantt implements IVisual {
     * Gets all unique types from the tasks array
     * @param dataView The data model.
     */
-    private static getAllTasksTypes(dataView: DataView): TaskTypes {
+    private getAllTasksTypes(dataView: DataView): TaskTypes {
         const taskTypes: TaskTypes = {
             typeName: "",
             types: []
@@ -1443,6 +1455,9 @@ export class Gantt implements IVisual {
                     columnGroup: group
                 };
             });
+
+            const highlightsExist = values.some(({ highlights }) => highlights?.some(Number.isInteger));
+            this.hasHighlights = !!highlightsExist;
         }
 
         return taskTypes;
@@ -1630,7 +1645,7 @@ export class Gantt implements IVisual {
 
             this.interactivityService.bind(behaviorOptions);
 
-            this.behavior.renderSelection(false);
+            this.behavior.renderSelection(this.hasHighlights);
         }
 
         this.eventService.renderingFinished(options);
