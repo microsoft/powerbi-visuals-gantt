@@ -379,8 +379,8 @@ export class Gantt implements IVisual {
     private groupLabelSize: number = 25;
     private secondExpandAllIconOffset: number = 7;
     private hasNotNullableDates: boolean = false;
-    private lastOptions: VisualUpdateOptions;
-    private currentOptions: VisualUpdateOptions;
+    // private lastOptions: VisualUpdateOptions;
+    // private currentOptions: VisualUpdateOptions;
 
     constructor(options: VisualConstructorOptions) {
         this.init(options);
@@ -824,7 +824,7 @@ export class Gantt implements IVisual {
         if (milestonesCategory && milestonesCategory.values) {
             milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
             milestones.forEach((milestone) => {
-                const milestoneObjects = milestonesCategory.objects && milestonesCategory.objects[milestone.index];
+                const milestoneObjects = milestonesCategory.objects?.[milestone.index];
                 const selectionBuilder: ISelectionIdBuilder = host
                     .createSelectionIdBuilder()
                     .withCategory(milestonesCategory, milestone.index);
@@ -832,9 +832,9 @@ export class Gantt implements IVisual {
                 const milestoneDataPoint: MilestoneDataPoint = {
                     name: milestone.value as string,
                     identity: selectionBuilder.createSelectionId(),
-                    shapeType: milestoneObjects && milestoneObjects.milestones && milestoneObjects.milestones.shapeType ?
+                    shapeType: milestoneObjects?.milestones?.shapeType ?
                         milestoneObjects.milestones.shapeType as string : MilestoneShapeTypes.Rhombus,
-                    color: milestoneObjects && milestoneObjects.milestones && milestoneObjects.milestones.fill ?
+                    color: milestoneObjects?.milestones?.fill ?
                         (milestoneObjects.milestones as any).fill.solid.color : Gantt.DefaultValues.TaskColor
                 };
                 milestoneData.dataPoints.push(milestoneDataPoint);
@@ -866,7 +866,7 @@ export class Gantt implements IVisual {
         localizationManager: ILocalizationManager,
         isEndDateFillled: boolean,
         hasHighlights: boolean): Task[] {
-        const categoricalValues: DataViewValueColumns = dataView.categorical && dataView.categorical.values;
+        const categoricalValues: DataViewValueColumns = dataView?.categorical?.values;
         
         let tasks: Task[] = [];
         const addedParents: string[] = [];
@@ -1090,7 +1090,7 @@ export class Gantt implements IVisual {
                 let datesDiff: number = 0;
                 do {
                     task.daysOffList = Gantt.calculateDaysOff(
-                        +settings.daysOffCardSettings.firstDayOfWeek.value.value,
+                        +settings.daysOffCardSettings.firstDayOfWeek?.value?.value,
                         new Date(task.start.getTime()),
                         new Date(task.end.getTime())
                     );
@@ -1438,7 +1438,7 @@ export class Gantt implements IVisual {
         if (index !== -1) {
             taskTypes.typeName = dataView.metadata.columns[index].displayName;
             const legendMetaCategoryColumn: DataViewMetadataColumn = dataView.metadata.columns[index];
-            const values = dataView.categorical && dataView.categorical.values || <DataViewValueColumns>[];
+            const values = dataView?.categorical?.values || <DataViewValueColumns>[];
             const groupValues = values.grouped();
             taskTypes.types = groupValues.map((group: DataViewValueColumnGroup): TaskTypeMetadata => {
                 const column: DataViewCategoryColumn = {
@@ -1514,14 +1514,14 @@ export class Gantt implements IVisual {
             return;
         }
 
-        this.currentOptions = options;
+        // this.currentOptions = options;
 
         // if (this.lastOptions!=null && this.AreEqualExceptCollapsed(this.currentOptions, this.lastOptions)){
         //     return;
         // }
 
         this.updateInternal(options);
-        this.lastOptions = options;
+        // this.lastOptions = options;
     }
 
     private updateInternal(options: VisualUpdateOptions) : void {
@@ -1654,11 +1654,17 @@ export class Gantt implements IVisual {
     private AreEqualExceptCollapsed(options1: VisualUpdateOptions, options2: VisualUpdateOptions) : boolean {
 
         const options1WithoutCollapsed = {...options1};
-        options1WithoutCollapsed.dataViews[0].metadata.objects.collapsedTasks.list = null;
+        const objects1 = options1WithoutCollapsed.dataViews[0].metadata.objects && options1WithoutCollapsed.dataViews[0].metadata.objects;
+        if (objects1 && objects1.collapsedTasks) {
+            objects1.collapsedTasks.list = null;
+        }
         options1WithoutCollapsed["updateId"] = null;
         
         const options2WithoutCollapsed = {...options2};
-        options2WithoutCollapsed.dataViews[0].metadata.objects.collapsedTasks.list = null;
+        const objects2 = options2WithoutCollapsed.dataViews[0].metadata.objects && options2WithoutCollapsed.dataViews[0].metadata.objects;
+        if (objects2 && objects2.collapsedTasks) {
+            objects2.collapsedTasks.list = null;
+        }
         options2WithoutCollapsed["updateId"] = null;
 
         if(options1WithoutCollapsed.type == 2){
@@ -1892,7 +1898,7 @@ export class Gantt implements IVisual {
         timestamp: number,
         defaultColor: string): string {
         const tickTime = new Date(timestamp);
-        const firstDayOfWeek: string = this.viewModel.settings.daysOffCardSettings.firstDayOfWeek.value.value.toString();
+        const firstDayOfWeek: string = this.viewModel.settings.daysOffCardSettings.firstDayOfWeek?.value?.value.toString();
         const color: string = this.viewModel.settings.daysOffCardSettings.fill.value.value;
         if (this.viewModel.settings.daysOffCardSettings.show.value) {
             const dateForCheck: Date = new Date(tickTime.getTime());
@@ -2177,17 +2183,17 @@ export class Gantt implements IVisual {
             }]
         });
 
-        const updatedObjects ={
-            collapsedTasks: {
-                list: JSON.stringify(this.collapsedTasks)
-            }
-        }
+        // const updatedObjects ={
+        //     collapsedTasks: {
+        //         list: JSON.stringify(this.collapsedTasks)
+        //     }
+        // }
 
-        if (this.currentOptions.dataViews[0].metadata.objects) {
-            this.currentOptions.dataViews[0].metadata.objects = {this:this.currentOptions.dataViews[0].metadata.objects, ...updatedObjects}
-        }
+        // if (this.currentOptions.dataViews[0].metadata.objects) {
+        //     this.currentOptions.dataViews[0].metadata.objects = {this:this.currentOptions.dataViews[0].metadata.objects, ...updatedObjects}
+        // }
 
-        this.updateInternal(this.currentOptions);
+        // this.updateInternal(this.currentOptions);
     }
 
     /**
