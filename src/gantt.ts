@@ -377,7 +377,6 @@ export class Gantt implements IVisual {
     private secondExpandAllIconOffset: number = 7;
     private hasNotNullableDates: boolean = false;
 
-    private currentOptions: VisualUpdateOptions;
     private collapsedTasksUpdateIDs: string[] = [];
 
     constructor(options: VisualConstructorOptions) {
@@ -1489,7 +1488,6 @@ export class Gantt implements IVisual {
             return;
         }
 
-        this.currentOptions = options;
         this.updateInternal(options);
     }
 
@@ -2139,8 +2137,6 @@ export class Gantt implements IVisual {
                 }
             }]
         });
-
-        this.update(this.currentOptions);
     }
 
     /**
