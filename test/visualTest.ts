@@ -2081,4 +2081,115 @@ describe("Gantt", () => {
             expect(isValidDate(validDate)).toBeFalsy();
         });
     });
+
+    describe("PersistProperties test", () => {
+        
+        it("Synchonous one task", (done) => {
+            visualBuilder.instance["collapsedTaskUpdateIDs"] = ["0.52"]; 
+
+            dataView.metadata.objects = {
+                collapsedTaskUpdateId: {
+                    value: "0.52"
+                }
+            };
+
+            visualBuilder.updateRenderTimeout(dataView, () => {
+                expect(visualBuilder.instance["collapsedTaskUpdateIDs"].length).toBe(0);
+                done(); 
+            });
+        });
+
+        it("Synchronous multiple tasks", (done) => {
+            visualBuilder.instance["collapsedTaskUpdateIDs"] = ["0.52", "23a", "saf"];
+
+            const objects1 = {
+                collapsedTaskUpdateId: {
+                    value: "0.52"
+                }
+            };
+
+            const objects2 = {
+                collapsedTaskUpdateId: {
+                    value: "saf"
+                }
+            };
+
+            const objects3 = {
+                collapsedTaskUpdateId: {
+                    value: "23a"
+                }
+            };
+
+
+            dataView.metadata.objects = objects1;
+            visualBuilder.update(dataView);
+            expect(visualBuilder.instance["collapsedTaskUpdateIDs"].length).toBe(2);
+
+            
+            dataView.metadata.objects = objects2;
+            visualBuilder.update(dataView);
+            expect(visualBuilder.instance["collapsedTaskUpdateIDs"].length).toBe(1);
+
+
+            dataView.metadata.objects = objects3;
+            visualBuilder.update(dataView);
+            expect(visualBuilder.instance["collapsedTaskUpdateIDs"].length).toBe(0);
+
+            done();
+        });
+
+        fit("Asynchronous multiple tasks", async () => {
+            visualBuilder.instance["collapsedTaskUpdateIDs"] = ["0.52", "23a", "saf"];
+
+            const objects1 = {
+                collapsedTaskUpdateId: {
+                    value: "0.52"
+                }
+            };
+
+            const objects2 = {
+                collapsedTaskUpdateId: {
+                    value: "saf"
+                }
+            };
+
+            const objects3 = {
+                collapsedTaskUpdateId: {
+                    value: "23a"
+                }
+            };
+
+
+            const promise1 = new Promise((resolve)=> {
+                setTimeout(() => {
+                    dataView.metadata.objects = objects1;
+                    visualBuilder.update(dataView);
+                    resolve(visualBuilder.instance["collapsedTaskUpdateIDs"].includes("0.52"));
+                }, 
+                1 * 1000);
+            });
+
+            const promise2 = new Promise((resolve)=> {
+                setTimeout(() => {
+                    dataView.metadata.objects = objects2;
+                    visualBuilder.update(dataView);
+                    resolve(visualBuilder.instance["collapsedTaskUpdateIDs"].includes("saf"));
+                }, 
+                2 * 1000);
+            });
+
+            const promise3 = new Promise((resolve)=> {
+                setTimeout(() => {
+                    dataView.metadata.objects = objects3;
+                    visualBuilder.update(dataView);
+                    resolve(visualBuilder.instance["collapsedTaskUpdateIDs"].includes("23a"));
+                }, 
+                3 * 1000);
+            });
+
+            const result = await Promise.all([promise1, promise2, promise3]);
+
+            expect(result.filter(result => result === true).length).toBe(0);
+        });
+    });
 });
