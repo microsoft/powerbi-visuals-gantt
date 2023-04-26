@@ -30,8 +30,6 @@ import * as d3 from "d3";
 import * as _ from "lodash";
 import powerbi from "powerbi-visuals-api";
 
-import { Guid } from "guid-typescript";
-
 // d3
 type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
 import timeScale = d3.ScaleTime;
@@ -2081,7 +2079,7 @@ export class Gantt implements IVisual {
             }
         });
 
-        const newId = Guid.create().toString();
+        const newId = crypto?.randomUUID() || Math.random.toString();
         this.collapsedTasksUpdateIDs.push(newId);
 
         this.setJsonFiltersValues(this.collapsedTasks, newId);
@@ -2113,7 +2111,7 @@ export class Gantt implements IVisual {
             });
         }
 
-        const newId = Guid.create().toString();
+        const newId = crypto?.randomUUID() || Math.random.toString();
         this.collapsedTasksUpdateIDs.push(newId);
 
         this.setJsonFiltersValues(this.collapsedTasks, newId);
