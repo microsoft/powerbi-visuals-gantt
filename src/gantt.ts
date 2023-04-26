@@ -378,7 +378,7 @@ export class Gantt implements IVisual {
     private hasNotNullableDates: boolean = false;
 
     private currentOptions: VisualUpdateOptions;
-    private collapsedTaskUpdateIDs: string[] = [];
+    private collapsedTasksUpdateIDs: string[] = [];
 
     constructor(options: VisualConstructorOptions) {
         this.init(options);
@@ -1480,12 +1480,12 @@ export class Gantt implements IVisual {
             return;
         }
 
-        const collapsedTaskUpdateId: any = options.dataViews[0].metadata.objects && 
-                                        options.dataViews[0].metadata.objects.collapsedTaskUpdateId && 
-                                        options.dataViews[0].metadata.objects.collapsedTaskUpdateId.value;
+        const collapsedTasksUpdateId: any = options.dataViews[0].metadata.objects && 
+                                        options.dataViews[0].metadata.objects.collapsedTasksUpdateId && 
+                                        options.dataViews[0].metadata.objects.collapsedTasksUpdateId.value;
 
-        if (this.collapsedTaskUpdateIDs.includes(collapsedTaskUpdateId)) {
-            this.collapsedTaskUpdateIDs = this.collapsedTaskUpdateIDs.filter(id => id !== collapsedTaskUpdateId);
+        if (this.collapsedTasksUpdateIDs.includes(collapsedTasksUpdateId)) {
+            this.collapsedTasksUpdateIDs = this.collapsedTasksUpdateIDs.filter(id => id !== collapsedTasksUpdateId);
             return;
         }
 
@@ -2086,7 +2086,7 @@ export class Gantt implements IVisual {
         });
 
         const newId = Guid.create().toString();
-        this.collapsedTaskUpdateIDs.push(newId);
+        this.collapsedTasksUpdateIDs.push(newId);
 
         this.setJsonFiltersValues(this.collapsedTasks, newId);
     }
@@ -2118,12 +2118,12 @@ export class Gantt implements IVisual {
         }
 
         const newId = Guid.create().toString();
-        this.collapsedTaskUpdateIDs.push(newId);
+        this.collapsedTasksUpdateIDs.push(newId);
 
         this.setJsonFiltersValues(this.collapsedTasks, newId);
     }
 
-    private setJsonFiltersValues(collapsedValues: string[], collapsedTaskUpdateId: string) {
+    private setJsonFiltersValues(collapsedValues: string[], collapsedTasksUpdateId: string) {
         this.host.persistProperties(<VisualObjectInstancesToPersist>{
             merge: [{
                 objectName: "collapsedTasks",
@@ -2132,10 +2132,10 @@ export class Gantt implements IVisual {
                     list: JSON.stringify(collapsedValues)
                 }
             }, {
-                objectName: "collapsedTaskUpdateId",
+                objectName: "collapsedTasksUpdateId",
                 selector: null,
                 properties: {
-                    value: JSON.stringify(collapsedTaskUpdateId)
+                    value: JSON.stringify(collapsedTasksUpdateId)
                 }
             }]
         });

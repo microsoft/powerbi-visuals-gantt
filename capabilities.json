@@ -408,7 +408,7 @@
                 }
             }
         },
-        "collapsedTaskUpdateId": {
+        "collapsedTasksUpdateId": {
             "properties": {
                 "value": {
                     "type": {
