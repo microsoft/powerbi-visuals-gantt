@@ -28,7 +28,6 @@
   },
   "homepage": "https://github.com/Microsoft/powerbi-visuals-gantt#readme",
   "dependencies": {
-    "core-js": "^3.1.4",
     "d3": "5.9.7",
     "del-cli": "2.0.0",
     "jquery": "3.4.1",
@@ -74,7 +73,6 @@
     "powerbi-visuals-tools": "^3.4.2",
     "powerbi-visuals-utils-testutils": "2.2.0",
     "puppeteer": "^1.7.0",
-    "regenerator-runtime": "0.13.3",
     "style-loader": "1.0.0",
     "ts-loader": "6.0.4",
     "ts-node": "^8.2.0",
