@@ -1479,9 +1479,7 @@ export class Gantt implements IVisual {
             return;
         }
 
-        const collapsedTasksUpdateId: any = options.dataViews[0].metadata.objects && 
-                                        options.dataViews[0].metadata.objects.collapsedTasksUpdateId && 
-                                        options.dataViews[0].metadata.objects.collapsedTasksUpdateId.value;
+        const collapsedTasksUpdateId: any = options.dataViews[0].metadata?.objects?.collapsedTasksUpdateId?.value;
 
         if (this.collapsedTasksUpdateIDs.includes(collapsedTasksUpdateId)) {
             this.collapsedTasksUpdateIDs = this.collapsedTasksUpdateIDs.filter(id => id !== collapsedTasksUpdateId);
