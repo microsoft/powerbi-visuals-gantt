@@ -549,7 +549,7 @@ export class GanttChartSettingsModel extends Model {
             dataPoints.forEach((dataPoint: LegendDataPoint) => {
                 newSlices.push(new formattingSettings.ColorPicker({
                     name: "fill",
-                    displayName: dataPoint.label.length > 0 ? dataPoint.label : "Unlabeled",
+                    displayName: dataPoint.label,
                     selector: ColorHelper.normalizeSelector((<ISelectionId>dataPoint.identity).getSelector(), false),
                     value: { value: dataPoint.color }
                 }));
