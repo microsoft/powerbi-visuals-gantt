@@ -23,7 +23,11 @@ module.exports = {
                     {
                         loader: 'less-loader',
                         options: {
-                            paths: [path.resolve(__dirname, 'node_modules')]
+                            lessOptions: () => {
+                                return {
+                                    paths: [path.resolve(__dirname, 'node_modules')],
+                                };
+                            },
                         }
                     }
                 ]

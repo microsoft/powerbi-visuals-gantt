@@ -36,10 +36,8 @@ const coverageFolder = "coverage";
 
 process.env.CHROME_BIN = require("playwright").chromium.executablePath();
 
-import { Config, ConfigOptions } from "karma";
-
-module.exports = (config: Config) => {
-    config.set(<ConfigOptions>{
+module.exports = (config) => {
+    config.set({
         mode: "development",
         browserNoActivityTimeout: 100000,
         browsers: ["ChromeHeadless"],
@@ -83,18 +81,6 @@ module.exports = (config: Config) => {
         },
         typescriptPreprocessor: {
             options: tsconfig.compilerOptions
-        },
-        coverageIstanbulReporter: {
-            reports: ["html", "lcovonly", "text-summary", "cobertura"],
-            dir: path.join(__dirname, coverageFolder),
-            'report-config': {
-                html: {
-                    subdir: 'html-report'
-                }
-            },
-            combineBrowserReports: true,
-            fixWebpackSourcePaths: true,
-            verbose: false
         },
         coverageReporter: {
             dir: path.join(__dirname, coverageFolder),
