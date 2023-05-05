@@ -367,6 +367,15 @@
                 }
             }
         },
+        "collapsedTasksUpdateId": {
+            "properties": {
+                "value": {
+                    "type": {
+                        "text": true
+                    }
+                }
+            }
+        },
         "daysOff": {
             "properties": {
                 "show": {

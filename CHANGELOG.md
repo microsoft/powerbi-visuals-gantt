@@ -1,3 +1,6 @@
+## 2.3.0
+* PersistProperties fix for collapse tasks update
+
 ## 2.2.3
 * Completion issue fix
 
