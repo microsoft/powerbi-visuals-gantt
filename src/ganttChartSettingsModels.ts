@@ -65,6 +65,11 @@ const resourcePositionOptions : IEnumMember[] = [
     { displayName: "Visual_Position_Inside", value: "Inside" }
 ];
 
+class DurationMinSettings {
+    public static readonly DefaultDurationMinValue: number = 1;
+    public static readonly MinDurationMinValue: number = 1;
+}
+
 class FontSizeSettings {
     public static readonly DefaultFontSize: number = 9;
     public static readonly MinFontSize: number = 8;
@@ -116,7 +121,13 @@ export class GeneralCardSettings extends Card {
     durationMin = new formattingSettings.NumUpDown({
         name: "durationMin",
         displayNameKey: "Visual_DurationMinimum",
-        value: 1
+        value: DurationMinSettings.DefaultDurationMinValue,
+        options: {
+            minValue: {
+                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                value: DurationMinSettings.MinDurationMinValue,
+            }
+        }
     });
 
     name: string = "general";
