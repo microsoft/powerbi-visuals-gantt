@@ -249,6 +249,7 @@ export class Gantt implements IVisual {
     public static LegendItems: ClassAndSelector = createClassAndSelector("legendItem");
     public static LegendTitle: ClassAndSelector = createClassAndSelector("legendTitle");
     public static ClickableArea: ClassAndSelector = createClassAndSelector("clickableArea");
+    public static CollapsedTasksUpdateIDs: string = "collapsedTasksUpdateIDs";
 
     private viewport: IViewport;
     private colors: IColorPalette;
@@ -2117,7 +2118,8 @@ export class Gantt implements IVisual {
             }
         });
 
-        const newId = crypto?.randomUUID() || Math.random.toString();
+        // eslint-disable-next-line
+        const newId = crypto?.randomUUID() || Math.random().toString();
         this.collapsedTasksUpdateIDs.push(newId);
 
         this.setJsonFiltersValues(this.collapsedTasks, newId);
@@ -2149,7 +2151,8 @@ export class Gantt implements IVisual {
             });
         }
 
-        const newId = crypto?.randomUUID() || Math.random.toString();
+        // eslint-disable-next-line
+        const newId = crypto?.randomUUID() || Math.random().toString();
         this.collapsedTasksUpdateIDs.push(newId);
 
         this.setJsonFiltersValues(this.collapsedTasks, newId);
@@ -2161,13 +2164,13 @@ export class Gantt implements IVisual {
                 objectName: "collapsedTasks",
                 selector: null,
                 properties: {
-                    list: JSON.stringify(collapsedValues)
+                    list: collapsedValues
                 }
             }, {
                 objectName: "collapsedTasksUpdateId",
                 selector: null,
                 properties: {
-                    value: JSON.stringify(collapsedTasksUpdateId)
+                    value: collapsedTasksUpdateId
                 }
             }]
         });

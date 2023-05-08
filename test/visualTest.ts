@@ -2153,79 +2153,99 @@ describe("Gantt", () => {
     });
 
     describe("PersistProperties test", () => {
+
+        const collapsedTasksUpdateIDs: string = "collapsedTasksUpdateIDs";
         
         it("Synchonous one task", (done) => {
-            visualBuilder.instance["collapsedTaskUpdateIDs"] = ["0.52"]; 
+            const newId = crypto?.randomUUID() || Math.random().toString();
 
-            dataView.metadata.objects = {
-                collapsedTaskUpdateId: {
-                    value: "0.52"
+            visualBuilder.instance[collapsedTasksUpdateIDs] = [newId]; 
+
+            const objects1 = {
+                collapsedTasksUpdateId: {
+                    value: newId
                 }
             };
 
+            dataView.metadata.objects = objects1;
+
             visualBuilder.updateRenderTimeout(dataView, () => {
-                expect(visualBuilder.instance["collapsedTaskUpdateIDs"].length).toBe(0);
-                done(); 
+                expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(0);
+                done();
             });
         });
 
         it("Synchronous multiple tasks", (done) => {
-            visualBuilder.instance["collapsedTaskUpdateIDs"] = ["0.52", "23a", "saf"];
+            const collapsedTasksUpdatIDsRandom : string[] = []
+            
+            for (let count = 0; count < 3; count++) {
+                const newId = crypto?.randomUUID() || Math.random().toString();
+                collapsedTasksUpdatIDsRandom.push(newId);
+            }
+
+            visualBuilder.instance[collapsedTasksUpdateIDs] = collapsedTasksUpdatIDsRandom;
 
             const objects1 = {
-                collapsedTaskUpdateId: {
-                    value: "0.52"
+                collapsedTasksUpdateId: {
+                    value: collapsedTasksUpdatIDsRandom[0]
                 }
             };
 
             const objects2 = {
-                collapsedTaskUpdateId: {
-                    value: "saf"
+                collapsedTasksUpdateId: {
+                    value: collapsedTasksUpdatIDsRandom[1]
                 }
             };
 
             const objects3 = {
-                collapsedTaskUpdateId: {
-                    value: "23a"
+                collapsedTasksUpdateId: {
+                    value: collapsedTasksUpdatIDsRandom[2]
                 }
             };
 
 
             dataView.metadata.objects = objects1;
             visualBuilder.update(dataView);
-            expect(visualBuilder.instance["collapsedTaskUpdateIDs"].length).toBe(2);
+            expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(2);
 
             
             dataView.metadata.objects = objects2;
             visualBuilder.update(dataView);
-            expect(visualBuilder.instance["collapsedTaskUpdateIDs"].length).toBe(1);
+            expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(1);
 
 
             dataView.metadata.objects = objects3;
             visualBuilder.update(dataView);
-            expect(visualBuilder.instance["collapsedTaskUpdateIDs"].length).toBe(0);
+            expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(0);
 
             done();
         });
 
-        fit("Asynchronous multiple tasks", async () => {
-            visualBuilder.instance["collapsedTaskUpdateIDs"] = ["0.52", "23a", "saf"];
+        it("Asynchronous multiple tasks", async () => {
+            const collapsedTasksUpdatIDsRandom : string[] = []
+            
+            for (let count = 0; count < 3; count++) {
+                const newId = crypto?.randomUUID() || Math.random().toString();
+                collapsedTasksUpdatIDsRandom.push(newId);
+            }
+
+            visualBuilder.instance[collapsedTasksUpdateIDs] = collapsedTasksUpdatIDsRandom;
 
             const objects1 = {
-                collapsedTaskUpdateId: {
-                    value: "0.52"
+                collapsedTasksUpdateId: {
+                    value: collapsedTasksUpdatIDsRandom[0]
                 }
             };
 
             const objects2 = {
-                collapsedTaskUpdateId: {
-                    value: "saf"
+                collapsedTasksUpdateId: {
+                    value: collapsedTasksUpdatIDsRandom[1]
                 }
             };
 
             const objects3 = {
-                collapsedTaskUpdateId: {
-                    value: "23a"
+                collapsedTasksUpdateId: {
+                    value: collapsedTasksUpdatIDsRandom[2]
                 }
             };
 
@@ -2234,7 +2254,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects1;
                     visualBuilder.update(dataView);
-                    resolve(visualBuilder.instance["collapsedTaskUpdateIDs"].includes("0.52"));
+                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdatIDsRandom[0]));
                 }, 
                 1 * 1000);
             });
@@ -2243,7 +2263,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects2;
                     visualBuilder.update(dataView);
-                    resolve(visualBuilder.instance["collapsedTaskUpdateIDs"].includes("saf"));
+                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdatIDsRandom[1]));
                 }, 
                 2 * 1000);
             });
@@ -2252,7 +2272,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects3;
                     visualBuilder.update(dataView);
-                    resolve(visualBuilder.instance["collapsedTaskUpdateIDs"].includes("23a"));
+                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdatIDsRandom[2]));
                 }, 
                 3 * 1000);
             });
