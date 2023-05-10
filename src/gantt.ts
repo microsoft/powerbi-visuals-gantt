@@ -281,6 +281,11 @@ export class Gantt implements IVisual {
         propertyName: "list"
     };
 
+    private static CollapsedTasksUpdateIdPropertyIdentifier: DataViewObjectPropertyIdentifier = {
+        objectName: "collapsedTasksUpdateId",
+        propertyName: "value"
+    };
+
     public static DefaultValues = {
         AxisTickSize: 6,
         BarMargin: 2,
@@ -1526,7 +1531,6 @@ export class Gantt implements IVisual {
     }
 
     private updateInternal(options: VisualUpdateOptions) : void {
-
         this.viewModel = this.converter(options.dataViews[0], this.host, this.colors, this.colorHelper, this.localizationManager);
 
         // for dublicated milestone types
@@ -2097,6 +2101,7 @@ export class Gantt implements IVisual {
      * @param taskClicked Grouped clicked task
      */
     private subTasksCollapseCb(taskClicked: GroupedTask): void {
+        debugger;
         const taskIsChild: boolean = taskClicked.tasks[0].parent && !taskClicked.tasks[0].children;
         const taskWithoutParentAndChildren: boolean = !taskClicked.tasks[0].parent && !taskClicked.tasks[0].children;
         if (taskIsChild || taskWithoutParentAndChildren) {
@@ -2159,6 +2164,7 @@ export class Gantt implements IVisual {
     }
 
     private setJsonFiltersValues(collapsedValues: string[], collapsedTasksUpdateId: string) {
+        debugger;
         this.host.persistProperties(<VisualObjectInstancesToPersist>{
             merge: [{
                 objectName: "collapsedTasks",
@@ -3083,6 +3089,10 @@ export class Gantt implements IVisual {
 
                 case Gantt.CollapsedTasksPropertyIdentifier.objectName:
                     this.removeArrayItem(newCards, this.formattingSettings.collapsedTasksCardSettings);
+                    break;
+
+                case Gantt.CollapsedTasksUpdateIdPropertyIdentifier.objectName:
+                    this.removeArrayItem(newCards, this.formattingSettings.collapsedTasksUpdateIdCardSettings);
                     break;
 
                 case Gantt.TaskResourcePropertyIdentifier.objectName: 

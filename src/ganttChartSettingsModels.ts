@@ -177,6 +177,20 @@ export class CollapsedTasksCardSettings extends Card {
     slices = [this.list];
 }
 
+export class CollapsedTasksUpdateIdCardSettings extends Card {
+
+    value = new formattingSettings.TextInput({
+        name: "value",
+        displayNameKey: "Visual_UpdateId",
+        placeholder: "",
+        value: ""
+    });
+
+    name: string = "collapsedTasksUpdateId";
+    displayNameKey: string = "Visual_CollapsedTasksUpdateId";
+    slices = [this.value];
+}
+
 export class DaysOffCardSettings extends Card {
 
     show = new formattingSettings.ToggleSwitch({
@@ -497,6 +511,7 @@ export class DateTypeCardSettings extends Card {
 export class GanttChartSettingsModel extends Model { 
     generalCardSettings = new GeneralCardSettings();
     collapsedTasksCardSettings = new CollapsedTasksCardSettings();
+    collapsedTasksUpdateIdCardSettings = new CollapsedTasksUpdateIdCardSettings();
     daysOffCardSettings = new DaysOffCardSettings();
     legendCardSettings = new LegendCardSettings();
     milestonesCardSettings = new MilestonesCardSettings();
@@ -507,7 +522,7 @@ export class GanttChartSettingsModel extends Model {
     taskResourceCardSettings = new TaskResourceCardSettings();
     dateTypeCardSettings = new DateTypeCardSettings();
     
-    cards = [this.generalCardSettings, this.collapsedTasksCardSettings, this.daysOffCardSettings, this.legendCardSettings, 
+    cards = [this.generalCardSettings, this.collapsedTasksCardSettings, this.collapsedTasksUpdateIdCardSettings, this.daysOffCardSettings, this.legendCardSettings, 
             this.milestonesCardSettings, this.taskLabelsCardSettings, this.taskCompletionCardSettings, 
             this.tooltipConfigCardSettings, this.taskConfigCardSettings, this.taskResourceCardSettings, this.dateTypeCardSettings];
 
