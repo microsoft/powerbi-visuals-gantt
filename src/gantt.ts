@@ -677,8 +677,7 @@ export class Gantt implements IVisual {
     * @param dataView
     */
     private static isChartHasTask(dataView: DataView): boolean {
-        if (dataView.metadata &&
-            dataView.metadata.columns) {
+        if (dataView?.metadata?.columns) {
             for (const column of dataView.metadata.columns) {
                 if (Gantt.hasRole(column, GanttRoles.Task)) {
                     return true;
@@ -699,9 +698,7 @@ export class Gantt implements IVisual {
         settings: GanttChartSettingsModel,
         cultureSelector: string): GanttChartFormatters {
 
-        if (!dataView ||
-            !dataView.metadata ||
-            !dataView.metadata.columns) {
+        if (!dataView?.metadata?.columns) {
             return null;
         }
 
@@ -744,11 +741,11 @@ export class Gantt implements IVisual {
         const legendData: LegendData = {
             fontSize: settings.legendCardSettings.fontSize.value,
             dataPoints: [],
-            title: settings.legendCardSettings.showTitle.value ? (settings.legendCardSettings.titleText.value || taskTypes.typeName) : null,
+            title: settings.legendCardSettings.showTitle.value ? (settings.legendCardSettings.titleText.value || taskTypes?.typeName) : null,
             labelColor: settings.legendCardSettings.labelColor.value.value
         };
 
-        legendData.dataPoints = taskTypes.types.map(
+        legendData.dataPoints = taskTypes?.types.map(
             (typeMeta: TaskTypeMetadata): LegendDataPoint => {
                 let color: string = settings.taskConfigCardSettings.fill.value.value;
 
@@ -1351,10 +1348,7 @@ export class Gantt implements IVisual {
         colorHelper: ColorHelper,
         localizationManager: ILocalizationManager): GanttViewModel {
 
-        if (!dataView
-            || !dataView.categorical
-            || !Gantt.isChartHasTask(dataView)
-            || dataView.categorical.categories.length === 0) {
+        if (dataView?.categorical?.categories?.length === 0 || !Gantt.isChartHasTask(dataView)) {
             return null;
         }
 
@@ -1371,7 +1365,7 @@ export class Gantt implements IVisual {
         const legendData: LegendData = Gantt.createLegend(host, colors, settings, taskTypes, !isDurationFilled && !isEndDateFillled);
         const milestonesData: MilestoneData = Gantt.createMilestones(dataView, host);
 
-        const taskColor: string = (legendData.dataPoints.length <= 1) || !isDurationFilled
+        const taskColor: string = (legendData.dataPoints?.length <= 1) || !isDurationFilled
             ? settings.taskConfigCardSettings.fill.value.value
             : null;
 
@@ -1379,7 +1373,7 @@ export class Gantt implements IVisual {
 
         // Remove empty legend if tasks isn't exist
         const types = _.groupBy(tasks, x => x.taskType);
-        legendData.dataPoints = legendData.dataPoints.filter(x => types[x.label]);
+        legendData.dataPoints = legendData.dataPoints?.filter(x => types[x.label]);
 
         return {
             dataView,
@@ -1444,7 +1438,12 @@ export class Gantt implements IVisual {
         if (index !== -1) {
             taskTypes.typeName = dataView.metadata.columns[index].displayName;
             const legendMetaCategoryColumn: DataViewMetadataColumn = dataView.metadata.columns[index];
-            const values = dataView?.categorical?.values || <DataViewValueColumns>[];
+            const values = (dataView?.categorical?.values?.length && dataView.categorical.values) || <DataViewValueColumns>[];
+
+            if (values === undefined || values.length == 0) {
+                return;
+            }
+
             const groupValues = values.grouped();
             taskTypes.types = groupValues.map((group: DataViewValueColumnGroup): TaskTypeMetadata => {
                 const column: DataViewCategoryColumn = {
@@ -1473,7 +1472,7 @@ export class Gantt implements IVisual {
      * Get legend data, calculate position and draw it
      */
     private renderLegend(): void {
-        if (!this.viewModel.legendData) {
+        if (!this.viewModel.legendData?.dataPoints) {
             return;
         }
 
@@ -2101,7 +2100,6 @@ export class Gantt implements IVisual {
      * @param taskClicked Grouped clicked task
      */
     private subTasksCollapseCb(taskClicked: GroupedTask): void {
-        debugger;
         const taskIsChild: boolean = taskClicked.tasks[0].parent && !taskClicked.tasks[0].children;
         const taskWithoutParentAndChildren: boolean = !taskClicked.tasks[0].parent && !taskClicked.tasks[0].children;
         if (taskIsChild || taskWithoutParentAndChildren) {
@@ -2164,13 +2162,12 @@ export class Gantt implements IVisual {
     }
 
     private setJsonFiltersValues(collapsedValues: string[], collapsedTasksUpdateId: string) {
-        debugger;
         this.host.persistProperties(<VisualObjectInstancesToPersist>{
             merge: [{
                 objectName: "collapsedTasks",
                 selector: null,
                 properties: {
-                    list: collapsedValues
+                    list: JSON.stringify(collapsedValues)
                 }
             }, {
                 objectName: "collapsedTasksUpdateId",

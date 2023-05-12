@@ -46,9 +46,14 @@ const extraInformationRole = "ExtraInformation";
 export class GanttColumns<T> {
 
     public static getGroupedValueColumns(dataView: DataView): GanttColumns<DataViewValueColumn>[] {
-        const categorical: DataViewCategorical = dataView && dataView.categorical;
-        const values: DataViewValueColumns = categorical && categorical.values;
-        const grouped: DataViewValueColumnGroup[] = values && values.grouped();
+        const categorical: DataViewCategorical = dataView?.categorical;
+        const values: DataViewValueColumns = categorical?.values;
+        const grouped: DataViewValueColumnGroup[] = values?.length && values.grouped();
+
+        if (values === undefined || values.length == 0) {
+            return;
+        }
+
         return grouped && grouped.map(g => lodashMapValues(
             new this<DataViewValueColumn>(),
             (n, i) => g.values.filter(v => v.source.roles[i])[0]));
