@@ -893,7 +893,7 @@ export class Gantt implements IVisual {
                             color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
                         }
 
-                        duration = group.Duration.values[index] > settings.general.durationMin ? group.Duration.values[index] as number : settings.general.durationMin;
+                        duration = group.Duration.values[index] as number > settings.general.durationMin ? group.Duration.values[index] as number : settings.general.durationMin;
 
                         if (duration && duration % 1 !== 0) {
                             durationUnit = DurationHelper.downgradeDurationUnit(durationUnit, duration);
@@ -2118,6 +2118,7 @@ export class Gantt implements IVisual {
      */
     private renderTasks(groupedTasks: GroupedTask[]): void {
         let taskConfigHeight: number = this.viewModel.settings.taskConfig.height || DefaultChartLineHeight;
+        let taskConfigCornersRounded: boolean = this.viewModel.settings.taskConfig.cornersRounded;
         let taskGroupSelection: Selection<any> = this.taskGroup
             .selectAll(Selectors.TaskGroup.selectorName)
             .data(groupedTasks);
@@ -2135,7 +2136,7 @@ export class Gantt implements IVisual {
         taskGroupSelectionMerged.classed(Selectors.TaskGroup.className, true);
 
         let taskSelection: Selection<Task> = this.taskSelectionRectRender(taskGroupSelectionMerged);
-        this.taskMainRectRender(taskSelection, taskConfigHeight);
+        this.taskMainRectRender(taskSelection, taskConfigHeight, taskConfigCornersRounded);
         this.MilestonesRender(taskSelection, taskConfigHeight);
         this.taskProgressRender(taskSelection);
         this.taskDaysOffRender(taskSelection, taskConfigHeight);
@@ -2238,14 +2239,14 @@ export class Gantt implements IVisual {
      * @param task
      * @param taskConfigHeight
      */
-    private drawTaskRect(task: Task, taskConfigHeight: number): string {
+    private drawTaskRect(task: Task, taskConfigHeight: number, taskConfigCornersRounded: boolean): string {
         const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
             y = Gantt.getBarYCoordinate(task.index, taskConfigHeight) + (task.index + 1) * this.getResourceLabelTopMargin(),
             width = this.getTaskRectWidth(task),
             height = Gantt.getBarHeight(taskConfigHeight),
             radius = Gantt.RectRound;
 
-        if (width < 2 * radius) {
+        if (!taskConfigCornersRounded || width < 2 * radius) {
             return drawNotRoundedRectByPath(x, y, width, height);
         }
         return drawRoundedRectByPath(x, y, width + Gantt.RectRound, height, radius);
@@ -2258,7 +2259,8 @@ export class Gantt implements IVisual {
      */
     private taskMainRectRender(
         taskSelection: Selection<Task>,
-        taskConfigHeight: number): void {
+        taskConfigHeight: number,
+        taskConfigCornersRounded: boolean): void {
         const highContrastModeTaskRectStroke: number = 1;
 
         let taskRect: Selection<Task> = taskSelection
@@ -2274,7 +2276,7 @@ export class Gantt implements IVisual {
 
         let index = 0, groupedTaskIndex = 0;
         taskRectMerged
-            .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight))
+            .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight, taskConfigCornersRounded))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
             .style("fill", (task: Task) => {
                 // logic used for grouped tasks, when there are several bars related to one category
