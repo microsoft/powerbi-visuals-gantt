@@ -408,6 +408,15 @@
                 }
             }
         },
+        "collapsedTasksUpdateId": {
+            "properties": {
+                "value": {
+                    "type": {
+                        "text": true
+                    }
+                }
+            }
+        },
         "daysOff": {
             "displayName": "Days off",
             "displayNameKey": "Visual_DaysOff",

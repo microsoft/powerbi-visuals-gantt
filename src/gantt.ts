@@ -143,6 +143,7 @@ import {
     hashCode
 } from "./utils";
 import { drawExpandButton, drawCollapseButton, drawMinusButton, drawPlusButton } from "./drawButtons";
+import { delay } from "lodash";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -374,11 +375,9 @@ export class Gantt implements IVisual {
     private secondExpandAllIconOffset: number = 7;
     private hasNotNullableDates: boolean = false;
 
-    constructor(options: VisualConstructorOptions) {
-        if (window.location !== window.parent.location) {
-            require("core-js/stable");
-        }
+    private collapsedTasksUpdateIDs: string[] = [];
 
+    constructor(options: VisualConstructorOptions) {
         this.init(options);
     }
 
@@ -1478,6 +1477,18 @@ export class Gantt implements IVisual {
             return;
         }
 
+        const collapsedTasksUpdateId: any = options.dataViews[0].metadata?.objects?.collapsedTasksUpdateId?.value;
+
+        if (this.collapsedTasksUpdateIDs.includes(collapsedTasksUpdateId)) {
+            this.collapsedTasksUpdateIDs = this.collapsedTasksUpdateIDs.filter(id => id !== collapsedTasksUpdateId);
+            return;
+        }
+
+        this.updateInternal(options);
+    }
+
+    private updateInternal(options: VisualUpdateOptions) : void {
+
         this.viewModel = Gantt.converter(options.dataViews[0], this.host, this.colors, this.colorHelper, this.localizationManager);
 
         // for dublicated milestone types
@@ -2068,7 +2079,10 @@ export class Gantt implements IVisual {
             }
         });
 
-        this.setJsonFiltersValues(this.collapsedTasks);
+        const newId = crypto?.randomUUID() || Math.random.toString();
+        this.collapsedTasksUpdateIDs.push(newId);
+
+        this.setJsonFiltersValues(this.collapsedTasks, newId);
     }
 
     /**
@@ -2097,16 +2111,25 @@ export class Gantt implements IVisual {
             });
         }
 
-        this.setJsonFiltersValues(this.collapsedTasks);
+        const newId = crypto?.randomUUID() || Math.random.toString();
+        this.collapsedTasksUpdateIDs.push(newId);
+
+        this.setJsonFiltersValues(this.collapsedTasks, newId);
     }
 
-    private setJsonFiltersValues(collapsedValues: string[]) {
+    private setJsonFiltersValues(collapsedValues: string[], collapsedTasksUpdateId: string) {
         this.host.persistProperties(<VisualObjectInstancesToPersist>{
             merge: [{
                 objectName: "collapsedTasks",
                 selector: null,
                 properties: {
-                    list: JSON.stringify(this.collapsedTasks)
+                    list: JSON.stringify(collapsedValues)
+                }
+            }, {
+                objectName: "collapsedTasksUpdateId",
+                selector: null,
+                properties: {
+                    value: JSON.stringify(collapsedTasksUpdateId)
                 }
             }]
         });
