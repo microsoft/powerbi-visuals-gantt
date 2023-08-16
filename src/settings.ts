@@ -84,7 +84,7 @@ export class TaskLabelsSettings {
 export class TaskConfigSettings {
     fill: string = "#00B099";
     height: number = 40;
-    cornersRounded: boolean = true;
+    roundedCorners: boolean = true;
 }
 
 export class TaskCompletionSettings {
