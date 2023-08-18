@@ -729,9 +729,9 @@
                         "numeric": true
                     }
                 },
-                "cornersRounded": {
-                    "displayName": "Corners Rounded",
-                    "displayNameKey": "Visual_TaskSettings_CornersRounded",
+                "roundedCorners": {
+                    "displayName": "Rounded Corners",
+                    "displayNameKey": "Visual_TaskSettings_RoundedCorners",
                     "type": {
                         "bool": true
                     }
