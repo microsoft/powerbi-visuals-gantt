@@ -50,6 +50,7 @@
 	"Visual_TaskSettings": "Task Settings",
 	"Visual_TaskSettings_Color": "Task color",
 	"Visual_TaskSettings_Height": "Height",
+	"Visual_TaskSettings_RoundedCorners": "Rounded Corners",
 	"Visual_DataLabels": "Data Labels",
 	"Visual_CategoryLabels": "Category Labels",
 	"Visual_Type": "Type",

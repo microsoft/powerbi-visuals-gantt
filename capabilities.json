@@ -728,6 +728,13 @@
                     "type": {
                         "numeric": true
                     }
+                },
+                "roundedCorners": {
+                    "displayName": "Rounded Corners",
+                    "displayNameKey": "Visual_TaskSettings_RoundedCorners",
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         },
