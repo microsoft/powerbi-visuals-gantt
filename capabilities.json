@@ -369,6 +369,13 @@
                     "type": {
                         "numeric": true
                     }
+                },
+                "barsRoundedCorners": {
+                    "displayName": "Bars Rounded Corners",
+                    "displayNameKey": "Visual_BarsRoundedCorners",
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         },
@@ -727,13 +734,6 @@
                     "displayNameKey": "Visual_TaskSettings_Height",
                     "type": {
                         "numeric": true
-                    }
-                },
-                "roundedCorners": {
-                    "displayName": "Rounded Corners",
-                    "displayNameKey": "Visual_TaskSettings_RoundedCorners",
-                    "type": {
-                        "bool": true
                     }
                 }
             }

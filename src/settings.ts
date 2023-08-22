@@ -49,6 +49,7 @@ export class GeneralSettings {
     displayGridLines: boolean = true;
     durationUnit: string = "day";
     durationMin: number = 1;
+    barsRoundedCorners: boolean = true;
 }
 
 export class CollapsedTasks {
@@ -84,7 +85,6 @@ export class TaskLabelsSettings {
 export class TaskConfigSettings {
     fill: string = "#00B099";
     height: number = 40;
-    roundedCorners: boolean = true;
 }
 
 export class TaskCompletionSettings {
