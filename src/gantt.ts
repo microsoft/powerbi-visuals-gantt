@@ -354,7 +354,7 @@ export class Gantt implements IVisual {
     private formattingSettings: GanttChartSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
     
-    private hasHighlights: boolean;
+    private static hasHighlights: boolean;
 
     private margin: IMargin = Gantt.DefaultMargin;
 
@@ -693,7 +693,7 @@ export class Gantt implements IVisual {
      * @param dataView The data Model
      * @param cultureSelector The current user culture
      */
-    private getFormatters(
+    private static getFormatters(
         dataView: DataView,
         settings: GanttChartSettingsModel,
         cultureSelector: string): GanttChartFormatters {
@@ -899,7 +899,7 @@ export class Gantt implements IVisual {
             let wasDowngradeDurationUnit: boolean = false;
             const tooltips: VisualTooltipDataItem[] = [];
             let stepDurationTransformation: number = 0;
-            let highlight: number = null;
+            let highlight: number = NaN;
 
             const selectionBuilder: ISelectionIdBuilder = host
                 .createSelectionIdBuilder()
@@ -1354,8 +1354,8 @@ export class Gantt implements IVisual {
 
         const settings: GanttChartSettingsModel = this.parseSettings(dataView, colorHelper);
         
-        const taskTypes: TaskTypes = this.getAllTasksTypes(dataView);
-        const formatters: GanttChartFormatters = this.getFormatters(dataView, settings, host.locale || null);
+        const taskTypes: TaskTypes = Gantt.getAllTasksTypes(dataView);
+        const formatters: GanttChartFormatters = Gantt.getFormatters(dataView, settings, host.locale || null);
 
         const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => Object.prototype.hasOwnProperty.call(col.roles, GanttRoles.Duration)) !== -1,
             isEndDateFillled: boolean = _.findIndex(dataView.metadata.columns, col => Object.prototype.hasOwnProperty.call(col.roles, GanttRoles.EndDate)) !== -1,
@@ -1369,7 +1369,7 @@ export class Gantt implements IVisual {
             ? settings.taskConfigCardSettings.fill.value.value
             : null;
 
-        const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFillled, this.hasHighlights);
+        const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFillled, Gantt.hasHighlights);
 
         // Remove empty legend if tasks isn't exist
         const types = _.groupBy(tasks, x => x.taskType);
@@ -1428,7 +1428,7 @@ export class Gantt implements IVisual {
     * Gets all unique types from the tasks array
     * @param dataView The data model.
     */
-    private getAllTasksTypes(dataView: DataView): TaskTypes {
+    private static getAllTasksTypes(dataView: DataView): TaskTypes {
         const taskTypes: TaskTypes = {
             typeName: "",
             types: []
@@ -1649,7 +1649,7 @@ export class Gantt implements IVisual {
 
             this.interactivityService.bind(behaviorOptions);
 
-            this.behavior.renderSelection(this.hasHighlights);
+            this.behavior.renderSelection(Gantt.hasHighlights);
         }
 
         this.eventService.renderingFinished(options);
