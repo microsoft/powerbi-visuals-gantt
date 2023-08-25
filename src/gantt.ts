@@ -1443,7 +1443,7 @@ export class Gantt implements IVisual {
             const legendMetaCategoryColumn: DataViewMetadataColumn = dataView.metadata.columns[index];
             const values = (dataView?.categorical?.values?.length && dataView.categorical.values) || <DataViewValueColumns>[];
 
-            if (values === undefined || values.length == 0) {
+            if (values === undefined || values.length === 0) {
                 return;
             }
 
