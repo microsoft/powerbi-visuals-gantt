@@ -53,11 +53,11 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get body(): HTMLElement {
-        return this.element.querySelector("div.gantt-body");
+        return this.element.querySelector("div.gantt-body") as HTMLElement;
     }
 
     public get mainElement(): HTMLElement {
-        return this.body.querySelector("svg.gantt");
+        return this.body.querySelector("svg.gantt") as HTMLElement;
     }
 
     public get collapseAllRect(): HTMLElement[] {
@@ -77,11 +77,11 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get axis(): HTMLElement {
-        return this.mainElement.querySelector("g.axis");
+        return this.mainElement.querySelector("g.axis") as HTMLElement;
     }
 
     public get axisBackgroundRect(): SVGElement {
-        return this.axis.querySelector("rect");
+        return this.axis.querySelector("rect") as SVGElement;
     }
 
     public get axisTicks(): NodeListOf<HTMLElement> {
@@ -113,7 +113,7 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get chart(): HTMLElement {
-        return this.mainElement.querySelector("g.chart");
+        return this.mainElement.querySelector("g.chart") as HTMLElement;
     }
 
     public get chartLine(): HTMLElement[] {
@@ -258,7 +258,7 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get legendGroup(): HTMLElement {
-        return this.element.querySelector<HTMLElement>('.legend #legendGroup');
+        return this.element.querySelector<HTMLElement>('.legend #legendGroup') as HTMLElement;
     }
 
     public downgradeDurationUnit(tasks: any, durationUnit: string) {

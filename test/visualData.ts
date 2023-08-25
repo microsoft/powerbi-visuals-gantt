@@ -102,18 +102,18 @@ export class VisualData extends TestDataViewBuilder {
         return result;
     }
 
-    public generateHightLightedValues(length: number, hightlightedElementNumber?: number): number[] {
+    public generateHighLightedValues(length: number, highLightedElementNumber?: number): number[] {
         let array: any[] = [];
         for (let i: number = 0; i < length; i++) {
             array[i] = null;
         }
-        if (hightlightedElementNumber == undefined)
+        if (highLightedElementNumber == undefined)
             return array;
 
-        if (hightlightedElementNumber >= length || hightlightedElementNumber < 0) {
+        if (highLightedElementNumber >= length || highLightedElementNumber < 0) {
             array[0] = getRandomNumbers(this.valuesDuration.length, 10, 100)[0];
         } else {
-            array[hightlightedElementNumber] = getRandomNumbers(this.valuesDuration.length, 10, 100)[0];
+            array[highLightedElementNumber] = getRandomNumbers(this.valuesDuration.length, 10, 100)[0];
         }
 
         return array;
@@ -124,9 +124,9 @@ export class VisualData extends TestDataViewBuilder {
 
         if (withHighlights)
         {
-            let hightlightedElementNumber: number = Math.round(getRandomNumber(0, this.valuesDuration.length - 1));
+            let highLightedElementNumber: number = Math.round(getRandomNumber(0, this.valuesDuration.length - 1));
             let highlightedValuesCount: number = this.valuesDuration.length;
-            highlights = this.generateHightLightedValues(highlightedValuesCount, hightlightedElementNumber);
+            highlights = this.generateHighLightedValues(highlightedValuesCount, highLightedElementNumber);
         }
 
         let categoriesColums: TestDataViewBuilderCategoryColumnOptions[] = [
