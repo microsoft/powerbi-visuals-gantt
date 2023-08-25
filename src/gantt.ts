@@ -354,7 +354,7 @@ export class Gantt implements IVisual {
     private formattingSettings: GanttChartSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
     
-    private static hasHighlights: boolean;
+    private hasHighlights: boolean;
 
     private margin: IMargin = Gantt.DefaultMargin;
 
@@ -899,7 +899,7 @@ export class Gantt implements IVisual {
             let wasDowngradeDurationUnit: boolean = false;
             const tooltips: VisualTooltipDataItem[] = [];
             let stepDurationTransformation: number = 0;
-            let highlight: number = NaN;
+            let highlight: number = null;
 
             const selectionBuilder: ISelectionIdBuilder = host
                 .createSelectionIdBuilder()
@@ -1355,6 +1355,9 @@ export class Gantt implements IVisual {
         const settings: GanttChartSettingsModel = this.parseSettings(dataView, colorHelper);
         
         const taskTypes: TaskTypes = Gantt.getAllTasksTypes(dataView);
+
+        this.hasHighlights = Gantt.hasHighlights(dataView);
+
         const formatters: GanttChartFormatters = Gantt.getFormatters(dataView, settings, host.locale || null);
 
         const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => GanttRoles.Duration in col.roles) !== -1,
@@ -1369,7 +1372,7 @@ export class Gantt implements IVisual {
             ? settings.taskConfigCardSettings.fill.value.value
             : null;
 
-        const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFillled, Gantt.hasHighlights);
+        const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFillled, this.hasHighlights);
 
         // Remove empty legend if tasks isn't exist
         const types = _.groupBy(tasks, x => x.taskType);
@@ -1460,12 +1463,15 @@ export class Gantt implements IVisual {
                     columnGroup: group
                 };
             });
-
-            const highlightsExist = values.some(({ highlights }) => highlights?.some(Number.isInteger));
-            this.hasHighlights = !!highlightsExist;
         }
 
         return taskTypes;
+    }
+
+    private static hasHighlights(dataView: DataView): boolean {
+        const values = (dataView?.categorical?.values?.length && dataView.categorical.values) || <DataViewValueColumns>[];
+        const highlightsExist = values.some(({ highlights }) => highlights?.some(Number.isInteger));
+        return !!highlightsExist;
     }
 
     /**
@@ -1649,7 +1655,7 @@ export class Gantt implements IVisual {
 
             this.interactivityService.bind(behaviorOptions);
 
-            this.behavior.renderSelection(Gantt.hasHighlights);
+            this.behavior.renderSelection(this.hasHighlights);
         }
 
         this.eventService.renderingFinished(options);
