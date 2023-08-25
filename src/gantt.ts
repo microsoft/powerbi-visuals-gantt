@@ -1099,7 +1099,7 @@ export class Gantt implements IVisual {
                     );
 
                     if (task.daysOffList.length) {
-                        const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => GanttRoles.Duration in col.roles) !== -1;
+                        const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => Gantt.hasRole(col, GanttRoles.Duration)) !== -1;
                         if (isDurationFilled) {
                             const extraDuration = Gantt.calculateExtraDurationDaysOff(task.daysOffList, task.start, task.end, +settings.daysOffCardSettings.firstDayOfWeek.value.value, durationUnit);
                             task.end = Gantt.getEndDate(durationUnit, task.start, task.duration + extraDuration);
@@ -1360,10 +1360,10 @@ export class Gantt implements IVisual {
 
         const formatters: GanttChartFormatters = Gantt.getFormatters(dataView, settings, host.locale || null);
 
-        const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => GanttRoles.Duration in col.roles) !== -1,
-            isEndDateFillled: boolean = _.findIndex(dataView.metadata.columns, col => GanttRoles.EndDate in col.roles) !== -1,
-            isParentFilled: boolean = _.findIndex(dataView.metadata.columns, col => GanttRoles.Parent in col.roles) !== -1,
-            isResourcesFilled: boolean = _.findIndex(dataView.metadata.columns, col => GanttRoles.Resource in col.roles) !== -1;
+        const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => Gantt.hasRole(col, GanttRoles.Duration)) !== -1,
+            isEndDateFillled: boolean = _.findIndex(dataView.metadata.columns, col => Gantt.hasRole(col, GanttRoles.EndDate)) !== -1,
+            isParentFilled: boolean = _.findIndex(dataView.metadata.columns, col => Gantt.hasRole(col, GanttRoles.Parent)) !== -1,
+            isResourcesFilled: boolean = _.findIndex(dataView.metadata.columns, col => Gantt.hasRole(col, GanttRoles.Resource)) !== -1;
 
         const legendData: LegendData = Gantt.createLegend(host, colors, settings, taskTypes, !isDurationFilled && !isEndDateFillled);
         const milestonesData: MilestoneData = Gantt.createMilestones(dataView, host);
