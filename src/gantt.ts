@@ -342,6 +342,8 @@ export class Gantt implements IVisual {
     private static TaskOpacity: number = 1;
     private static RectRound: number = 7;
 
+    private static TimeScale: timeScale<any, any>;
+
     private static get DefaultMargin(): IMargin {
         return {
             top: 50,
@@ -361,7 +363,6 @@ export class Gantt implements IVisual {
     private body: Selection<any>;
     private ganttSvg: Selection<any>;
     private viewModel: GanttViewModel;
-    private timeScale: timeScale<any, any>;
     private collapseAllGroup: Selection<any>;
     private axisGroup: Selection<any>;
     private chartGroup: Selection<any>;
@@ -1618,7 +1619,7 @@ export class Gantt implements IVisual {
             };
 
             const xAxisProperties: IAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, ticks, false);
-            this.timeScale = <timeScale<Date, Date>>xAxisProperties.scale;
+            Gantt.TimeScale = <timeScale<Date, Date>>xAxisProperties.scale;
 
             this.renderAxis(xAxisProperties);
         }
@@ -2303,7 +2304,7 @@ export class Gantt implements IVisual {
      */
     private getTaskRectWidth(task: Task): number {
         const taskIsCollapsed = _.includes(this.collapsedTasks, task.name);
-        return this.hasNotNullableDates && (taskIsCollapsed || _.isEmpty(task.Milestones)) ? this.taskDurationToWidth(task.start, task.end) : 0;
+        return this.hasNotNullableDates && (taskIsCollapsed || _.isEmpty(task.Milestones)) ? Gantt.taskDurationToWidth(task.start, task.end) : 0;
     }
 
 
@@ -2313,7 +2314,7 @@ export class Gantt implements IVisual {
      * @param taskConfigHeight
      */
     private drawTaskRect(task: Task, taskConfigHeight: number): string {
-        const x = this.hasNotNullableDates ? this.timeScale(task.start) : 0,
+        const x = this.hasNotNullableDates ? Gantt.TimeScale(task.start) : 0,
             y = Gantt.getBarYCoordinate(task.index, taskConfigHeight) + (task.index + 1) * this.getResourceLabelTopMargin(),
             width = this.getTaskRectWidth(task),
             height = Gantt.getBarHeight(taskConfigHeight),
@@ -2451,7 +2452,7 @@ export class Gantt implements IVisual {
         taskMilestonesMerged.classed(Gantt.TaskMilestone.className, true);
 
         const transformForMilestone = (id: number, start: Date) => {
-            return SVGManipulations.translate(this.timeScale(start) - Gantt.getBarHeight(taskConfigHeight) / 4, Gantt.getBarYCoordinate(id, taskConfigHeight) + (id + 1) * this.getResourceLabelTopMargin());
+            return SVGManipulations.translate(Gantt.TimeScale(start) - Gantt.getBarHeight(taskConfigHeight) / 4, Gantt.getBarYCoordinate(id, taskConfigHeight) + (id + 1) * this.getResourceLabelTopMargin());
         };
 
         const taskMilestonesSelection = taskMilestonesMerged.selectAll("path");
@@ -2532,14 +2533,14 @@ export class Gantt implements IVisual {
                     const startTime: number = startDate.getTime();
                     const endDate: Date = new Date(startTime + (task.daysOff[1] * MillisecondsInADay));
 
-                    width = this.taskDurationToWidth(startDate, endDate);
+                    width = Gantt.taskDurationToWidth(startDate, endDate);
                 }
 
                 return width;
             };
 
             const drawTaskRectDaysOff = (task: TaskDaysOff) => {
-                let x = this.hasNotNullableDates ? this.timeScale(task.daysOff[0]) : 0;
+                let x = this.hasNotNullableDates ? Gantt.TimeScale(task.daysOff[0]) : 0;
                 const y: number = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
                     height: number = Gantt.getBarHeight(taskConfigHeight),
                     radius: number = Gantt.RectRound,
@@ -2691,27 +2692,25 @@ export class Gantt implements IVisual {
                 .style("fill", taskResourceColor)
                 .style("font-size", PixelConverter.fromPoint(taskResourceFontSize));
 
-            // eslint-disable-next-line
-            const self: Gantt = this;
             const hasNotNullableDates: boolean = this.hasNotNullableDates;
             const defaultWidth: number = Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding;
 
             if (taskResourceWidthByTask) {
                 taskResourceMerged
                     .each(function (task: Task) {
-                        const width: number = hasNotNullableDates ? self.taskDurationToWidth(task.start, task.end) : 0;
+                        const width: number = hasNotNullableDates ? Gantt.taskDurationToWidth(task.start, task.end) : 0;
                         AxisHelper.LabelLayoutStrategy.clip(d3Select(this), width, textMeasurementService.svgEllipsis);
                     });
             } else if (isGroupedByTaskName) {
                 taskResourceMerged
                     .each(function (task: Task, outerIndex: number) {
-                        const sameRowNextTaskStart: Date = self.getSameRowNextTaskStartDate(task, outerIndex, taskResourceMerged);
+                        const sameRowNextTaskStart: Date = Gantt.getSameRowNextTaskStartDate(task, outerIndex, taskResourceMerged);
 
                         if (sameRowNextTaskStart) {
                             let width: number = 0;
                             if (hasNotNullableDates) {
                                 const startDate: Date = taskResourcePosition === ResourceLabelPositions.Top ? task.start : task.end;
-                                width = self.taskDurationToWidth(startDate, sameRowNextTaskStart);
+                                width = Gantt.taskDurationToWidth(startDate, sameRowNextTaskStart);
                             }
 
                             AxisHelper.LabelLayoutStrategy.clip(d3Select(this), width, textMeasurementService.svgEllipsis);
@@ -2738,7 +2737,7 @@ export class Gantt implements IVisual {
         }
     }
 
-    private getSameRowNextTaskStartDate(task: Task, index: number, selection: Selection<Task>) {
+    private static getSameRowNextTaskStartDate(task: Task, index: number, selection: Selection<Task>) {
         let sameRowNextTaskStart: Date;
 
         selection
@@ -2782,11 +2781,11 @@ export class Gantt implements IVisual {
         const barHeight: number = Gantt.getBarHeight(taskConfigHeight);
         switch (taskResourcePosition) {
             case ResourceLabelPositions.Right:
-                return this.timeScale(task.end) + (taskResourceFontSize / 2) + Gantt.RectRound;
+                return Gantt.TimeScale(task.end) + (taskResourceFontSize / 2) + Gantt.RectRound;
             case ResourceLabelPositions.Top:
-                return this.timeScale(task.start) + Gantt.RectRound;
+                return Gantt.TimeScale(task.start) + Gantt.RectRound;
             case ResourceLabelPositions.Inside:
-                return this.timeScale(task.start) + barHeight / (2 * Gantt.ResourceLabelDefaultDivisionCoefficient) + Gantt.RectRound;
+                return Gantt.TimeScale(task.start) + barHeight / (2 * Gantt.ResourceLabelDefaultDivisionCoefficient) + Gantt.RectRound;
         }
     }
 
@@ -2874,10 +2873,10 @@ export class Gantt implements IVisual {
      * @param start The start of task to convert
      * @param end The end of task to convert
      */
-    private taskDurationToWidth(
+    private static taskDurationToWidth(
         start: Date,
         end: Date): number {
-        return this.timeScale(end) - this.timeScale(start);
+        return Gantt.TimeScale(end) - Gantt.TimeScale(start);
     }
 
     private static getTooltipForMilestoneLine(
@@ -2949,11 +2948,11 @@ export class Gantt implements IVisual {
         const line: Line[] = [];
         const dateTypeSettings: DateTypeCardSettings = this.viewModel.settings.dateTypeCardSettings;
         milestoneDates.forEach((date: Date) => {
-            const title = date === this.timeScale(timestamp) ? milestoneTitle : "Milestone";
+            const title = date === Gantt.TimeScale(timestamp) ? milestoneTitle : "Milestone";
             const lineOptions = {
-                x1: this.timeScale(date),
+                x1: Gantt.TimeScale(date),
                 y1: Gantt.MilestoneTop,
-                x2: this.timeScale(date),
+                x2: Gantt.TimeScale(date),
                 y2: this.getMilestoneLineLength(tasks.length),
                 tooltipInfo: Gantt.getTooltipForMilestoneLine(date.toLocaleDateString(), this.localizationManager, dateTypeSettings, [title])
             };
@@ -2977,7 +2976,7 @@ export class Gantt implements IVisual {
             .attr("x2", (line: Line) => line.x2)
             .attr("y2", (line: Line) => line.y2)
             .style("stroke", (line: Line) => {
-                const color: string = line.x1 === this.timeScale(timestamp) ? todayColor : Gantt.DefaultValues.MilestoneLineColor;
+                const color: string = line.x1 === Gantt.TimeScale(timestamp) ? todayColor : Gantt.DefaultValues.MilestoneLineColor;
                 return this.colorHelper.getHighContrastColor("foreground", color);
             });
 
@@ -2991,7 +2990,7 @@ export class Gantt implements IVisual {
     private scrollToMilestoneLine(axisLength: number,
         timestamp: number = Date.now()): void {
 
-        let scrollValue = this.timeScale(new Date(timestamp));
+        let scrollValue = Gantt.TimeScale(new Date(timestamp));
         scrollValue -= scrollValue > ScrollMargin
             ? ScrollMargin
             : 0;
