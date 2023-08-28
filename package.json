@@ -14,7 +14,6 @@
     "start": "pbiviz start",
     "package": "pbiviz package",
     "eslint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
-    "pretest": "pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
     "test": "karma start",
     "cert": "pbiviz --install-cert"
   },
@@ -108,7 +107,7 @@
     "less": "^4.2.0",
     "less-loader": "^11.1.3",
     "playwright": "^1.37.1",
-    "powerbi-visuals-tools": "^4.3.3",
+    "powerbi-visuals-tools": "^5.1.0",
     "powerbi-visuals-utils-testutils": "^6.0.1",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.4.4",
