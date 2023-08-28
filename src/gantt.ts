@@ -1565,6 +1565,15 @@ export class Gantt implements IVisual {
         this.margin = Gantt.DefaultMargin;
 
         this.eventService.renderingStarted(options);
+
+        this.render();
+
+        this.eventService.renderingFinished(options);
+    }
+
+    private render(): void {
+        const settings = this.viewModel.settings;
+
         this.renderLegend();
         this.updateChartSize();
 
@@ -1584,9 +1593,9 @@ export class Gantt implements IVisual {
             return;
         }
 
-        const settings = this.viewModel.settings;
         this.collapsedTasks = JSON.parse(settings.collapsedTasksCardSettings.list.value);
-        const groupedTasks: GroupedTask[] = this.groupTasks(tasks);
+        const groupTasks = this.viewModel.settings.generalCardSettings.groupTasks.value;
+        const groupedTasks: GroupedTask[] = Gantt.getGroupTasks(tasks, groupTasks, this.collapsedTasks);
         // do smth with task ids
         this.updateCommonTasks(groupedTasks);
         this.updateCommonMilestones(groupedTasks);
@@ -1625,6 +1634,7 @@ export class Gantt implements IVisual {
         }
 
         axisLength = this.scaleAxisLength(axisLength);
+
         this.setDimension(groupedTasks, axisLength, settings);
 
         this.renderTasks(groupedTasks);
@@ -1632,10 +1642,14 @@ export class Gantt implements IVisual {
         this.updateElementsPositions(this.margin);
         this.createMilestoneLine(groupedTasks);
 
-        if (settings.generalCardSettings.scrollToCurrentTime.value && this.hasNotNullableDates) {
+        if (this.formattingSettings.generalCardSettings.scrollToCurrentTime.value && this.hasNotNullableDates) {
             this.scrollToMilestoneLine(axisLength);
         }
 
+        this.bindInteractivityService(tasks);
+    }
+
+    private bindInteractivityService(tasks: Task[]): void {
         if (this.interactivityService) {
             const behaviorOptions: BehaviorOptions = {
                 clearCatcher: this.clearCatcher,
@@ -1659,8 +1673,6 @@ export class Gantt implements IVisual {
 
             this.behavior.renderSelection(this.hasHighlights);
         }
-
-        this.eventService.renderingFinished(options);
     }
 
     private static getDateType(dateType: DateTypes): number {
@@ -1797,8 +1809,8 @@ export class Gantt implements IVisual {
             .attr("width", width);
     }
 
-    private groupTasks(tasks: Task[]): GroupedTask[] {
-        if (this.viewModel.settings.generalCardSettings.groupTasks.value) {
+    private static getGroupTasks(tasks: Task[], groupTasks: boolean, collapsedTasks: string[]): GroupedTask[] {
+        if (groupTasks) {
             const groupedTasks: _.Dictionary<Task[]> = _.groupBy(tasks,
                 x => (x.parent ? `${x.parent}.${x.name}` : x.name));
 
@@ -1824,7 +1836,7 @@ export class Gantt implements IVisual {
 
                     // see all the children and add them
                     groupedTasks[key].forEach((task: Task) => {
-                        if (task.children && !_.includes(this.collapsedTasks, task.name)) {
+                        if (task.children && !_.includes(collapsedTasks, task.name)) {
                             task.children.forEach((childrenTask: Task) => {
                                 const childrenFullName = `${name}.${childrenTask.name}`;
                                 const isChildrenKeyAlreadyReviewed = _.includes(alreadyReviewedKeys, childrenFullName);
