@@ -424,8 +424,6 @@ export class Gantt implements IVisual {
      * Create the viewport area of the gantt chart
      */
     private createViewport(element: HTMLElement): void {
-        // eslint-disable-next-line
-        const self: Gantt = this;
         const axisBackgroundColor: string = this.colorHelper.getThemeColor();
         // create div container to the whole viewport area
         this.ganttDiv = this.body.append("div")
@@ -500,15 +498,18 @@ export class Gantt implements IVisual {
             LegendPosition.Top,
             interactiveBehavior);
 
-        this.ganttDiv.on("scroll", function () {
-            if (self.viewModel) {
-                const taskLabelsWidth: number = self.viewModel.settings.taskLabelsCardSettings.show.value
-                    ? self.viewModel.settings.taskLabelsCardSettings.width.value
+        this.ganttDiv.on("scroll", (event) => {
+            if (this.viewModel) {
+                const taskLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.show.value
+                    ? this.viewModel.settings.taskLabelsCardSettings.width.value
                     : 0;
-                self.axisGroup
-                    .attr("transform", SVGManipulations.translate(taskLabelsWidth + self.margin.left + Gantt.SubtasksLeftMargin, Gantt.TaskLabelsMarginTop + this.scrollTop));
-                self.lineGroup
-                    .attr("transform", SVGManipulations.translate(this.scrollLeft, 0))
+                const scrollTop: number = <number>event.target.scrollTop;
+                const scrollLeft: number = <number>event.target.scrollLeft;
+
+                this.axisGroup
+                    .attr("transform", SVGManipulations.translate(taskLabelsWidth + this.margin.left + Gantt.SubtasksLeftMargin, Gantt.TaskLabelsMarginTop + scrollTop));
+                this.lineGroup
+                    .attr("transform", SVGManipulations.translate(scrollLeft, 0))
                     .attr("height", 20);
             }
         }, false);
