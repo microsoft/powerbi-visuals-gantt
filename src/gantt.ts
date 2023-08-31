@@ -79,10 +79,9 @@ import PrimitiveType = valueType.PrimitiveType;
 import ValueType = valueType.ValueType;
 
 // powerbi.extensibility.utils.formatting
-import { textMeasurementService as tms, valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
-import TextProperties = tms.TextProperties;
+import { textMeasurementService, valueFormatter as ValueFormatter, interfaces } from "powerbi-visuals-utils-formattingutils";
+import TextProperties = interfaces.TextProperties;
 import IValueFormatter = ValueFormatter.IValueFormatter;
-import textMeasurementService = tms.textMeasurementService;
 
 // powerbi.extensibility.utils.interactivity
 import { interactivityBaseService as interactivityService, interactivitySelectionService } from "powerbi-visuals-utils-interactivityutils";
@@ -374,11 +373,9 @@ export class Gantt implements IVisual {
     private secondExpandAllIconOffset: number = 7;
     private hasNotNullableDates: boolean = false;
 
-    constructor(options: VisualConstructorOptions) {
-        if (window.location !== window.parent.location) {
-            require("core-js/stable");
-        }
+    private lastUpdateOptions = null;
 
+    constructor(options: VisualConstructorOptions) {
         this.init(options);
     }
 
@@ -1473,10 +1470,26 @@ export class Gantt implements IVisual {
     * @param options The visual option that contains the dataview and the viewport
     */
     public update(options: VisualUpdateOptions): void {
+        //console.log("Gantt Chart run update method");
+
         if (!options || !options.dataViews || !options.dataViews[0]) {
             this.clearViewport();
             return;
         }
+
+        let newOptions = {...options, ...{updateId: null}};
+
+        if (_.isEqual(this.lastUpdateOptions, JSON.stringify(newOptions))) {
+            console.log('VisualUpdateOptions are the same');
+            return;
+        } else {
+            console.log('VisualUpdateOptions are NOT the same');
+        }
+
+        this.lastUpdateOptions = JSON.stringify(newOptions);
+
+
+        this.eventService.renderingStarted(options);
 
         this.viewModel = Gantt.converter(options.dataViews[0], this.host, this.colors, this.colorHelper, this.localizationManager);
 
@@ -1504,7 +1517,6 @@ export class Gantt implements IVisual {
         this.viewport = _.clone(options.viewport);
         this.margin = Gantt.DefaultMargin;
 
-        this.eventService.renderingStarted(options);
         this.renderLegend();
         this.updateChartSize();
 
@@ -1806,8 +1818,6 @@ export class Gantt implements IVisual {
         this.axisGroup.call(xAxis.tickSizeOuter(xAxisProperties.outerPadding));
 
         this.axisGroup
-            .transition()
-            .duration(duration)
             .call(xAxis);
 
         this.axisGroup
@@ -2054,19 +2064,16 @@ export class Gantt implements IVisual {
         }
 
         const taskClickedParent: string = taskClicked.tasks[0].parent || taskClicked.tasks[0].name;
-        this.viewModel.tasks.forEach((task: Task) => {
-            if (task.parent === taskClickedParent &&
-                task.parent.length >= taskClickedParent.length) {
+        this.viewModel.tasks
+            .filter((task: Task) => task.parent === taskClickedParent)
+            .forEach((task: Task) => {
                 const index: number = this.collapsedTasks.indexOf(task.parent);
                 if (task.visibility) {
                     this.collapsedTasks.push(task.parent);
                 } else {
-                    if (taskClickedParent === task.parent) {
-                        this.collapsedTasks.splice(index, 1);
-                    }
+                    this.collapsedTasks.splice(index, 1);
                 }
-            }
-        });
+            });
 
         this.setJsonFiltersValues(this.collapsedTasks);
     }
@@ -2609,7 +2616,7 @@ export class Gantt implements IVisual {
             taskResourceMerged.classed(Selectors.TaskResource.className, true);
 
             taskResourceMerged
-                .attr("x", (task: Task) => this.getResourceLabelXCoordinate(task, taskConfigHeight, taskResourceFontSize, taskResourcePosition))
+                .attr("x", (task: Task) => this.getResourceLabelXCoordinate(task, taskConfigHeight, taskResourceFontSize, taskResourcePosition) || 0)
                 .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.index, taskConfigHeight)
                     + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition)
                     + (task.index + 1) * this.getResourceLabelTopMargin())
@@ -2930,8 +2937,8 @@ export class Gantt implements IVisual {
     private renderTooltip(selection: Selection<Line | Task | MilestonePath>): void {
         this.tooltipServiceWrapper.addTooltip(
             selection,
-            (tooltipEvent: TooltipEventArgs<TooltipEnabledDataPoint>) => {
-                return tooltipEvent.data.tooltipInfo;
+            (datapoint: TooltipEnabledDataPoint) => {
+                return datapoint.tooltipInfo;
             });
     }
 
