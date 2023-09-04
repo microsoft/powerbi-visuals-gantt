@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
     - run: npm ci
     - run: npm run eslint --if-present
     - run: npm run lint --if-present
-    - run: export NODE_OPTIONS=--openssl-legacy-provider && npm run package
-    - run: export NODE_OPTIONS=--openssl-legacy-provider && npm test
+    - run: npm run package
+    - run: npm test
       env:
         CI: true
