@@ -43,6 +43,14 @@ module.exports = (config: Config) => {
         mode: "development",
         browserNoActivityTimeout: 100000,
         browsers: ["ChromeHeadless"],
+        customLaunchers:{
+            HeadlessChrome:{
+              base: 'ChromeHeadless',
+              flags: [
+                '--disable-features=VizDisplayCompositor'
+              ]
+            }
+        },
         colors: true,
         frameworks: ["jasmine"],
         reporters: [
