@@ -27,6 +27,6 @@ jobs:
     - run: npm run eslint --if-present
     - run: npm run lint --if-present
     - run: export NODE_OPTIONS=--openssl-legacy-provider && npm run package
-    - run: npm test
+    - run: export NODE_OPTIONS=--openssl-legacy-provider && npm test
       env:
         CI: true
