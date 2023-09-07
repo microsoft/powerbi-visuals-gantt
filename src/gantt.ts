@@ -32,7 +32,17 @@ import { timeSecond as d3TimeSecond, timeMinute as d3TimeMinute, timeHour as d3T
 import { nest as d3Nest } from "d3-collection";
 import "d3-transition";
 
-import * as _ from "lodash";
+//lodash
+import lodashIsEmpty from "lodash.isempty";
+import lodashMin from "lodash.min";
+import lodashMinBy from "lodash.minby";
+import lodashMax from "lodash.max";
+import lodashMaxBy from "lodash.maxby";
+import lodashGroupBy from "lodash.groupby";
+import lodashClone from "lodash.clone";
+import lodashUniqBy from "lodash.uniqby";
+import { Dictionary as lodashDictionary } from "lodash";
+
 import powerbi from "powerbi-visuals-api";
 
 // d3
@@ -604,14 +614,14 @@ export class Gantt implements IVisual {
             });
         }
 
-        if (_.isEmpty(task.Milestones) && task.end && !isNaN(task.end.getDate())) {
+        if (lodashIsEmpty(task.Milestones) && task.end && !isNaN(task.end.getDate())) {
             tooltipDataArray.push({
                 displayName: localizationManager.getDisplayName("Role_EndDate"),
                 value: formatters.startDateFormatter.format(task.end)
             });
         }
 
-        if (_.isEmpty(task.Milestones) && task.duration && !isEndDateFillled) {
+        if (lodashIsEmpty(task.Milestones) && task.duration && !isEndDateFillled) {
             const durationLabel: string = DurationHelper.generateLabelForDuration(task.duration, durationUnit, localizationManager);
             tooltipDataArray.push({
                 displayName: localizationManager.getDisplayName("Role_Duration"),
@@ -897,12 +907,12 @@ export class Gantt implements IVisual {
 
             if (groupValues) {
                 groupValues.forEach((group: GanttColumns<DataViewValueColumn>) => {
-                    let maxCompletionFromTasks: number = _.max(values.Completion);
+                    let maxCompletionFromTasks: number = lodashMax(values.Completion);
                     maxCompletionFromTasks = maxCompletionFromTasks > Gantt.ComplectionMax ? Gantt.ComplectionMaxInPercent : Gantt.ComplectionMax;
 
                     if (group.Duration && group.Duration.values[index] !== null) {
-                        taskType = _.find(taskTypes.types,
-                            (typeMeta: TaskTypeMetadata) => typeMeta.name === group.Duration.source.groupName);
+                        taskType = 
+                            taskTypes.types.find((typeMeta: TaskTypeMetadata) => typeMeta.name === group.Duration.source.groupName);
 
                         if (taskType) {
                             selectionBuilder.withCategory(taskType.selectionColumn, 0);
@@ -935,8 +945,8 @@ export class Gantt implements IVisual {
                         }
 
                     } else if (group.EndDate && group.EndDate.values[index] !== null) {
-                        taskType = _.find(taskTypes.types,
-                            (typeMeta: TaskTypeMetadata) => typeMeta.name === group.EndDate.source.groupName);
+                        taskType = 
+                            taskTypes.types.find((typeMeta: TaskTypeMetadata) => typeMeta.name === group.EndDate.source.groupName);
 
                         if (taskType) {
                             selectionBuilder.withCategory(taskType.selectionColumn, 0);
@@ -969,7 +979,7 @@ export class Gantt implements IVisual {
             const extraInformation: ExtraInformation[] = [];
             const resource: string = (values.Resource && values.Resource[index] as string) || "";
             const parent: string = (values.Parent && values.Parent[index] as string) || null;
-            const Milestone: string = (values.Milestones && !_.isEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
+            const Milestone: string = (values.Milestones && !lodashIsEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
 
             const startDate: Date = (values.StartDate && values.StartDate[index]
                 && isValidDate(new Date(values.StartDate[index])) && new Date(values.StartDate[index]))
@@ -1038,7 +1048,7 @@ export class Gantt implements IVisual {
                         description: null,
                         color: null,
                         tooltipInfo: null,
-                        extraInformation: _.includes(collapsedTasks, parent) ? extraInformation : null,
+                        extraInformation: collapsedTasks.includes(parent) ? extraInformation : null,
                         daysOffList: null,
                         wasDowngradeDurationUnit: null,
                         selected: null,
@@ -1089,7 +1099,7 @@ export class Gantt implements IVisual {
                     );
 
                     if (task.daysOffList.length) {
-                        const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => Gantt.hasRole(col, GanttRoles.Duration)) !== -1;
+                        const isDurationFilled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRoles.Duration)) !== -1;
                         if (isDurationFilled) {
                             const extraDuration = Gantt.calculateExtraDurationDaysOff(task.daysOffList, task.start, task.end, +settings.daysOffCardSettings.firstDayOfWeek.value.value, durationUnit);
                             task.end = Gantt.getEndDate(durationUnit, task.start, task.duration + extraDuration);
@@ -1109,7 +1119,7 @@ export class Gantt implements IVisual {
         });
 
         tasks.forEach((task: Task) => {
-            if (!task.children || _.includes(collapsedTasks, task.name)) {
+            if (!task.children || collapsedTasks.includes(task.name)) {
                 task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit, localizationManager, isEndDateFillled);
                 if (task.Milestones) {
                     task.Milestones.forEach((milestone) => {
@@ -1350,10 +1360,10 @@ export class Gantt implements IVisual {
 
         const formatters: GanttChartFormatters = Gantt.getFormatters(dataView, settings, host.locale || null);
 
-        const isDurationFilled: boolean = _.findIndex(dataView.metadata.columns, col => Gantt.hasRole(col, GanttRoles.Duration)) !== -1,
-            isEndDateFillled: boolean = _.findIndex(dataView.metadata.columns, col => Gantt.hasRole(col, GanttRoles.EndDate)) !== -1,
-            isParentFilled: boolean = _.findIndex(dataView.metadata.columns, col => Gantt.hasRole(col, GanttRoles.Parent)) !== -1,
-            isResourcesFilled: boolean = _.findIndex(dataView.metadata.columns, col => Gantt.hasRole(col, GanttRoles.Resource)) !== -1;
+        const isDurationFilled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRoles.Duration)) !== -1,
+            isEndDateFillled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRoles.EndDate)) !== -1,
+            isParentFilled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRoles.Parent)) !== -1,
+            isResourcesFilled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRoles.Resource)) !== -1;
 
         const legendData: LegendData = Gantt.createLegend(host, colors, settings, taskTypes, !isDurationFilled && !isEndDateFillled);
         const milestonesData: MilestoneData = Gantt.createMilestones(dataView, host);
@@ -1365,7 +1375,7 @@ export class Gantt implements IVisual {
         const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFillled, this.hasHighlights);
 
         // Remove empty legend if tasks isn't exist
-        const types = _.groupBy(tasks, x => x.taskType);
+        const types = lodashGroupBy(tasks, x => x.taskType);
         legendData.dataPoints = legendData.dataPoints?.filter(x => types[x.label]);
 
         return {
@@ -1426,7 +1436,7 @@ export class Gantt implements IVisual {
             typeName: "",
             types: []
         };
-        const index: number = _.findIndex(dataView.metadata.columns, col => GanttRoles.Legend in col.roles);
+        const index: number = dataView.metadata.columns.findIndex(col => GanttRoles.Legend in col.roles);
 
         if (index !== -1) {
             taskTypes.typeName = dataView.metadata.columns[index].displayName;
@@ -1477,7 +1487,7 @@ export class Gantt implements IVisual {
             : LegendPosition.None;
 
         this.legend.changeOrientation(position as LegendPosition);
-        this.legend.drawLegend(this.viewModel.legendData, _.clone(this.viewport));
+        this.legend.drawLegend(this.viewModel.legendData, lodashClone(this.viewport));
         LegendModule.positionChartArea(this.ganttDiv, this.legend);
 
         switch (this.legend.getOrientation()) {
@@ -1549,7 +1559,7 @@ export class Gantt implements IVisual {
             return;
         }
 
-        this.viewport = _.clone(options.viewport);
+        this.viewport = lodashClone(options.viewport);
         this.margin = Gantt.DefaultMargin;
 
         this.eventService.renderingStarted(options);
@@ -1590,8 +1600,8 @@ export class Gantt implements IVisual {
 
         let tasksAfterGrouping: Task[] = [];
         groupedTasks.forEach((t: GroupedTask) => tasksAfterGrouping = tasksAfterGrouping.concat(t.tasks));
-        const minDateTask: Task = _.minBy(tasksAfterGrouping, (t) => t && t.start);
-        const maxDateTask: Task = _.maxBy(tasksAfterGrouping, (t) => t && t.end);
+        const minDateTask: Task = lodashMinBy(tasksAfterGrouping, (t) => t && t.start);
+        const maxDateTask: Task = lodashMaxBy(tasksAfterGrouping, (t) => t && t.end);
         this.hasNotNullableDates = !!minDateTask && !!maxDateTask;
 
         let axisLength: number = 0;
@@ -1799,7 +1809,7 @@ export class Gantt implements IVisual {
 
     private static getGroupTasks(tasks: Task[], groupTasks: boolean, collapsedTasks: string[]): GroupedTask[] {
         if (groupTasks) {
-            const groupedTasks: _.Dictionary<Task[]> = _.groupBy(tasks,
+            const groupedTasks: lodashDictionary<Task[]> = lodashGroupBy(tasks,
                 x => (x.parent ? `${x.parent}.${x.name}` : x.name));
 
             const result: GroupedTask[] = [];
@@ -1807,7 +1817,7 @@ export class Gantt implements IVisual {
             const alreadyReviewedKeys: string[] = [];
 
             taskKeys.forEach((key: string) => {
-                const isKeyAlreadyReviewed = _.includes(alreadyReviewedKeys, key);
+                const isKeyAlreadyReviewed = alreadyReviewedKeys.includes(key);
                 if (!isKeyAlreadyReviewed) {
                     let name: string = key;
                     if (groupedTasks[key] && groupedTasks[key].length && groupedTasks[key][0].parent && key.indexOf(groupedTasks[key][0].parent) !== -1) {
@@ -1824,10 +1834,10 @@ export class Gantt implements IVisual {
 
                     // see all the children and add them
                     groupedTasks[key].forEach((task: Task) => {
-                        if (task.children && !_.includes(collapsedTasks, task.name)) {
+                        if (task.children && !collapsedTasks.includes(task.name)) {
                             task.children.forEach((childrenTask: Task) => {
                                 const childrenFullName = `${name}.${childrenTask.name}`;
-                                const isChildrenKeyAlreadyReviewed = _.includes(alreadyReviewedKeys, childrenFullName);
+                                const isChildrenKeyAlreadyReviewed = alreadyReviewedKeys.includes(childrenFullName);
 
                                 if (!isChildrenKeyAlreadyReviewed) {
                                     const childrenRecord = <GroupedTask>{
@@ -1955,7 +1965,7 @@ export class Gantt implements IVisual {
             clickableArea
                 .append("text")
                 .attr("x", (task: GroupedTask) => (Gantt.TaskLineCoordinateX +
-                    (_.every(task.tasks, (task: Task) => !!task.parent)
+                    (task.tasks.every((task: Task) => !!task.parent)
                         ? Gantt.SubtasksLeftMargin
                         : (task.tasks[0].children && !!task.tasks[0].children.length) ? this.parentLabelOffset : 0)))
                 .attr("class", (task: GroupedTask) => task.tasks[0].children ? "parent" : task.tasks[0].parent ? "child" : "normal-node")
@@ -2007,7 +2017,7 @@ export class Gantt implements IVisual {
                     parentTask = task.tasks[0].parent ? task.tasks[0].parent : task.tasks[0].name;
                     if (task.tasks[0].children) {
                         parentTask = task.tasks[0].name;
-                        childrenCount = isGrouped ? _.uniqBy(task.tasks[0].children, "name").length : task.tasks[0].children.length;
+                        childrenCount = isGrouped ? lodashUniqBy(task.tasks[0].children, "name").length : task.tasks[0].children.length;
                         currentChildrenIndex = 0;
                     }
 
@@ -2230,17 +2240,17 @@ export class Gantt implements IVisual {
         if (!this.viewModel.settings.generalCardSettings.groupTasks.value) {
             groupedTasks.forEach((groupedTask: GroupedTask) => {
                 const currentTaskName: string = groupedTask.name;
-                if (_.includes(this.collapsedTasks, currentTaskName)) {
+                if (this.collapsedTasks.includes(currentTaskName)) {
                     const firstTask: Task = groupedTask.tasks && groupedTask.tasks[0];
                     const tasks = groupedTask.tasks;
                     tasks.forEach((task: Task) => {
                         if (task.children) {
                             const childrenColors = task.children.map((child: Task) => child.color).filter((color) => color);
-                            const minChildDateStart = _.min(task.children.map((child: Task) => child.start).filter((dateStart) => dateStart));
-                            const maxChildDateEnd = _.max(task.children.map((child: Task) => child.end).filter((dateStart) => dateStart));
+                            const minChildDateStart = lodashMin(task.children.map((child: Task) => child.start).filter((dateStart) => dateStart));
+                            const maxChildDateEnd = lodashMax(task.children.map((child: Task) => child.end).filter((dateStart) => dateStart));
                             firstTask.color = !firstTask.color && task.children ? childrenColors[0] : firstTask.color;
-                            firstTask.start = _.min([firstTask.start, minChildDateStart]);
-                            firstTask.end = <any>_.max([firstTask.end, maxChildDateEnd]);
+                            firstTask.start = lodashMin([firstTask.start, minChildDateStart]);
+                            firstTask.end = <any>lodashMax([firstTask.end, maxChildDateEnd]);
                         }
                     });
 
@@ -2259,14 +2269,14 @@ export class Gantt implements IVisual {
     private updateCommonMilestones(groupedTasks: GroupedTask[]): void {
         groupedTasks.forEach((groupedTask: GroupedTask) => {
             const currentTaskName: string = groupedTask.name;
-            if (_.includes(this.collapsedTasks, currentTaskName)) {
+            if (this.collapsedTasks.includes(currentTaskName)) {
 
                 const lastTask: Task = groupedTask.tasks && groupedTask.tasks[groupedTask.tasks.length - 1];
                 const tasks = groupedTask.tasks;
                 tasks.forEach((task: Task) => {
                     if (task.children) {
                         task.children.map((child: Task) => {
-                            if (!_.isEmpty(child.Milestones)) {
+                            if (!lodashIsEmpty(child.Milestones)) {
                                 lastTask.Milestones = lastTask.Milestones.concat(child.Milestones);
                             }
                         });
@@ -2303,8 +2313,8 @@ export class Gantt implements IVisual {
      * @param task
      */
     private getTaskRectWidth(task: Task): number {
-        const taskIsCollapsed = _.includes(this.collapsedTasks, task.name);
-        return this.hasNotNullableDates && (taskIsCollapsed || _.isEmpty(task.Milestones)) ? Gantt.taskDurationToWidth(task.start, task.end) : 0;
+        const taskIsCollapsed = this.collapsedTasks.includes(task.name);
+        return this.hasNotNullableDates && (taskIsCollapsed || lodashIsEmpty(task.Milestones)) ? Gantt.taskDurationToWidth(task.start, task.end) : 0;
     }
 
 
@@ -2688,7 +2698,7 @@ export class Gantt implements IVisual {
                 .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.index, taskConfigHeight)
                     + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition)
                     + (task.index + 1) * this.getResourceLabelTopMargin())
-                .text((task: Task) => _.isEmpty(task.Milestones) && task.resource || "")
+                .text((task: Task) => lodashIsEmpty(task.Milestones) && task.resource || "")
                 .style("fill", taskResourceColor)
                 .style("font-size", PixelConverter.fromPoint(taskResourceFontSize));
 
@@ -2935,9 +2945,9 @@ export class Gantt implements IVisual {
         tasks.forEach((task: GroupedTask) => {
             const subtasks: Task[] = task.tasks;
             subtasks.forEach((task: Task) => {
-                if (!_.isEmpty(task.Milestones)) {
+                if (!lodashIsEmpty(task.Milestones)) {
                     task.Milestones.forEach((milestone) => {
-                        if (!_.includes(milestoneDates, milestone.start)) {
+                        if (!milestoneDates.includes(milestone.start)) {
                             milestoneDates.push(milestone.start);
                         }
                     });

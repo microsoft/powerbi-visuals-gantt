@@ -28,7 +28,10 @@ import powerbi from "powerbi-visuals-api";
 import { select as d3Select } from "d3-selection";
 import { timeDay as d3TimeDay } from "d3-time";
 
-import * as _ from "lodash";
+import lodashMinBy from "lodash.minby";
+import lodashMaxBy from "lodash.maxby";
+import lodashUniq from "lodash.uniq";
+import lodashUniqBy from "lodash.uniqby";
 
 import DataView = powerbi.DataView;
 import PrimitiveValue = powerbi.PrimitiveValue;
@@ -357,7 +360,7 @@ describe("Gantt", () => {
         // });
 
         it("Verify task labels have tooltips", (done) => {
-            defaultDataViewBuilder.valuesTaskTypeResource.forEach(x => x[1] = _.repeat(x[1] + " ", 5).trim());
+            defaultDataViewBuilder.valuesTaskTypeResource.forEach(x => x[1] = (x[1] + " ").repeat(5).trim());
             dataView = defaultDataViewBuilder.getDataView([
                 VisualData.ColumnTask,
                 VisualData.ColumnStartDate,
@@ -832,8 +835,8 @@ describe("Gantt", () => {
                 let taskGroups: HTMLElement[] = visualBuilder.tasksGroups;
                 let tasks: Task[] = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
 
-                expect(values?.length).toBeGreaterThan(_.uniq(values).length);
-                expect(taskLinesText.length).toEqual(_.uniq(values).length);
+                expect(values?.length).toBeGreaterThan(lodashUniq(values).length);
+                expect(taskLinesText.length).toEqual(lodashUniq(values).length);
 
                 taskGroups.forEach((taskGroup: HTMLElement, index: number) => {
                     const taskName: string | null = taskLinesText[index].children[0].textContent;
@@ -896,8 +899,8 @@ describe("Gantt", () => {
                     parentTaskLabel = visualBuilder.taskLabelsText[parentTask.index];
 
 
-                const minChildStart = _.minBy(parentTask.children, (t: Task) => t.start).start;
-                const maxChildEnd = _.maxBy(parentTask.children, (t: Task) => t.end).end;
+                const minChildStart = lodashMinBy(parentTask.children, (t: Task) => t.start).start;
+                const maxChildEnd = lodashMaxBy(parentTask.children, (t: Task) => t.end).end;
                 const color = parentTask.children[0].color;
 
 
@@ -947,8 +950,8 @@ describe("Gantt", () => {
                     parentTask = parentTasks[parentIndex],
                     parentTaskLabel = visualBuilder.taskLabelsText[parentTask.index];
 
-                const minChildStart = _.minBy(parentTask.children, (t: Task) => t.start).start;
-                const maxChildEnd = _.maxBy(parentTask.children, (t: Task) => t.end).end;
+                const minChildStart = lodashMinBy(parentTask.children, (t: Task) => t.start).start;
+                const maxChildEnd = lodashMaxBy(parentTask.children, (t: Task) => t.end).end;
 
                 // Collapse
                 clickElement(parentTaskLabel.parentElement);
@@ -989,7 +992,7 @@ describe("Gantt", () => {
 
             const milestoneColumnIndex = 5;
             const categoriesColumn = dataView?.categorical?.categories?.[milestoneColumnIndex];
-            const uniqueMilestoneTypes = _.compact(_.uniq(categoriesColumn?.values));
+            const uniqueMilestoneTypes = lodashUniq(categoriesColumn?.values).filter(x => !!x);
 
             const randomColors = uniqueMilestoneTypes.map(() => getRandomHexColor());
             const randomTypes = uniqueMilestoneTypes.map(() => {
@@ -1068,7 +1071,7 @@ describe("Gantt", () => {
                     mergedMilestone = mergedMilestone?.concat(milestoneArr);
                 });
 
-                const uniqDates = _.uniqBy(mergedMilestone, "start");
+                const uniqDates = lodashUniqBy(mergedMilestone, "start");
 
                 // Collapse
                 clickElement(parentTaskLabel.parentNode);
@@ -1435,12 +1438,12 @@ describe("Gantt", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const tasks = d3Select(visualBuilder.element)
                         .selectAll(".task")
-                        .data();
+                        .data() as Task[];
 
                     tasks.forEach((task: Task) => {
                         if (task.parent) {
                             const parentName = task.parent.substring(0, task.parent.length - task.name.length - 1);
-                            const parentTask: Task = _.find(tasks, { name: parentName }) as Task;
+                            const parentTask: Task = tasks.find(t => t.name == parentName) as Task;
 
                             if (parentTask) {
                                 expect(task.taskType).toEqual(parentTask.taskType);
@@ -1464,8 +1467,8 @@ describe("Gantt", () => {
                     let { parents, children } = getChildrenAndParents(tasks);
 
                     parents.forEach((parent: Task) => {
-                        const start: Date = (_.minBy(children[parent.name], (childTask: Task) => childTask.start)).start;
-                        const end: Date = (_.maxBy(children[parent.name], (childTask: Task) => childTask.end)).end;
+                        const start: Date = (lodashMinBy(children[parent.name], (childTask: Task) => childTask.start)).start;
+                        const end: Date = (lodashMaxBy(children[parent.name], (childTask: Task) => childTask.end)).end;
 
                         expect(parent.start).toEqual(start);
                         expect(parent.end).toEqual(end);
@@ -1572,10 +1575,10 @@ describe("Gantt", () => {
                     if (task.parent) {
                         const parentName = task.parent.substring(0, task.parent.length - task.name.length - 1);
 
-                        const parentTask: Task | undefined = _.find(tasks, { name: parentName });
+                        const parentTask: Task | undefined = tasks.find(t => t.name == parentName);
 
                         if (parentTask) {
-                            if (!_.find(parents, { name: parentTask.name })) {
+                            if (!parents.find(parent => parent.name = parentTask.name)) {
                                 parents.push(parentTask);
                             }
 
@@ -2136,7 +2139,7 @@ describe("Gantt", () => {
                 const tasks: HTMLElement[] = visualBuilder.tasks;
 
                 tasks.forEach((task: HTMLElement) => {
-                    const opacity: string = task.style.opacity;
+                    const opacity: string = task?.style?.opacity;
                     if (opacity === defaultOpacity)
                         highligtedCount++;
                     if (opacity === dimmedOpacity)
