@@ -391,7 +391,6 @@ export class Gantt implements IVisual {
 
     constructor(options: VisualConstructorOptions) {
         this.init(options);
-        this.handleContextMenu();
     }
 
     private init(options: VisualConstructorOptions): void {
@@ -408,17 +407,6 @@ export class Gantt implements IVisual {
         this.selectionManager = options.host.createSelectionManager();
 
         this.createViewport(options.element);
-    }
-
-    public handleContextMenu() {
-        this.ganttSvg.on('contextmenu', (event) => {
-            const dataPoint: any = d3Select(event.target).datum();
-            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
-                x: event.clientX,
-                y: event.clientY
-            });
-            event.preventDefault();
-        });
     }
 
     /**

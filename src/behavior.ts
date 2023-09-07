@@ -71,10 +71,14 @@ export interface BehaviorOptions extends IBehaviorOptions<Task> {
 
 export class Behavior implements IInteractiveBehavior {
     private options: BehaviorOptions;
+    private selectionHandler: ISelectionHandler;
 
     public bindEvents(options: BehaviorOptions, selectionHandler: ISelectionHandler) {
         this.options = options;
+        this.selectionHandler = selectionHandler;
         const clearCatcher = options.clearCatcher;
+
+        this.bindContextMenu();
 
         options.taskSelection.on("click", (mouseEvent, dataPoint: Task) => {
             const event: MouseEvent = mouseEvent as MouseEvent;
@@ -134,6 +138,68 @@ export class Behavior implements IInteractiveBehavior {
                 !dataPoint.highlight && hasSelection,
                 !dataPoint.selected && hasHighlights
             );
+        });
+    }
+
+    private bindContextMenu(): void {
+        this.options.taskSelection.on("contextmenu", (event: PointerEvent, task: Task) => {
+            if (event) {
+                this.selectionHandler.handleContextMenu(
+                    task,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                event.preventDefault();
+            }
+        });
+
+        this.options.legendSelection.on("contextmenu", (event: PointerEvent, legend: any) => {
+            if (event) {
+                this.selectionHandler.handleContextMenu(
+                    legend,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                event.preventDefault();
+            }
+        });
+
+        this.options.subTasksCollapse.selection.on("contextmenu", (event: PointerEvent) => {
+            if (event) {
+                this.selectionHandler.handleContextMenu(
+                    null,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                event.preventDefault();
+            }
+        });
+
+        this.options.allSubtasksCollapse.selection.on("contextmenu", (event: PointerEvent) => {
+            if (event) {
+                this.selectionHandler.handleContextMenu(
+                    null,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                event.preventDefault();
+            }
+        });
+
+        this.options.clearCatcher.on("contextmenu", (event: PointerEvent) => {
+            if (event) {
+                this.selectionHandler.handleContextMenu(
+                    null,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                event.preventDefault();
+            }
         });
     }
 }
