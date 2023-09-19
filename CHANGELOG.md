@@ -1,3 +1,6 @@
+## 2.3.0
+* Background issue fix by adding formatting options for sidebar, sidebar border and horizontal lines colors
+
 ## 2.2.3
 * Completion issue fix
 

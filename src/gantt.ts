@@ -285,12 +285,10 @@ export class Gantt implements IVisual {
         BarMargin: 2,
         ResourceWidth: 100,
         TaskColor: "#00B099",
-        TaskLineColor: "#ccc",
         CollapseAllColor: "#000",
         PlusMinusColor: "#5F6B6D",
         CollapseAllTextColor: "#aaa",
         MilestoneLineColor: "#ccc",
-        TaskCategoryLabelsRectColor: "#fafafa",
         TaskLineWidth: 15,
         IconMargin: 12,
         IconHeight: 16,
@@ -401,7 +399,6 @@ export class Gantt implements IVisual {
      */
     private createViewport(element: HTMLElement): void {
         let self = this;
-        const isHighContrast: boolean = this.colorHelper.isHighContrast;
         const axisBackgroundColor: string = this.colorHelper.getThemeColor();
         // create div container to the whole viewport area
         this.ganttDiv = this.body.append("div")
@@ -459,8 +456,7 @@ export class Gantt implements IVisual {
             .classed(Selectors.TaskTopLine.className, true)
             .attr("width", "100%")
             .attr("height", 1)
-            .attr("y", this.margin.top)
-            .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
+            .attr("y", this.margin.top);
 
         this.collapseAllGroup = this.lineGroup
             .append("g")
@@ -1376,7 +1372,10 @@ export class Gantt implements IVisual {
 
             settings.daysOff.fill = colorHelper.getHighContrastColor("foreground", settings.daysOff.fill);
             settings.taskConfig.fill = colorHelper.getHighContrastColor("foreground", settings.taskConfig.fill);
-            settings.taskLabels.fill = colorHelper.getHighContrastColor("foreground", settings.taskLabels.fill);
+            settings.taskLabels.fontColor = colorHelper.getHighContrastColor("foreground", settings.taskLabels.fontColor);
+            settings.taskLabels.sidebarColor = colorHelper.getHighContrastColor("foreground", settings.taskLabels.sidebarColor);
+            settings.taskLabels.sidebarBorderColor = colorHelper.getHighContrastColor("foreground", settings.taskLabels.sidebarBorderColor);
+            settings.taskLabels.gridLinesColor = colorHelper.getHighContrastColor("foreground", settings.taskLabels.gridLinesColor);
             settings.taskResource.fill = colorHelper.getHighContrastColor("foreground", settings.taskResource.fill);
             settings.legend.labelColor = colorHelper.getHighContrastColor("foreground", settings.legend.labelColor);
         }
@@ -1856,7 +1855,7 @@ export class Gantt implements IVisual {
         let axisLabel: Selection<any>;
         let taskLabelsShow: boolean = this.viewModel.settings.taskLabels.show;
         let displayGridLines: boolean = this.viewModel.settings.general.displayGridLines;
-        let taskLabelsColor: string = this.viewModel.settings.taskLabels.fill;
+        let taskLabelsColor: string = this.viewModel.settings.taskLabels.fontColor;
         let taskLabelsFontSize: number = this.viewModel.settings.taskLabels.fontSize;
         let taskLabelsWidth: number = this.viewModel.settings.taskLabels.width;
         let taskConfigHeight: number = this.viewModel.settings.taskConfig.height || DefaultChartLineHeight;
@@ -1866,8 +1865,8 @@ export class Gantt implements IVisual {
         if (taskLabelsShow) {
             this.lineGroupWrapper
                 .attr("width", taskLabelsWidth)
-                .attr("fill", isHighContrast ? categoriesAreaBackgroundColor : Gantt.DefaultValues.TaskCategoryLabelsRectColor)
-                .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
+                .attr("fill", isHighContrast ? categoriesAreaBackgroundColor : this.viewModel.settings.taskLabels.sidebarColor)
+                .attr("stroke", this.colorHelper.getHighContrastColor("foreground", this.viewModel.settings.taskLabels.sidebarBorderColor))
                 .attr("stroke-width", 1);
 
             this.lineGroup
@@ -1959,7 +1958,11 @@ export class Gantt implements IVisual {
                 .attr("y", (task: GroupedTask) => (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabels.fontSize) / 2)
                 .attr("width", () => displayGridLines ? this.viewport.width : 0)
                 .attr("height", 1)
-                .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
+                .attr("fill", this.colorHelper.getHighContrastColor("foreground", this.viewModel.settings.taskLabels.gridLinesColor));
+
+            this.lineGroup
+                .selectAll(Selectors.TaskTopLine.selectorName)
+                .attr("fill", this.colorHelper.getHighContrastColor("foreground", this.viewModel.settings.taskLabels.gridLinesColor));
 
             axisLabel
                 .exit()

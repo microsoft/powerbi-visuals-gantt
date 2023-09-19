@@ -40,7 +40,7 @@
 	"Visual_Title": "Title",
 	"Visual_Color": "Color",
 	"Visual_TextSize": "Text Size",
-	"Visual_Fill": "Fill",
+	"Visual_Fill": "Font Color",
 	"Visual_FontSize": "Font Size",
 	"Visual_Width": "Width",
 	"Visual_TooltipSettings": "Tooltip Settings",
@@ -90,5 +90,9 @@
 	"Visual_Shape_Rhombus": "Rhombus",
 	"Visual_Shape_Square": "Square",
 	"Visual_Shape_Circle": "Circle",
-	"Visual_Description_Milestones": "Display milestones options"
+	"Visual_Description_Milestones": "Display milestones options",
+	"Visual_Description_Milestones": "Display milestones options",
+	"Visual_SidebarColor": "Sidebar Color",
+	"Visual_SidebarBorderColor": "Sidebar Border Color",
+	"Visual_GridLinesColor": "Grid lines color"
 }
