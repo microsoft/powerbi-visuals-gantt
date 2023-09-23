@@ -258,6 +258,7 @@ export class Gantt implements IVisual {
     private textProperties: TextProperties = {
         fontFamily: "wf_segoe-ui_normal",
         fontSize: PixelConverter.toString(9),
+        text: "#FF0000",
     };
 
     private static LegendPropertyIdentifier: DataViewObjectPropertyIdentifier = {
@@ -290,7 +291,7 @@ export class Gantt implements IVisual {
         PlusMinusColor: "#5F6B6D",
         CollapseAllTextColor: "#aaa",
         MilestoneLineColor: "#ccc",
-        TaskCategoryLabelsRectColor: "#fafafa",
+        TaskCategoryLabelsRectColor: "#000000",
         TaskLineWidth: 15,
         IconMargin: 12,
         IconHeight: 16,
