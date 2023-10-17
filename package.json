@@ -48,6 +48,7 @@
     "powerbi-visuals-utils-chartutils": "^6.0.1",
     "powerbi-visuals-utils-colorutils": "^6.0.1",
     "powerbi-visuals-utils-dataviewutils": "^6.0.1",
+    "powerbi-visuals-utils-formattingmodel": "^6.0.0",
     "powerbi-visuals-utils-formattingutils": "^6.0.1",
     "powerbi-visuals-utils-interactivityutils": "^6.0.2",
     "powerbi-visuals-utils-svgutils": "^6.0.1",

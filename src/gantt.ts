@@ -1394,7 +1394,7 @@ export class Gantt implements IVisual {
 
     public parseSettings(dataView: DataView, colorHelper: ColorHelper): GanttChartSettingsModel {
 
-        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(GanttChartSettingsModel, [dataView]);
+        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(GanttChartSettingsModel, dataView);
         const settings: GanttChartSettingsModel = this.formattingSettings;
         
         if (!colorHelper) {
@@ -3066,7 +3066,6 @@ export class Gantt implements IVisual {
 
     public filterSettingsCards() {
         const settings: GanttChartSettingsModel = this.formattingSettings;
-        const newCards = [...settings.cards];
 
         settings.cards.forEach(element => {
             switch(element.name) {
@@ -3082,7 +3081,7 @@ export class Gantt implements IVisual {
 
                     const milestonesWithoutDublicates = Gantt.getUniqueMilestones(dataPoints);
 
-                    this.formattingSettings.enumerateMilestones(milestonesWithoutDublicates);
+                    settings.enumerateMilestones(milestonesWithoutDublicates);
                     break;
                 }
 
@@ -3096,36 +3095,24 @@ export class Gantt implements IVisual {
                         return;
                     }
 
-                    this.formattingSettings.enumerateLegend(dataPoints);
+                    settings.enumerateLegend(dataPoints);
                     break;
                 }
 
                 case Gantt.CollapsedTasksPropertyIdentifier.objectName:
-                    this.removeArrayItem(newCards, this.formattingSettings.collapsedTasksCardSettings);
+                    settings.collapsedTasksCardSettings.visible = false;
                     break;
 
                 case Gantt.CollapsedTasksUpdateIdPropertyIdentifier.objectName:
-                    this.removeArrayItem(newCards, this.formattingSettings.collapsedTasksUpdateIdCardSettings);
+                    settings.collapsedTasksUpdateIdCardSettings.visible = false;
                     break;
 
                 case Gantt.TaskResourcePropertyIdentifier.objectName: 
                     if (!this.viewModel.isResourcesFilled) {
-                        this.removeArrayItem(newCards, this.formattingSettings.taskResourceCardSettings)
+                        settings.taskResourceCardSettings.visible = false;
                     }
                     break;
             }
         });
-
-        settings.cards = newCards;
-        this.formattingSettings = settings;
-    }
-
-    private removeArrayItem<T>(array: T[], item: T)
-    {
-        const index: number = array.indexOf(item);
-        if (index > -1)
-        {
-            array.splice(index, 1);
-        }
     }
 }

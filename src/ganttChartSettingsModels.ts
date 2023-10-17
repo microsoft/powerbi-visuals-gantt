@@ -7,7 +7,7 @@ import LegendPosition = legendInterfaces.LegendPosition;
 
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
-import Card = formattingSettings.Card;
+import Card = formattingSettings.SimpleCard;
 import Model = formattingSettings.Model;
 
 import IEnumMember = powerbi.IEnumMember;
@@ -93,22 +93,19 @@ export class GeneralCardSettings extends Card {
     groupTasks = new formattingSettings.ToggleSwitch({
         name: "groupTasks",
         displayNameKey: "Visual_GroupTasks",
-        value: false,
-        topLevelToggle: false
+        value: false
     });
 
     scrollToCurrentTime = new formattingSettings.ToggleSwitch({
         name: "scrollToCurrentTime",
         displayNameKey: "Visual_ScrollToCurrentTime",
-        value: false,
-        topLevelToggle: false
+        value: false
     });
 
     displayGridLines = new formattingSettings.ToggleSwitch({
         name: "displayGridLines",
         displayNameKey: "Visual_DisplayGridLines",
-        value: true,
-        topLevelToggle: false
+        value: true
     });
 
     durationUnit = new formattingSettings.ItemDropdown({
@@ -140,22 +137,19 @@ export class SubTasksCardSettings extends Card {
     inheritParentLegend = new formattingSettings.ToggleSwitch({
         name: "inheritParentLegend",
         displayNameKey: "Visual_InheritParentLegend",
-        value: true,
-        topLevelToggle: true
+        value: true
     });
 
     parentDurationByChildren = new formattingSettings.ToggleSwitch({
         name: "parentDurationByChildren",
         displayNameKey: "Visual_ParentDurationByChildren",
-        value: true,
-        topLevelToggle: true
+        value: true
     });
     
     parentCompletionByChildren = new formattingSettings.ToggleSwitch({
         name: "parentCompletionByChildren",
         displayNameKey: "Visual_ParentCompletionByChildren",
-        value: true,
-        topLevelToggle: true
+        value: true
     });
 
     name: string = "subTasks";
@@ -196,8 +190,7 @@ export class DaysOffCardSettings extends Card {
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
-        value: false,
-        topLevelToggle: true
+        value: false
     });
 
     fill = new formattingSettings.ColorPicker({
@@ -215,7 +208,8 @@ export class DaysOffCardSettings extends Card {
 
     name: string = "daysOff";
     displayNameKey: string = "Visual_DaysOff";
-    slices = [this.show, this.fill, this.firstDayOfWeek];
+    slices = [this.fill, this.firstDayOfWeek];
+    topLevelSlice?: formattingSettings.SimpleSlice<any> = this.show;
 }
 
 export class LegendCardSettings extends Card {
@@ -223,8 +217,7 @@ export class LegendCardSettings extends Card {
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
-        value: true,
-        topLevelToggle: true
+        value: true
     });
 
     position = new formattingSettings.ItemDropdown({
@@ -237,8 +230,7 @@ export class LegendCardSettings extends Card {
     showTitle = new formattingSettings.ToggleSwitch({
         name: "showTitle",
         displayNameKey: "Visual_Title",
-        value: true,
-        topLevelToggle: true
+        value: true
     });
 
     titleText = new formattingSettings.TextInput({
@@ -279,7 +271,8 @@ export class LegendCardSettings extends Card {
 
     name: string = "legend";
     displayNameKey: string = "Visual_Legend";
-    slices = [this.show, this.position, this.showTitle, this.titleText, this.labelColor, this.fontSize, this.fill];
+    slices = [this.position, this.showTitle, this.titleText, this.labelColor, this.fontSize, this.fill];
+    topLevelSlice?: formattingSettings.SimpleSlice<any> = this.show;
 }
 
 export class MilestonesCardSettings extends Card {
@@ -307,8 +300,7 @@ export class TaskLabelsCardSettings extends Card {
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
-        value: true,
-        topLevelToggle: true
+        value: true
     });
 
     fill = new formattingSettings.ColorPicker({
@@ -351,7 +343,8 @@ export class TaskLabelsCardSettings extends Card {
 
     name: string = "taskLabels";
     displayNameKey: string = "Visual_CategoryLabels";
-    slices = [this.show, this.fill, this.fontSize, this.width];
+    slices = [this.fill, this.fontSize, this.width];
+    topLevelSlice?: formattingSettings.SimpleSlice<any> = this.show;
 }
 
 export class TaskCompletionCardSettings extends Card {
@@ -359,8 +352,7 @@ export class TaskCompletionCardSettings extends Card {
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
-        value: true,
-        topLevelToggle: true
+        value: true
     });
 
     maxCompletion = new formattingSettings.NumUpDown({
@@ -371,7 +363,8 @@ export class TaskCompletionCardSettings extends Card {
 
     name: string = "taskCompletion";
     displayNameKey: string = "Visual_TaskCompletion";
-    slices = [this.show, this.maxCompletion];
+    slices = [this.maxCompletion];
+    topLevelSlice?: formattingSettings.SimpleSlice<any> = this.show;
 }
 
 export class TooltipConfigCardSettings extends Card {
@@ -424,8 +417,7 @@ export class TaskResourceCardSettings extends Card {
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
-        value: true,
-        topLevelToggle: true
+        value: true
     });
 
     fill = new formattingSettings.ColorPicker({
@@ -460,20 +452,19 @@ export class TaskResourceCardSettings extends Card {
     fullText = new formattingSettings.ToggleSwitch({
         name: "fullText",
         displayNameKey: "Visual_FullText",
-        value: false,
-        topLevelToggle: true
+        value: false
     });
 
     widthByTask = new formattingSettings.ToggleSwitch({
         name: "widthByTask",
         displayNameKey: "Visual_WidthByTask",
-        value: false,
-        topLevelToggle: true
+        value: false
     });
 
     name: string = "taskResource";
     displayNameKey: string = "Visual_DataLabels";
-    slices = [this.show, this.fill, this.fontSize, this.position, this.fullText, this.widthByTask];
+    slices = [this.fill, this.fontSize, this.position, this.fullText, this.widthByTask];
+    topLevelSlice?: formattingSettings.SimpleSlice<any> = this.show;
 }
 
 export class DateTypeCardSettings extends Card {
