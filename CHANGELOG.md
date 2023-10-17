@@ -1,3 +1,11 @@
+## 3.0.0
+* API 5.4.0+
+* Dependencies update
+* Major bugs fixes
+* Support Highlight feature add
+* Eslint support
+* Puppeeter support
+
 ## 2.2.3
 * Completion issue fix
 

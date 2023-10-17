@@ -69,7 +69,7 @@ export class DurationHelper {
     }
 
     public static downgradeDurationUnit(durationUnit: string, duration: number): string {
-        let durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
+        const durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
         // if duration == 0.84 day, we need transform duration to minutes in order to get duration without extra loss
         durationUnit = DurationHelper.getNewUnitByFloorDuration(durationUnitTypeIndex, duration);
 

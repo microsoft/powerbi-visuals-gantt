@@ -30,7 +30,7 @@ import DataView = powerbi.DataView;
 import { valueType as vt } from "powerbi-visuals-utils-typeutils";
 import ValueType = vt.ValueType;
 
-import { testDataViewBuilder, getRandomNumber } from "powerbi-visuals-utils-testutils";
+import { testDataViewBuilder, getRandomNumber, getRandomNumbers } from "powerbi-visuals-utils-testutils";
 import TestDataViewBuilder = testDataViewBuilder.TestDataViewBuilder;
 import { TestDataViewBuilderColumnOptions, TestDataViewBuilderCategoryColumnOptions } from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/testDataViewBuilder";
 
@@ -102,7 +102,33 @@ export class VisualData extends TestDataViewBuilder {
         return result;
     }
 
-    public getDataView(columnNames?: string[], withMilestones?: boolean): DataView {
+    public generateHighLightedValues(length: number, highLightedElementNumber?: number): number[] {
+        let array: any[] = [];
+        for (let i: number = 0; i < length; i++) {
+            array[i] = null;
+        }
+        if (highLightedElementNumber == undefined)
+            return array;
+
+        if (highLightedElementNumber >= length || highLightedElementNumber < 0) {
+            array[0] = getRandomNumbers(this.valuesDuration.length, 10, 100)[0];
+        } else {
+            array[highLightedElementNumber] = getRandomNumbers(this.valuesDuration.length, 10, 100)[0];
+        }
+
+        return array;
+    }
+
+    public getDataView(columnNames?: string[], withMilestones?: boolean, withHighlights?: boolean): DataView {    
+        let highlights: number[] = [];
+
+        if (withHighlights)
+        {
+            let highLightedElementNumber: number = Math.round(getRandomNumber(0, this.valuesDuration.length - 1));
+            let highlightedValuesCount: number = this.valuesDuration.length;
+            highlights = this.generateHighLightedValues(highlightedValuesCount, highLightedElementNumber);
+        }
+
         let categoriesColums: TestDataViewBuilderCategoryColumnOptions[] = [
             {
                 source: {
@@ -118,7 +144,7 @@ export class VisualData extends TestDataViewBuilder {
                     type: ValueType.fromDescriptor({ text: true }),
                     roles: { "Task": true }
                 },
-                values: this.valuesTaskTypeResource.map(x => x[1])
+                values: this.valuesTaskTypeResource.map(x => x[1]),
             },
             {
                 source: {
@@ -170,7 +196,7 @@ export class VisualData extends TestDataViewBuilder {
                     type: ValueType.fromDescriptor({ text: true }),
                     roles: { "Milestones": true }
                 },
-                values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null)
+                values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null),
             };
 
             categoriesColums.push(milestoneCategoriesColumn);
@@ -184,7 +210,8 @@ export class VisualData extends TestDataViewBuilder {
                         type: ValueType.fromDescriptor({ numeric: true }),
                         roles: { "Duration": true }
                     },
-                    values: this.valuesDuration
+                    values: this.valuesDuration,
+                    highlights: highlights.length > 0 ? highlights : undefined
                 },
                 {
                     source: {
@@ -192,7 +219,8 @@ export class VisualData extends TestDataViewBuilder {
                         type: ValueType.fromDescriptor({ numeric: true }),
                         roles: { "Completion": true }
                     },
-                    values: this.valuesCompletePrecntege
+                    values: this.valuesCompletePrecntege,
+                    highlights: highlights.length > 0 ? highlights : undefined
                 }
             ], columnNames).build();
     }
