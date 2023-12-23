@@ -60,7 +60,7 @@
 	"Visual_DateType_Day": "Day",
 	"Visual_DateType_Week": "Week",
 	"Visual_DateType_Month": "Month",
-  	"Visual_DateType_Quarter": "Quarter",
+	"Visual_DateType_Quarter": "Quarter",
 	"Visual_DateType_Year": "Year",
 	"Visual_DateType_TodayColor": "Today Color",
 	"Visual_DateType_AxisColor": "Axis Color",
@@ -90,5 +90,8 @@
 	"Visual_Shape_Rhombus": "Rhombus",
 	"Visual_Shape_Square": "Square",
 	"Visual_Shape_Circle": "Circle",
-	"Visual_Description_Milestones": "Display milestones options"
+	"Visual_Description_Milestones": "Display milestones options",
+	"Milestones": "Milestones",
+	"Visual_DisplayGridLines": "Display grid lines",
+	"Visual_MaxCompletion": "Max completion"
 }
