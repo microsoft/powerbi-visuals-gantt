@@ -1,7 +1,12 @@
 import powerbiVisualsApi from "powerbi-visuals-api";
-import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
-import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
-
+import {formattingSettings} from "powerbi-visuals-utils-formattingmodel";
+import {legendInterfaces} from "powerbi-visuals-utils-chartutils";
+import {LegendDataPoint} from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
+import {ColorHelper} from "powerbi-visuals-utils-colorutils";
+import {MilestoneShape} from "./enums/milestoneShape";
+import {DateType} from "./enums/dateType";
+import {ResourceLabelPosition} from "./enums/resourceLabelPosition";
+import {DurationUnit} from "./enums/durationUnit";
 import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
 import LegendPosition = legendInterfaces.LegendPosition;
 
@@ -11,41 +16,40 @@ import Card = formattingSettings.SimpleCard;
 import Model = formattingSettings.Model;
 
 import IEnumMember = powerbi.IEnumMember;
-import { LegendDataPoint } from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
-import { ColorHelper } from "powerbi-visuals-utils-colorutils";
+import {Day} from "./enums/day";
 
 const durationUnitsOptions : IEnumMember[] = [
-    { displayName: "Visual_DurationUnit_Days", value: "day" },
-    { displayName: "Visual_DurationUnit_Hours", value: "hour" },
-    { displayName: "Visual_DurationUnit_Minutes", value: "minute" },
-    { displayName: "Visual_DurationUnit_Seconds", value: "second" }
+    { displayName: "Visual_DurationUnit_Days", value: DurationUnit.Day },
+    { displayName: "Visual_DurationUnit_Hours", value: DurationUnit.Hour },
+    { displayName: "Visual_DurationUnit_Minutes", value: DurationUnit.Minute },
+    { displayName: "Visual_DurationUnit_Seconds", value: DurationUnit.Second }
 ]
 
 const dayOfWeekOptions : IEnumMember[] = [
-    { displayName: "Visual_Day_Sunday", value: "0" },
-    { displayName: "Visual_Day_Monday", value: "1" },
-    { displayName: "Visual_Day_Tuesday", value: "2" },
-    { displayName: "Visual_Day_Wednesday", value: "3" },
-    { displayName: "Visual_Day_Thursday", value: "4" },
-    { displayName: "Visual_Day_Friday", value: "5" },
-    { displayName: "Visual_Day_Saturday", value: "6" }
+    { displayName: "Visual_Day_Sunday", value: Day.Sunday },
+    { displayName: "Visual_Day_Monday", value: Day.Monday },
+    { displayName: "Visual_Day_Tuesday", value: Day.Tuesday },
+    { displayName: "Visual_Day_Wednesday", value: Day.Wednesday },
+    { displayName: "Visual_Day_Thursday", value: Day.Thursday },
+    { displayName: "Visual_Day_Friday", value: Day.Friday },
+    { displayName: "Visual_Day_Saturday", value: Day.Saturday }
 ]
 
 export const dateTypeOptions : IEnumMember[] = [
-    { displayName: "Visual_DateType_Second", value: "Second" },
-    { displayName: "Visual_DateType_Minute", value: "Minute" },
-    { displayName: "Visual_DateType_Hour", value: "Hour" },
-    { displayName: "Visual_DateType_Day", value: "Day" },
-    { displayName: "Visual_DateType_Week", value: "Week" },
-    { displayName: "Visual_DateType_Month", value: "Month" },
-    { displayName: "Visual_DateType_Quarter", value: "Quarter" },
-    { displayName: "Visual_DateType_Year", value: "Year" }
+    { displayName: "Visual_DateType_Second", value: DateType.Second },
+    { displayName: "Visual_DateType_Minute", value: DateType.Minute },
+    { displayName: "Visual_DateType_Hour", value: DateType.Hour },
+    { displayName: "Visual_DateType_Day", value: DateType.Day },
+    { displayName: "Visual_DateType_Week", value: DateType.Week },
+    { displayName: "Visual_DateType_Month", value: DateType.Month },
+    { displayName: "Visual_DateType_Quarter", value: DateType.Quarter },
+    { displayName: "Visual_DateType_Year", value: DateType.Year }
 ]
 
 const shapesOptions : IEnumMember[] = [
-    { displayName: "Visual_Shape_Rhombus", value: "Rhombus" },
-    { displayName: "Visual_Shape_Circle", value: "Circle" },
-    { displayName: "Visual_Shape_Square", value: "Square" }
+    { displayName: "Visual_Shape_Rhombus", value: MilestoneShape.Rhombus },
+    { displayName: "Visual_Shape_Circle", value: MilestoneShape.Circle },
+    { displayName: "Visual_Shape_Square", value: MilestoneShape.Square }
 ]
 
 const positionOptions : IEnumMember[] = [
@@ -60,9 +64,9 @@ const positionOptions : IEnumMember[] = [
 ];
 
 const resourcePositionOptions : IEnumMember[] = [
-    { displayName: "Visual_Position_Top", value: "Top" },
-    { displayName: "Visual_Position_Right", value: "Right" },
-    { displayName: "Visual_Position_Inside", value: "Inside" }
+    { displayName: "Visual_Position_Top", value: ResourceLabelPosition.Top },
+    { displayName: "Visual_Position_Right", value: ResourceLabelPosition.Right },
+    { displayName: "Visual_Position_Inside", value: ResourceLabelPosition.Inside }
 ];
 
 class DurationMinSettings {

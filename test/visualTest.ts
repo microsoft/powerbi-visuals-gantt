@@ -25,57 +25,48 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import { select as d3Select } from "d3-selection";
-import { timeDay as d3TimeDay } from "d3-time";
+import {select as d3Select} from "d3-selection";
+import {timeDay as d3TimeDay} from "d3-time";
 
 import lodashMinBy from "lodash.minby";
 import lodashMaxBy from "lodash.maxby";
 import lodashUniq from "lodash.uniq";
 import lodashUniqBy from "lodash.uniqby";
 
+import {VisualData} from "./visualData";
+import {VisualBuilder} from "./visualBuilder";
+import {getEndDate, isColorAppliedToElements} from "./helpers/helpers";
+import {
+    assertColorsMatch,
+    clickElement,
+    createVisualHost,
+    getRandomNumber,
+    MockISelectionId,
+    MockISelectionIdBuilder
+} from "powerbi-visuals-utils-testutils";
+
+import {pixelConverter as PixelConverter} from "powerbi-visuals-utils-typeutils";
+import {legendPosition as LegendPosition} from "powerbi-visuals-utils-chartutils";
+import {valueFormatter} from "powerbi-visuals-utils-formattingutils";
+
+import {Milestone, Task, TaskDaysOff} from "../src/interfaces";
+import {DurationHelper} from "../src/durationHelper";
+import {Gantt as VisualClass} from "../src/gantt";
+import {getRandomHexColor, isValidDate} from "../src/utils";
+
+import {DefaultOpacity, DimmedOpacity} from "../src/behavior";
+import {DateType} from "../src/enums/dateType";
+import {Day} from "../src/enums/day";
+import {DurationUnit} from "../src/enums/durationUnit";
 import DataView = powerbi.DataView;
 import PrimitiveValue = powerbi.PrimitiveValue;
 
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-
-import { VisualData } from "./visualData";
-import { VisualBuilder } from "./visualBuilder";
-import { isColorAppliedToElements, getEndDate } from "./helpers/helpers";
-import { clickElement, MockISelectionId, assertColorsMatch, MockISelectionIdBuilder, createSelectionId, createVisualHost, getRandomNumber } from "powerbi-visuals-utils-testutils";
-
-import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
-import { legendPosition as LegendPosition } from "powerbi-visuals-utils-chartutils";
-import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 import IValueFormatter = valueFormatter.IValueFormatter;
+import {MilestoneShape} from "../src/enums/milestoneShape";
+import {ResourceLabelPosition} from "../src/enums/resourceLabelPosition";
 
-import { Task, TaskDaysOff, Milestone } from "../src/interfaces";
-import { DurationHelper } from "../src/durationHelper";
-import { Gantt as VisualClass } from "../src/gantt";
-import { getRandomHexColor, isValidDate } from "../src/utils";
-
-import { DefaultOpacity, DimmedOpacity } from "../src/behavior";
-
-export enum DateTypes {
-    Second = <any>"Second",
-    Minute = <any>"Minute",
-    Hour = <any>"Hour",
-    Day = <any>"Day",
-    Week = <any>"Week",
-    Month = <any>"Month",
-    Quarter = <any>"Quarter",
-    Year = <any>"Year"
-}
-
-export enum Days {
-    Sunday = <any>"0",
-    Monday = <any>"1",
-    Tuesday = <any>"2",
-    Wednesday = <any>"3",
-    Thursday = <any>"4",
-    Friday = <any>"5",
-    Saturday = <any>"6"
-}
 
 const defaultTaskDuration: number = 1;
 const datesAmountForScroll: number = 90;
@@ -247,7 +238,7 @@ describe("Gantt", () => {
 
             dataView.metadata.objects = {
                 general: {
-                    durationUnit: "second"
+                    durationUnit: DurationUnit.Second
                 }
             };
 
@@ -395,7 +386,7 @@ describe("Gantt", () => {
 
             dataView.metadata.objects = {
                 general: {
-                    durationUnit: "day"
+                    durationUnit: DurationUnit.Day
                 }
             };
 
@@ -409,7 +400,7 @@ describe("Gantt", () => {
                     if (tasks[i].duration % 1 !== 0) {
                         newDuration = VisualClass["transformDuration"](
                             defaultDataViewBuilder.valuesDuration[i],
-                            "minute",
+                            DurationUnit.Minute,
                             2
                         );
                     }
@@ -480,7 +471,7 @@ describe("Gantt", () => {
 
         it("Verify tooltips have only string values", (done) => {
             const randomNumber = 134223;
-            const durationUnit = "day";
+            const durationUnit = DurationUnit.Day;
 
             const task: any = {
                 taskType: randomNumber,
@@ -667,12 +658,12 @@ describe("Gantt", () => {
             });
         });
 
-        for (let dateType in DateTypes) {
+        for (let dateType in DateType) {
             it(`Verify date format (${dateType})`, ((dateType) => (done) => {
                 switch (dateType) {
-                    case "Second":
-                    case "Minute":
-                    case "Hour":
+                    case DateType.Second:
+                    case DateType.Minute:
+                    case DateType.Hour:
                         defaultDataViewBuilder.valuesStartDate = VisualData.getRandomUniqueDates(
                             defaultDataViewBuilder.valuesTaskTypeResource.length,
                             new Date(2017, 7, 0),
@@ -996,7 +987,7 @@ describe("Gantt", () => {
 
             const randomColors = uniqueMilestoneTypes.map(() => getRandomHexColor());
             const randomTypes = uniqueMilestoneTypes.map(() => {
-                const types = ["Rhombus", "Circle", "Square"];
+                const types = [MilestoneShape.Rhombus, MilestoneShape.Circle, MilestoneShape.Square];
                 return types[Math.floor(getRandomNumber(0, types.length - 1))];
             });
 
@@ -1218,7 +1209,7 @@ describe("Gantt", () => {
 
             describe("Duration units", () => {
 
-                function checkDurationUnit(durationUnit: string) {
+                function checkDurationUnit(durationUnit: DurationUnit) {
                     const tasks: Task[] = d3Select(visualBuilder.element)
                         .selectAll(".task")
                         .data() as Task[];
@@ -1231,7 +1222,7 @@ describe("Gantt", () => {
                     });
                 }
 
-                function setDurationUnit(durationUnit) {
+                function setDurationUnit(durationUnit: DurationUnit) {
                     dataView.metadata.objects = {
                         general: {
                             durationUnit: durationUnit
@@ -1240,7 +1231,7 @@ describe("Gantt", () => {
                 }
 
                 it("days", (done) => {
-                    let durationUnit: string = "day";
+                    const durationUnit: DurationUnit = DurationUnit.Day;
                     setDurationUnit(durationUnit);
 
                     fixDataViewDateValuesAggregation(dataView);
@@ -1252,7 +1243,7 @@ describe("Gantt", () => {
                 });
 
                 it("hours", (done) => {
-                    let durationUnit: string = "hour";
+                    const durationUnit: DurationUnit = DurationUnit.Hour;
                     setDurationUnit(durationUnit);
 
                     fixDataViewDateValuesAggregation(dataView);
@@ -1264,7 +1255,7 @@ describe("Gantt", () => {
                 });
 
                 it("minutes", (done) => {
-                    let durationUnit: string = "minute";
+                    const durationUnit: DurationUnit = DurationUnit.Minute;
                     setDurationUnit(durationUnit);
 
                     fixDataViewDateValuesAggregation(dataView);
@@ -1276,7 +1267,7 @@ describe("Gantt", () => {
                 });
 
                 it("seconds", (done) => {
-                    let durationUnit: string = "second";
+                    const durationUnit = DurationUnit.Second;
                     setDurationUnit(durationUnit);
 
                     fixDataViewDateValuesAggregation(dataView);
@@ -1314,7 +1305,7 @@ describe("Gantt", () => {
                         }
                     ];
 
-                    visualBuilder.downgradeDurationUnit(tasks, "second");
+                    visualBuilder.downgradeDurationUnit(tasks, DurationUnit.Second);
                     expect(tasks[0].duration).toEqual(firstTaskDuration);
                     expect(tasks[1].duration).toEqual(Math.floor(secondTaskDuration * secondInHour));
                     expect(tasks[2].duration).toEqual(Math.floor(thirdTaskDuration * secondInHour));
@@ -1367,7 +1358,7 @@ describe("Gantt", () => {
                 });
             }
 
-            for (let day in Days) {
+            for (let day in Day) {
                 it(`Verify day off (${day}) for 'Day' date type`, ((day) => (done) => {
                     dataView = defaultDataViewBuilder.getDataView();
 
@@ -1401,18 +1392,18 @@ describe("Gantt", () => {
 
                 dataView.metadata.objects = {
                     general: {
-                        durationUnit: "hour"
+                        durationUnit: DurationUnit.Hour
                     },
                     dateType: {
-                        type: "Hour"
+                        type: DateType.Hour
                     },
                     daysOff: {
                         show: true,
-                        firstDayOfWeek: +Days.Monday
+                        firstDayOfWeek: +Day.Monday
                     }
                 };
 
-                checkDaysOff(+Days.Monday, done);
+                checkDaysOff(+Day.Monday, done);
             });
         });
 
@@ -1669,7 +1660,7 @@ describe("Gantt", () => {
             it("position", (done) => {
                 dataView.metadata.objects = {
                     taskResource: {
-                        position: "Top"
+                        position: ResourceLabelPosition.Top
                     }
                 };
 
@@ -1710,7 +1701,7 @@ describe("Gantt", () => {
             it("widthByTask", (done) => {
                 dataView.metadata.objects = {
                     taskResource: {
-                        position: "Top",
+                        position: ResourceLabelPosition.Top,
                         fullText: false,
                         widthByTask: true
                     }

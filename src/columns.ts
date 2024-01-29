@@ -39,9 +39,10 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 import { valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
 
 import { converterHelper } from "powerbi-visuals-utils-dataviewutils";
+import {GanttRole} from "./enums/ganttRole";
 
 
-const extraInformationRole = "ExtraInformation";
+const extraInformationRole = GanttRole.ExtraInformation;
 
 export class GanttColumns<T> {
 

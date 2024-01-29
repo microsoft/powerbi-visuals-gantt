@@ -31,6 +31,7 @@ import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructor
 import { VisualBuilderBase } from "powerbi-visuals-utils-testutils";
 import { Task } from "../src/interfaces";
 import { Gantt as VisualClass } from "../src/gantt";
+import {DurationUnit} from "../src/enums/durationUnit";
 
 interface TaskMockParamsInterface {
     id: number;
@@ -261,7 +262,7 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
         return this.element.querySelector<HTMLElement>('.legend #legendGroup') as HTMLElement;
     }
 
-    public downgradeDurationUnit(tasks: any, durationUnit: string) {
+    public downgradeDurationUnit(tasks: any, durationUnit: DurationUnit) {
         VisualClass.downgradeDurationUnitIfNeeded(tasks, durationUnit);
     }
 
@@ -309,48 +310,48 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public static getDowngradeDurationUnitMocks() {
-        const GanttDurationUnitType = [
-            "second",
-            "minute",
-            "hour",
-            "day",
+        const GanttDurationUnitType: DurationUnit[] = [
+            DurationUnit.Second,
+            DurationUnit.Minute,
+            DurationUnit.Hour,
+            DurationUnit.Day,
         ];
 
-        let downgradeDurationUnitMock = {
+        const downgradeDurationUnitMock = {
             days: {
                 "data": [
-                    { "unit": GanttDurationUnitType.indexOf("day"), "duration": 1.5 },
-                    { "unit": GanttDurationUnitType.indexOf("day"), "duration": 0.84 }
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Day), "duration": 1.5 },
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Day), "duration": 0.84 }
                 ],
                 "expected": [
-                    "hour",
-                    "second"
+                    DurationUnit.Hour,
+                    DurationUnit.Second
                 ]
             },
             hours: {
                 "data": [
-                    { "unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.05 },
-                    { "unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.005 }
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Hour), "duration": 0.05 },
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Hour), "duration": 0.005 }
                 ],
                 "expected": [
-                    "minute",
-                    "second"
+                    DurationUnit.Minute,
+                    DurationUnit.Second
                 ]
             },
             minutes: {
                 "data": [
-                    { "unit": GanttDurationUnitType.indexOf("minute"), "duration": 0.01 }
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Minute), "duration": 0.01 }
                 ],
                 "expected": [
-                    "second"
+                    DurationUnit.Second
                 ]
             },
             seconds: {
                 "data": [
-                    { "unit": GanttDurationUnitType.indexOf("second"), "duration": 0.5 }
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Second), "duration": 0.5 }
                 ],
                 "expected": [
-                    "second"
+                    DurationUnit.Second
                 ]
             }
         };

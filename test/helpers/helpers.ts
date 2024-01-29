@@ -26,7 +26,8 @@
 import { timeSecond as d3TimeSecond, timeMinute as d3TimeMinute, timeHour as d3TimeHour, timeDay as d3TimeDay } from "d3-time";
 
 import { RgbColor, parseColorString } from "powerbi-visuals-utils-colorutils";
-import { DurationUnits } from "../../src/gantt";
+
+import {DurationUnit} from "../../src/enums/durationUnit";
 
 export function areColorsEqual(firstColor: string, secondColor: string): boolean {
     const firstConvertedColor: RgbColor = parseColorString(firstColor),
@@ -54,20 +55,17 @@ export function isColorAppliedToElements(
 }
 
 /**
-* Calculates end date from start date and offset for different durationUnits
-* @param durationUnit
-* @param start Start date
-* @param step An offset
+* Calculates date from startDate date till endDate for different durationUnits
 */
-export function getEndDate(durationUnit: string, start: Date, end: Date): Date[] {
+export function getEndDate(durationUnit: DurationUnit, startDate: Date, endDate: Date): Date[] {
     switch (durationUnit) {
-        case DurationUnits.Second.toString():
-            return d3TimeSecond.range(start, end);
-        case DurationUnits.Minute.toString():
-            return d3TimeMinute.range(start, end);
-        case DurationUnits.Hour.toString():
-            return d3TimeHour.range(start, end);
+        case DurationUnit.Second:
+            return d3TimeSecond.range(startDate, endDate);
+        case DurationUnit.Minute:
+            return d3TimeMinute.range(startDate, endDate);
+        case DurationUnit.Hour:
+            return d3TimeHour.range(startDate, endDate);
         default:
-            return d3TimeDay.range(start, end);
+            return d3TimeDay.range(startDate, endDate);
     }
 }

@@ -90,7 +90,7 @@
 ## 1.9.4
  * Fixed issue with tooltip duration
  * Fixed issue with invisible task line when duration is 1
- * Renamed "Extra imformation" field bucket to "Tooltips"
+ * Renamed "Extra information" field bucket to "Tooltips"
 
 ## 1.9.3
  * Fixed issue with tooltip duration

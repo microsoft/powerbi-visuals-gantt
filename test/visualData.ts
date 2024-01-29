@@ -33,6 +33,7 @@ import ValueType = vt.ValueType;
 import { testDataViewBuilder, getRandomNumber, getRandomNumbers } from "powerbi-visuals-utils-testutils";
 import TestDataViewBuilder = testDataViewBuilder.TestDataViewBuilder;
 import { TestDataViewBuilderColumnOptions, TestDataViewBuilderCategoryColumnOptions } from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/testDataViewBuilder";
+import {GanttRole} from "../src/enums/ganttRole";
 
 export class VisualData extends TestDataViewBuilder {
     public static ColumnType: string = "Type";
@@ -134,7 +135,7 @@ export class VisualData extends TestDataViewBuilder {
                 source: {
                     displayName: VisualData.ColumnType,
                     type: ValueType.fromDescriptor({ text: true }),
-                    roles: { "Legend": true }
+                    roles: { [GanttRole.Legend]: true }
                 },
                 values: this.valuesTaskTypeResource.map(x => x[0])
             },
@@ -142,7 +143,7 @@ export class VisualData extends TestDataViewBuilder {
                 source: {
                     displayName: VisualData.ColumnTask,
                     type: ValueType.fromDescriptor({ text: true }),
-                    roles: { "Task": true }
+                    roles: { [GanttRole.Task]: true }
                 },
                 values: this.valuesTaskTypeResource.map(x => x[1]),
             },
@@ -150,7 +151,7 @@ export class VisualData extends TestDataViewBuilder {
                 source: {
                     displayName: VisualData.ColumnResource,
                     type: ValueType.fromDescriptor({ text: true }),
-                    roles: { "Resource": true }
+                    roles: { [GanttRole.Resource]: true }
                 },
                 values: this.valuesTaskTypeResource.map(x => x[2])
             },
@@ -158,7 +159,7 @@ export class VisualData extends TestDataViewBuilder {
                 source: {
                     displayName: VisualData.ColumnExtraInformation,
                     type: ValueType.fromDescriptor({ text: true }),
-                    roles: { "ExtraInformation": true }
+                    roles: { [GanttRole.ExtraInformation]: true }
                 },
                 values: this.valuesExtraInformation
             },
@@ -167,7 +168,7 @@ export class VisualData extends TestDataViewBuilder {
                 source: {
                     displayName: VisualData.ColumnExtraInformationDates,
                     type: ValueType.fromDescriptor({ text: true }),
-                    roles: { "ExtraInformation": true }
+                    roles: { [GanttRole.ExtraInformation]: true }
                 },
                 values: this.valuesExtraInformationDates
             },
@@ -175,7 +176,7 @@ export class VisualData extends TestDataViewBuilder {
                 source: {
                     displayName: VisualData.ColumnParent,
                     type: ValueType.fromDescriptor({ text: true }),
-                    roles: { "Parent": true }
+                    roles: { [GanttRole.Parent]: true }
                 },
                 values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null)
             },
@@ -183,7 +184,7 @@ export class VisualData extends TestDataViewBuilder {
                 source: {
                     displayName: VisualData.ColumnStartDate,
                     type: ValueType.fromDescriptor({ dateTime: true }),
-                    roles: { "StartDate": true }
+                    roles: { [GanttRole.StartDate]: true }
                 },
                 values: this.valuesStartDate
             }
@@ -194,7 +195,7 @@ export class VisualData extends TestDataViewBuilder {
                 source: {
                     displayName: VisualData.ColumnMilestones,
                     type: ValueType.fromDescriptor({ text: true }),
-                    roles: { "Milestones": true }
+                    roles: { [GanttRole.Milestones]: true }
                 },
                 values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null),
             };
@@ -208,7 +209,7 @@ export class VisualData extends TestDataViewBuilder {
                     source: {
                         displayName: VisualData.ColumnDuration,
                         type: ValueType.fromDescriptor({ numeric: true }),
-                        roles: { "Duration": true }
+                        roles: { [GanttRole.Duration]: true }
                     },
                     values: this.valuesDuration,
                     highlights: highlights.length > 0 ? highlights : undefined
@@ -217,7 +218,7 @@ export class VisualData extends TestDataViewBuilder {
                     source: {
                         displayName: VisualData.ColumnCompletePercentage,
                         type: ValueType.fromDescriptor({ numeric: true }),
-                        roles: { "Completion": true }
+                        roles: { [GanttRole.Completion]: true }
                     },
                     values: this.valuesCompletePrecntege,
                     highlights: highlights.length > 0 ? highlights : undefined
