@@ -1,10 +1,10 @@
 ## 3.0.0
-* API 5.4.0+
+* API 5.7.0+
 * Dependencies update
 * Major bugs fixes
 * Support Highlight feature add
 * Eslint support
-* Puppeeter support
+* Playwright support
 
 ## 2.2.3
 * Completion issue fix
