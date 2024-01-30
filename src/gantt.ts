@@ -2191,7 +2191,7 @@ export class Gantt implements IVisual {
                 objectName: "collapsedTasksUpdateId",
                 selector: null,
                 properties: {
-                    value: collapsedTasksUpdateId
+                    value: JSON.stringify(collapsedTasksUpdateId)
                 }
             }]
         });
