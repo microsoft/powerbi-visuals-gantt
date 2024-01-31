@@ -131,9 +131,16 @@ export class GeneralCardSettings extends Card {
         }
     });
 
+    barsRoundedCorners = new formattingSettings.ToggleSwitch({
+        name: "barsRoundedCorners",
+        displayName: "Bars Rounded Corners",
+        displayNameKey: "Visual_BarsRoundedCorners",
+        value: true
+    });
+
     name: string = "general";
     displayNameKey: string = "Visual_General";
-    slices = [this.groupTasks, this.scrollToCurrentTime, this.displayGridLines, this.durationUnit, this.durationMin];
+    slices = [this.groupTasks, this.scrollToCurrentTime, this.displayGridLines, this.durationUnit, this.durationMin, this.barsRoundedCorners];
 }
 
 export class SubTasksCardSettings extends Card {

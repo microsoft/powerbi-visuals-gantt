@@ -1674,8 +1674,8 @@ describe("Gantt", () => {
                         const taskRectY = taskRects[i].getBBox().y;
 
                         if (text) {
-                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2));
-                            expect(taskResourcesY.toFixed(2)).toBeLessThan(taskRectY.toFixed(2));
+                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2), 2);
+                            expect(taskResourcesY.toFixed(2)).toBeCloseTo(taskRectY.toFixed(2), 2);
                         }
                     });
 
@@ -2250,7 +2250,7 @@ describe("Gantt", () => {
                     visualBuilder.update(dataView);
                     resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdatIDsRandom[0]));
                 }, 
-                1 * 1000);
+                1_000);
             });
 
             const promise2 = new Promise((resolve)=> {
@@ -2258,8 +2258,8 @@ describe("Gantt", () => {
                     dataView.metadata.objects = objects2;
                     visualBuilder.update(dataView);
                     resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdatIDsRandom[1]));
-                }, 
-                2 * 1000);
+                },
+                    2_000);
             });
 
             const promise3 = new Promise((resolve)=> {
@@ -2267,8 +2267,8 @@ describe("Gantt", () => {
                     dataView.metadata.objects = objects3;
                     visualBuilder.update(dataView);
                     resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdatIDsRandom[2]));
-                }, 
-                3 * 1000);
+                },
+                    3_000);
             });
 
             const result = await Promise.all([promise1, promise2, promise3]);

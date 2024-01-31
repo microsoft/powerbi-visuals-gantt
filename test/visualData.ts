@@ -130,7 +130,7 @@ export class VisualData extends TestDataViewBuilder {
             highlights = this.generateHighLightedValues(highlightedValuesCount, highLightedElementNumber);
         }
 
-        let categoriesColums: TestDataViewBuilderCategoryColumnOptions[] = [
+        let categoriesColumns: TestDataViewBuilderCategoryColumnOptions[] = [
             {
                 source: {
                     displayName: VisualData.ColumnType,
@@ -200,11 +200,11 @@ export class VisualData extends TestDataViewBuilder {
                 values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null),
             };
 
-            categoriesColums.push(milestoneCategoriesColumn);
+            categoriesColumns.push(milestoneCategoriesColumn);
         }
 
         return this.createCategoricalDataViewBuilder(
-            categoriesColums, [
+            categoriesColumns, [
                 {
                     source: {
                         displayName: VisualData.ColumnDuration,

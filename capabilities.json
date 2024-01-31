@@ -336,6 +336,11 @@
                     "type": {
                         "numeric": true
                     }
+                },
+                "barsRoundedCorners": {
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         },

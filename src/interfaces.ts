@@ -106,7 +106,7 @@ export interface GanttViewModel {
     milestonesData: MilestoneData;
     taskTypes: TaskTypes;
     isDurationFilled: boolean;
-    isEndDateFillled: boolean;
+    isEndDateFilled: boolean;
     isParentFilled: boolean;
     isResourcesFilled: boolean;
 }

@@ -5,28 +5,33 @@ export const drawRoundedRectByPath = (x: number, y: number, width: number, heigh
     if (!width || !height) {
         return;
     }
-    return "M" + x + "," + y
-        + "h" + (width - 2 * radius)
-        + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
-        + "v" + (height - 2 * radius)
-        + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
-        + "h" + (2 * radius - width)
-        + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + -radius
-        + "v" + (2 * radius - height)
-        + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + -radius
-        + "z";
+    const r = radius;
+
+    return `
+    M${x},${y}
+    h${width - 2 * r}
+    a${r},${r} 0 0 1 ${r},${r}
+    v${height - 2 * r}
+    a${r},${r} 0 0 1 ${-r},${r}
+    h${2 * r - width}
+    a${r},${r} 0 0 1 ${-r},${-r}
+    v${2 * r - height}
+    a${r},${r} 0 0 1 ${r},${-r}
+    z
+    `;
 };
 
 export const drawNotRoundedRectByPath = (x: number, y: number, width: number, height: number) => {
     if (!width || !height) {
         return;
     }
-    return "M" + x + "," + y
-        + "h" + width
-        + "v" + height
-        + "h" + (- width)
-        + "v" + (- height)
-        + "z";
+    return `
+    M${x},${y}
+    h${width}
+    v${height}
+    h${-width}
+    v${-height}z
+    `;
 };
 
 export function drawRectangle(taskConfigHeight: number): string {
