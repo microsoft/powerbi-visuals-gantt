@@ -123,12 +123,12 @@ import {TextProperties} from "powerbi-visuals-utils-formattingutils/lib/src/inte
 
 import {FormattingSettingsService} from "powerbi-visuals-utils-formattingmodel";
 import {DateTypeCardSettings, GanttChartSettingsModel} from "./ganttChartSettingsModels";
-import {MilestoneShape} from "./enums/milestoneShape";
-import {LabelForDate} from "./enums/labelForDate";
-import {DateType} from "./enums/dateType";
-import {DurationUnit} from "./enums/durationUnit";
-import {ResourceLabelPosition} from "./enums/resourceLabelPosition";
-import {GanttRole} from "./enums/ganttRole";
+import {MilestoneShape} from "./enums";
+import {LabelForDate} from "./enums";
+import {DateType} from "./enums";
+import {DurationUnit} from "./enums";
+import {ResourceLabelPosition} from "./enums";
+import {GanttRole} from "./enums";
 
 // d3
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;

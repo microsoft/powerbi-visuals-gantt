@@ -31,7 +31,7 @@ import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructor
 import { VisualBuilderBase } from "powerbi-visuals-utils-testutils";
 import { Task } from "../src/interfaces";
 import { Gantt as VisualClass } from "../src/gantt";
-import {DurationUnit} from "../src/enums/durationUnit";
+import {DurationUnit} from "../src/enums";
 
 interface TaskMockParamsInterface {
     id: number;

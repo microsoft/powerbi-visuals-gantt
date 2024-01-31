@@ -26,7 +26,7 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import {DurationUnit} from "./enums/durationUnit";
+import {DurationUnit} from "./enums";
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 const GanttDurationUnitType = [

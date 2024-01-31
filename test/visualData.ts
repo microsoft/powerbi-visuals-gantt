@@ -33,7 +33,7 @@ import ValueType = vt.ValueType;
 import { testDataViewBuilder, getRandomNumber, getRandomNumbers } from "powerbi-visuals-utils-testutils";
 import TestDataViewBuilder = testDataViewBuilder.TestDataViewBuilder;
 import { TestDataViewBuilderColumnOptions, TestDataViewBuilderCategoryColumnOptions } from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/testDataViewBuilder";
-import {GanttRole} from "../src/enums/ganttRole";
+import {GanttRole} from "../src/enums";
 
 export class VisualData extends TestDataViewBuilder {
     public static ColumnType: string = "Type";

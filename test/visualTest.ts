@@ -55,17 +55,17 @@ import {Gantt as VisualClass} from "../src/gantt";
 import {getRandomHexColor, isValidDate} from "../src/utils";
 
 import {DefaultOpacity, DimmedOpacity} from "../src/behavior";
-import {DateType} from "../src/enums/dateType";
-import {Day} from "../src/enums/day";
-import {DurationUnit} from "../src/enums/durationUnit";
+import {DateType} from "../src/enums";
+import {Day} from "../src/enums";
+import {DurationUnit} from "../src/enums";
 import DataView = powerbi.DataView;
 import PrimitiveValue = powerbi.PrimitiveValue;
 
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import IValueFormatter = valueFormatter.IValueFormatter;
-import {MilestoneShape} from "../src/enums/milestoneShape";
-import {ResourceLabelPosition} from "../src/enums/resourceLabelPosition";
+import {MilestoneShape} from "../src/enums";
+import {ResourceLabelPosition} from "../src/enums";
 
 
 const defaultTaskDuration: number = 1;

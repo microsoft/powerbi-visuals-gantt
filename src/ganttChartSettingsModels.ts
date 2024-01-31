@@ -3,10 +3,10 @@ import {formattingSettings} from "powerbi-visuals-utils-formattingmodel";
 import {legendInterfaces} from "powerbi-visuals-utils-chartutils";
 import {LegendDataPoint} from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
 import {ColorHelper} from "powerbi-visuals-utils-colorutils";
-import {MilestoneShape} from "./enums/milestoneShape";
-import {DateType} from "./enums/dateType";
-import {ResourceLabelPosition} from "./enums/resourceLabelPosition";
-import {DurationUnit} from "./enums/durationUnit";
+import {MilestoneShape} from "./enums";
+import {DateType} from "./enums";
+import {ResourceLabelPosition} from "./enums";
+import {DurationUnit} from "./enums";
 import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
 import LegendPosition = legendInterfaces.LegendPosition;
 
@@ -16,7 +16,7 @@ import Card = formattingSettings.SimpleCard;
 import Model = formattingSettings.Model;
 
 import IEnumMember = powerbi.IEnumMember;
-import {Day} from "./enums/day";
+import {Day} from "./enums";
 
 const durationUnitsOptions : IEnumMember[] = [
     { displayName: "Visual_DurationUnit_Days", value: DurationUnit.Day },
