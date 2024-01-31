@@ -1,3 +1,5 @@
+## 2.2.5.0
+* Feature to turn on/off rectangle roundness
 ## 2.2.3
 * Completion issue fix
 
