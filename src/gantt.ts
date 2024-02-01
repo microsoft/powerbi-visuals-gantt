@@ -150,42 +150,34 @@ import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
-
 // powerbi.visuals
 import ISelectionIdBuilder = powerbi.visuals.ISelectionIdBuilder;
-
 // powerbi.extensibility.visual
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import IVisual = powerbi.extensibility.visual.IVisual;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
-
 // powerbi.extensibility.utils.svg
 import SVGManipulations = SVGUtil.manipulation;
 import ClassAndSelector = SVGUtil.CssConstants.ClassAndSelector;
 import createClassAndSelector = SVGUtil.CssConstants.createClassAndSelector;
 import IMargin = SVGUtil.IMargin;
-
 // powerbi.extensibility.utils.type
 import PrimitiveType = valueType.PrimitiveType;
 import ValueType = valueType.ValueType;
-
 // powerbi.extensibility.utils.formatting
 import IValueFormatter = ValueFormatter.IValueFormatter;
-
 // powerbi.extensibility.utils.interactivity
 import appendClearCatcher = interactivityService.appendClearCatcher;
 import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
 import IInteractivityService = interactivityService.IInteractivityService;
 import createInteractivityService = interactivitySelectionService.createInteractivitySelectionService;
-
 // powerbi.extensibility.utils.chart.legend
 import ILegend = legendInterfaces.ILegend;
 import LegendPosition = legendInterfaces.LegendPosition;
 import LegendData = legendInterfaces.LegendData;
 import createLegend = LegendModule.createLegend;
 import LegendDataPoint = legendInterfaces.LegendDataPoint;
-
 // powerbi.extensibility.utils.chart
 import IAxisProperties = axisInterfaces.IAxisProperties;
 
@@ -323,16 +315,16 @@ export class Gantt implements IVisual {
     private static ChartLineHeightDivider: number = 4;
     private static ResourceWidthPadding: number = 10;
     private static TaskLabelsMarginTop: number = 15;
-    private static ComplectionDefault: number = null;
-    private static ComplectionMax: number = 1;
-    private static ComplectionMin: number = 0;
-    private static ComplectionMaxInPercent: number = 100;
+    private static CompletionDefault: number = null;
+    private static CompletionMax: number = 1;
+    private static CompletionMin: number = 0;
+    private static CompletionMaxInPercent: number = 100;
     private static MinTasks: number = 1;
     private static ChartLineProportion: number = 1.5;
     private static MilestoneTop: number = 0;
-    private static DeviderForCalculatingPadding: number = 4;
+    private static DividerForCalculatingPadding: number = 4;
     private static LabelTopOffsetForPadding: number = 0.5;
-    private static DeviderForCalculatingCenter: number = 2;
+    private static DividerForCalculatingCenter: number = 2;
     private static SubtasksLeftMargin: number = 10;
     private static NotCompletedTaskOpacity: number = .5;
     private static TaskOpacity: number = 1;
@@ -568,7 +560,7 @@ export class Gantt implements IVisual {
     }
 
     /**
-     * Get the tooltip info (data display names & formated values)
+     * Get the tooltip info (data display names & formatted values)
      * @param task All task attributes.
      * @param formatters Formatting options for gantt attributes.
      * @param durationUnit Duration unit option
@@ -786,14 +778,14 @@ export class Gantt implements IVisual {
     }
 
     private static getUniqueMilestones(milestonesDataPoints: MilestoneDataPoint[]) {
-        const milestonesWithoutDublicates = {};
+        const milestonesWithoutDuplicates = {};
         milestonesDataPoints.forEach((milestone: MilestoneDataPoint) => {
             if (milestone.name) {
-                milestonesWithoutDublicates[milestone.name] = milestone;
+                milestonesWithoutDuplicates[milestone.name] = milestone;
             }
         });
 
-        return milestonesWithoutDublicates;
+        return milestonesWithoutDuplicates;
     }
 
     private static createMilestones(
@@ -846,10 +838,9 @@ export class Gantt implements IVisual {
      * @param host Host object
      * @param taskTypes
      * @param localizationManager powerbi localization manager
-     * @param isEndDateFillled
+     * @param isEndDateFilled
      * @param hasHighlights if any of the tasks has highlights
      */
-    // eslint-disable-next-line max-lines-per-function
     private static createTasks(
         dataView: DataView,
         taskTypes: TaskTypes,
@@ -859,12 +850,13 @@ export class Gantt implements IVisual {
         settings: GanttChartSettingsModel,
         taskColor: string,
         localizationManager: ILocalizationManager,
-        isEndDateFillled: boolean,
+        isEndDateFilled: boolean,
         hasHighlights: boolean): Task[] {
         const categoricalValues: DataViewValueColumns = dataView?.categorical?.values;
 
         let tasks: Task[] = [];
         const addedParents: string[] = [];
+        taskColor = taskColor || Gantt.DefaultValues.TaskColor;
 
         const values: GanttColumns<any> = GanttColumns.getCategoricalValues(dataView);
 
@@ -879,183 +871,44 @@ export class Gantt implements IVisual {
         const collapsedTasks: string[] = JSON.parse(settings.collapsedTasksCardSettings.list.value);
         let durationUnit: DurationUnit = <DurationUnit>settings.generalCardSettings.durationUnit.value.value.toString();
         let duration: number = settings.generalCardSettings.durationMin.value;
-        const taskProgressShow: boolean = settings.taskCompletionCardSettings.show.value;
 
         let endDate: Date = null;
 
-        // eslint-disable-next-line max-lines-per-function
         values.Task.forEach((categoryValue: PrimitiveValue, index: number) => {
-            let color: string = taskColor || Gantt.DefaultValues.TaskColor;
-            let completion: number = 0;
-            let taskType: TaskTypeMetadata = null;
-            let wasDowngradeDurationUnit: boolean = false;
-            const tooltips: VisualTooltipDataItem[] = [];
-            let stepDurationTransformation: number = 0;
-            let highlight: number = null;
-
             const selectionBuilder: ISelectionIdBuilder = host
                 .createSelectionIdBuilder()
                 .withCategory(dataView.categorical.categories[0], index);
 
-            if (groupValues) {
-                groupValues.forEach((group: GanttColumns<DataViewValueColumn>) => {
-                    let maxCompletionFromTasks: number = lodashMax(values.Completion);
-                    maxCompletionFromTasks = maxCompletionFromTasks > Gantt.ComplectionMax ? Gantt.ComplectionMaxInPercent : Gantt.ComplectionMax;
+            const taskGroupAttributes = this.computeTaskGroupAttributes(taskColor, groupValues, values, index, taskTypes, selectionBuilder, colorHelper, duration, settings, durationUnit);
+            const { color, completion, taskType, wasDowngradeDurationUnit, stepDurationTransformation } = taskGroupAttributes;
 
-                    if (group.Duration && group.Duration.values[index] !== null) {
-                        taskType =
-                            taskTypes.types.find((typeMeta: TaskTypeMetadata) => typeMeta.name === group.Duration.source.groupName);
+            duration = taskGroupAttributes.duration;
+            durationUnit = taskGroupAttributes.durationUnit;
+            endDate = taskGroupAttributes.endDate;
 
-                        if (taskType) {
-                            selectionBuilder.withCategory(taskType.selectionColumn, 0);
-                            color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
-                        }
-
-                        duration = (group.Duration.values[index] as number > settings.generalCardSettings.durationMin.value) ? group.Duration.values[index] as number : settings.generalCardSettings.durationMin.value;
-
-                        if (duration && duration % 1 !== 0) {
-                            durationUnit = DurationHelper.downgradeDurationUnit(durationUnit, duration);
-                            stepDurationTransformation =
-                                GanttDurationUnitType.indexOf(<DurationUnit>settings.generalCardSettings.durationUnit.value.value.toString()) - GanttDurationUnitType.indexOf(durationUnit);
-
-                            duration = DurationHelper.transformDuration(duration, durationUnit, stepDurationTransformation);
-                            wasDowngradeDurationUnit = true;
-                        }
-
-                        completion = ((group.Completion && group.Completion.values[index])
-                            && taskProgressShow
-                            && Gantt.convertToDecimal(group.Completion.values[index] as number, settings.taskCompletionCardSettings.maxCompletion.value, maxCompletionFromTasks)) || null;
-
-                        if (completion !== null) {
-                            if (completion < Gantt.ComplectionMin) {
-                                completion = Gantt.ComplectionMin;
-                            }
-
-                            if (completion > Gantt.ComplectionMax) {
-                                completion = Gantt.ComplectionMax;
-                            }
-                        }
-
-                    } else if (group.EndDate && group.EndDate.values[index] !== null) {
-                        taskType =
-                            taskTypes.types.find((typeMeta: TaskTypeMetadata) => typeMeta.name === group.EndDate.source.groupName);
-
-                        if (taskType) {
-                            selectionBuilder.withCategory(taskType.selectionColumn, 0);
-                            color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
-                        }
-
-                        endDate = group.EndDate.values[index] ? group.EndDate.values[index] as Date : null;
-                        if (typeof (endDate) === "string" || typeof (endDate) === "number") {
-                            endDate = new Date(endDate);
-                        }
-
-                        completion = ((group.Completion && group.Completion.values[index])
-                            && taskProgressShow
-                            && Gantt.convertToDecimal(group.Completion.values[index] as number, settings.taskCompletionCardSettings.maxCompletion.value, maxCompletionFromTasks)) || null;
-
-                        if (completion !== null) {
-                            if (completion < Gantt.ComplectionMin) {
-                                completion = Gantt.ComplectionMin;
-                            }
-
-                            if (completion > Gantt.ComplectionMax) {
-                                completion = Gantt.ComplectionMax;
-                            }
-                        }
-                    }
-                });
-            }
-
-            const selectionId: powerbi.extensibility.ISelectionId = selectionBuilder.createSelectionId();
-            const extraInformation: ExtraInformation[] = [];
-            const resource: string = (values.Resource && values.Resource[index] as string) || "";
-            const parent: string = (values.Parent && values.Parent[index] as string) || null;
-            const Milestone: string = (values.Milestones && !lodashIsEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
-
-            const startDate: Date = (values.StartDate && values.StartDate[index]
-                && isValidDate(new Date(values.StartDate[index])) && new Date(values.StartDate[index]))
-                || new Date(Date.now());
-
-            if (values.ExtraInformation) {
-                const extraInformationKeys: any[] = Object.keys(values.ExtraInformation);
-                for (const key of extraInformationKeys) {
-                    const value: string = values.ExtraInformation[key][index];
-                    if (value) {
-                        extraInformation.push({
-                            displayName: key,
-                            value: value
-                        });
-                    }
-                }
-            }
-
-            if (hasHighlights && categoricalValues) {
-                const notNullIndex = categoricalValues.findIndex(value => value.highlights && value.values[index] != null);
-                if (notNullIndex != -1) highlight = <number>categoricalValues[notNullIndex].highlights[index];
-            }
-
-            const task: Task = {
-                color,
-                completion,
-                resource,
-                index: null,
-                name: categoryValue as string,
-                start: startDate,
-                end: endDate,
-                parent,
-                children: null,
-                visibility: true,
-                duration,
-                taskType: taskType && taskType.name,
-                description: categoryValue as string,
-                tooltipInfo: tooltips,
-                selected: false,
-                identity: selectionId,
+            const {
+                taskParentName,
+                milestone,
+                startDate,
                 extraInformation,
-                daysOffList: [],
-                wasDowngradeDurationUnit,
-                stepDurationTransformation,
-                Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : [],
-                highlight: highlight !== null
-            };
+                highlight,
+                task
+            } = this.createTask(values, index, hasHighlights, categoricalValues, color, completion, categoryValue, endDate, duration, taskType, selectionBuilder, wasDowngradeDurationUnit, stepDurationTransformation);
 
-            if (parent) {
-                let parentTask: Task;
-                if (addedParents.indexOf(parent) === -1) {
-                    addedParents.push(parent);
-
-                    parentTask = {
-                        index: 0,
-                        name: parent,
-                        start: null,
-                        duration: null,
-                        completion: null,
-                        resource: null,
-                        end: null,
-                        parent: null,
-                        children: [task],
-                        visibility: true,
-                        taskType: null,
-                        description: null,
-                        color: null,
-                        tooltipInfo: null,
-                        extraInformation: collapsedTasks.includes(parent) ? extraInformation : null,
-                        daysOffList: null,
-                        wasDowngradeDurationUnit: null,
-                        selected: null,
-                        identity: selectionBuilder.createSelectionId(),
-                        Milestones: Milestone && startDate ? [{ type: Milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : [],
-                        highlight: highlight !== null
-                    };
-
-                    tasks.push(parentTask);
-
-                } else {
-                    parentTask = tasks.filter(x => x.index === 0 && x.name === parent)[0];
-
-                    parentTask.children.push(task);
-                }
+            if (taskParentName) {
+                Gantt.addTaskToParentTask(
+                    categoryValue,
+                    task,
+                    tasks,
+                    taskParentName,
+                    addedParents,
+                    collapsedTasks,
+                    milestone,
+                    startDate,
+                    highlight,
+                    extraInformation,
+                    selectionBuilder,
+                );
             }
 
             tasks.push(task);
@@ -1067,6 +920,14 @@ export class Gantt implements IVisual {
             tasks = Gantt.sortTasksWithParents(tasks, sortingOptions);
         }
 
+        this.updateTaskDetails(tasks, durationUnit, settings, duration, dataView, collapsedTasks);
+
+        this.addTooltipInfoForCollapsedTasks(tasks, collapsedTasks, formatters, durationUnit, localizationManager, isEndDateFilled, settings);
+
+        return tasks;
+    }
+
+    private static updateTaskDetails(tasks: Task[], durationUnit: DurationUnit, settings: GanttChartSettingsModel, duration: number, dataView: powerbi.DataView, collapsedTasks: string[]) {
         tasks.forEach(task => {
             if (task.children && task.children.length) {
                 return;
@@ -1109,10 +970,12 @@ export class Gantt implements IVisual {
                 task.visibility = collapsedTasks.indexOf(task.parent) === -1;
             }
         });
+    }
 
+    private static addTooltipInfoForCollapsedTasks(tasks: Task[], collapsedTasks: string[], formatters: GanttChartFormatters, durationUnit: DurationUnit, localizationManager: powerbi.extensibility.ILocalizationManager, isEndDateFilled: boolean, settings: GanttChartSettingsModel) {
         tasks.forEach((task: Task) => {
             if (!task.children || collapsedTasks.includes(task.name)) {
-                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit, localizationManager, isEndDateFillled);
+                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit, localizationManager, isEndDateFilled);
                 if (task.Milestones) {
                     task.Milestones.forEach((milestone) => {
                         const dateFormatted = formatters.startDateFormatter.format(task.start);
@@ -1122,8 +985,224 @@ export class Gantt implements IVisual {
                 }
             }
         });
+    }
 
-        return tasks;
+    private static createTask(values: GanttColumns<any>, index: number, hasHighlights: boolean, categoricalValues: powerbi.DataViewValueColumns, color: string, completion: number, categoryValue: string | number | Date | boolean, endDate: Date, duration: number, taskType: TaskTypeMetadata, selectionBuilder: powerbi.visuals.ISelectionIdBuilder, wasDowngradeDurationUnit: boolean, stepDurationTransformation: number) {
+        const resource: string = (values.Resource && values.Resource[index] as string) || "";
+        const taskParentName: string = (values.Parent && values.Parent[index] as string) || null;
+        const milestone: string = (values.Milestones && !lodashIsEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
+
+        const startDate: Date = (values.StartDate && values.StartDate[index]
+                && isValidDate(new Date(values.StartDate[index])) && new Date(values.StartDate[index]))
+            || new Date(Date.now());
+
+        const extraInformation: ExtraInformation[] = this.getExtraInformationFromValues(values, index);
+
+        let highlight: number = null;
+        if (hasHighlights && categoricalValues) {
+            const notNullIndex = categoricalValues.findIndex(value => value.highlights && value.values[index] != null);
+            if (notNullIndex != -1) highlight = <number>categoricalValues[notNullIndex].highlights[index];
+        }
+
+        const task: Task = {
+            color,
+            completion,
+            resource,
+            index: null,
+            name: categoryValue as string,
+            start: startDate,
+            end: endDate,
+            parent: taskParentName,
+            children: null,
+            visibility: true,
+            duration,
+            taskType: taskType && taskType.name,
+            description: categoryValue as string,
+            tooltipInfo: [],
+            selected: false,
+            identity: selectionBuilder.createSelectionId(),
+            extraInformation,
+            daysOffList: [],
+            wasDowngradeDurationUnit,
+            stepDurationTransformation,
+            Milestones: milestone && startDate ? [{
+                type: milestone,
+                start: startDate,
+                tooltipInfo: null,
+                category: categoryValue as string
+            }] : [],
+            highlight: highlight !== null
+        };
+
+        return {taskParentName, milestone, startDate, extraInformation, highlight, task};
+    }
+
+    private static computeTaskGroupAttributes(
+        taskColor: string,
+        groupValues: GanttColumns<powerbi.DataViewValueColumn>[],
+        values: GanttColumns<any>,
+        index: number,
+        taskTypes: TaskTypes,
+        selectionBuilder: powerbi.visuals.ISelectionIdBuilder,
+        colorHelper: ColorHelper,
+        duration: number,
+        settings: GanttChartSettingsModel,
+        durationUnit: DurationUnit) {
+        let color: string = taskColor;
+        let completion: number = 0;
+        let taskType: TaskTypeMetadata = null;
+        let wasDowngradeDurationUnit: boolean = false;
+        let stepDurationTransformation: number = 0;
+        let endDate: Date;
+
+        const taskProgressShow: boolean = settings.taskCompletionCardSettings.show.value;
+
+        if (groupValues) {
+            groupValues.forEach((group: GanttColumns<DataViewValueColumn>) => {
+                let maxCompletionFromTasks: number = lodashMax(values.Completion);
+                maxCompletionFromTasks = maxCompletionFromTasks > Gantt.CompletionMax ? Gantt.CompletionMaxInPercent : Gantt.CompletionMax;
+
+                if (group.Duration && group.Duration.values[index] !== null) {
+                    taskType =
+                        taskTypes.types.find((typeMeta: TaskTypeMetadata) => typeMeta.name === group.Duration.source.groupName);
+
+                    if (taskType) {
+                        selectionBuilder.withCategory(taskType.selectionColumn, 0);
+                        color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
+                    }
+
+                    duration = (group.Duration.values[index] as number > settings.generalCardSettings.durationMin.value) ? group.Duration.values[index] as number : settings.generalCardSettings.durationMin.value;
+
+                    if (duration && duration % 1 !== 0) {
+                        durationUnit = DurationHelper.downgradeDurationUnit(durationUnit, duration);
+                        stepDurationTransformation =
+                            GanttDurationUnitType.indexOf(<DurationUnit>settings.generalCardSettings.durationUnit.value.value.toString()) - GanttDurationUnitType.indexOf(durationUnit);
+
+                        duration = DurationHelper.transformDuration(duration, durationUnit, stepDurationTransformation);
+                        wasDowngradeDurationUnit = true;
+                    }
+
+                    completion = ((group.Completion && group.Completion.values[index])
+                        && taskProgressShow
+                        && Gantt.convertToDecimal(group.Completion.values[index] as number, settings.taskCompletionCardSettings.maxCompletion.value, maxCompletionFromTasks)) || null;
+
+                    if (completion !== null) {
+                        if (completion < Gantt.CompletionMin) {
+                            completion = Gantt.CompletionMin;
+                        }
+
+                        if (completion > Gantt.CompletionMax) {
+                            completion = Gantt.CompletionMax;
+                        }
+                    }
+
+                } else if (group.EndDate && group.EndDate.values[index] !== null) {
+                    taskType =
+                        taskTypes.types.find((typeMeta: TaskTypeMetadata) => typeMeta.name === group.EndDate.source.groupName);
+
+                    if (taskType) {
+                        selectionBuilder.withCategory(taskType.selectionColumn, 0);
+                        color = colorHelper.getColorForMeasure(taskType.columnGroup.objects, taskType.name);
+                    }
+
+                    endDate = group.EndDate.values[index] ? group.EndDate.values[index] as Date : null;
+                    if (typeof (endDate) === "string" || typeof (endDate) === "number") {
+                        endDate = new Date(endDate);
+                    }
+
+                    completion = ((group.Completion && group.Completion.values[index])
+                        && taskProgressShow
+                        && Gantt.convertToDecimal(group.Completion.values[index] as number, settings.taskCompletionCardSettings.maxCompletion.value, maxCompletionFromTasks)) || null;
+
+                    if (completion !== null) {
+                        if (completion < Gantt.CompletionMin) {
+                            completion = Gantt.CompletionMin;
+                        }
+
+                        if (completion > Gantt.CompletionMax) {
+                            completion = Gantt.CompletionMax;
+                        }
+                    }
+                }
+            });
+        }
+
+        return {
+            duration,
+            durationUnit,
+            color,
+            completion,
+            taskType,
+            wasDowngradeDurationUnit,
+            stepDurationTransformation,
+            endDate
+        };
+    }
+
+    private static addTaskToParentTask(
+        categoryValue: PrimitiveValue,
+        task: Task,
+        tasks: Task[],
+        taskParentName: string,
+        addedParents: string[],
+        collapsedTasks: string[],
+        milestone: string,
+        startDate: Date,
+        highlight: number,
+        extraInformation: ExtraInformation[],
+        selectionBuilder: ISelectionIdBuilder,
+    ) {
+        if (addedParents.includes(taskParentName)) {
+            const parentTask: Task = tasks.find(x => x.index === 0 && x.name === taskParentName);
+            parentTask.children.push(task);
+        } else {
+            addedParents.push(taskParentName);
+
+            const parentTask: Task = {
+                index: 0,
+                name: taskParentName,
+                start: null,
+                duration: null,
+                completion: null,
+                resource: null,
+                end: null,
+                parent: null,
+                children: [task],
+                visibility: true,
+                taskType: null,
+                description: null,
+                color: null,
+                tooltipInfo: null,
+                extraInformation: collapsedTasks.includes(taskParentName) ? extraInformation : null,
+                daysOffList: null,
+                wasDowngradeDurationUnit: null,
+                selected: null,
+                identity: selectionBuilder.createSelectionId(),
+                Milestones: milestone && startDate ? [{ type: milestone, start: startDate, tooltipInfo: null, category: categoryValue as string }] : [],
+                highlight: highlight !== null
+            };
+
+            tasks.push(parentTask);
+        }
+    }
+
+    private static getExtraInformationFromValues(values: GanttColumns<any>, taskIndex: number): ExtraInformation[] {
+        const extraInformation: ExtraInformation[] = [];
+
+        if (values.ExtraInformation) {
+            const extraInformationKeys: any[] = Object.keys(values.ExtraInformation);
+            for (const key of extraInformationKeys) {
+                const value: string = values.ExtraInformation[key][taskIndex];
+                if (value) {
+                    extraInformation.push({
+                        displayName: key,
+                        value: value
+                    });
+                }
+            }
+        }
+
+        return extraInformation;
     }
 
     public static sortTasksWithParents(tasks: Task[], sortingOptions: SortingOptions): Task[] {
@@ -1355,18 +1434,18 @@ export class Gantt implements IVisual {
         const formatters: GanttChartFormatters = Gantt.getFormatters(dataView, settings, host.locale || null);
 
         const isDurationFilled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRole.Duration)) !== -1,
-            isEndDateFillled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRole.EndDate)) !== -1,
+            isEndDateFilled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRole.EndDate)) !== -1,
             isParentFilled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRole.Parent)) !== -1,
             isResourcesFilled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRole.Resource)) !== -1;
 
-        const legendData: LegendData = Gantt.createLegend(host, colors, settings, taskTypes, !isDurationFilled && !isEndDateFillled);
+        const legendData: LegendData = Gantt.createLegend(host, colors, settings, taskTypes, !isDurationFilled && !isEndDateFilled);
         const milestonesData: MilestoneData = Gantt.createMilestones(dataView, host);
 
         const taskColor: string = (legendData.dataPoints?.length <= 1) || !isDurationFilled
             ? settings.taskConfigCardSettings.fill.value.value
             : null;
 
-        const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFillled, this.hasHighlights);
+        const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFilled, this.hasHighlights);
 
         // Remove empty legend if tasks isn't exist
         const types = lodashGroupBy(tasks, x => x.taskType);
@@ -1380,7 +1459,7 @@ export class Gantt implements IVisual {
             legendData,
             milestonesData,
             isDurationFilled,
-            isEndDateFilled: isEndDateFillled,
+            isEndDateFilled: isEndDateFilled,
             isParentFilled,
             isResourcesFilled
         };
@@ -1395,8 +1474,8 @@ export class Gantt implements IVisual {
             return settings;
         }
 
-        if (settings.taskCompletionCardSettings.maxCompletion.value < Gantt.ComplectionMin || settings.taskCompletionCardSettings.maxCompletion.value > Gantt.ComplectionMaxInPercent) {
-            settings.taskCompletionCardSettings.maxCompletion.value = Gantt.ComplectionDefault;
+        if (settings.taskCompletionCardSettings.maxCompletion.value < Gantt.CompletionMin || settings.taskCompletionCardSettings.maxCompletion.value > Gantt.CompletionMaxInPercent) {
+            settings.taskCompletionCardSettings.maxCompletion.value = Gantt.CompletionDefault;
         }
 
         if (colorHelper.isHighContrast) {
@@ -1511,7 +1590,7 @@ export class Gantt implements IVisual {
 
     /**
     * Called on data change or resizing
-    * @param options The visual option that contains the dataview and the viewport
+    * @param options The visual option that contains the dataView and the viewport
     */
     public update(options: VisualUpdateOptions): void {
         if (!options || !options.dataViews || !options.dataViews[0]) {
@@ -1532,14 +1611,14 @@ export class Gantt implements IVisual {
     private updateInternal(options: VisualUpdateOptions) : void {
         this.viewModel = this.converter(options.dataViews[0], this.host, this.colors, this.colorHelper, this.localizationManager);
 
-        // for dublicated milestone types
+        // for duplicated milestone types
         if (this.viewModel && this.viewModel.milestonesData) {
             const newMilestoneData: MilestoneData = this.viewModel.milestonesData;
-            const milestonesWithoutDublicates = Gantt.getUniqueMilestones(newMilestoneData.dataPoints);
+            const milestonesWithoutDuplicates = Gantt.getUniqueMilestones(newMilestoneData.dataPoints);
 
             newMilestoneData.dataPoints.forEach((dataPoint: MilestoneDataPoint) => {
                 if (dataPoint.name) {
-                    const theSameUniqDataPoint: MilestoneDataPoint = milestonesWithoutDublicates[dataPoint.name];
+                    const theSameUniqDataPoint: MilestoneDataPoint = milestonesWithoutDuplicates[dataPoint.name];
                     dataPoint.color = theSameUniqDataPoint.color;
                     dataPoint.shapeType = theSameUniqDataPoint.shapeType;
                 }
@@ -1588,7 +1667,7 @@ export class Gantt implements IVisual {
         this.collapsedTasks = JSON.parse(settings.collapsedTasksCardSettings.list.value);
         const groupTasks = this.viewModel.settings.generalCardSettings.groupTasks.value;
         const groupedTasks: GroupedTask[] = Gantt.getGroupTasks(tasks, groupTasks, this.collapsedTasks);
-        // do smth with task ids
+        // do something with task ids
         this.updateCommonTasks(groupedTasks);
         this.updateCommonMilestones(groupedTasks);
 
@@ -1737,7 +1816,7 @@ export class Gantt implements IVisual {
             textMeasurementService.measureSvgTextWidth,
             textProperties);
 
-        // If labels do not fit and we are not scrolling, try word breaking
+        // If labels do not fit, and we are not scrolling, try word breaking
         axes.willLabelsWordBreak = (!axes.willLabelsFit && !scrollbarVisible) && AxisHelper.LabelLayoutStrategy.willLabelsWordBreak(
             axes, this.margin, width, textMeasurementService.measureSvgTextWidth,
             textMeasurementService.estimateSvgTextHeight, textMeasurementService.getTailoredTextOrDefault,
@@ -1785,16 +1864,16 @@ export class Gantt implements IVisual {
         settings: GanttChartSettingsModel): void {
 
         const fullResourceLabelMargin = groupedTasks.length * this.getResourceLabelTopMargin();
-        let widthBeforeConvertion = this.margin.left + settings.taskLabelsCardSettings.width.value + axisLength;
+        let widthBeforeConversion = this.margin.left + settings.taskLabelsCardSettings.width.value + axisLength;
 
         if (settings.taskResourceCardSettings.show.value && settings.taskResourceCardSettings.position.value.value === ResourceLabelPosition.Right) {
-            widthBeforeConvertion += Gantt.DefaultValues.ResourceWidth;
+            widthBeforeConversion += Gantt.DefaultValues.ResourceWidth;
         } else {
-            widthBeforeConvertion += Gantt.DefaultValues.ResourceWidth / 2;
+            widthBeforeConversion += Gantt.DefaultValues.ResourceWidth / 2;
         }
 
         const height = PixelConverter.toString(groupedTasks.length * (settings.taskConfigCardSettings.height.value || DefaultChartLineHeight) + this.margin.top + fullResourceLabelMargin);
-        const width = PixelConverter.toString(widthBeforeConvertion);
+        const width = PixelConverter.toString(widthBeforeConversion);
 
         this.ganttSvg
             .attr("height", height)
@@ -2007,7 +2086,7 @@ export class Gantt implements IVisual {
                 .append("rect")
                 .attr("x", (task: GroupedTask) => {
                     const isGrouped = this.viewModel.settings.generalCardSettings.groupTasks.value;
-                    const drawStandartMargin: boolean = !task.tasks[0].parent || task.tasks[0].parent && task.tasks[0].parent !== parentTask;
+                    const drawStandardMargin: boolean = !task.tasks[0].parent || task.tasks[0].parent && task.tasks[0].parent !== parentTask;
                     parentTask = task.tasks[0].parent ? task.tasks[0].parent : task.tasks[0].name;
                     if (task.tasks[0].children) {
                         parentTask = task.tasks[0].name;
@@ -2019,7 +2098,7 @@ export class Gantt implements IVisual {
                         currentChildrenIndex++;
                     }
                     const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
-                    return drawStandartMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
+                    return drawStandardMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
                 })
                 .attr("y", (task: GroupedTask) => (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabelsCardSettings.fontSize.value) / 2)
                 .attr("width", () => displayGridLines ? this.viewport.width : 0)
@@ -2427,7 +2506,7 @@ export class Gantt implements IVisual {
                 const nestedByDate = d3Nest().key((d: Milestone) => d.start.toDateString()).entries(d.Milestones);
                 const updatedMilestones: MilestonePath[] = nestedByDate.map((nestedObj) => {
                     const oneDateMilestones = nestedObj.values;
-                    // if there 2 or more milestones for concrete date => draw only one milestone for concrete date, but with tooltip for all of them
+                    // if there is 2 or more milestones for concrete date => draw only one milestone for concrete date, but with tooltip for all of them
                     const currentMilestone = [...oneDateMilestones].pop();
                     const allTooltipInfo = oneDateMilestones.map((milestone: MilestonePath) => milestone.tooltipInfo);
                     currentMilestone.tooltipInfo = allTooltipInfo.reduce((a, b) => a.concat(b), []);
@@ -2769,11 +2848,11 @@ export class Gantt implements IVisual {
         const barHeight: number = Gantt.getBarHeight(taskConfigHeight);
         switch (taskResourcePosition) {
             case ResourceLabelPosition.Right:
-                return (barHeight / Gantt.DeviderForCalculatingCenter) + (taskResourceFontSize / Gantt.DeviderForCalculatingCenter);
+                return (barHeight / Gantt.DividerForCalculatingCenter) + (taskResourceFontSize / Gantt.DividerForCalculatingCenter);
             case ResourceLabelPosition.Top:
-                return -(taskResourceFontSize / Gantt.DeviderForCalculatingPadding) + Gantt.LabelTopOffsetForPadding;
+                return -(taskResourceFontSize / Gantt.DividerForCalculatingPadding) + Gantt.LabelTopOffsetForPadding;
             case ResourceLabelPosition.Inside:
-                return -(taskResourceFontSize / Gantt.DeviderForCalculatingPadding) + Gantt.LabelTopOffsetForPadding + barHeight / Gantt.ResourceLabelDefaultDivisionCoefficient;
+                return -(taskResourceFontSize / Gantt.DividerForCalculatingPadding) + Gantt.LabelTopOffsetForPadding + barHeight / Gantt.ResourceLabelDefaultDivisionCoefficient;
         }
     }
 
@@ -2876,7 +2955,7 @@ export class Gantt implements IVisual {
     }
 
     /**
-     * convert task duration to width in the time scale
+     * convert task duration to width in the timescale
      * @param start The start of task to convert
      * @param end The end of task to convert
      */
@@ -3076,9 +3155,9 @@ export class Gantt implements IVisual {
                         return;
                     }
 
-                    const milestonesWithoutDublicates = Gantt.getUniqueMilestones(dataPoints);
+                    const milestonesWithoutDuplicates = Gantt.getUniqueMilestones(dataPoints);
 
-                    settings.enumerateMilestones(milestonesWithoutDublicates);
+                    settings.enumerateMilestones(milestonesWithoutDuplicates);
                     break;
                 }
 
