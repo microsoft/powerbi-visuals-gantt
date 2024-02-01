@@ -1652,7 +1652,7 @@ export class Gantt implements IVisual {
                 },
                 allSubtasksCollapse: {
                     selection: this.body
-                        .selectAll(Selectors.CollapseAllArrow.selectorName),
+                        .selectAll(Selectors.CollapseAll.selectorName),
                     callback: this.subTasksCollapseAll.bind(this)
                 },
                 interactivityService: this.interactivityService,
