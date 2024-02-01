@@ -8,9 +8,9 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
-      matrix:
+     matrix:
         node-version: [ 18.x, 20.x ]
 
     steps:
