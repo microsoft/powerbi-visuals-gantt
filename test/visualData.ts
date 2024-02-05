@@ -25,15 +25,18 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import {valueType as vt} from "powerbi-visuals-utils-typeutils";
 
-import DataView = powerbi.DataView;
-import { valueType as vt } from "powerbi-visuals-utils-typeutils";
-import ValueType = vt.ValueType;
-
-import { testDataViewBuilder, getRandomNumber, getRandomNumbers } from "powerbi-visuals-utils-testutils";
-import TestDataViewBuilder = testDataViewBuilder.TestDataViewBuilder;
-import { TestDataViewBuilderColumnOptions, TestDataViewBuilderCategoryColumnOptions } from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/testDataViewBuilder";
+import {getRandomNumber, getRandomNumbers, testDataViewBuilder} from "powerbi-visuals-utils-testutils";
+import {
+    TestDataViewBuilderCategoryColumnOptions,
+    TestDataViewBuilderColumnOptions
+} from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/testDataViewBuilder";
 import {GanttRole} from "../src/enums";
+import {DataViewBuilderValuesColumnOptions} from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/dataViewBuilder";
+import DataView = powerbi.DataView;
+import ValueType = vt.ValueType;
+import TestDataViewBuilder = testDataViewBuilder.TestDataViewBuilder;
 
 export class VisualData extends TestDataViewBuilder {
     public static ColumnType: string = "Type";
@@ -121,74 +124,7 @@ export class VisualData extends TestDataViewBuilder {
     }
 
     public getDataView(columnNames?: string[], withMilestones?: boolean, withHighlights?: boolean): DataView {    
-        let highlights: number[] = [];
-
-        if (withHighlights)
-        {
-            let highLightedElementNumber: number = Math.round(getRandomNumber(0, this.valuesDuration.length - 1));
-            let highlightedValuesCount: number = this.valuesDuration.length;
-            highlights = this.generateHighLightedValues(highlightedValuesCount, highLightedElementNumber);
-        }
-
-        let categoriesColumns: TestDataViewBuilderCategoryColumnOptions[] = [
-            {
-                source: {
-                    displayName: VisualData.ColumnType,
-                    type: ValueType.fromDescriptor({ text: true }),
-                    roles: { [GanttRole.Legend]: true }
-                },
-                values: this.valuesTaskTypeResource.map(x => x[0])
-            },
-            {
-                source: {
-                    displayName: VisualData.ColumnTask,
-                    type: ValueType.fromDescriptor({ text: true }),
-                    roles: { [GanttRole.Task]: true }
-                },
-                values: this.valuesTaskTypeResource.map(x => x[1]),
-            },
-            {
-                source: {
-                    displayName: VisualData.ColumnResource,
-                    type: ValueType.fromDescriptor({ text: true }),
-                    roles: { [GanttRole.Resource]: true }
-                },
-                values: this.valuesTaskTypeResource.map(x => x[2])
-            },
-            {
-                source: {
-                    displayName: VisualData.ColumnExtraInformation,
-                    type: ValueType.fromDescriptor({ text: true }),
-                    roles: { [GanttRole.ExtraInformation]: true }
-                },
-                values: this.valuesExtraInformation
-            },
-
-            {
-                source: {
-                    displayName: VisualData.ColumnExtraInformationDates,
-                    type: ValueType.fromDescriptor({ text: true }),
-                    roles: { [GanttRole.ExtraInformation]: true }
-                },
-                values: this.valuesExtraInformationDates
-            },
-            {
-                source: {
-                    displayName: VisualData.ColumnParent,
-                    type: ValueType.fromDescriptor({ text: true }),
-                    roles: { [GanttRole.Parent]: true }
-                },
-                values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null)
-            },
-            {
-                source: {
-                    displayName: VisualData.ColumnStartDate,
-                    type: ValueType.fromDescriptor({ dateTime: true }),
-                    roles: { [GanttRole.StartDate]: true }
-                },
-                values: this.valuesStartDate
-            }
-        ];
+        let categoriesColumns = this.getCategoryColumns();
 
         if (withMilestones) {
             let milestoneCategoriesColumn: TestDataViewBuilderColumnOptions = {
@@ -203,26 +139,132 @@ export class VisualData extends TestDataViewBuilder {
             categoriesColumns.push(milestoneCategoriesColumn);
         }
 
-        return this.createCategoricalDataViewBuilder(
-            categoriesColumns, [
-                {
-                    source: {
-                        displayName: VisualData.ColumnDuration,
-                        type: ValueType.fromDescriptor({ numeric: true }),
-                        roles: { [GanttRole.Duration]: true }
-                    },
-                    values: this.valuesDuration,
-                    highlights: highlights.length > 0 ? highlights : undefined
+        let highlights: number[] = [];
+        if (withHighlights)
+        {
+            let highLightedElementNumber: number = Math.round(getRandomNumber(0, this.valuesDuration.length - 1));
+            let highlightedValuesCount: number = this.valuesDuration.length;
+            highlights = this.generateHighLightedValues(highlightedValuesCount, highLightedElementNumber);
+        }
+
+        const valuesColumns = this.getValuesColumns(highlights);
+
+        return this.createCategoricalDataViewBuilder(categoriesColumns, valuesColumns, columnNames).build();
+    }
+
+    private getValuesColumns(highlights: number[]) {
+        const valuesColumns: DataViewBuilderValuesColumnOptions[] = [
+            {
+                source: {
+                    displayName: VisualData.ColumnDuration,
+                    type: ValueType.fromDescriptor({numeric: true}),
+                    roles: {[GanttRole.Duration]: true}
                 },
-                {
-                    source: {
-                        displayName: VisualData.ColumnCompletePercentage,
-                        type: ValueType.fromDescriptor({ numeric: true }),
-                        roles: { [GanttRole.Completion]: true }
-                    },
-                    values: this.valuesCompletePrecntege,
-                    highlights: highlights.length > 0 ? highlights : undefined
-                }
-            ], columnNames).build();
+                values: this.valuesDuration,
+                highlights: highlights.length > 0 ? highlights : undefined
+            },
+            {
+                source: {
+                    displayName: VisualData.ColumnCompletePercentage,
+                    type: ValueType.fromDescriptor({numeric: true}),
+                    roles: {[GanttRole.Completion]: true}
+                },
+                values: this.valuesCompletePrecntege,
+                highlights: highlights.length > 0 ? highlights : undefined
+            }
+        ]
+        return valuesColumns;
+    }
+
+    private getCategoryColumns() {
+        let categoriesColumns: TestDataViewBuilderCategoryColumnOptions[] = [
+            {
+                source: {
+                    displayName: VisualData.ColumnType,
+                    type: ValueType.fromDescriptor({text: true}),
+                    roles: {[GanttRole.Legend]: true}
+                },
+                values: this.valuesTaskTypeResource.map(x => x[0])
+            },
+            {
+                source: {
+                    displayName: VisualData.ColumnTask,
+                    type: ValueType.fromDescriptor({text: true}),
+                    roles: {[GanttRole.Task]: true}
+                },
+                values: this.valuesTaskTypeResource.map(x => x[1]),
+            },
+            {
+                source: {
+                    displayName: VisualData.ColumnResource,
+                    type: ValueType.fromDescriptor({text: true}),
+                    roles: {[GanttRole.Resource]: true}
+                },
+                values: this.valuesTaskTypeResource.map(x => x[2])
+            },
+            {
+                source: {
+                    displayName: VisualData.ColumnExtraInformation,
+                    type: ValueType.fromDescriptor({text: true}),
+                    roles: {[GanttRole.ExtraInformation]: true}
+                },
+                values: this.valuesExtraInformation
+            },
+
+            {
+                source: {
+                    displayName: VisualData.ColumnExtraInformationDates,
+                    type: ValueType.fromDescriptor({text: true}),
+                    roles: {[GanttRole.ExtraInformation]: true}
+                },
+                values: this.valuesExtraInformationDates
+            },
+            {
+                source: {
+                    displayName: VisualData.ColumnParent,
+                    type: ValueType.fromDescriptor({text: true}),
+                    roles: {[GanttRole.Parent]: true}
+                },
+                values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null)
+            },
+            {
+                source: {
+                    displayName: VisualData.ColumnStartDate,
+                    type: ValueType.fromDescriptor({dateTime: true}),
+                    roles: {[GanttRole.StartDate]: true}
+                },
+                values: this.valuesStartDate
+            }
+        ];
+        return categoriesColumns;
+    }
+
+    public getDataViewWithHighlights(): DataView {
+        const categoriesColumns: TestDataViewBuilderCategoryColumnOptions[] = this.getCategoryColumns();
+
+        let highlightedElementIndex: number = Math.round(getRandomNumber(0, this.valuesDuration.length - 1));
+
+        const valuesColumns: DataViewBuilderValuesColumnOptions[] = [
+            {
+                source: {
+                    displayName: VisualData.ColumnDuration,
+                    type: ValueType.fromDescriptor({numeric: true}),
+                    roles: {[GanttRole.Duration]: true}
+                },
+                values: this.valuesDuration,
+                highlights: this.valuesDuration.map((value, index) => index === highlightedElementIndex ? value : null)
+            },
+            {
+                source: {
+                    displayName: VisualData.ColumnCompletePercentage,
+                    type: ValueType.fromDescriptor({numeric: true}),
+                    roles: {[GanttRole.Completion]: true}
+                },
+                values: this.valuesCompletePrecntege,
+                highlights: this.valuesCompletePrecntege.map((value, index) => index === highlightedElementIndex ? value : null)
+            }
+        ];
+
+        return this.createCategoricalDataViewBuilder(categoriesColumns, valuesColumns, undefined).build();
     }
 }

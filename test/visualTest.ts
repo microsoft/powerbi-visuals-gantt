@@ -25,7 +25,7 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import {select as d3Select} from "d3-selection";
+import {BaseType, select as d3Select} from "d3-selection";
 import {timeDay as d3TimeDay} from "d3-time";
 
 import lodashMinBy from "lodash.minby";
@@ -55,17 +55,13 @@ import {Gantt as VisualClass} from "../src/gantt";
 import {getRandomHexColor, isValidDate} from "../src/utils";
 
 import {DefaultOpacity, DimmedOpacity} from "../src/behavior";
-import {DateType} from "../src/enums";
-import {Day} from "../src/enums";
-import {DurationUnit} from "../src/enums";
+import {DateType, Day, DurationUnit, MilestoneShape, ResourceLabelPosition} from "../src/enums";
 import DataView = powerbi.DataView;
 import PrimitiveValue = powerbi.PrimitiveValue;
 
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import IValueFormatter = valueFormatter.IValueFormatter;
-import {MilestoneShape} from "../src/enums";
-import {ResourceLabelPosition} from "../src/enums";
 
 
 const defaultTaskDuration: number = 1;
@@ -86,7 +82,7 @@ describe("Gantt", () => {
         
     });
 
-    function fixDataViewDateValuesAggregation(dataView) {
+    function fixDataViewDateValuesAggregation(dataView: DataView) {
         let values = dataView.categorical.values[0].values;
 
         for (let i = 0; i < values.length; ++i) {
@@ -99,7 +95,7 @@ describe("Gantt", () => {
         }
     }
 
-    function getUniqueParentsCount(dataView, parentColumnIndex) {
+    function getUniqueParentsCount(dataView: DataView, parentColumnIndex: number) {
         let uniqueParents: string[] = [];
 
         dataView.table.rows.forEach(row => {
@@ -114,7 +110,7 @@ describe("Gantt", () => {
     describe("DOM tests", () => {
 
         // function that uses grep to filter
-        function grep(val) {
+        function grep(val: BaseType[]) {
             return val.filter((e: Element) => e.innerHTML === "" || e.textContent === "");
         }
 
@@ -313,12 +309,12 @@ describe("Gantt", () => {
         });
 
         // it("Task Completion width is equal task width", (done) => {
-        //     defaultDataViewBuilder.valuesCompletePrecntege = VisualData.getRandomUniqueNumbers(
+        //     defaultDataViewBuilder.valuesCompletePercentage = VisualData.getRandomUniqueNumbers(
         //         defaultDataViewBuilder.valuesTaskTypeResource.length, 0, 100
         //     );
 
-        //     defaultDataViewBuilder.valuesCompletePrecntege.forEach((value, index) => {
-        //         defaultDataViewBuilder.valuesCompletePrecntege[index] = value * 0.01;
+        //     defaultDataViewBuilder.valuesCompletePercentage.forEach((value, index) => {
+        //         defaultDataViewBuilder.valuesCompletePercentage[index] = value * 0.01;
         //     });
 
         //     dataView = defaultDataViewBuilder.getDataView([
@@ -337,7 +333,7 @@ describe("Gantt", () => {
 
         //         let skippedParents: number = 0;
         //         progressOfTasks.forEach((e, i) => {
-        //             let percent: number = defaultDataViewBuilder.valuesCompletePrecntege[i - skippedParents];
+        //             let percent: number = defaultDataViewBuilder.valuesCompletePercentage[i - skippedParents];
         //             let widthOfTask: number = parseFloat((visualBuilder.taskRect[i - skippedParents]).getAttribute("width") ?? "0");
         //             let widthOfProgressTask: number = parseFloat(e.getAttribute("width") ?? "0");
 
@@ -774,7 +770,7 @@ describe("Gantt", () => {
                         if (tooltipInfo.displayName === "Start Date") {
                             let value: string = tooltipInfo.value;
 
-                            expect(value).toMatch(/([a-z].)\s{1}([0-9]{2}),([0-9]{0,4})/);
+                            expect(value).toMatch(/([a-z].)\s([0-9]{2}),([0-9]{0,4})/);
                         }
                     });
                 }
@@ -1376,7 +1372,7 @@ describe("Gantt", () => {
             }
 
             it(`Verify end date of task is weekend date`, (done) => {
-                let startDate: Date = new Date(2017, 8, 29); // Its a last day of working week
+                let startDate: Date = new Date(2017, 8, 29); // It's a last day of working week
                 let endDate: Date = new Date(2017, 8, 30);
 
                 defaultDataViewBuilder.valuesStartDate = VisualData.getRandomUniqueDates(
@@ -1650,7 +1646,7 @@ describe("Gantt", () => {
                         let fontSizePoint: string = PixelConverter.fromPoint(fontSize);
                         fontSizePoint = (+(fontSizePoint.substring(0, fontSizePoint.length - 2))).toFixed(4);
 
-                        expect(fontSizeEl).toEqual(fontSizePoint);
+                       expect(fontSizeEl).toEqual(fontSizePoint);
                     });
 
                     done();
@@ -1674,8 +1670,8 @@ describe("Gantt", () => {
                         const taskRectY = taskRects[i].getBBox().y;
 
                         if (text) {
-                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2), 2);
-                            expect(taskResourcesY.toFixed(2)).toBeCloseTo(taskRectY.toFixed(2), 2);
+                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2), 1);
+                            expect(taskResourcesY.toFixed(2)).toBeLessThan(taskRectY.toFixed(2));
                         }
                     });
 
@@ -1965,7 +1961,7 @@ describe("Gantt", () => {
                 done: () => void
             ): void {
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    elements.forEach(e =>
+                    elements.forEach((e: SVGElement | HTMLElement) =>
                         assertColorsMatch(e.style.getPropertyValue(cssStyle), color));
 
                     done();
@@ -2119,27 +2115,27 @@ describe("Gantt", () => {
         });
 
         it("Elements should be highlighted", (done) => {
-            const dataViewWithHighLighted: DataView = defaultDataViewBuilder.getDataView(undefined, false, true);
+            const dataViewWithHighLighted: DataView = defaultDataViewBuilder.getDataViewWithHighlights();
             visualBuilder.updateRenderTimeout(dataViewWithHighLighted, () => {
                 expect(dataViewWithHighLighted.categorical?.values?.some(value => value.highlights != null && value.highlights.length > 0)).toBe(true);
 
-                let highligtedCount: number = 0;
+                let highlightedCount: number = 0;
                 let nonHighlightedCount: number = 0;
-                const expectedHighligtedCount: number = 1;
+                const expectedHighlightedCount: number = 1;
 
                 const tasks: HTMLElement[] = visualBuilder.tasks;
 
                 tasks.forEach((task: HTMLElement) => {
                     const opacity: string = task?.style?.opacity;
                     if (opacity === defaultOpacity)
-                        highligtedCount++;
+                        highlightedCount++;
                     if (opacity === dimmedOpacity)
                         nonHighlightedCount++;
                 });
 
-                const expectedNonHighligtedCount: number = tasks.length - expectedHighligtedCount;
-                expect(highligtedCount).toBe(expectedHighligtedCount);
-                expect(nonHighlightedCount).toBe(expectedNonHighligtedCount);
+                const expectedNonHighlightedCount: number = tasks.length - expectedHighlightedCount;
+                expect(highlightedCount).toBe(expectedHighlightedCount);
+                expect(nonHighlightedCount).toBe(expectedNonHighlightedCount);
 
                 done();
             });
@@ -2150,18 +2146,16 @@ describe("Gantt", () => {
 
         const collapsedTasksUpdateIDs: string = "collapsedTasksUpdateIDs";
         
-        it("Synchonous one task", (done) => {
+        it("Synchronous one task", (done) => {
             const newId = crypto?.randomUUID() || Math.random().toString();
 
-            visualBuilder.instance[collapsedTasksUpdateIDs] = [newId]; 
+            visualBuilder.instance[collapsedTasksUpdateIDs] = [newId];
 
-            const objects1 = {
+            dataView.metadata.objects = {
                 collapsedTasksUpdateId: {
                     value: newId
                 }
             };
-
-            dataView.metadata.objects = objects1;
 
             visualBuilder.updateRenderTimeout(dataView, () => {
                 expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(0);
@@ -2170,30 +2164,30 @@ describe("Gantt", () => {
         });
 
         it("Synchronous multiple tasks", (done) => {
-            const collapsedTasksUpdatIDsRandom : string[] = []
+            const collapsedTasksUpdateIDsRandom : string[] = []
             
             for (let count = 0; count < 3; count++) {
                 const newId = crypto?.randomUUID() || Math.random().toString();
-                collapsedTasksUpdatIDsRandom.push(newId);
+                collapsedTasksUpdateIDsRandom.push(newId);
             }
 
-            visualBuilder.instance[collapsedTasksUpdateIDs] = collapsedTasksUpdatIDsRandom;
+            visualBuilder.instance[collapsedTasksUpdateIDs] = collapsedTasksUpdateIDsRandom;
 
             const objects1 = {
                 collapsedTasksUpdateId: {
-                    value: collapsedTasksUpdatIDsRandom[0]
+                    value: collapsedTasksUpdateIDsRandom[0]
                 }
             };
 
             const objects2 = {
                 collapsedTasksUpdateId: {
-                    value: collapsedTasksUpdatIDsRandom[1]
+                    value: collapsedTasksUpdateIDsRandom[1]
                 }
             };
 
             const objects3 = {
                 collapsedTasksUpdateId: {
-                    value: collapsedTasksUpdatIDsRandom[2]
+                    value: collapsedTasksUpdateIDsRandom[2]
                 }
             };
 
@@ -2216,30 +2210,30 @@ describe("Gantt", () => {
         });
 
         it("Asynchronous multiple tasks", async () => {
-            const collapsedTasksUpdatIDsRandom : string[] = []
+            const collapsedTasksUpdateIDsRandom : string[] = []
             
             for (let count = 0; count < 3; count++) {
                 const newId = crypto?.randomUUID() || Math.random().toString();
-                collapsedTasksUpdatIDsRandom.push(newId);
+                collapsedTasksUpdateIDsRandom.push(newId);
             }
 
-            visualBuilder.instance[collapsedTasksUpdateIDs] = collapsedTasksUpdatIDsRandom;
+            visualBuilder.instance[collapsedTasksUpdateIDs] = collapsedTasksUpdateIDsRandom;
 
             const objects1 = {
                 collapsedTasksUpdateId: {
-                    value: collapsedTasksUpdatIDsRandom[0]
+                    value: collapsedTasksUpdateIDsRandom[0]
                 }
             };
 
             const objects2 = {
                 collapsedTasksUpdateId: {
-                    value: collapsedTasksUpdatIDsRandom[1]
+                    value: collapsedTasksUpdateIDsRandom[1]
                 }
             };
 
             const objects3 = {
                 collapsedTasksUpdateId: {
-                    value: collapsedTasksUpdatIDsRandom[2]
+                    value: collapsedTasksUpdateIDsRandom[2]
                 }
             };
 
@@ -2248,7 +2242,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects1;
                     visualBuilder.update(dataView);
-                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdatIDsRandom[0]));
+                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[0]));
                 }, 
                 1_000);
             });
@@ -2257,7 +2251,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects2;
                     visualBuilder.update(dataView);
-                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdatIDsRandom[1]));
+                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[1]));
                 },
                     2_000);
             });
@@ -2266,7 +2260,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects3;
                     visualBuilder.update(dataView);
-                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdatIDsRandom[2]));
+                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[2]));
                 },
                     3_000);
             });

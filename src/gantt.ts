@@ -149,7 +149,6 @@ import IColorPalette = powerbi.extensibility.IColorPalette;
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import ISelectionManager = powerbi.extensibility.ISelectionManager;
 // powerbi.visuals
 import ISelectionIdBuilder = powerbi.visuals.ISelectionIdBuilder;
 // powerbi.extensibility.visual
@@ -229,7 +228,6 @@ export class Gantt implements IVisual {
     private static TaskResource: ClassAndSelector = createClassAndSelector("task-resource");
     private static TaskLabels: ClassAndSelector = createClassAndSelector("task-labels");
     private static TaskLines: ClassAndSelector = createClassAndSelector("task-lines");
-    private static LabelLines: ClassAndSelector = createClassAndSelector("label-lines");
     private static TaskLinesRect: ClassAndSelector = createClassAndSelector("task-lines-rect");
     private static TaskTopLine: ClassAndSelector = createClassAndSelector("task-top-line");
     private static CollapseAll: ClassAndSelector = createClassAndSelector("collapse-all");
@@ -362,7 +360,6 @@ export class Gantt implements IVisual {
     private behavior: Behavior;
     private interactivityService: IInteractivityService<Task | LegendDataPoint>;
     private eventService: IVisualEventService;
-    private selectionManager: ISelectionManager;
     private tooltipServiceWrapper: ITooltipServiceWrapper;
     private host: IVisualHost;
     private localizationManager: ILocalizationManager;
@@ -392,7 +389,6 @@ export class Gantt implements IVisual {
         this.behavior = new Behavior();
         this.interactivityService = createInteractivityService(this.host);
         this.eventService = options.host.eventService;
-        this.selectionManager = options.host.createSelectionManager();
 
         this.createViewport(options.element);
     }
@@ -1671,8 +1667,7 @@ export class Gantt implements IVisual {
         this.updateCommonTasks(groupedTasks);
         this.updateCommonMilestones(groupedTasks);
 
-        let tasksAfterGrouping: Task[] = [];
-        groupedTasks.forEach((t: GroupedTask) => tasksAfterGrouping = tasksAfterGrouping.concat(t.tasks));
+        const tasksAfterGrouping: Task[] = groupedTasks.flatMap(t => t.tasks);
         const minDateTask: Task = lodashMinBy(tasksAfterGrouping, (t) => t && t.start);
         const maxDateTask: Task = lodashMaxBy(tasksAfterGrouping, (t) => t && t.end);
         this.hasNotNullableDates = !!minDateTask && !!maxDateTask;
@@ -2708,7 +2703,7 @@ export class Gantt implements IVisual {
             .merge(<any>stopsSelection)
             .attr("offset", (data: LinearStop) => `${data.completion * 100}%`)
             .attr("stop-color", (data: LinearStop) => this.colorHelper.getHighContrastColor("foreground", data.color))
-            .attr("stop-opacity", (data: LinearStop, index: number) => (index > 1) && taskProgressShow ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
+            .attr("stop-opacity", (_: LinearStop, index: number) => (index > 1) && taskProgressShow ? Gantt.NotCompletedTaskOpacity : Gantt.TaskOpacity);
 
         taskProgress
             .exit()
