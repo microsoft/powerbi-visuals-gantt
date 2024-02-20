@@ -2,16 +2,16 @@ name: build
 
 on:
   push:
-    branches: [ main, dev]
+    branches: [ main, dev, certification ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, dev, certification ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
-      matrix:
-        node-version: [18.x]
+     matrix:
+        node-version: [ 18.x, 20.x ]
 
     steps:
     - uses: actions/checkout@v2
@@ -19,14 +19,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: export NODE_OPTIONS=--openssl-legacy-provider
+    - run: npm ci
     - run: npm audit
       continue-on-error: true
     - run: npm outdated
       continue-on-error: true
-    - run: npm ci
-    - run: npm run eslint --if-present
-    - run: npm run lint --if-present
+    - run: npm run eslint
     - run: npm run package
     - run: npm test
       env:

@@ -25,7 +25,8 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import * as _ from "lodash";
+import lodashMapValues from "lodash.mapvalues";
+import lodashToArray from "lodash.toarray";
 
 import DataView = powerbi.DataView;
 import DataViewValueColumn = powerbi.DataViewValueColumn;
@@ -37,32 +38,38 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 
 import { valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
 
-import { converterHelper as ch } from "powerbi-visuals-utils-dataviewutils";
-import converterHelper = ch.converterHelper;
+import { converterHelper } from "powerbi-visuals-utils-dataviewutils";
+import {GanttRole} from "./enums";
 
-const extraInformationRole = "ExtraInformation";
+
+const extraInformationRole = GanttRole.ExtraInformation;
 
 export class GanttColumns<T> {
 
     public static getGroupedValueColumns(dataView: DataView): GanttColumns<DataViewValueColumn>[] {
-        let categorical: DataViewCategorical = dataView && dataView.categorical;
-        let values: DataViewValueColumns = categorical && categorical.values;
-        let grouped: DataViewValueColumnGroup[] = values && values.grouped();
-        return grouped && grouped.map(g => _.mapValues(
+        const categorical: DataViewCategorical = dataView?.categorical;
+        const values: DataViewValueColumns = categorical?.values;
+        const grouped: DataViewValueColumnGroup[] = values?.length && values.grouped();
+
+        if (values === undefined || values.length == 0) {
+            return;
+        }
+
+        return grouped && grouped.map(g => lodashMapValues(
             new this<DataViewValueColumn>(),
             (n, i) => g.values.filter(v => v.source.roles[i])[0]));
     }
 
     public static getCategoricalValues(dataView: DataView): GanttColumns<any> {
-        let categorical: DataViewCategorical = dataView && dataView.categorical;
-        let categories: DataViewCategoricalColumn[] = categorical && categorical.categories || [];
-        let values: DataViewValueColumns = categorical && categorical.values || <DataViewValueColumns>[];
-        let series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
+        const categorical: DataViewCategorical = dataView && dataView.categorical;
+        const categories: DataViewCategoricalColumn[] = categorical && categorical.categories || [];
+        const values: DataViewValueColumns = categorical && categorical.values || <DataViewValueColumns>[];
+        const series: PrimitiveValue[] = categorical && values.source && this.getSeriesValues(dataView);
 
-        return categorical && _.mapValues(new this<any[]>(), (n, i) => {
+        return categorical && lodashMapValues(new this<any[]>(), (n, i) => {
             let columns: PrimitiveValue[] | { [x: string]: PrimitiveValue[]; };
-            (<DataViewValueColumn[]>_.toArray(categories))
-                .concat(_.toArray(values))
+            (<DataViewValueColumn[]>lodashToArray(categories))
+                .concat(lodashToArray(values))
                 .filter(x => x.source.roles && x.source.roles[i])
                 .forEach(x => {
                     if (i === extraInformationRole && x.source.roles && x.source.roles[extraInformationRole]) {

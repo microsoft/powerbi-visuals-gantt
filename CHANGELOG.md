@@ -1,3 +1,14 @@
+## 3.0.0
+* API 5.7.0+
+* Dependencies update
+* Major bugs fixes
+* Support Highlight feature add
+* Eslint support
+* Playwright support
+
+## 2.2.5
+* Feature to turn on/off rectangle roundness
+
 ## 2.2.3
 * Completion issue fix
 
@@ -82,7 +93,7 @@
 ## 1.9.4
  * Fixed issue with tooltip duration
  * Fixed issue with invisible task line when duration is 1
- * Renamed "Extra imformation" field bucket to "Tooltips"
+ * Renamed "Extra information" field bucket to "Tooltips"
 
 ## 1.9.3
  * Fixed issue with tooltip duration

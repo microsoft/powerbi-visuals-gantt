@@ -26,14 +26,14 @@
 
 import powerbi from "powerbi-visuals-api";
 
+import {DurationUnit} from "./enums";
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
-import { DurationUnits } from "./gantt";
 
 const GanttDurationUnitType = [
-    "second",
-    "minute",
-    "hour",
-    "day",
+    DurationUnit.Second,
+    DurationUnit.Minute,
+    DurationUnit.Hour,
+    DurationUnit.Day,
 ];
 
 const HoursInADay: number = 24;
@@ -45,18 +45,18 @@ const SecondsInAHour: number = MinutesInAHour * SecondsInAMinute;
 
 export class DurationHelper {
 
-    public static getNewUnitByFloorDuration(durationUnitTypeIndex: number, duration: number): string {
+    public static getNewUnitByFloorDuration(durationUnitTypeIndex: number, duration: number): DurationUnit {
         if (!durationUnitTypeIndex)
             return GanttDurationUnitType[0];
 
         switch (durationUnitTypeIndex) {
-            case GanttDurationUnitType.indexOf("day"):
+            case GanttDurationUnitType.indexOf(DurationUnit.Day):
                 duration = duration * HoursInADay;
                 break;
-            case GanttDurationUnitType.indexOf("hour"):
+            case GanttDurationUnitType.indexOf(DurationUnit.Hour):
                 duration = duration * MinutesInAHour;
                 break;
-            case GanttDurationUnitType.indexOf("minute"):
+            case GanttDurationUnitType.indexOf(DurationUnit.Minute):
                 duration = duration * SecondsInAMinute;
                 break;
         }
@@ -68,8 +68,8 @@ export class DurationHelper {
         }
     }
 
-    public static downgradeDurationUnit(durationUnit: string, duration: number): string {
-        let durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
+    public static downgradeDurationUnit(durationUnit: DurationUnit, duration: number): DurationUnit {
+        const durationUnitTypeIndex = GanttDurationUnitType.indexOf(durationUnit);
         // if duration == 0.84 day, we need transform duration to minutes in order to get duration without extra loss
         durationUnit = DurationHelper.getNewUnitByFloorDuration(durationUnitTypeIndex, duration);
 
@@ -77,16 +77,16 @@ export class DurationHelper {
     }
 
     public static transformExtraDuration(
-        durationUnit: string | DurationUnits,
+        durationUnit: DurationUnit,
         duration: number): number {
         switch (durationUnit) {
-            case DurationUnits.Hour:
+            case DurationUnit.Hour:
                 return HoursInADay * duration;
 
-            case DurationUnits.Minute:
+            case DurationUnit.Minute:
                 return MinutesInADay * duration;
 
-            case DurationUnits.Second:
+            case DurationUnit.Second:
                 return SecondsInADay * duration;
 
             default:
@@ -97,7 +97,7 @@ export class DurationHelper {
 
     public static transformDuration(
         duration: number,
-        newDurationUnit: string | DurationUnits,
+        newDurationUnit: DurationUnit,
         stepDurationTransformation: number): number {
 
         if (stepDurationTransformation === null || typeof stepDurationTransformation === "undefined") {
@@ -106,15 +106,15 @@ export class DurationHelper {
 
         let transformedDuration: number = duration;
         switch (newDurationUnit) {
-            case DurationUnits.Hour:
+            case DurationUnit.Hour:
                 transformedDuration = duration * HoursInADay;
                 break;
-            case DurationUnits.Minute:
+            case DurationUnit.Minute:
                 transformedDuration = duration * (stepDurationTransformation === 2
                     ? MinutesInADay
                     : MinutesInAHour);
                 break;
-            case DurationUnits.Second:
+            case DurationUnit.Second:
                 transformedDuration = duration * (stepDurationTransformation === 3 ? SecondsInADay
                     : stepDurationTransformation === 2 ? SecondsInAHour
                         : SecondsInAMinute);
@@ -128,23 +128,24 @@ export class DurationHelper {
      * Generate 'Duration' label for tooltip
      * @param duration The duration of task
      * @param durationUnit The duration unit for chart
+     * @param localizationManager managers which returns localized strings
      */
     public static generateLabelForDuration(
         duration: number,
-        durationUnit: string | DurationUnits,
+        durationUnit: DurationUnit,
         localizationManager: ILocalizationManager): string {
 
         let oneDayDuration: number = HoursInADay;
         let oneHourDuration: number = MinutesInAHour;
         let oneMinuteDuration: number = 1;
         switch (durationUnit) {
-            case DurationUnits.Hour:
+            case DurationUnit.Hour:
                 oneHourDuration = 1;
                 break;
-            case DurationUnits.Minute:
+            case DurationUnit.Minute:
                 oneDayDuration = MinutesInADay;
                 break;
-            case DurationUnits.Second:
+            case DurationUnit.Second:
                 oneDayDuration = SecondsInADay;
                 oneHourDuration = SecondsInAHour;
                 oneMinuteDuration = SecondsInAMinute;
@@ -154,14 +155,14 @@ export class DurationHelper {
         let label: string = "";
         const days: number = Math.floor(duration / oneDayDuration);
         label += days ? `${days} ${localizationManager.getDisplayName("Visual_DurationUnit_Days")} ` : ``;
-        if (durationUnit === DurationUnits.Day) {
+        if (durationUnit === DurationUnit.Day) {
             return `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Days")} `;
         }
 
         let timeDelta: number = days * oneDayDuration;
         const hours: number = Math.floor((duration - timeDelta) / oneHourDuration);
         label += hours ? `${hours} ${localizationManager.getDisplayName("Visual_DurationUnit_Hours")} ` : ``;
-        if (durationUnit === DurationUnits.Hour) {
+        if (durationUnit === DurationUnit.Hour) {
             return duration >= 24
                 ? label
                 : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Hours")}`;
@@ -170,7 +171,7 @@ export class DurationHelper {
         timeDelta = (days * oneDayDuration) + (hours * oneHourDuration);
         const minutes: number = Math.floor((duration - timeDelta) / oneMinuteDuration);
         label += minutes ? `${minutes} ${localizationManager.getDisplayName("Visual_DurationUnit_Minutes")} ` : ``;
-        if (durationUnit === DurationUnits.Minute) {
+        if (durationUnit === DurationUnit.Minute) {
             return duration >= 60
                 ? label
                 : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Minutes")} `;
@@ -179,7 +180,7 @@ export class DurationHelper {
         timeDelta = (days * oneDayDuration) + (hours * oneHourDuration) + (minutes * oneMinuteDuration);
         const seconds: number = Math.floor(duration - timeDelta);
         label += seconds ? `${seconds} ${localizationManager.getDisplayName("Visual_DurationUnit_Seconds")} ` : ``;
-        if (durationUnit === DurationUnits.Second) {
+        if (durationUnit === DurationUnit.Second) {
             return duration >= 60
                 ? label
                 : `${duration} ${localizationManager.getDisplayName("Visual_DurationUnit_Seconds")} `;

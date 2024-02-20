@@ -1,32 +1,37 @@
-import * as _ from "lodash";
 import { getRandomNumber } from "powerbi-visuals-utils-testutils";
+import lodashRange from "lodash.range";
 
 export const drawRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
     if (!width || !height) {
         return;
     }
-    return "M" + x + "," + y
-        + "h" + (width - 2 * radius)
-        + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
-        + "v" + (height - 2 * radius)
-        + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
-        + "h" + (2 * radius - width)
-        + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + -radius
-        + "v" + (2 * radius - height)
-        + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + -radius
-        + "z";
+    const r = radius;
+
+    return `
+    M${x},${y}
+    h${width - 2 * r}
+    a${r},${r} 0 0 1 ${r},${r}
+    v${height - 2 * r}
+    a${r},${r} 0 0 1 ${-r},${r}
+    h${2 * r - width}
+    a${r},${r} 0 0 1 ${-r},${-r}
+    v${2 * r - height}
+    a${r},${r} 0 0 1 ${r},${-r}
+    z
+    `;
 };
 
 export const drawNotRoundedRectByPath = (x: number, y: number, width: number, height: number) => {
     if (!width || !height) {
         return;
     }
-    return "M" + x + "," + y
-        + "h" + width
-        + "v" + height
-        + "h" + (- width)
-        + "v" + (- height)
-        + "z";
+    return `
+    M${x},${y}
+    h${width}
+    v${height}
+    h${-width}
+    v${-height}z
+    `;
 };
 
 export function drawRectangle(taskConfigHeight: number): string {
@@ -35,7 +40,7 @@ export function drawRectangle(taskConfigHeight: number): string {
 }
 
 export function drawCircle(taskConfigHeight: number): string {
-    const r = taskConfigHeight / 3, cx = taskConfigHeight / 4, cy = taskConfigHeight / 2;
+    const r: number = taskConfigHeight / 3, cx: number = taskConfigHeight / 4, cy: number = taskConfigHeight / 2;
     return `M ${cx} ${cy}  m -${r}, 0 a ${r}, ${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0`;
 }
 
@@ -48,8 +53,8 @@ export function getRandomHexColor(): string {
 }
 
 export function getHexColorFromNumber(value: number) {
-    let hex = value.toString(16).toUpperCase();
-    return "#" + (hex.length === 6 ? hex : _.range(0, 6 - hex.length, 0).join("") + hex);
+    const hex: string = value.toString(16).toUpperCase();
+    return "#" + (hex.length === 6 ? hex : lodashRange(0, 6 - hex.length, 0).join("") + hex);
 }
 
 export function getRandomInteger(min: number, max: number, exceptionList?: number[]): number {
@@ -65,12 +70,12 @@ export function isValidDate(date: Date): boolean {
 }
 
 export function isStringNotNullEmptyOrUndefined(str: string) {
-    const isReducableType = typeof str === "string" || typeof str === "number" || typeof str === "boolean";
+    const isReducableType: boolean = typeof str === "string" || typeof str === "number" || typeof str === "boolean";
     return str && isReducableType;
 }
 
 export function hashCode(s) {
-    let h;
+    let h: number;
     for (let i = 0; i < s.length; i++) {
         h = Math.imul(31, h) + s.charCodeAt(i) | 0;
     }
