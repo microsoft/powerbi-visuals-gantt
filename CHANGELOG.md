@@ -1,5 +1,5 @@
 ## 3.0.0
-* API 5.7.0+
+* API 5.8.0+
 * Dependencies update
 * Major bugs fixes
 * Support Highlight feature add
