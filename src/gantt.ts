@@ -2410,7 +2410,7 @@ export class Gantt implements IVisual {
             height = Gantt.getBarHeight(taskConfigHeight),
             radius = Gantt.RectRound;
 
-        if (this.formattingSettings.generalCardSettings.barsRoundedCorners.value) {
+        if (barsRoundedCorners) {
             return drawRoundedRectByPath(x, y, width + Gantt.RectRound, height, radius);
         }
 
