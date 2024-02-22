@@ -2400,10 +2400,11 @@ export class Gantt implements IVisual {
             height = Gantt.getBarHeight(taskConfigHeight),
             radius = Gantt.RectRound;
 
-        if (!barsRoundedCorners || width < 2 * radius) {
-            return drawNotRoundedRectByPath(x, y, width, height);
+        if (this.formattingSettings.generalCardSettings.barsRoundedCorners.value) {
+            return drawRoundedRectByPath(x, y, width + Gantt.RectRound, height, radius);
         }
-        return drawRoundedRectByPath(x, y, width + Gantt.RectRound, height, radius);
+
+        return drawNotRoundedRectByPath(x, y, width, height);
     }
 
     /**
@@ -2632,11 +2633,11 @@ export class Gantt implements IVisual {
                     x = x - width / 2;
                 }
 
-                if (width < 2 * radius) {
-                    return drawNotRoundedRectByPath(x, y, width, height);
+                if (this.formattingSettings.generalCardSettings.barsRoundedCorners.value) {
+                    return drawRoundedRectByPath(x, y, width, height, radius);
                 }
 
-                return drawRoundedRectByPath(x, y, width, height, radius);
+                return drawNotRoundedRectByPath(x, y, width, height);
             };
 
             tasksDaysOffMerged
