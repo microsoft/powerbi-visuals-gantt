@@ -2783,7 +2783,8 @@ export class Gantt implements IVisual {
                     + (task.index + 1) * this.getResourceLabelTopMargin())
                 .text((task: Task) => lodashIsEmpty(task.Milestones) && task.resource || "")
                 .style("fill", taskResourceColor)
-                .style("font-size", PixelConverter.fromPoint(taskResourceFontSize));
+                .style("font-size", PixelConverter.fromPoint(taskResourceFontSize))
+                .style("alignment-baseline", taskResourcePosition === ResourceLabelPosition.Inside ? "central" : "auto");
 
             const hasNotNullableDates: boolean = this.hasNotNullableDates;
             const defaultWidth: number = Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding;
