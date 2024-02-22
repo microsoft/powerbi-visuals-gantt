@@ -516,6 +516,10 @@ export class Gantt implements IVisual {
             .selectAll(Gantt.CollapseAll.selectorName)
             .remove();
 
+        this.collapseAllGroup
+            .selectAll(Gantt.CollapseAllArrow.selectorName)
+            .remove();
+
         this.lineGroup
             .selectAll(Gantt.TaskLabels.selectorName)
             .remove();
@@ -2167,6 +2171,10 @@ export class Gantt implements IVisual {
 
             this.collapseAllGroup
                 .selectAll("image")
+                .remove();
+
+            this.collapseAllGroup
+                .selectAll(Gantt.CollapseAllArrow.selectorName)
                 .remove();
 
             this.collapseAllGroup
