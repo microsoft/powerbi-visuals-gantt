@@ -774,7 +774,9 @@ export class Gantt implements IVisual {
     }
 
     private static getUniqueMilestones(milestonesDataPoints: MilestoneDataPoint[]) {
-        const milestonesWithoutDuplicates = {};
+        const milestonesWithoutDuplicates: {
+            [name: string]: MilestoneDataPoint
+        } = {};
         milestonesDataPoints.forEach((milestone: MilestoneDataPoint) => {
             if (milestone.name) {
                 milestonesWithoutDuplicates[milestone.name] = milestone;
@@ -3130,7 +3132,6 @@ export class Gantt implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-
         this.filterSettingsCards();
         this.formattingSettings.setLocalizedOptions(this.localizationManager);
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
@@ -3148,12 +3149,13 @@ export class Gantt implements IVisual {
 
                     const dataPoints: MilestoneDataPoint[] = this.viewModel && this.viewModel.milestonesData.dataPoints;
                     if (!dataPoints || !dataPoints.length) {
+                        settings.milestonesCardSettings.visible = false;
                         return;
                     }
 
                     const milestonesWithoutDuplicates = Gantt.getUniqueMilestones(dataPoints);
 
-                    settings.enumerateMilestones(milestonesWithoutDuplicates);
+                    settings.populateMilestones(milestonesWithoutDuplicates);
                     break;
                 }
 
@@ -3167,17 +3169,9 @@ export class Gantt implements IVisual {
                         return;
                     }
 
-                    settings.enumerateLegend(dataPoints);
+                    settings.populateLegend(dataPoints);
                     break;
                 }
-
-                case Gantt.CollapsedTasksPropertyIdentifier.objectName:
-                    settings.collapsedTasksCardSettings.visible = false;
-                    break;
-
-                case Gantt.CollapsedTasksUpdateIdPropertyIdentifier.objectName:
-                    settings.collapsedTasksUpdateIdCardSettings.visible = false;
-                    break;
 
                 case Gantt.TaskResourcePropertyIdentifier.objectName:
                     if (!this.viewModel.isResourcesFilled) {
