@@ -1842,7 +1842,7 @@ export class Gantt implements IVisual {
             dataDomain: options.forcedXDomain,
             metaDataColumn: metaDataColumn,
             formatString: Gantt.DefaultValues.DateFormatStrings[dateType],
-            outerPadding: 0,
+            outerPadding: 5,
             isScalar: true,
             isVertical: false,
             forcedTickCount: options.forcedTickCount,
