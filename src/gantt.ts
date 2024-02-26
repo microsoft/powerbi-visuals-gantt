@@ -326,7 +326,7 @@ export class Gantt implements IVisual {
     private static SubtasksLeftMargin: number = 10;
     private static NotCompletedTaskOpacity: number = .5;
     private static TaskOpacity: number = 1;
-    private static RectRound: number = 7;
+    public static RectRound: number = 7;
 
     private static TimeScale: timeScale<any, any>;
 
@@ -514,6 +514,10 @@ export class Gantt implements IVisual {
 
         this.collapseAllGroup
             .selectAll(Gantt.CollapseAll.selectorName)
+            .remove();
+
+        this.collapseAllGroup
+            .selectAll(Gantt.CollapseAllArrow.selectorName)
             .remove();
 
         this.lineGroup
@@ -774,7 +778,9 @@ export class Gantt implements IVisual {
     }
 
     private static getUniqueMilestones(milestonesDataPoints: MilestoneDataPoint[]) {
-        const milestonesWithoutDuplicates = {};
+        const milestonesWithoutDuplicates: {
+            [name: string]: MilestoneDataPoint
+        } = {};
         milestonesDataPoints.forEach((milestone: MilestoneDataPoint) => {
             if (milestone.name) {
                 milestonesWithoutDuplicates[milestone.name] = milestone;
@@ -1836,7 +1842,7 @@ export class Gantt implements IVisual {
             dataDomain: options.forcedXDomain,
             metaDataColumn: metaDataColumn,
             formatString: Gantt.DefaultValues.DateFormatStrings[dateType],
-            outerPadding: 0,
+            outerPadding: 5,
             isScalar: true,
             isVertical: false,
             forcedTickCount: options.forcedTickCount,
@@ -2168,6 +2174,10 @@ export class Gantt implements IVisual {
                 .remove();
 
             this.collapseAllGroup
+                .selectAll(Gantt.CollapseAllArrow.selectorName)
+                .remove();
+
+            this.collapseAllGroup
                 .selectAll("rect")
                 .remove();
 
@@ -2400,10 +2410,11 @@ export class Gantt implements IVisual {
             height = Gantt.getBarHeight(taskConfigHeight),
             radius = Gantt.RectRound;
 
-        if (!barsRoundedCorners || width < 2 * radius) {
-            return drawNotRoundedRectByPath(x, y, width, height);
+        if (barsRoundedCorners) {
+            return drawRoundedRectByPath(x, y, width + Gantt.RectRound, height, radius);
         }
-        return drawRoundedRectByPath(x, y, width + Gantt.RectRound, height, radius);
+
+        return drawNotRoundedRectByPath(x, y, width, height);
     }
 
     /**
@@ -2632,11 +2643,11 @@ export class Gantt implements IVisual {
                     x = x - width / 2;
                 }
 
-                if (width < 2 * radius) {
-                    return drawNotRoundedRectByPath(x, y, width, height);
+                if (this.formattingSettings.generalCardSettings.barsRoundedCorners.value) {
+                    return drawRoundedRectByPath(x, y, width, height, radius);
                 }
 
-                return drawRoundedRectByPath(x, y, width, height, radius);
+                return drawNotRoundedRectByPath(x, y, width, height);
             };
 
             tasksDaysOffMerged
@@ -2772,7 +2783,8 @@ export class Gantt implements IVisual {
                     + (task.index + 1) * this.getResourceLabelTopMargin())
                 .text((task: Task) => lodashIsEmpty(task.Milestones) && task.resource || "")
                 .style("fill", taskResourceColor)
-                .style("font-size", PixelConverter.fromPoint(taskResourceFontSize));
+                .style("font-size", PixelConverter.fromPoint(taskResourceFontSize))
+                .style("alignment-baseline", taskResourcePosition === ResourceLabelPosition.Inside ? "central" : "auto");
 
             const hasNotNullableDates: boolean = this.hasNotNullableDates;
             const defaultWidth: number = Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding;
@@ -3129,7 +3141,6 @@ export class Gantt implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-
         this.filterSettingsCards();
         this.formattingSettings.setLocalizedOptions(this.localizationManager);
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
@@ -3147,12 +3158,13 @@ export class Gantt implements IVisual {
 
                     const dataPoints: MilestoneDataPoint[] = this.viewModel && this.viewModel.milestonesData.dataPoints;
                     if (!dataPoints || !dataPoints.length) {
+                        settings.milestonesCardSettings.visible = false;
                         return;
                     }
 
                     const milestonesWithoutDuplicates = Gantt.getUniqueMilestones(dataPoints);
 
-                    settings.enumerateMilestones(milestonesWithoutDuplicates);
+                    settings.populateMilestones(milestonesWithoutDuplicates);
                     break;
                 }
 
@@ -3166,17 +3178,9 @@ export class Gantt implements IVisual {
                         return;
                     }
 
-                    settings.enumerateLegend(dataPoints);
+                    settings.populateLegend(dataPoints);
                     break;
                 }
-
-                case Gantt.CollapsedTasksPropertyIdentifier.objectName:
-                    settings.collapsedTasksCardSettings.visible = false;
-                    break;
-
-                case Gantt.CollapsedTasksUpdateIdPropertyIdentifier.objectName:
-                    settings.collapsedTasksUpdateIdCardSettings.visible = false;
-                    break;
 
                 case Gantt.TaskResourcePropertyIdentifier.objectName:
                     if (!this.viewModel.isResourcesFilled) {

@@ -14,9 +14,11 @@ import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 import Card = formattingSettings.SimpleCard;
 import Model = formattingSettings.Model;
+import FormattingSettingsSlice = formattingSettings.SimpleSlice;
 
 import IEnumMember = powerbi.IEnumMember;
 import {Day} from "./enums";
+import {MilestoneDataPoint} from "./interfaces";
 
 const durationUnitsOptions : IEnumMember[] = [
     { displayName: "Visual_DurationUnit_Days", value: DurationUnit.Day },
@@ -177,6 +179,7 @@ export class CollapsedTasksCardSettings extends Card {
         value: "[]"
     });
 
+    visible: boolean = false;
     name: string = "collapsedTasks";
     displayNameKey: string = "Visual_CollapsedTasks";
     slices = [this.list];
@@ -191,6 +194,7 @@ export class CollapsedTasksUpdateIdCardSettings extends Card {
         value: ""
     });
 
+    visible: boolean = false;
     name: string = "collapsedTasksUpdateId";
     displayNameKey: string = "Visual_CollapsedTasksUpdateId";
     slices = [this.value];
@@ -224,12 +228,13 @@ export class DaysOffCardSettings extends Card {
 }
 
 export class LegendCardSettings extends Card {
-
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
         value: true
     });
+
+    topLevelSlice = this.show;
 
     position = new formattingSettings.ItemDropdown({
         name: "position",
@@ -273,17 +278,15 @@ export class LegendCardSettings extends Card {
         }
     });
 
-    fill = new formattingSettings.ColorPicker({
-        name: "fill",
-        displayNameKey: "Visual_LegendColor",
-        value: { value: "#000000" }
-    });
-
-
     name: string = "legend";
     displayNameKey: string = "Visual_Legend";
-    slices = [this.position, this.showTitle, this.titleText, this.labelColor, this.fontSize, this.fill];
-    topLevelSlice?: formattingSettings.SimpleSlice<any> = this.show;
+    slices: FormattingSettingsSlice[] = [
+        this.position,
+        this.showTitle,
+        this.titleText,
+        this.labelColor,
+        this.fontSize,
+    ];
 }
 
 export class MilestonesCardSettings extends Card {
@@ -303,7 +306,7 @@ export class MilestonesCardSettings extends Card {
 
     name: string = "milestones";
     displayNameKey: string = "Visual_Milestones";
-    slices = [this.fill, this.shapeType];
+    slices = [];
 }
 
 export class TaskLabelsCardSettings extends Card {
@@ -538,13 +541,14 @@ export class GanttChartSettingsModel extends Model {
         this.setLocalizedDisplayName(dateTypeOptions, localizationManager);
     }       
 
-    enumerateMilestones(milestonesWithoutDublicates) {
-
+    populateMilestones(milestonesWithoutDuplicates: {
+        [name: string]: MilestoneDataPoint
+    }) {
         const newSlices = [];
 
-        if (milestonesWithoutDublicates) {
-            for (const uniqMilestones in milestonesWithoutDublicates) {
-                const milestone = milestonesWithoutDublicates[uniqMilestones];
+        if (milestonesWithoutDuplicates) {
+            for (const uniqMilestones in milestonesWithoutDuplicates) {
+                const milestone = milestonesWithoutDuplicates[uniqMilestones];
                 newSlices.push(new formattingSettings.ColorPicker({
                     name: this.milestonesCardSettings.fill.name,
                     displayName: `${milestone.name} color`,
@@ -560,31 +564,24 @@ export class GanttChartSettingsModel extends Model {
                     selector: ColorHelper.normalizeSelector((<ISelectionId>milestone.identity).getSelector(), false),
                 }));
             }
-
-            this.milestonesCardSettings.slices = newSlices;
         }
 
         this.milestonesCardSettings.slices = newSlices;
     }
 
-    enumerateLegend(dataPoints: LegendDataPoint[]) {
-
-        const newSlices = [this.legendCardSettings.show, this.legendCardSettings.position, this.legendCardSettings.showTitle, 
-            this.legendCardSettings.titleText, this.legendCardSettings.labelColor, this.legendCardSettings.fontSize, this.legendCardSettings.fill];
-
-        if (dataPoints) {
-            newSlices.pop();
-            dataPoints.forEach((dataPoint: LegendDataPoint) => {
-                newSlices.push(new formattingSettings.ColorPicker({
-                    name: "fill",
-                    displayName: dataPoint.label,
-                    selector: ColorHelper.normalizeSelector((<ISelectionId>dataPoint.identity).getSelector(), false),
-                    value: { value: dataPoint.color }
-                }));
-            });
+    public populateLegend(dataPoints: LegendDataPoint[]) {
+        if (!dataPoints) {
+            return;
         }
 
-        this.legendCardSettings.slices = newSlices;
+        for (const dataPoint of dataPoints) {
+            this.legendCardSettings.slices.push(new formattingSettings.ColorPicker({
+                name: "fill",
+                displayName: dataPoint.label,
+                selector: ColorHelper.normalizeSelector((<ISelectionId>dataPoint.identity).getSelector(), false),
+                value: { value: dataPoint.color }
+            }));
+        }
     }
 
     public setLocalizedDisplayName(options: IEnumMember[], localizationManager: ILocalizationManager) {
