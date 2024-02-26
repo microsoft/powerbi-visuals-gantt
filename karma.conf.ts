@@ -41,6 +41,12 @@ module.exports = (config) => {
         mode: "development",
         browserNoActivityTimeout: 100000,
         browsers: ["ChromeHeadless"],
+        customLaunchers: {
+          ChromeDebugging: {
+              base: "ChromeHeadless",
+              flags: ["--remote-debugging-port=9333"]
+          }
+        },
         colors: true,
         frameworks: ["jasmine"],
         reporters: [

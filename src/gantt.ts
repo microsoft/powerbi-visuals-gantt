@@ -326,7 +326,7 @@ export class Gantt implements IVisual {
     private static SubtasksLeftMargin: number = 10;
     private static NotCompletedTaskOpacity: number = .5;
     private static TaskOpacity: number = 1;
-    private static RectRound: number = 7;
+    public static RectRound: number = 7;
 
     private static TimeScale: timeScale<any, any>;
 
