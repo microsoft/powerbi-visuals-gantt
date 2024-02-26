@@ -49,7 +49,7 @@
     "powerbi-visuals-utils-colorutils": "^6.0.3",
     "powerbi-visuals-utils-dataviewutils": "^6.0.2",
     "powerbi-visuals-utils-formattingmodel": "^6.0.1",
-    "powerbi-visuals-utils-formattingutils": "^6.0.3",
+    "powerbi-visuals-utils-formattingutils": "^6.1.0",
     "powerbi-visuals-utils-interactivityutils": "^6.0.3",
     "powerbi-visuals-utils-svgutils": "^6.0.3",
     "powerbi-visuals-utils-tooltiputils": "^6.0.3",
@@ -82,7 +82,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-powerbi-visuals": "^0.8.1",
     "jasmine": "^5.1.0",
-    "karma": "^6.4.2",
+    "karma": "^6.4.3",
     "karma-chrome-launcher": "^3.2.0",
     "karma-coverage": "^2.2.1",
     "karma-jasmine": "^5.1.0",
@@ -90,15 +90,15 @@
     "karma-sourcemap-loader": "^0.4.0",
     "karma-typescript": "^5.5.4",
     "karma-typescript-preprocessor": "^0.4.0",
-    "karma-webpack": "^5.0.0",
+    "karma-webpack": "^5.0.1",
     "less": "^4.2.0",
     "less-loader": "^12.2.0",
-    "playwright": "^1.41.1",
-    "powerbi-visuals-tools": "^5.4.1",
+    "playwright-chromium": "^1.41.2",
+    "powerbi-visuals-tools": "^5.4.2",
     "powerbi-visuals-utils-testutils": "^6.0.3",
     "style-loader": "^3.3.4",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
-    "webpack": "^5.90.0"
+    "webpack": "^5.90.3"
   }
 }
