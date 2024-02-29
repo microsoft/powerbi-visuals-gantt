@@ -569,19 +569,30 @@ export class GanttChartSettingsModel extends Model {
         this.milestonesCardSettings.slices = newSlices;
     }
 
-    public populateLegend(dataPoints: LegendDataPoint[]) {
-        if (!dataPoints) {
+    public populateLegend(dataPoints: LegendDataPoint[], localizationManager: ILocalizationManager) {
+        const newSlices: FormattingSettingsSlice[] = [
+            this.legendCardSettings.position,
+            this.legendCardSettings.showTitle,
+            this.legendCardSettings.titleText,
+            this.legendCardSettings.labelColor,
+            this.legendCardSettings.fontSize,
+        ];
+
+        if (!dataPoints || dataPoints.length === 0) {
+            this.legendCardSettings.slices = newSlices;
             return;
         }
 
         for (const dataPoint of dataPoints) {
-            this.legendCardSettings.slices.push(new formattingSettings.ColorPicker({
+            newSlices.push(new formattingSettings.ColorPicker({
                 name: "fill",
-                displayName: dataPoint.label,
+                displayName: dataPoint.label || localizationManager.getDisplayName("Visual_LegendColor"),
                 selector: ColorHelper.normalizeSelector((<ISelectionId>dataPoint.identity).getSelector(), false),
                 value: { value: dataPoint.color }
             }));
         }
+
+        this.legendCardSettings.slices = newSlices;
     }
 
     public setLocalizedDisplayName(options: IEnumMember[], localizationManager: ILocalizationManager) {

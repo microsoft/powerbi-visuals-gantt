@@ -736,7 +736,7 @@ export class Gantt implements IVisual {
                 }
 
                 return {
-                    label: typeMeta.name,
+                    label: typeMeta.name.toString(),
                     color: color,
                     selected: false,
                     identity: host.createSelectionIdBuilder()
@@ -3178,7 +3178,7 @@ export class Gantt implements IVisual {
                         return;
                     }
 
-                    settings.populateLegend(dataPoints);
+                    settings.populateLegend(dataPoints, this.localizationManager);
                     break;
                 }
 
