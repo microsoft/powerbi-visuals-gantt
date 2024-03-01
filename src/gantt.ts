@@ -2169,22 +2169,6 @@ export class Gantt implements IVisual {
                 .attr("width", 0)
                 .attr("fill", "transparent");
 
-            this.collapseAllGroup
-                .selectAll("image")
-                .remove();
-
-            this.collapseAllGroup
-                .selectAll(Gantt.CollapseAllArrow.selectorName)
-                .remove();
-
-            this.collapseAllGroup
-                .selectAll("rect")
-                .remove();
-
-            this.collapseAllGroup
-                .selectAll("text")
-                .remove();
-
             this.lineGroup
                 .selectAll(Gantt.Label.selectorName)
                 .remove();
@@ -3112,7 +3096,7 @@ export class Gantt implements IVisual {
 
         const translateYValue: number = Gantt.TaskLabelsMarginTop + (this.ganttDiv.node() as SVGSVGElement).scrollTop;
         this.axisGroup
-            .attr("transform", SVGManipulations.translate(translateXValue, translateYValue));
+            .attr("transform", SVGManipulations.translate(settings.taskLabelsCardSettings.width.value + margin.left + Gantt.SubtasksLeftMargin, translateYValue));
 
         translateXValue = (this.ganttDiv.node() as SVGSVGElement).scrollLeft;
         this.lineGroup
