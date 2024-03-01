@@ -1,3 +1,8 @@
+## 3.0.2
+* Fix tests
+* Fix label name
+
+
 ## 3.0.1
 * Upgraded to API 5.8.0
 * Fixed bugs related to UI 
