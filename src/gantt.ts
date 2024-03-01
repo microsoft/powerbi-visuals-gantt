@@ -736,7 +736,7 @@ export class Gantt implements IVisual {
                 }
 
                 return {
-                    label: typeMeta.name.toString(),
+                    label: typeMeta.name?.toString(),
                     color: color,
                     selected: false,
                     identity: host.createSelectionIdBuilder()
