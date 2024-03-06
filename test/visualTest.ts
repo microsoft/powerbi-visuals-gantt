@@ -438,7 +438,7 @@ describe("Gantt", () => {
         });
 
         it("Verify tooltips have extra information (date type)", (done) => {
-            let host: IVisualHost = createVisualHost();
+            let host: IVisualHost = createVisualHost({});
             host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
             let dateFormatter: IValueFormatter = valueFormatter.create({ format: undefined, cultureSelector: host.locale });
 
@@ -671,7 +671,7 @@ describe("Gantt", () => {
 
                 dataView.metadata.objects = { dateType: { type: dateType } };
 
-                let host: IVisualHost = createVisualHost();
+                let host: IVisualHost = createVisualHost({});
                 host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
 
                 let xAxisDateFormatter: IValueFormatter = valueFormatter.create({
@@ -720,7 +720,7 @@ describe("Gantt", () => {
         });
 
         it("Verify date format for culture which user have chosen", (done) => {
-            let host: IVisualHost = createVisualHost();
+            let host: IVisualHost = createVisualHost({});
             host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
             let dateFormatter: IValueFormatter = valueFormatter.create({ format: undefined, cultureSelector: host.locale });
 
@@ -780,7 +780,7 @@ describe("Gantt", () => {
         });
 
         it("Verify end date in tooltip", (done) => {
-            let host: IVisualHost = createVisualHost();
+            let host: IVisualHost = createVisualHost({});
             host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
             let dateFormatter: IValueFormatter = valueFormatter.create({ format: undefined, cultureSelector: host.locale });
 

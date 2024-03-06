@@ -1,3 +1,6 @@
+## 3.0.3
+* Render "Collapse all" / "Expand all" even if "Category labels" is disabled
+
 ## 3.0.2
 * Fix tests
 * Fix label name
