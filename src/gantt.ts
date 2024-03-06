@@ -2008,6 +2008,8 @@ export class Gantt implements IVisual {
         const categoriesAreaBackgroundColor: string = this.colorHelper.getThemeColor();
         const isHighContrast: boolean = this.colorHelper.isHighContrast;
 
+        this.updateCollapseAllGroup(categoriesAreaBackgroundColor);
+
         if (taskLabelsShow) {
             this.lineGroupWrapper
                 .attr("width", taskLabelsWidth)
@@ -2109,61 +2111,6 @@ export class Gantt implements IVisual {
             axisLabel
                 .exit()
                 .remove();
-
-            this.collapseAllGroup
-                .selectAll("svg")
-                .remove();
-
-            this.collapseAllGroup
-                .selectAll("rect")
-                .remove();
-
-            this.collapseAllGroup
-                .selectAll("text")
-                .remove();
-
-            if (this.viewModel.isParentFilled) {
-                const categoryLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.width.value;
-                this.collapseAllGroup
-                    .append("rect")
-                    .attr("width", categoryLabelsWidth)
-                    .attr("height", 2 * Gantt.TaskLabelsMarginTop)
-                    .attr("fill", categoriesAreaBackgroundColor);
-
-                const expandCollapseButton = this.collapseAllGroup
-                    .append("svg")
-                    .classed(Gantt.CollapseAllArrow.className, true)
-                    .attr("viewBox", "0 0 48 48")
-                    .attr("width", this.groupLabelSize)
-                    .attr("height", this.groupLabelSize)
-                    .attr("x", 0)
-                    .attr("y", this.secondExpandAllIconOffset)
-                    .attr(this.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
-
-                expandCollapseButton
-                    .append("rect")
-                    .attr("width", this.groupLabelSize)
-                    .attr("height", this.groupLabelSize)
-                    .attr("x", 0)
-                    .attr("y", this.secondExpandAllIconOffset)
-                    .attr("fill", "transparent");
-
-                const buttonExpandCollapseColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
-                if (this.collapsedTasks.length) {
-                    drawExpandButton(expandCollapseButton, buttonExpandCollapseColor);
-                } else {
-                    drawCollapseButton(expandCollapseButton, buttonExpandCollapseColor);
-                }
-
-                this.collapseAllGroup
-                    .append("text")
-                    .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
-                    .attr("y", this.groupLabelSize)
-                    .attr("font-size", "12px")
-                    .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllTextColor))
-                    .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
-            }
-
         } else {
             this.lineGroupWrapper
                 .attr("width", 0)
@@ -2172,6 +2119,62 @@ export class Gantt implements IVisual {
             this.lineGroup
                 .selectAll(Gantt.Label.selectorName)
                 .remove();
+        }
+    }
+
+    private updateCollapseAllGroup(categoriesAreaBackgroundColor: string) {
+        this.collapseAllGroup
+            .selectAll("svg")
+            .remove();
+
+        this.collapseAllGroup
+            .selectAll("rect")
+            .remove();
+
+        this.collapseAllGroup
+            .selectAll("text")
+            .remove();
+
+        if (this.viewModel.isParentFilled) {
+            const categoryLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.width.value;
+            this.collapseAllGroup
+                .append("rect")
+                .attr("width", categoryLabelsWidth)
+                .attr("height", 2 * Gantt.TaskLabelsMarginTop)
+                .attr("fill", categoriesAreaBackgroundColor);
+
+            const expandCollapseButton = this.collapseAllGroup
+                .append("svg")
+                .classed(Gantt.CollapseAllArrow.className, true)
+                .attr("viewBox", "0 0 48 48")
+                .attr("width", this.groupLabelSize)
+                .attr("height", this.groupLabelSize)
+                .attr("x", 0)
+                .attr("y", this.secondExpandAllIconOffset)
+                .attr(this.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
+
+            expandCollapseButton
+                .append("rect")
+                .attr("width", this.groupLabelSize)
+                .attr("height", this.groupLabelSize)
+                .attr("x", 0)
+                .attr("y", this.secondExpandAllIconOffset)
+                .attr("fill", "transparent");
+
+            const buttonExpandCollapseColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
+            if (this.collapsedTasks.length) {
+                drawExpandButton(expandCollapseButton, buttonExpandCollapseColor);
+            } else {
+                drawCollapseButton(expandCollapseButton, buttonExpandCollapseColor);
+            }
+
+            this.collapseAllGroup
+                .append("text")
+                .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
+                .attr("y", this.groupLabelSize)
+                .attr("font-size", "12px")
+                .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllTextColor))
+                .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
         }
     }
 
@@ -2859,11 +2862,11 @@ export class Gantt implements IVisual {
         const barHeight: number = Gantt.getBarHeight(taskConfigHeight);
         switch (taskResourcePosition) {
             case ResourceLabelPosition.Right:
-                return Gantt.TimeScale(task.end) + (taskResourceFontSize / 2) + Gantt.RectRound;
+                return (Gantt.TimeScale(task.end) + (taskResourceFontSize / 2) + Gantt.RectRound) || 0;
             case ResourceLabelPosition.Top:
-                return Gantt.TimeScale(task.start) + Gantt.RectRound;
+                return (Gantt.TimeScale(task.start) + Gantt.RectRound) || 0;
             case ResourceLabelPosition.Inside:
-                return Gantt.TimeScale(task.start) + barHeight / (2 * Gantt.ResourceLabelDefaultDivisionCoefficient) + Gantt.RectRound;
+                return (Gantt.TimeScale(task.start) + barHeight / (2 * Gantt.ResourceLabelDefaultDivisionCoefficient) + Gantt.RectRound) || 0;
         }
     }
 
