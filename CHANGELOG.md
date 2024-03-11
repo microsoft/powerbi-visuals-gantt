@@ -1,3 +1,7 @@
+## 3.0.4
+* Fix issue when milestones were rendered twice
+* Show customized legend name in the tooltips
+
 ## 3.0.3
 * Render "Collapse all" / "Expand all" even if "Category labels" is disabled
 

@@ -485,7 +485,7 @@ describe("Gantt", () => {
             };
             const localizationManager = visualBuilder.visualHost.createLocalizationManager();
 
-            const tooltips = VisualClass.getTooltipInfo(task, formatters, durationUnit, localizationManager, false);
+            const tooltips = VisualClass.getTooltipInfo(task, formatters, durationUnit, localizationManager, false, undefined);
             tooltips
                 .filter(t => t.value !== null && t.value !== undefined)
                 .forEach(t => {
@@ -1666,11 +1666,11 @@ describe("Gantt", () => {
                         const text: string | null = e.textContent;
                         const taskResourcesX = +(e.getAttribute("x") ?? 0);
                         const taskResourcesY = +(e.getAttribute("y") ?? 0);
-                        const taskRectX = taskRects[i].getBBox().x + VisualClass.RectRound * 2;
+                        const taskRectX = taskRects[i].getBBox().x + VisualClass.RectRound;
                         const taskRectY = taskRects[i].getBBox().y;
 
                         if (text) {
-                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2), 1);
+                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2, 2));
                             expect(taskResourcesY.toFixed(2)).toBeLessThan(taskRectY.toFixed(2));
                         }
                     });

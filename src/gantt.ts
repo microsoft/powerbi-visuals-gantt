@@ -565,19 +565,21 @@ export class Gantt implements IVisual {
      * @param formatters Formatting options for gantt attributes.
      * @param durationUnit Duration unit option
      * @param localizationManager powerbi localization manager
-     * @param isEndDateFilled
+     * @param isEndDateFilled if end date is filled
+     * @param roleLegendText customized legend name
      */
     public static getTooltipInfo(
         task: Task,
         formatters: GanttChartFormatters,
         durationUnit: DurationUnit,
         localizationManager: ILocalizationManager,
-        isEndDateFilled: boolean): VisualTooltipDataItem[] {
+        isEndDateFilled: boolean,
+        roleLegendText?: string): VisualTooltipDataItem[] {
 
         const tooltipDataArray: VisualTooltipDataItem[] = [];
         if (task.taskType) {
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_Legend"),
+                displayName: roleLegendText || localizationManager.getDisplayName("Role_Legend"),
                 value: task.taskType
             });
         }
@@ -977,7 +979,7 @@ export class Gantt implements IVisual {
     private static addTooltipInfoForCollapsedTasks(tasks: Task[], collapsedTasks: string[], formatters: GanttChartFormatters, durationUnit: DurationUnit, localizationManager: powerbi.extensibility.ILocalizationManager, isEndDateFilled: boolean, settings: GanttChartSettingsModel) {
         tasks.forEach((task: Task) => {
             if (!task.children || collapsedTasks.includes(task.name)) {
-                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit, localizationManager, isEndDateFilled);
+                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit, localizationManager, isEndDateFilled, settings.legendCardSettings.titleText.value);
                 if (task.Milestones) {
                     task.Milestones.forEach((milestone) => {
                         const dateFormatted = formatters.startDateFormatter.format(task.start);
