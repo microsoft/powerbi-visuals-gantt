@@ -565,19 +565,21 @@ export class Gantt implements IVisual {
      * @param formatters Formatting options for gantt attributes.
      * @param durationUnit Duration unit option
      * @param localizationManager powerbi localization manager
-     * @param isEndDateFilled
+     * @param isEndDateFilled if end date is filled
+     * @param roleLegendText customized legend name
      */
     public static getTooltipInfo(
         task: Task,
         formatters: GanttChartFormatters,
         durationUnit: DurationUnit,
         localizationManager: ILocalizationManager,
-        isEndDateFilled: boolean): VisualTooltipDataItem[] {
+        isEndDateFilled: boolean,
+        roleLegendText?: string): VisualTooltipDataItem[] {
 
         const tooltipDataArray: VisualTooltipDataItem[] = [];
         if (task.taskType) {
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_Legend"),
+                displayName: roleLegendText || localizationManager.getDisplayName("Role_Legend"),
                 value: task.taskType
             });
         }
@@ -977,7 +979,7 @@ export class Gantt implements IVisual {
     private static addTooltipInfoForCollapsedTasks(tasks: Task[], collapsedTasks: string[], formatters: GanttChartFormatters, durationUnit: DurationUnit, localizationManager: powerbi.extensibility.ILocalizationManager, isEndDateFilled: boolean, settings: GanttChartSettingsModel) {
         tasks.forEach((task: Task) => {
             if (!task.children || collapsedTasks.includes(task.name)) {
-                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit, localizationManager, isEndDateFilled);
+                task.tooltipInfo = Gantt.getTooltipInfo(task, formatters, durationUnit, localizationManager, isEndDateFilled, settings.legendCardSettings.titleText.value);
                 if (task.Milestones) {
                     task.Milestones.forEach((milestone) => {
                         const dateFormatted = formatters.startDateFormatter.format(task.start);
@@ -2174,7 +2176,7 @@ export class Gantt implements IVisual {
                 .attr("y", this.groupLabelSize)
                 .attr("font-size", "12px")
                 .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllTextColor))
-                .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
+                .text(this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
         }
     }
 
@@ -2380,7 +2382,10 @@ export class Gantt implements IVisual {
      */
     private getTaskRectWidth(task: Task): number {
         const taskIsCollapsed = this.collapsedTasks.includes(task.name);
-        return this.hasNotNullableDates && (taskIsCollapsed || lodashIsEmpty(task.Milestones)) ? Gantt.taskDurationToWidth(task.start, task.end) : 0;
+
+        return this.hasNotNullableDates && (taskIsCollapsed || lodashIsEmpty(task.Milestones))
+            ? Gantt.taskDurationToWidth(task.start, task.end)
+            : 0;
     }
 
 
@@ -2391,6 +2396,11 @@ export class Gantt implements IVisual {
      * @param barsRoundedCorners are bars with rounded corners
      */
     private drawTaskRect(task: Task, taskConfigHeight: number, barsRoundedCorners: boolean): string {
+        // milestones are already rendered in the function MilestonesRender
+        if (task.Milestones && task.Milestones.length > 0) {
+            return undefined;
+        }
+
         const x = this.hasNotNullableDates ? Gantt.TimeScale(task.start) : 0,
             y = Gantt.getBarYCoordinate(task.index, taskConfigHeight) + (task.index + 1) * this.getResourceLabelTopMargin(),
             width = this.getTaskRectWidth(task),

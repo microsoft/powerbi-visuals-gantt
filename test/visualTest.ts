@@ -485,7 +485,7 @@ describe("Gantt", () => {
             };
             const localizationManager = visualBuilder.visualHost.createLocalizationManager();
 
-            const tooltips = VisualClass.getTooltipInfo(task, formatters, durationUnit, localizationManager, false);
+            const tooltips = VisualClass.getTooltipInfo(task, formatters, durationUnit, localizationManager, false, undefined);
             tooltips
                 .filter(t => t.value !== null && t.value !== undefined)
                 .forEach(t => {
@@ -2007,7 +2007,7 @@ describe("Gantt", () => {
         it("all items having displayName should have displayNameKey property", () => {
             const jsonData = require("../capabilities.json");
 
-            let objectsChecker: Function = (obj) => {
+            let objectsChecker: Function = (obj: any) => {
                 for (let property in obj) {
                     let value: any = obj[property];
 

@@ -38,8 +38,6 @@ import { IBehaviorOptions } from "powerbi-visuals-utils-interactivityutils/lib/i
 export const DimmedOpacity: number = 0.4;
 export const DefaultOpacity: number = 1.0;
 
-const getEvent = () => require("d3-selection").event;
-
 export function getFillOpacity(
     selected: boolean,
     highlight: boolean,
@@ -79,41 +77,40 @@ export class Behavior implements IInteractiveBehavior {
 
         this.bindContextMenu();
 
-        options.taskSelection.on("click", (mouseEvent, dataPoint: Task) => {
-            const event: MouseEvent = mouseEvent as MouseEvent;
-            selectionHandler.handleSelection(dataPoint, event.ctrlKey);
+        options.taskSelection.on("click", (event: MouseEvent, dataPoint: Task) => {
+            selectionHandler.handleSelection(dataPoint, event.ctrlKey || event.metaKey);
 
             event.stopPropagation();
         });
 
-        options.legendSelection.on("click", (event, d: any) => {
-            if (!d.selected) {
-
-                selectionHandler.handleSelection(d, event.ctrlKey);
-                (event as MouseEvent).stopPropagation();
-
-                const selectedType: string = d.tooltipInfo;
-                options.taskSelection.each((d: Task) => {
-                    if (d.taskType === selectedType && d.parent && !d.selected) {
-                        selectionHandler.handleSelection(d, getEvent().ctrlKey);
-                    }
-                });
-            } else {
+        options.legendSelection.on("click", (event: MouseEvent, d: any) => {
+            if (d.selected) {
                 selectionHandler.handleClearSelection();
+                return;
             }
+
+            selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey);
+            event.stopPropagation();
+
+            const selectedType: string = d.tooltipInfo;
+            options.taskSelection.each((d: Task) => {
+                if (d.taskType === selectedType && d.parent && !d.selected) {
+                    selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey);
+                }
+            });
         });
 
-        options.subTasksCollapse.selection.on("click", (event, d: GroupedTask) => {
+        options.subTasksCollapse.selection.on("click", (event: MouseEvent, d: GroupedTask) => {
             if (!d.tasks.map(task => task.children).flat().length) {
                 return;
             }
 
-            (event as MouseEvent).stopPropagation();
+            event.stopPropagation();
             options.subTasksCollapse.callback(d);
         });
 
-        options.allSubtasksCollapse.selection.on("click", (event) => {
-            (event as MouseEvent).stopPropagation();
+        options.allSubtasksCollapse.selection.on("click", (event: MouseEvent) => {
+            event.stopPropagation();
             options.allSubtasksCollapse.callback();
         });
 
@@ -141,7 +138,7 @@ export class Behavior implements IInteractiveBehavior {
     }
 
     private bindContextMenu(): void {
-        this.options.taskSelection.on("contextmenu", (event: PointerEvent, task: Task) => {
+        this.options.taskSelection.on("contextmenu", (event: MouseEvent, task: Task) => {
             if (event) {
                 this.selectionHandler.handleContextMenu(
                     task,
@@ -153,7 +150,7 @@ export class Behavior implements IInteractiveBehavior {
             }
         });
 
-        this.options.legendSelection.on("contextmenu", (event: PointerEvent, legend: any) => {
+        this.options.legendSelection.on("contextmenu", (event: MouseEvent, legend: any) => {
             if (event) {
                 this.selectionHandler.handleContextMenu(
                     legend,
@@ -165,7 +162,7 @@ export class Behavior implements IInteractiveBehavior {
             }
         });
 
-        this.options.subTasksCollapse.selection.on("contextmenu", (event: PointerEvent) => {
+        this.options.subTasksCollapse.selection.on("contextmenu", (event: MouseEvent) => {
             if (event) {
                 this.selectionHandler.handleContextMenu(
                     null,
@@ -177,7 +174,7 @@ export class Behavior implements IInteractiveBehavior {
             }
         });
 
-        this.options.allSubtasksCollapse.selection.on("contextmenu", (event: PointerEvent) => {
+        this.options.allSubtasksCollapse.selection.on("contextmenu", (event: MouseEvent) => {
             if (event) {
                 this.selectionHandler.handleContextMenu(
                     null,
@@ -189,7 +186,7 @@ export class Behavior implements IInteractiveBehavior {
             }
         });
 
-        this.options.clearCatcher.on("contextmenu", (event: PointerEvent) => {
+        this.options.clearCatcher.on("contextmenu", (event: MouseEvent) => {
             if (event) {
                 this.selectionHandler.handleContextMenu(
                     null,
