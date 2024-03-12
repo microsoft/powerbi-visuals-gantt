@@ -1670,7 +1670,7 @@ describe("Gantt", () => {
                         const taskRectY = taskRects[i].getBBox().y;
 
                         if (text) {
-                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2, 1));
+                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2), 1);
                             expect(taskResourcesY.toFixed(2)).toBeLessThan(taskRectY.toFixed(2));
                         }
                     });
@@ -2007,7 +2007,7 @@ describe("Gantt", () => {
         it("all items having displayName should have displayNameKey property", () => {
             const jsonData = require("../capabilities.json");
 
-            let objectsChecker: Function = (obj) => {
+            let objectsChecker: Function = (obj: any) => {
                 for (let property in obj) {
                     let value: any = obj[property];
 
