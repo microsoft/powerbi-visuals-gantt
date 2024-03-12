@@ -2396,6 +2396,7 @@ export class Gantt implements IVisual {
      * @param barsRoundedCorners are bars with rounded corners
      */
     private drawTaskRect(task: Task, taskConfigHeight: number, barsRoundedCorners: boolean): string {
+        // milestones are already rendered in the function MilestonesRender
         if (task.Milestones && task.Milestones.length > 0) {
             return undefined;
         }
