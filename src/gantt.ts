@@ -2176,7 +2176,7 @@ export class Gantt implements IVisual {
                 .attr("y", this.groupLabelSize)
                 .attr("font-size", "12px")
                 .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllTextColor))
-                .text(this.collapsedTasks.length ? "Expand All" : "Collapse All");
+                .text(this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
         }
     }
 

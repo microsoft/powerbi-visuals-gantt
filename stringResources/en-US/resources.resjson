@@ -94,5 +94,7 @@
 	"Visual_Shape_Rhombus": "Rhombus",
 	"Visual_Shape_Square": "Square",
 	"Visual_Shape_Circle": "Circle",
-	"Visual_Description_Milestones": "Display milestones options"
+	"Visual_Description_Milestones": "Display milestones options",
+	"Visual_Expand_All": "Expand All",
+	"Visual_Collapse_All": "Collapse All"
 }
