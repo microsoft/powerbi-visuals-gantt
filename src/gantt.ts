@@ -2382,7 +2382,10 @@ export class Gantt implements IVisual {
      */
     private getTaskRectWidth(task: Task): number {
         const taskIsCollapsed = this.collapsedTasks.includes(task.name);
-        return this.hasNotNullableDates && (taskIsCollapsed || lodashIsEmpty(task.Milestones)) ? Gantt.taskDurationToWidth(task.start, task.end) : 0;
+
+        return this.hasNotNullableDates && (taskIsCollapsed || lodashIsEmpty(task.Milestones))
+            ? Gantt.taskDurationToWidth(task.start, task.end)
+            : 0;
     }
 
 
@@ -2393,6 +2396,10 @@ export class Gantt implements IVisual {
      * @param barsRoundedCorners are bars with rounded corners
      */
     private drawTaskRect(task: Task, taskConfigHeight: number, barsRoundedCorners: boolean): string {
+        if (task.Milestones && task.Milestones.length > 0) {
+            return undefined;
+        }
+
         const x = this.hasNotNullableDates ? Gantt.TimeScale(task.start) : 0,
             y = Gantt.getBarYCoordinate(task.index, taskConfigHeight) + (task.index + 1) * this.getResourceLabelTopMargin(),
             width = this.getTaskRectWidth(task),

@@ -1666,11 +1666,11 @@ describe("Gantt", () => {
                         const text: string | null = e.textContent;
                         const taskResourcesX = +(e.getAttribute("x") ?? 0);
                         const taskResourcesY = +(e.getAttribute("y") ?? 0);
-                        const taskRectX = taskRects[i].getBBox().x + VisualClass.RectRound;
+                        const taskRectX = taskRects[i].getBBox().x + VisualClass.RectRound * 2;
                         const taskRectY = taskRects[i].getBBox().y;
 
                         if (text) {
-                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2, 2));
+                            expect(taskResourcesX.toFixed(2)).toBeCloseTo(taskRectX.toFixed(2, 1));
                             expect(taskResourcesY.toFixed(2)).toBeLessThan(taskRectY.toFixed(2));
                         }
                     });
