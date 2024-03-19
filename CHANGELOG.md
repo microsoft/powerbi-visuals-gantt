@@ -1,3 +1,7 @@
+## 3.0.6
+* Rollback shifted task bars in order to have backwards compatibility
+* NPM vulnerabilities fixed
+
 ## 3.0.5
 * Fix issue with disappearing of the task bar
 * Fix issue with shifted task bar when `barsRoundedCorners` is enabled

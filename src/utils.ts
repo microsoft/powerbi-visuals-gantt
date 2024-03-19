@@ -9,7 +9,7 @@ export const drawRoundedRectByPath = (x: number, y: number, width: number, heigh
 
     return `
     M${x},${y}
-    h${width - r}
+    h${width - 2 * r}
     a${r},${r} 0 0 1 ${r},${r}
     v${height - 2 * r}
     a${r},${r} 0 0 1 ${-r},${r}
