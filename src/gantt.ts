@@ -2397,11 +2397,6 @@ export class Gantt implements IVisual {
      * @param barsRoundedCorners are bars with rounded corners
      */
     private drawTaskRect(task: Task, taskConfigHeight: number, barsRoundedCorners: boolean): string {
-        // milestones are already rendered in the function MilestonesRender
-        if (task.Milestones && task.Milestones.length > 0) {
-            return undefined;
-        }
-
         const x = this.hasNotNullableDates ? Gantt.TimeScale(task.start) : 0,
             y = Gantt.getBarYCoordinate(task.index, taskConfigHeight) + (task.index + 1) * this.getResourceLabelTopMargin(),
             width = this.getTaskRectWidth(task),
@@ -2409,7 +2404,7 @@ export class Gantt implements IVisual {
             radius = Gantt.RectRound;
 
         if (barsRoundedCorners) {
-            return drawRoundedRectByPath(x, y, width + Gantt.RectRound, height, radius);
+            return drawRoundedRectByPath(x, y, width, height, radius);
         }
 
         return drawNotRoundedRectByPath(x, y, width, height);
