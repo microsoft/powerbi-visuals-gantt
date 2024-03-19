@@ -52,6 +52,7 @@ export function getFillOpacity(
 }
 
 export interface BehaviorOptions extends IBehaviorOptions<Task> {
+    rootElement: Selection<any>;
     clearCatcher: Selection<any>;
     taskSelection: Selection<Task>;
     legendSelection: Selection<any>;
@@ -138,6 +139,19 @@ export class Behavior implements IInteractiveBehavior {
     }
 
     private bindContextMenu(): void {
+        this.options.rootElement.on("contextmenu", (event: MouseEvent) => {
+            if (!event) {
+                return;
+            }
+
+            this.selectionHandler.handleContextMenu(null, {
+                x: event.clientX,
+                y: event.clientY,
+            })
+
+            event.preventDefault();
+        });
+
         this.options.taskSelection.on("contextmenu", (event: MouseEvent, task: Task) => {
             if (event) {
                 this.selectionHandler.handleContextMenu(

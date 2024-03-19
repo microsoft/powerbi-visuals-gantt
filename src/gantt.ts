@@ -1726,6 +1726,7 @@ export class Gantt implements IVisual {
     private bindInteractivityService(tasks: Task[]): void {
         if (this.interactivityService) {
             const behaviorOptions: BehaviorOptions = {
+                rootElement: this.body,
                 clearCatcher: this.clearCatcher,
                 taskSelection: this.taskGroup.selectAll(Gantt.SingleTask.selectorName),
                 legendSelection: this.body.selectAll(Gantt.LegendItems.selectorName),
