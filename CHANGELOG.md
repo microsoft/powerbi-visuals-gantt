@@ -1,3 +1,7 @@
+## 3.0.5
+* Fix issue with disappearing of the task bar
+* Fix issue with shifted task bar when `barsRoundedCorners` is enabled
+
 ## 3.0.4
 * Fix issue when milestones were rendered twice
 * Show customized legend name in the tooltips

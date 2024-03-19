@@ -3,13 +3,13 @@ import lodashRange from "lodash.range";
 
 export const drawRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
     if (!width || !height) {
-        return;
+        return undefined;
     }
     const r = radius;
 
     return `
     M${x},${y}
-    h${width - 2 * r}
+    h${width - r}
     a${r},${r} 0 0 1 ${r},${r}
     v${height - 2 * r}
     a${r},${r} 0 0 1 ${-r},${r}
@@ -23,7 +23,7 @@ export const drawRoundedRectByPath = (x: number, y: number, width: number, heigh
 
 export const drawNotRoundedRectByPath = (x: number, y: number, width: number, height: number) => {
     if (!width || !height) {
-        return;
+        return undefined;
     }
     return `
     M${x},${y}
