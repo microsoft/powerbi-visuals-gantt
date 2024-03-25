@@ -147,6 +147,7 @@ export class Behavior implements IInteractiveBehavior {
                         y: event.clientY
                     });
                 event.preventDefault();
+                event.stopPropagation();
             }
         });
 
@@ -159,30 +160,7 @@ export class Behavior implements IInteractiveBehavior {
                         y: event.clientY
                     });
                 event.preventDefault();
-            }
-        });
-
-        this.options.subTasksCollapse.selection.on("contextmenu", (event: MouseEvent) => {
-            if (event) {
-                this.selectionHandler.handleContextMenu(
-                    null,
-                    {
-                        x: event.clientX,
-                        y: event.clientY
-                    });
-                event.preventDefault();
-            }
-        });
-
-        this.options.allSubtasksCollapse.selection.on("contextmenu", (event: MouseEvent) => {
-            if (event) {
-                this.selectionHandler.handleContextMenu(
-                    null,
-                    {
-                        x: event.clientX,
-                        y: event.clientY
-                    });
-                event.preventDefault();
+                event.stopPropagation();
             }
         });
 

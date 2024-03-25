@@ -1,3 +1,7 @@
+## 3.0.7
+* Fix issue with showing multiple context menus
+* Fix npm vulnerabilities
+
 ## 3.0.6
 * Rollback shifted task bars in order to have backwards compatibility
 * NPM vulnerabilities fixed
