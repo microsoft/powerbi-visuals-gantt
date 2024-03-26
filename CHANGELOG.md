@@ -1,3 +1,9 @@
+## 3.0.9
+* Fix axis position compared to tasks position
+
+## 3.0.8
+* Fix bar start position and axis visibility on scroll
+
 ## 3.0.7
 * Fix issue with showing multiple context menus
 * Fix npm vulnerabilities

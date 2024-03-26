@@ -420,11 +420,6 @@ export class Gantt implements IVisual {
             .append("g")
             .classed(Gantt.Tasks.className, true);
 
-        // create tasks container
-        this.taskGroup = this.chartGroup
-            .append("g")
-            .classed(Gantt.Tasks.className, true);
-
         // create axis container
         this.axisGroup = this.ganttSvg
             .append("g")
@@ -476,6 +471,7 @@ export class Gantt implements IVisual {
                 const taskLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.show.value
                     ? this.viewModel.settings.taskLabelsCardSettings.width.value
                     : 0;
+
                 const scrollTop: number = <number>event.target.scrollTop;
                 const scrollLeft: number = <number>event.target.scrollLeft;
 
@@ -1844,7 +1840,7 @@ export class Gantt implements IVisual {
             dataDomain: options.forcedXDomain,
             metaDataColumn: metaDataColumn,
             formatString: Gantt.DefaultValues.DateFormatStrings[dateType],
-            outerPadding: 5,
+            outerPadding: 0,
             isScalar: true,
             isVertical: false,
             forcedTickCount: options.forcedTickCount,
@@ -2010,7 +2006,7 @@ export class Gantt implements IVisual {
         const categoriesAreaBackgroundColor: string = this.colorHelper.getThemeColor();
         const isHighContrast: boolean = this.colorHelper.isHighContrast;
 
-        this.updateCollapseAllGroup(categoriesAreaBackgroundColor);
+        this.updateCollapseAllGroup(categoriesAreaBackgroundColor, taskLabelsShow);
 
         if (taskLabelsShow) {
             this.lineGroupWrapper
@@ -2124,7 +2120,7 @@ export class Gantt implements IVisual {
         }
     }
 
-    private updateCollapseAllGroup(categoriesAreaBackgroundColor: string) {
+    private updateCollapseAllGroup(categoriesAreaBackgroundColor: string, taskLabelShow: boolean) {
         this.collapseAllGroup
             .selectAll("svg")
             .remove();
@@ -2138,7 +2134,10 @@ export class Gantt implements IVisual {
             .remove();
 
         if (this.viewModel.isParentFilled) {
-            const categoryLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.width.value;
+            const categoryLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.show.value
+                ? this.viewModel.settings.taskLabelsCardSettings.width.value
+                : 0;
+
             this.collapseAllGroup
                 .append("rect")
                 .attr("width", categoryLabelsWidth)
@@ -2151,7 +2150,7 @@ export class Gantt implements IVisual {
                 .attr("viewBox", "0 0 48 48")
                 .attr("width", this.groupLabelSize)
                 .attr("height", this.groupLabelSize)
-                .attr("x", 0)
+                .attr("x", 7.5)
                 .attr("y", this.secondExpandAllIconOffset)
                 .attr(this.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
 
@@ -2170,13 +2169,15 @@ export class Gantt implements IVisual {
                 drawCollapseButton(expandCollapseButton, buttonExpandCollapseColor);
             }
 
-            this.collapseAllGroup
-                .append("text")
-                .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
-                .attr("y", this.groupLabelSize)
-                .attr("font-size", "12px")
-                .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllTextColor))
-                .text(this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
+            if (taskLabelShow) {
+                this.collapseAllGroup
+                    .append("text")
+                    .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
+                    .attr("y", this.groupLabelSize)
+                    .attr("font-size", "12px")
+                    .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllTextColor))
+                    .text(this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
+            }
         }
     }
 
@@ -3104,13 +3105,13 @@ export class Gantt implements IVisual {
 
         const translateYValue: number = Gantt.TaskLabelsMarginTop + (this.ganttDiv.node() as SVGSVGElement).scrollTop;
         this.axisGroup
-            .attr("transform", SVGManipulations.translate(settings.taskLabelsCardSettings.width.value + margin.left + Gantt.SubtasksLeftMargin, translateYValue));
+            .attr("transform", SVGManipulations.translate(translateXValue, translateYValue));
 
         translateXValue = (this.ganttDiv.node() as SVGSVGElement).scrollLeft;
         this.lineGroup
             .attr("transform", SVGManipulations.translate(translateXValue, 0));
         this.collapseAllGroup
-            .attr("transform", SVGManipulations.translate(0, margin.top / 4));
+            .attr("transform", SVGManipulations.translate(0, margin.top / 4 + 6));
     }
 
     private getMilestoneLineLength(numOfTasks: number): number {
