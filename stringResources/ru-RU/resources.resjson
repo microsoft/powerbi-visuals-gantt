@@ -1,13 +1,17 @@
 {
   "Role_Legend": "Обозначения",
   "Role_Task": "Задача",
+  "Role_Parent": "Родительский",
   "Role_StartDate": "Дата начала",
   "Role_EndDate": "Дата окончания",
   "Role_Duration": "Длительность",
   "Role_Completion": "% готовности",
   "Role_Resource": "Ресурс",
+  "Role_Milestones": "Milestones",
   "Role_Tooltips": "Подсказки",
   "Visual_General": "Общие",
+  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
+  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Групповые задачи",
   "Visual_ScrollToCurrentTime": "Прокрутить до текущего времени",
   "Visual_DaysOff": "Выходные дни",
@@ -50,7 +54,7 @@
   "Visual_TaskSettings": "Параметры задачи",
   "Visual_TaskSettings_Color": "Цвет задачи",
   "Visual_TaskSettings_Height": "Высота",
-  "Visual_TaskSettings_RoundedCorners": "Скругленные углы",
+  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
   "Visual_DataLabels": "Метки данных",
   "Visual_CategoryLabels": "Метки категорий",
   "Visual_Type": "Тип",
@@ -72,7 +76,6 @@
   "Visual_DurationUnit_Minutes": "мин",
   "Visual_DurationUnit_Seconds": "Секунды",
   "Visual_DurationMinimum": "Длительность (мин)",
-  "Role_Parent": "Родительский",
   "Visual_SubTasks": "Подзадачи",
   "Visual_InheritParentLegend": "Наследовать родительские условные обозначения",
   "Visual_ParentDurationByChildren": "Длительность выполнения родительских объектов дочерними",
@@ -91,5 +94,7 @@
   "Visual_Shape_Rhombus": "Ромб",
   "Visual_Shape_Square": "Квадрат",
   "Visual_Shape_Circle": "Круг",
-  "Visual_Description_Milestones": "Показать параметры вех"
+  "Visual_Description_Milestones": "Показать параметры вех",
+  "Visual_Expand_All": "Expand All",
+  "Visual_Collapse_All": "Collapse All"
 }

@@ -1,13 +1,17 @@
 {
   "Role_Legend": "범례",
   "Role_Task": "작업",
+  "Role_Parent": "부모",
   "Role_StartDate": "시작 날짜",
   "Role_EndDate": "종료 날짜",
   "Role_Duration": "지속 시간",
   "Role_Completion": "완료율(%)",
   "Role_Resource": "리소스",
+  "Role_Milestones": "Milestones",
   "Role_Tooltips": "도구 설명",
   "Visual_General": "일반",
+  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
+  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "그룹 작업",
   "Visual_ScrollToCurrentTime": "현재 시간으로 스크롤",
   "Visual_DaysOff": "휴가",
@@ -50,7 +54,7 @@
   "Visual_TaskSettings": "작업 설정",
   "Visual_TaskSettings_Color": "작업 색",
   "Visual_TaskSettings_Height": "높이",
-  "Visual_TaskSettings_RoundedCorners": "둥근 모서리",
+  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
   "Visual_DataLabels": "데이터 레이블",
   "Visual_CategoryLabels": "범주 레이블",
   "Visual_Type": "형식",
@@ -72,7 +76,6 @@
   "Visual_DurationUnit_Minutes": "분",
   "Visual_DurationUnit_Seconds": "초",
   "Visual_DurationMinimum": "기간(분)",
-  "Role_Parent": "부모",
   "Visual_SubTasks": "하위 작업",
   "Visual_InheritParentLegend": "부모 범례 상속",
   "Visual_ParentDurationByChildren": "자식 요소별 부모 기간",
@@ -91,5 +94,7 @@
   "Visual_Shape_Rhombus": "마름모꼴",
   "Visual_Shape_Square": "제곱",
   "Visual_Shape_Circle": "원",
-  "Visual_Description_Milestones": "중요 시점 옵션 표시"
+  "Visual_Description_Milestones": "중요 시점 옵션 표시",
+  "Visual_Expand_All": "Expand All",
+  "Visual_Collapse_All": "Collapse All"
 }

@@ -1,13 +1,17 @@
 {
   "Role_Legend": "Legenda",
   "Role_Task": "Taak",
+  "Role_Parent": "Bovenliggend item",
   "Role_StartDate": "Begindatum",
   "Role_EndDate": "Einddatum",
   "Role_Duration": "Duur",
   "Role_Completion": "Percentage voltooid",
   "Role_Resource": "Resource",
+  "Role_Milestones": "Milestones",
   "Role_Tooltips": "Tooltips",
   "Visual_General": "Algemeen",
+  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
+  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Groepstaken",
   "Visual_ScrollToCurrentTime": "Naar huidige tijd scrollen",
   "Visual_DaysOff": "Vrije dagen",
@@ -50,7 +54,7 @@
   "Visual_TaskSettings": "Taakinstellingen",
   "Visual_TaskSettings_Color": "Taakkleur",
   "Visual_TaskSettings_Height": "Hoogte",
-  "Visual_TaskSettings_RoundedCorners": "Afgeronde hoeken",
+  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
   "Visual_DataLabels": "Gegevenslabels",
   "Visual_CategoryLabels": "Categorielabels",
   "Visual_Type": "Type",
@@ -72,7 +76,6 @@
   "Visual_DurationUnit_Minutes": "Minuten",
   "Visual_DurationUnit_Seconds": "Seconden",
   "Visual_DurationMinimum": "Duur (min)",
-  "Role_Parent": "Bovenliggend item",
   "Visual_SubTasks": "Subtaken",
   "Visual_InheritParentLegend": "Bovenliggende legenda overnemen",
   "Visual_ParentDurationByChildren": "Duur van de bovenliggende item door onderliggende items",
@@ -91,5 +94,7 @@
   "Visual_Shape_Rhombus": "Rhombus",
   "Visual_Shape_Square": "Vierkant",
   "Visual_Shape_Circle": "Cirkel",
-  "Visual_Description_Milestones": "Opties voor mijlpalen weergeven"
+  "Visual_Description_Milestones": "Opties voor mijlpalen weergeven",
+  "Visual_Expand_All": "Expand All",
+  "Visual_Collapse_All": "Collapse All"
 }

@@ -1,13 +1,17 @@
 {
   "Role_Legend": "图例",
   "Role_Task": "任务",
+  "Role_Parent": "父级",
   "Role_StartDate": "开始日期",
   "Role_EndDate": "结束日期",
   "Role_Duration": "持续时间",
   "Role_Completion": "完成百分比",
   "Role_Resource": "资源",
+  "Role_Milestones": "Milestones",
   "Role_Tooltips": "工具提示",
   "Visual_General": "常规",
+  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
+  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "组任务",
   "Visual_ScrollToCurrentTime": "滚动到当前时间",
   "Visual_DaysOff": "休息日",
@@ -50,7 +54,7 @@
   "Visual_TaskSettings": "任务设置",
   "Visual_TaskSettings_Color": "任务颜色",
   "Visual_TaskSettings_Height": "高度",
-  "Visual_TaskSettings_RoundedCorners": "圆角",
+  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
   "Visual_DataLabels": "数据标签",
   "Visual_CategoryLabels": "类别标签",
   "Visual_Type": "类型",
@@ -72,7 +76,6 @@
   "Visual_DurationUnit_Minutes": "分钟",
   "Visual_DurationUnit_Seconds": "秒",
   "Visual_DurationMinimum": "持续时间(分钟)",
-  "Role_Parent": "父级",
   "Visual_SubTasks": "子任务",
   "Visual_InheritParentLegend": "继承父图例",
   "Visual_ParentDurationByChildren": "子级继承父级持续时间",
@@ -91,5 +94,7 @@
   "Visual_Shape_Rhombus": "菱形",
   "Visual_Shape_Square": "正方形",
   "Visual_Shape_Circle": "圆圈",
-  "Visual_Description_Milestones": "显示里程碑选项"
+  "Visual_Description_Milestones": "显示里程碑选项",
+  "Visual_Expand_All": "Expand All",
+  "Visual_Collapse_All": "Collapse All"
 }

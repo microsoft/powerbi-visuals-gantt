@@ -1,13 +1,17 @@
 {
   "Role_Legend": "लेजेंड",
   "Role_Task": "कार्य",
+  "Role_Parent": "पेरेंट",
   "Role_StartDate": "प्रारंभ दिनांक",
   "Role_EndDate": "समाप्ति दिनांक",
   "Role_Duration": "अवधि",
   "Role_Completion": "% पूर्णता",
   "Role_Resource": "संसाधन",
+  "Role_Milestones": "Milestones",
   "Role_Tooltips": "टूलटिप",
   "Visual_General": "सामान्य",
+  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
+  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "समूह कार्य",
   "Visual_ScrollToCurrentTime": "वर्तमान समय में स्क्रॉल करें",
   "Visual_DaysOff": "दिन का अवकाश",
@@ -50,7 +54,7 @@
   "Visual_TaskSettings": "कार्य सेटिंग्स",
   "Visual_TaskSettings_Color": "कार्य का रंग",
   "Visual_TaskSettings_Height": "ऊंचाई",
-  "Visual_TaskSettings_RoundedCorners": "गोल कोने",
+  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
   "Visual_DataLabels": "डेटा लेबल्स",
   "Visual_CategoryLabels": "श्रेणी लेबल",
   "Visual_Type": "प्रकार",
@@ -72,7 +76,6 @@
   "Visual_DurationUnit_Minutes": "मिनट",
   "Visual_DurationUnit_Seconds": "सेकंड",
   "Visual_DurationMinimum": "न्यूनतम अवधि",
-  "Role_Parent": "पेरेंट",
   "Visual_SubTasks": "उप-कार्य",
   "Visual_InheritParentLegend": "पैरेंट लेजंड प्राप्त करें",
   "Visual_ParentDurationByChildren": "संतानों द्वारा पैरेंट ड्यूरेशन",
@@ -91,5 +94,7 @@
   "Visual_Shape_Rhombus": "विषमकोण",
   "Visual_Shape_Square": "वर्ग",
   "Visual_Shape_Circle": "वृत",
-  "Visual_Description_Milestones": "माइलस्टोन विकल्प प्रदर्शित करें"
+  "Visual_Description_Milestones": "माइलस्टोन विकल्प प्रदर्शित करें",
+  "Visual_Expand_All": "Expand All",
+  "Visual_Collapse_All": "Collapse All"
 }

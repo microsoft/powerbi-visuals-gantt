@@ -1,13 +1,17 @@
 {
   "Role_Legend": "Legenda",
   "Role_Task": "Tarefa",
+  "Role_Parent": "Pai",
   "Role_StartDate": "Data de Início",
   "Role_EndDate": "Data de Término",
   "Role_Duration": "Duração",
   "Role_Completion": "% de Conclusão",
   "Role_Resource": "Recurso",
+  "Role_Milestones": "Milestones",
   "Role_Tooltips": "Dicas de ferramentas",
   "Visual_General": "Geral",
+  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
+  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Agrupar Tarefas",
   "Visual_ScrollToCurrentTime": "Rolar para a hora atual",
   "Visual_DaysOff": "Dias de folga",
@@ -50,7 +54,7 @@
   "Visual_TaskSettings": "Configurações de Tarefas",
   "Visual_TaskSettings_Color": "Cor da tarefa",
   "Visual_TaskSettings_Height": "Altura",
-  "Visual_TaskSettings_RoundedCorners": "Cantos Arredondados",
+  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
   "Visual_DataLabels": "Rótulos de Dados",
   "Visual_CategoryLabels": "Rótulos da Categoria",
   "Visual_Type": "Tipo",
@@ -72,7 +76,6 @@
   "Visual_DurationUnit_Minutes": "Minutos",
   "Visual_DurationUnit_Seconds": "Segundos",
   "Visual_DurationMinimum": "Duração em min",
-  "Role_Parent": "Pai",
   "Visual_SubTasks": "Subtarefas",
   "Visual_InheritParentLegend": "Herdar legenda pai",
   "Visual_ParentDurationByChildren": "Duração do pai por filhos",
@@ -91,5 +94,7 @@
   "Visual_Shape_Rhombus": "Rhombus",
   "Visual_Shape_Square": "Quadrado",
   "Visual_Shape_Circle": "Círculo",
-  "Visual_Description_Milestones": "Exibir as opções de marco"
+  "Visual_Description_Milestones": "Exibir as opções de marco",
+  "Visual_Expand_All": "Expand All",
+  "Visual_Collapse_All": "Collapse All"
 }
