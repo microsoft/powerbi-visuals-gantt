@@ -330,7 +330,6 @@ export class Gantt implements IVisual {
     private static TaskOpacity: number = 1;
     public static RectRound: number = 7;
 
-
     private static TimeScale: timeScale<any, any>;
     private xAxisProperties: IAxisProperties;
 
@@ -2408,7 +2407,8 @@ export class Gantt implements IVisual {
             height = Gantt.getBarHeight(taskConfigHeight),
             radius = Gantt.RectRound;
 
-        if (barsRoundedCorners) {
+
+        if (barsRoundedCorners && width >= 2 * radius) {
             return drawRoundedRectByPath(x, y, width, height, radius);
         }
 
@@ -2641,7 +2641,7 @@ export class Gantt implements IVisual {
                     x = x - width / 2;
                 }
 
-                if (this.formattingSettings.generalCardSettings.barsRoundedCorners.value) {
+                if (this.formattingSettings.generalCardSettings.barsRoundedCorners.value && width >= 2 * radius) {
                     return drawRoundedRectByPath(x, y, width, height, radius);
                 }
 
