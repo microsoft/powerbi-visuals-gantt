@@ -1,13 +1,17 @@
 {
   "Role_Legend": "Petunjuk",
   "Role_Task": "Tugas",
+  "Role_Parent": "Induk",
   "Role_StartDate": "Tarikh Mula",
   "Role_EndDate": "Tarikh Tamat",
   "Role_Duration": "Tempoh",
   "Role_Completion": "% Pelengkapan",
   "Role_Resource": "Sumber",
+  "Role_Milestones": "Milestones",
   "Role_Tooltips": "Petua alat",
   "Visual_General": "Umum",
+  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
+  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Tugas Kumpulan",
   "Visual_ScrollToCurrentTime": "Tatal ke masa semasa",
   "Visual_DaysOff": "Hari cuti",
@@ -50,7 +54,7 @@
   "Visual_TaskSettings": "Pengaturan Tugas",
   "Visual_TaskSettings_Color": "Warna tugas",
   "Visual_TaskSettings_Height": "Ketinggian",
-  "Visual_TaskSettings_RoundedCorners": "Sudut Bulat",
+  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
   "Visual_DataLabels": "Label Data",
   "Visual_CategoryLabels": "Label Kategori",
   "Visual_Type": "Jenis",
@@ -72,7 +76,6 @@
   "Visual_DurationUnit_Minutes": "Minit",
   "Visual_DurationUnit_Seconds": "Saat",
   "Visual_DurationMinimum": "Durasi min",
-  "Role_Parent": "Induk",
   "Visual_SubTasks": "Subtugasan",
   "Visual_InheritParentLegend": "Warisi petunjuk ibu bapa",
   "Visual_ParentDurationByChildren": "Tempoh ibu bapa mengikut anak",
@@ -91,5 +94,7 @@
   "Visual_Shape_Rhombus": "Rhombus",
   "Visual_Shape_Square": "Segi Empat Sama",
   "Visual_Shape_Circle": "Kumpulan",
-  "Visual_Description_Milestones": "Paparkan opsyen pencapaian"
+  "Visual_Description_Milestones": "Paparkan opsyen pencapaian",
+  "Visual_Expand_All": "Expand All",
+  "Visual_Collapse_All": "Collapse All"
 }

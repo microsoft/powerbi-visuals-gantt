@@ -1,13 +1,17 @@
 {
   "Role_Legend": "Förklaring",
   "Role_Task": "Aktivitet",
+  "Role_Parent": "Överordnad",
   "Role_StartDate": "Startdatum",
   "Role_EndDate": "Slutdatum",
   "Role_Duration": "Varaktighet",
   "Role_Completion": "% färdigt",
   "Role_Resource": "Resurs",
+  "Role_Milestones": "Milestones",
   "Role_Tooltips": "Knappbeskrivningar",
   "Visual_General": "Allmänt",
+  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
+  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Gruppaktiviteter",
   "Visual_ScrollToCurrentTime": "Bläddra till aktuell tidpunkt",
   "Visual_DaysOff": "Lediga dagar",
@@ -50,7 +54,7 @@
   "Visual_TaskSettings": "Uppgiftsinställningar",
   "Visual_TaskSettings_Color": "Uppgift färg",
   "Visual_TaskSettings_Height": "Höjd",
-  "Visual_TaskSettings_RoundedCorners": "Rundade hörn",
+  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
   "Visual_DataLabels": "Dataetiketter",
   "Visual_CategoryLabels": "Kategorietiketter",
   "Visual_Type": "Typ",
@@ -72,7 +76,6 @@
   "Visual_DurationUnit_Minutes": "Minuter",
   "Visual_DurationUnit_Seconds": "Sekunder",
   "Visual_DurationMinimum": "Varaktighet min",
-  "Role_Parent": "Överordnad",
   "Visual_SubTasks": "Underuppgifter",
   "Visual_InheritParentLegend": "Ärv överordnad förklaring",
   "Visual_ParentDurationByChildren": "Överordnad varaktighet av underordnat element",
@@ -91,5 +94,7 @@
   "Visual_Shape_Rhombus": "Romb",
   "Visual_Shape_Square": "Fyrkant",
   "Visual_Shape_Circle": "Cirkel",
-  "Visual_Description_Milestones": "Visa milstolpealternativ"
+  "Visual_Description_Milestones": "Visa milstolpealternativ",
+  "Visual_Expand_All": "Expand All",
+  "Visual_Collapse_All": "Collapse All"
 }

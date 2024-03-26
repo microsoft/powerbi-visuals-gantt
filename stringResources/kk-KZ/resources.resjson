@@ -1,13 +1,17 @@
 {
   "Role_Legend": "Шартты белгілер",
   "Role_Task": "Тапсырма",
+  "Role_Parent": "Негізгі",
   "Role_StartDate": "Басталу күні",
   "Role_EndDate": "Аяқталу күні",
   "Role_Duration": "Ұзақтық",
   "Role_Completion": "% аяқталу",
   "Role_Resource": "Ресурс",
+  "Role_Milestones": "Milestones",
   "Role_Tooltips": "Кеңестер",
   "Visual_General": "Жалпы",
+  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
+  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Тапсырмаларды топтау",
   "Visual_ScrollToCurrentTime": "Ағымдағы уақытқа жылжыту",
   "Visual_DaysOff": "Демалыс күндері",
@@ -50,7 +54,7 @@
   "Visual_TaskSettings": "Тапсырма параметрлері",
   "Visual_TaskSettings_Color": "Тапсырма түсі",
   "Visual_TaskSettings_Height": "Биіктігі",
-  "Visual_TaskSettings_RoundedCorners": "Дөңгеленген бұрыштар",
+  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
   "Visual_DataLabels": "Деректер белгілері",
   "Visual_CategoryLabels": "Санат белгілері",
   "Visual_Type": "Түр",
@@ -72,7 +76,6 @@
   "Visual_DurationUnit_Minutes": "Минуттар",
   "Visual_DurationUnit_Seconds": "Секундтар",
   "Visual_DurationMinimum": "Ұзақтық мин.",
-  "Role_Parent": "Негізгі",
   "Visual_SubTasks": "Қосалқы тапсырмалар",
   "Visual_InheritParentLegend": "Негізгі мәндік белгілерді иелену",
   "Visual_ParentDurationByChildren": "Қосалқы арқылы негізгінің ұзақтығы",
@@ -91,5 +94,7 @@
   "Visual_Shape_Rhombus": "Ромб",
   "Visual_Shape_Square": "Шаршы",
   "Visual_Shape_Circle": "Дөңгелек",
-  "Visual_Description_Milestones": "Аралық кезең параметрлерін көрсету"
+  "Visual_Description_Milestones": "Аралық кезең параметрлерін көрсету",
+  "Visual_Expand_All": "Expand All",
+  "Visual_Collapse_All": "Collapse All"
 }
