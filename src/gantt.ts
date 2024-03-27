@@ -328,7 +328,9 @@ export class Gantt implements IVisual {
     private static TaskOpacity: number = 1;
     public static RectRound: number = 7;
 
+
     private static TimeScale: timeScale<any, any>;
+    private static xAxisProperties: IAxisProperties;
 
     private static get DefaultMargin(): IMargin {
         return {
@@ -1698,6 +1700,7 @@ export class Gantt implements IVisual {
             };
 
             const xAxisProperties: IAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, ticks, false);
+            Gantt.xAxisProperties = xAxisProperties;
             Gantt.TimeScale = <timeScale<Date, Date>>xAxisProperties.scale;
 
             this.renderAxis(xAxisProperties);
@@ -1840,7 +1843,7 @@ export class Gantt implements IVisual {
             dataDomain: options.forcedXDomain,
             metaDataColumn: metaDataColumn,
             formatString: Gantt.DefaultValues.DateFormatStrings[dateType],
-            outerPadding: 0,
+            outerPadding: 5,
             isScalar: true,
             isVertical: false,
             forcedTickCount: options.forcedTickCount,
@@ -2150,7 +2153,7 @@ export class Gantt implements IVisual {
                 .attr("viewBox", "0 0 48 48")
                 .attr("width", this.groupLabelSize)
                 .attr("height", this.groupLabelSize)
-                .attr("x", 7.5)
+                .attr("x", 7.5 + Gantt.xAxisProperties.outerPadding || 0)
                 .attr("y", this.secondExpandAllIconOffset)
                 .attr(this.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
 

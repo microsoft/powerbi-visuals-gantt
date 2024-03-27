@@ -1,5 +1,6 @@
 ## 3.0.9
 * Fix axis position compared to tasks position
+* Increase axis and tasks padding so axis is visible when "Date type" is set to "Hour"
 
 ## 3.0.8
 * Fix bar start position and axis visibility on scroll
