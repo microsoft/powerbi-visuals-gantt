@@ -7,11 +7,11 @@
   "Role_Duration": "Ilgums",
   "Role_Completion": "Pabeigšanas %",
   "Role_Resource": "Resurss",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Atskaites punkti",
   "Role_Tooltips": "Rīku padomi",
   "Visual_General": "Vispārīgi",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Joslu diagrammas veids, kurā attēlots projekta laika grafiks vai arī grafiks ar resursiem.",
+  "Visual_Long_Description": "Ganta diagramma ir joslu diagrammas veids, ko izmanto, lai attēlotu grafiku ar laika asi. Interaktīvajā pamatnē izmantojot Ganta diagrammu kopā ar citām noderīgām diagrammām, projektu varat pārvaldīt pavisam jaunā veidā. Pakalpojumā Power BI, kurā vizuālie dati savstarpēji mijiedarbojas, varat citā perspektīvā apskatīt resursu iedalīšanu, uzdevumu pabeigtību, atlikušos uzdevumus un gūt skaidru izpratni par gaidāmo.\nGanta diagrammas ir neatņemama projekta pārvaldības portfeļa daļa. Projektu vadītāji un vadošie darbinieki ir ļoti iecienījuši Ganta diagrammas, jo tajās ir vizuāli ļoti uzskatāmi un detalizēti parādīts vispārējais projekta laika grafiks, pašreizējais statuss un norise (vai to trūkums), kā arī informācija par piešķiršanu.\nIzmantojot šos pielāgotos vizuālos datus, varat norādīt atveidei Ganta diagrammā vienumus Uzdevumi, Sākuma datums, Ilgums un Pabeigtība (%). Ņemiet vērā, ka vienumam Pabeigtība (%) ir jānorāda decimālskaitļa vērtība (piemēram, 0,85 nozīmē 85%), savukārt vienumam Sākuma datums — datuma lauks, nevis datumu hierarhija.\nVarat arī kontrolēt joslas krāsu, izmantojot sadaļu Apzīmējumi. Kā apzīmējumu varat izmantot jebkuru atbilstošu projekta lauku, piemēram, uzdevuma veidu. Turklāt varat arī norādīt resursa lauku, kas Ganta diagrammā atrodas blakus joslai.\nŠie ir atklātā pirmkoda vizuālie dati. Iegūstiet kodu no GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Grupas uzdevumi",
   "Visual_ScrollToCurrentTime": "Ritināt līdz pašreizējam laikam",
   "Visual_DaysOff": "Brīvdienas",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Uzdevuma iestatījumi",
   "Visual_TaskSettings_Color": "Uzdevuma krāsa",
   "Visual_TaskSettings_Height": "Augstums",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Joslu noapaļotie stūri",
   "Visual_DataLabels": "Datu etiķetes",
   "Visual_CategoryLabels": "Kategoriju etiķetes",
   "Visual_Type": "Veidi",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Kvadrāts",
   "Visual_Shape_Circle": "Aplis",
   "Visual_Description_Milestones": "Rādīt atskaites punktu opcijas",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Izvērst visu",
+  "Visual_Collapse_All": "Sakļaut visu"
 }

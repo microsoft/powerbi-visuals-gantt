@@ -7,11 +7,11 @@
   "Role_Duration": "Durată",
   "Role_Completion": "% finalizare",
   "Role_Resource": "Resursă",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Jaloane",
   "Role_Tooltips": "Sfaturi ecran",
   "Visual_General": "General",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Un tip de diagramă cu bare care ilustrează cronologia sau planificarea unui proiect cu resurse",
+  "Visual_Long_Description": "Diagrama Gantt este un tip de diagramă cu bare ce ilustrează o planificare cu o axă temporală. Atunci când amplasați o diagramă Gantt împreună cu alte diagrame de profunzime pe o pânză interactivă, vă puteți gestiona proiectul într-un mod cu totul nou. În Power BI, pe măsură ce elementele vizuale interacționează între ele, puteți să examinați alocarea resurselor, finalizarea activităților și activitățile rămase într-o perspectivă diferită, precum și să aveți o imagine clară a situației din viitor.\nDiagramele Gantt sunt o parte indispensabilă a portofoliului managementului de proiect. Managerii de proiect și directorii apreciază mult diagramele Gantt, deoarece ele ilustrează într-un mod foarte eficient și imediat cronologia generală a proiectului, starea actuală și progresul (sau lipsa acestuia), împreună cu atribuirile, incluzând detaliile importante.\nCu acest element vizual particularizat, puteți specifica activități, data de început, durata și procentul de finalizare, pentru a le reda sub formă de diagramă Gantt. Rețineți că procentul de finalizare așteaptă o valoare zecimală (de exemplu, 0,85 înseamnă 85%) și data de început, un câmp de dată și nu o ierarhie de date.\nDe asemenea, puteți să controlați culoarea barei cu o legendă. În acest scop puteți utiliza orice câmp relevant din proiectul dvs. ca legendă, de exemplu, tipul de activitate. În plus, mai puteți specifica și câmpul resurselor, care va fi listat lângă bara din diagrama Gantt.\nAcesta este un element vizual open source. Obțineți codul de la GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Grupare activități",
   "Visual_ScrollToCurrentTime": "Defilați la ora curentă",
   "Visual_DaysOff": "Zile libere",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Setări activitate",
   "Visual_TaskSettings_Color": "Culoare activitate",
   "Visual_TaskSettings_Height": "Înălțime",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Colțuri rotunjite de bară",
   "Visual_DataLabels": "Etichete de date",
   "Visual_CategoryLabels": "Etichete categorie",
   "Visual_Type": "Tip",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Pătrat",
   "Visual_Shape_Circle": "Cerc",
   "Visual_Description_Milestones": "Afișați opțiunile pentru repere",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Extindere totală",
+  "Visual_Collapse_All": "Restrângere totală"
 }

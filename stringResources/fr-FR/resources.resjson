@@ -7,11 +7,11 @@
   "Role_Duration": "Durée",
   "Role_Completion": "Pourcentage de complétion",
   "Role_Resource": "Ressource",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Jalons",
   "Role_Tooltips": "Info-bulles",
   "Visual_General": "Général",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Type de graphique à barres qui illustre la chronologie ou la planification d'un projet avec des ressources",
+  "Visual_Long_Description": "Le diagramme de Gantt est un type de graphique à barres permettant d'illustrer une planification avec un axe de temps. Le fait de placer un diagramme de Gantt et d'autres graphiques détaillés dans une zone de dessin interactive vous permet de gérer votre projet de façon inédite. Dans Power BI, les visuels interagissent les uns avec les autres : vous pouvez ainsi voir sous un nouvel angle l'allocation des ressources, l'achèvement des tâches et les tâches restantes, et vous faire une bonne idée de ce que le futur vous réserve.\nLes diagrammes de Gantt font partie intégrante du portefeuille de gestion d'un projet. Les responsables de projet et les dirigeants les plébiscitent, car ils peuvent voir en un coup d'œil la chronologie d'ensemble du projet, son état actuel, sa progression (ou sa stagnation) ainsi qu'une somme considérable de détails.\nCe visuel personnalisé vous permet de spécifier des tâches, une date de début, une durée et le pourcentage d'achèvement à représenter dans un diagramme de Gantt. Notez que le pourcentage d'achèvement doit être une valeur décimale (par exemple, 0,85 signifie 85 %), et la date de début un champ de date (et non une hiérarchie de dates).\nVous pouvez également contrôler la couleur de la barre à l'aide d'une légende, à laquelle vous pouvez affecter n'importe quel champ pertinent de votre projet. Vous pouvez aussi spécifier le champ de ressource qui apparaît à côté de la barre dans le diagramme de Gantt.\nCe visuel est open source. Obtenez le code sur GitHub ici : https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Grouper les tâches",
   "Visual_ScrollToCurrentTime": "Aller à l'heure actuelle",
   "Visual_DaysOff": "Jours de congé",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Paramètres de la tâche",
   "Visual_TaskSettings_Color": "Couleur de la tâche",
   "Visual_TaskSettings_Height": "Hauteur",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Barres Coins arrondis",
   "Visual_DataLabels": "Étiquettes de données",
   "Visual_CategoryLabels": "Étiquettes des catégories",
   "Visual_Type": "Type",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Carré",
   "Visual_Shape_Circle": "Cercle",
   "Visual_Description_Milestones": "Afficher les options de jalons",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Développer tout",
+  "Visual_Collapse_All": "Tout réduire"
 }

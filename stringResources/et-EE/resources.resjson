@@ -7,11 +7,11 @@
   "Role_Duration": "Kestus",
   "Role_Completion": "% lõpuleviimine",
   "Role_Resource": "Ressurss",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Vahekokkuvõtted",
   "Role_Tooltips": "Kohtspikrid",
   "Visual_General": "Üldine",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Teatud tüüpi lintdiagramm, mis illustreerib projekti ajakava koos ressurssidega",
+  "Visual_Long_Description": "Gantti diagramm on teatud tüüpi lintdiagramm, mis illustreerib ajakava koos ajateljega. Kui panete Gantti diagrammi koos teiste ülevaatlike diagrammide interaktiivsele lõuendile, saate hallata oma projekti täiesti uuel viisil. Kui Power BI-s visuaalid üksteisega interakteeruvad, saata vaadata oma ressursieraldust, ülesannete täitmist ja allesjäänud ülesandeid uuest vaatenurgast ning saate tulevikust selge ülevaate.\nGantti diagrammid on projektihalduse portfoolio asendamatu osa. Projektijuhtidele ja tegevjuhtidele meeldivad Gantti diagrammid väga, sest need kuvavad visuaalselt ja väga tõhusalt projekti üldise ajaskaala, praeguse oleku ja edusammud (või nende puudumise) koos ülesandega märkimisväärselt üksikasjalikult.\nSelle kohandatud visuaaliga saate määratleda ülesanded, alguskuupäeva, kestuse ja lõpule viimise protsendi nende renderdamiseks Gantti diagrammina. Pange tähele, et lõpule viimise protsent eeldab kümnendväärtust (nt, 0,85 tähendab 85%) ja alguskuupäeva, kuupäeva välja ja mitte kuupäeva hierarhiat.\nLegendiga saate ka kontrollida riba värvi. Saate legendina kasutada oma projekti mis tahes asjakohast välja, näiteks sel eesmärgil ülesande tüüpi. Saate määratleda ka ressursivälja, mis esitatakse riba kõrval Ganttis.\nSee on avatud lähtekoodiga visuaal. Hankige kood GitHubist: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Rühma tööülesanded",
   "Visual_ScrollToCurrentTime": "Keri praegusesse aega",
   "Visual_DaysOff": "Puhkepäevad",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Tööülesande sätted",
   "Visual_TaskSettings_Color": "Tööülesande värv",
   "Visual_TaskSettings_Height": "Kõrgus",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Ribade ümarad nurgad",
   "Visual_DataLabels": "Andmesildid",
   "Visual_CategoryLabels": "Kategooriasildid",
   "Visual_Type": "Tüüp",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Ruut",
   "Visual_Shape_Circle": "Ring",
   "Visual_Description_Milestones": "Kuva vahekokkuvõtete suvandid",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Laienda kõik",
+  "Visual_Collapse_All": "Ahenda kõik"
 }

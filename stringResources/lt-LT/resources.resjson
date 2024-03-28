@@ -7,11 +7,11 @@
   "Role_Duration": "Trukmė",
   "Role_Completion": "% baigimas",
   "Role_Resource": "Išteklius",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Gairės",
   "Role_Tooltips": "Patarimai",
   "Visual_General": "Bendra",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Juostinės diagramos tipas, vaizduojantis projekto laiko juostą arba grafiką su ištekliais",
+  "Visual_Long_Description": "Ganto diagrama yra juostinės diagramos tipas, skirtas vaizduoti grafikui su laiko ašimi. Interaktyvioje drobėje Ganto diagramą įdėję su kitomis informatyviomis diagramomis, savo projektą galite valdyti visiškai nauju būdu. Tarnyboje „Power BI“ vaizdiniams elementams interaktyviai bendraujant tarpusavyje, galite iš kitos perspektyvos pažiūrėti į išteklių priskyrimą, užduočių įvykdymą, likusias užduotis ir tiksliai planuoti ateitį.\nGanto diagramos yra būtinai reikalinga projektų valdymo portfelio dalis. Projektų vadovams ir direktoriams Ganto diagramos labai patinka, nes jose labai efektyviai ir gana išsamiai parodoma bendroji projekto laiko juosta, dabartinė būsena ir eiga (ar jos nebuvimas) bei informacija apie priskyrimus – visa tai galima matyti vos pažvelgus į diagramą.\nNaudodami šį pasirinktinį vaizdinį elementą, kaip Ganto diagramą galite atvaizduoti nurodytus elementus Užduotys, Pradžios data, Trukmė ir Įvykdymo %. Atkreipkite dėmesį, kad su elementu Įvykdymo % reikia naudoti dešimtainę reikšmę (pavyzdžiui „0,85“ reiškia „85 %“), o Pradžios data turi būti datos laukas, o ne datų hierarchija.\nTaip pat elementu Legenda galite valdyti juostos spalvą. Šiuo tikslu kaip elementą Legenda galite naudoti bet kurį reikiamą projekto lauką, pavyzdžiui, užduoties tipo lauką. Be to, galite nurodyti išteklių lauką, kuris bus šalia juostos Ganto diagramoje.\nTai yra atvirojo kodo vaizdinis elementas. Šį kodą galite gauti iš „GitHub“: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Grupuoti užduotis",
   "Visual_ScrollToCurrentTime": "Slinkti į dabartinį laiką",
   "Visual_DaysOff": "Poilsio dienos",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Užduoties parametrai",
   "Visual_TaskSettings_Color": "Užduoties spalva",
   "Visual_TaskSettings_Height": "Aukštis",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Juostos suapvalintais kampais",
   "Visual_DataLabels": "Duomenų žymos",
   "Visual_CategoryLabels": "Kategorijų žymos",
   "Visual_Type": "Tipas",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Kvadratas",
   "Visual_Shape_Circle": "Apskritimas",
   "Visual_Description_Milestones": "Rodyti gairių parinktis",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Išplėsti viską",
+  "Visual_Collapse_All": "Sutraukti viską"
 }

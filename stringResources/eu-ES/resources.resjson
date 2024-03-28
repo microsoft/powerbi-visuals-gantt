@@ -7,11 +7,11 @@
   "Role_Duration": "Iraupena",
   "Role_Completion": "Osatutako %",
   "Role_Resource": "Baliabidea",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Mugarriak",
   "Role_Tooltips": "Argibideak",
   "Visual_General": "Orokorra",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Proiektuen kronologia edo antolaketa baliabideekin batera ilustratzen dituen barra-diagrama mota",
+  "Visual_Long_Description": "Antolaketa bat denbora-ardatz batean erakusteko erabiltzen den barra-diagrama da Gantt diagrama. Xehetasun asko dituzten beste diagrama batzuekin batera jartzen duzunean oihal interaktibo batean, proiektua modu berri-berri batean kudea dezakezula ikusiko duzu. Power BI-n, elementu bisualak elkarrekintzan jardun ahala, beste ikuspegi batetik ikusiko dituzu baliabide-esleipena, nahiz burututako zereginak eta egiteke daudenak. Horrela, errazago erabaki ahal izango duzu zer egin behar den aurrerantzean.\nGantt diagramak ezinbestekoak dira proiektuen kudeaketarako. Proiektuen kudeatzaile eta buruei asko gustatzen zaizkie Gantt diagramak, oso erraza baita begiratu batean xehetasun asko ikustea; adibidez, proiektuaren kronologia orokorra, uneko egoera eta aurrerapena (edo haren eza) edo baliabideen esleipena.\nElementu bisual pertsonalizatu honekin, zereginak, hasiera-data, iraupena eta osatutako ehunekoa zehatz ditzakezu, Gantt diagrama gisa ager daitezen. Kontuan izan osatutako ehunekoa balio hamartar gisa ezarri behar dela (adibidez, 0,85 adieraziz gero, % 85 esan nahiko da). Hasiera-data, berriz, data-eremu bat da, eta ez data-hierarkia.\nHalaber, legenda bat erabil dezakezu barraren kolorea kontrolatzeko. Proiektuko edozein eremu erabil dezakezu legenda gisa (adibidez, zeregin mota), helburu berarekin. Gainera, baliabide-eremua ere zehatz dezakezu (Gantt diagramako barraren ondoan agertuko litzateke).\nKode irekikoa da elementu bisual hau. Eskuratu kodea GitHub-en: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Taldeko zereginak",
   "Visual_ScrollToCurrentTime": "Korritu uneko ordura",
   "Visual_DaysOff": "Oporrak",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Zereginaren ezarpenak",
   "Visual_TaskSettings_Color": "Zereginaren kolorea",
   "Visual_TaskSettings_Height": "Altuera",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Barren ertz biribilduak",
   "Visual_DataLabels": "Datu-etiketak",
   "Visual_CategoryLabels": "Kategoria-etiketak",
   "Visual_Type": "Mota",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Karratua",
   "Visual_Shape_Circle": "Zirkulua",
   "Visual_Description_Milestones": "Bistaratu mugarrien aukerak",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Zabaldu dena",
+  "Visual_Collapse_All": "Tolestu dena"
 }

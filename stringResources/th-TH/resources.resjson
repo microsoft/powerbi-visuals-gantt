@@ -7,11 +7,11 @@
   "Role_Duration": "ระยะเวลา",
   "Role_Completion": "% ความเสร็จสมบูรณ์",
   "Role_Resource": "ทรัพยากร",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "หลักเป้าหมาย",
   "Role_Tooltips": "เคล็ดลับเครื่องมือ",
   "Visual_General": "ทั่วไป",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "ชนิดของแผนภูมิแท่งซึ่งแสดงเส้นเวลาโครงการหรือกำหนดการพร้อมทรัพยากร",
+  "Visual_Long_Description": "แผนภูมิแกนต์เป็นชนิดแผนภูมิแท่งที่จะแสดงกำหนดการด้วยแกนเวลา เมื่อคุณวางแผนภูมิแกนต์พร้อมกับแผนภูมิเชิงลึกอื่นๆ ในผืนผ้าใบแบบโต้ตอบ คุณสามารถจัดการโครงการของคุณด้วยวิธีใหม่ ใน Power BI เมื่อภาพโต้ตอบระหว่างกัน คุณสามารถดูการจัดสรรทรัพยากรของคุณ การเสร็จสมบูรณ์ของงาน งานที่เหลืออยู่ในมุมมองที่แตกต่างกัน และรับมือกับอนาคตได้\nแผนภูมิแกนต์เป็นส่วนจำเป็นของพอร์ตโครงการการจัดการโครงการ ผู้จัดการโครงการและผู้บริหารรักแผนภูมิแกนต์เนื่องจากแสดงภาพได้อย่างรวดเร็วและมีประสิทธิภาพ ทั้งไทม์ไลน์โดยรวมของโครงการ สถานะปัจจุบันและความคืบหน้า (หรือความบกพร่อง) พร้อมกับงานที่มอบหมายโดยละเอียด\nด้วยภาพแบบกำหนดเองนี้ คุณสามารถระบุงาน วันที่เริ่มต้น ระยะเวลา และ % ความเสร็จสมบูรณ์ สำหรับการแสดงภาพเป็นแผนภูมิแกนต์ โปรดทราบว่า % ความเสร็จสมบูรณ์ คาดหวังค่าทศนิยม (ตัวอย่างเช่น 0.85 หมายถึง 85%) และวันที่เริ่มต้น เป็นเขตข้อมูลวันที่ ไม่ใช่ลำดับชั้นวันที่\nคุณยังสามารถควบคุมสีของแท่งด้วยคำอธิบายแผนภูมิ คุณสามารถใช้เขตข้อมูลที่เกี่ยวข้องจากโครงการของคุณเป็นคำอธิบายแผนภูมิสำหรับชนิดงานตัวอย่างเช่นเพื่อจุดประสงค์นี้ นอกจากนี้ คุณยังสามารถระบุเขตข้อมูลทรัพยากร ซึ่งจะแสดงรายการถัดจากแท่งในแผนภูมิแกนต์\nนี่เป็นการแสดงภาพแบบโอเพนซอร์ส (Open Source) รับรหัสจาก GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "งานกลุ่ม",
   "Visual_ScrollToCurrentTime": "เลื่อนไปยังเวลาปัจจุบัน",
   "Visual_DaysOff": "วันหยุด",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "การตั้งค่างาน",
   "Visual_TaskSettings_Color": "สีของงาน",
   "Visual_TaskSettings_Height": "ความสูง",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "แท่งมุมมน",
   "Visual_DataLabels": "ป้ายชื่อข้อมูล",
   "Visual_CategoryLabels": "ป้ายชื่อประเภท",
   "Visual_Type": "ชนิด",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "สี่เหลี่ยมจัตุรัส",
   "Visual_Shape_Circle": "วงกลม",
   "Visual_Description_Milestones": "แสดงตัวเลือกหลักเป้าหมาย",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "ขยายทั้งหมด",
+  "Visual_Collapse_All": "ยุบทั้งหมด"
 }

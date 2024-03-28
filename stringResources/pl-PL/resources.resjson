@@ -7,11 +7,11 @@
   "Role_Duration": "Czas trwania",
   "Role_Completion": "% ukończenia",
   "Role_Resource": "Zasób",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Kamienie milowe",
   "Role_Tooltips": "Etykietki narzędzi",
   "Visual_General": "Ogólne",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Typ wykresu słupkowego, który ilustruje oś czasu projektu lub harmonogram z zasobami",
+  "Visual_Long_Description": "Wykres Gantta to typ wykresu słupkowego umożliwiający zilustrowanie harmonogramu przy użyciu osi czasu. Po umieszczeniu wykresu Gantta wraz z innymi szczegółowymi wykresami na kanwie interaktywnej można zarządzać projektem w całkiem nowy sposób. W usłudze Power BI — ponieważ wizualizacje współpracują ze sobą — można sprawdzić alokację zasobów, postęp wykonywania zadania lub pozostałe zadania w innej perspektywie, aby uzyskać jasny obraz działania w przyszłości.\nWykresy Gantta są niezbędną częścią portfela zarządzania projektami. Kierownicy projektów i dyrektorzy lubią wykresy Gantta, ponieważ w bardzo efektywny, szybki sposób przedstawiają wizualnie ogólną oś czasu projektu, bieżący stan i postęp (lub jego brak) oraz przypisania na uzasadnionym poziomie szczegółowości.\nPrzy użyciu tej niestandardowej wizualizacji można określić zadania, datę rozpoczęcia, czas trwania i % ukończenia (%Completion) do renderowania w postaci wykresu Gantta. Należy zwrócić uwagę, że oczekiwana wartość % ukończenia (%Completion) to wartość dziesiętna (na przykład 0,85 oznacza 85%), a oczekiwana data rozpoczęcia to pole daty, a nie hierarchia dat.\nMożna również kontrolować kolor słupka przy użyciu legendy. W tym celu można używać wszystkich odpowiednich pól z projektu jako legendy dla przykładowego typu zadania. Ponadto można określić pole zasobu, które znajdzie się obok słupka na wykresie Gantta.\nJest to wizualizacja typu open source. Pobierz kod z usługi GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Grupuj zadania",
   "Visual_ScrollToCurrentTime": "Przewiń do bieżącej godziny",
   "Visual_DaysOff": "Dni wolne",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Ustawienia zadania",
   "Visual_TaskSettings_Color": "Kolor zadania",
   "Visual_TaskSettings_Height": "Wysokość",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Słupki z zaokrąglonymi rogami",
   "Visual_DataLabels": "Etykiety danych",
   "Visual_CategoryLabels": "Etykiety kategorii",
   "Visual_Type": "Typ",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Kwadrat",
   "Visual_Shape_Circle": "Okrąg",
   "Visual_Description_Milestones": "Wyświetl opcje kamieni milowych",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Rozwiń wszystkie",
+  "Visual_Collapse_All": "Zwiń wszystko"
 }

@@ -7,11 +7,11 @@
   "Role_Duration": "Trajanje",
   "Role_Completion": "% završetka",
   "Role_Resource": "Resurs",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Ključne tačke",
   "Role_Tooltips": "Opisi alatki",
   "Visual_General": "Opšte",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Tip trakastog grafikona koji ilustruje vremensku osu projekta ili raspored sa resursima",
+  "Visual_Long_Description": "Gantov grafikon predstavlja tip trakastog grafikona koji ilustruje raspored pomoću vremenske ose. Kada na interaktivno platno postavite Gantov grafikon zajedno sa drugim grafikonima koji pružaju uvid, možete da upravljate projektom na potpuno novi način. Dok vizuelni elementi usluzi Power BI vrše interakciju jedni sa drugima, možete da pogledate dodelu resursa, dovršenje zadataka, preostale zadatke u različitoj perspektivi, kao i da dobijete kontrolu nad budućnošću.\nGantovi grafikoni su nerazdvojni deo portfolija za upravljanje projektima. Menadžeri projekata i direktori vole Gantove grafikone zato što oni vizuelno, na veoma efikasan način za tren oka prikazuju sveukupnu vremensku osu projekta, trenutni status i napredak (odnosno njegov nedostatak) uz dodeljivanje velike količine detalja.\nPomoću ovog prilagođenog vizuelnog elementa, možete da navedete zadatke, datum početka, trajanje, procenat dovršenosti kako biste ih prikazali u vidu Gantovog grafikona. Imajte u vidu da procenat dovršenosti očekuje decimalnu vrednost (na primer, 0,85 znači 85%), a datum početka očekuje polje za datum, ne hijerarhiju datuma.\nTakođe možete da kontrolišete boju trake pomoću legende. Možete da koristite bilo koje relevantno polje iz projekta kao legendu, na primer, tip zadatka za ovu svrhu. Pored toga, možete i da navedete polje resursa, koje bi bilo navedeno pored trake u Gantovom grafikonu.\nOvo je open source vizuelni element. Preuzmite kôd iz usluge GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Zadaci grupe",
   "Visual_ScrollToCurrentTime": "Pomerite se do trenutnog vremena",
   "Visual_DaysOff": "Slobodni dani",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Postavke zadataka",
   "Visual_TaskSettings_Color": "Boja zadataka",
   "Visual_TaskSettings_Height": "Visina",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Trake sa zaobljenim uglovima",
   "Visual_DataLabels": "Oznake podataka",
   "Visual_CategoryLabels": "Oznake kategorija",
   "Visual_Type": "Tip",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Kvadrat",
   "Visual_Shape_Circle": "Krug",
   "Visual_Description_Milestones": "Prikaži opcije kontrolnih tačaka",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Razvij sve",
+  "Visual_Collapse_All": "Skupi sve"
 }

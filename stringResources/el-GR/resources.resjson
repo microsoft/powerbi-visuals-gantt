@@ -7,11 +7,11 @@
   "Role_Duration": "Διάρκεια",
   "Role_Completion": "% ολοκλήρωσης",
   "Role_Resource": "Πόρος",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Ορόσημα",
   "Role_Tooltips": "Συμβουλές εργαλείων",
   "Visual_General": "Γενικά",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Ένας τύπος γραφήματος ράβδων που απεικονίζει μια λωρίδα χρόνου έργου ή το χρονοδιάγραμμα με πόρους",
+  "Visual_Long_Description": "Το γράφημα Gantt είναι ένας τύπος γραφήματος ράβδων για την απεικόνιση ενός χρονοδιαγράμματος με άξονα χρόνου. Όταν τοποθετείτε ένα γράφημα Gantt μαζί με άλλα γραφήματα σε έναν αλληλεπιδραστικό καμβά, μπορείτε να διαχειριστείτε το έργο σας με εντελώς νέο τρόπο. Στο Power BI, καθώς οι απεικονίσεις αλληλεπιδρούν μεταξύ τους, μπορείτε να εξετάσετε την εκχώρηση πόρων, την ολοκλήρωση της εργασίας και τις εργασίες που απομένουν με διαφορετική προοπτική και να αποκτήσετε μια σαφή άποψη για τις εξελίξεις.\nΤα γραφήματα Gantt είναι απαραίτητο μέρος του έργου διαχείρισης χαρτοφυλακίου. Οι διαχειριστές έργων και τα στελέχη εκτιμούν τα γραφήματα Gantt, καθώς απεικονίζουν πολύ αποτελεσματικά με μια ματιά, τη συνολική λωρίδα χρόνου του έργου, την τρέχουσα κατάσταση και την εξέλιξη (ή τη στασιμότητα) της ανάθεσης, με λεπτομέρειες.\nΣε αυτή την προσαρμοσμένη απεικόνιση, μπορείτε να καθορίσετε τις εργασίες, την ημερομηνία έναρξης, τη διάρκεια και το ποσοστό ολοκλήρωσης για την απόδοσή τους ως Gantt. Λάβετε υπόψη ότι το ποσοστό ολοκλήρωσης αναμένει μια δεκαδική τιμή (για παράδειγμα 0,85 σημαίνει 85%) και η Ημερομηνία έναρξης, ένα πεδίο ημερομηνίας και όχι μια ιεραρχία ημερομηνιών.\nΜπορείτε επίσης να ελέγξετε το χρώμα της γραμμής με ένα υπόμνημα. Μπορείτε να χρησιμοποιήσετε οποιοδήποτε σχετικό πεδίο από το έργο σας ως υπόμνημα για αυτόν το σκοπό, για παράδειγμα τύπο εργασίας. Επιπλέον, μπορείτε να καθορίσετε το πεδίο πόρου που θα αναφέρεται δίπλα στη γραμμή στο Gantt.\nΑυτό είναι μια απεικόνιση ανοιχτού κώδικα. Αποκτήστε τον κώδικα από το GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Εργασίες ομάδας",
   "Visual_ScrollToCurrentTime": "Κύλιση στην τρέχουσα χρονική στιγμή",
   "Visual_DaysOff": "Άδεια",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Ρυθμίσεις εργασίας",
   "Visual_TaskSettings_Color": "Χρώμα εργασίας",
   "Visual_TaskSettings_Height": "Ύψος",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Ράβδοι στρογγυλεμένες γωνίες",
   "Visual_DataLabels": "Ετικέτες δεδομένων",
   "Visual_CategoryLabels": "Ετικέτες κατηγοριών",
   "Visual_Type": "Τύπος",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Τετράγωνο",
   "Visual_Shape_Circle": "Κύκλος",
   "Visual_Description_Milestones": "Εμφάνιση επιλογών ορόσημων",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Ανάπτυξη όλων",
+  "Visual_Collapse_All": "Σύμπτυξη όλων"
 }

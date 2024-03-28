@@ -7,11 +7,11 @@
   "Role_Duration": "期間",
   "Role_Completion": "達成率",
   "Role_Resource": "リソース",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "マイルストーン",
   "Role_Tooltips": "ヒント",
   "Visual_General": "全般",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "リソースのプロジェクトのタイムラインまたはスケジュールを示す横棒グラフの一種",
+  "Visual_Long_Description": "ガント チャートは横棒グラフの一種で、時間軸でスケジュールを示すときに使用します。ガント チャートを対話式キャンバスで分析情報に富んだ他のグラフと一緒に配置すると、プロジェクトをまったく新しい方法で管理できます。相互に連携する視覚エフェクトを利用できる Power BI では、リソース割り当て、タスクの完了、別のパースペクティブで残っているタスクを確認し、今後について確実に把握できるようにします。\nガント チャートは、プロジェクト管理ポートフォリオに不可欠な部分です。プロジェクト管理者と幹部はガント チャートが手放せません。プロジェクト、現在の状況、進行状況 (または不足しているもの) が、詳細情報を含む割り当てと一緒に、時系列で分かりやすい視覚エフェクトにより一目で確認できるためです。\nこのカスタム視覚エフェクトを使用すると、ガントとして表示するタスク、開始日、期間、達成率を指定できます。達成率には 10 進値 (たとえば、0.85 は 85% を意味します) と開始日 (日付の階層ではなく、日付フィールド) が必要になります。\n凡例で使用する横棒の色も制御できます。そのためには凡例として、プロジェクトの任意の関連フィールド (タスクの種類など) を使用できます。また、ガントで横棒の隣にリストされるリソース フィールドも指定できます。\nこれは、オープンソースの視覚エフェクトです。GitHub からコードを取得します。https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "グループ タスク",
   "Visual_ScrollToCurrentTime": "現在の時刻にスクロールする",
   "Visual_DaysOff": "非稼働日",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "タスクの設定",
   "Visual_TaskSettings_Color": "タスクの色",
   "Visual_TaskSettings_Height": "高さ",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "角を丸めたバー",
   "Visual_DataLabels": "データ ラベル",
   "Visual_CategoryLabels": "カテゴリ ラベル",
   "Visual_Type": "種類",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "正方形",
   "Visual_Shape_Circle": "円",
   "Visual_Description_Milestones": "マイルストーン オプションを表示します",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "すべて展開",
+  "Visual_Collapse_All": "すべて折りたたむ"
 }

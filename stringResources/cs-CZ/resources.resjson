@@ -7,11 +7,11 @@
   "Role_Duration": "Doba trvání",
   "Role_Completion": "% dokončení",
   "Role_Resource": "Prostředek",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Milníky",
   "Role_Tooltips": "Popisky",
   "Visual_General": "Obecné",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Typ pruhového grafu, který ukazuje časovou osu projektu nebo plán se zdroji",
+  "Visual_Long_Description": "Ganttův diagram je typ pruhového grafu, který slouží ke znázornění plánu s časovou osou. Když Ganttův diagram společně s dalšími užitečnými grafy vložíte na interaktivní plátno, získáte zcela nové možnosti správy svého projektu. V Power BI vizuály komunikují mezi sebou, a tak se můžete podívat na přidělení prostředků, stavy dokončení úkolů a zbývající úkoly z různých úhlů pohledu a získat jasnou vizi do budoucnosti.\nGanttovy diagramy jsou nepostradatelnou součástí portfolia správy projektů. Projektoví a výkonní manažeři Ganttovy diagramy milují, protože na první pohled vizuálně a velmi efektivně zobrazují přehled celkové časové osy projektu, aktuální stav a postup (nebo informaci o tom, že se příliš nepostupuje) a poměrně podrobně popsaná přiřazení.\nDíky tomuto vlastnímu vizuálu můžete zadávat úkoly, datum zahájení, trvání a procento dokončení a to vše vykreslit jako Ganttův diagram. Upozorňujeme, že se u procenta dokončení očekává desetinná hodnota (například 0.85 znamená 85 %) a u data zahájení datové pole, nikoli datová hierarchie.\nMůžete také určit barvu panelu s legendou. Jako legendu můžete použít libovolné odpovídající pole z projektu, například typ úlohy pro tento účel. Navíc můžete také zadat pole prostředku, který bude uveden v Ganttově diagramu vedle panelu.\nTento vizuál je typu open source. Kód můžete získat z Githubu: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Skupinové úkoly",
   "Visual_ScrollToCurrentTime": "Posunout na aktuální čas",
   "Visual_DaysOff": "Dny volna",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Nastavení úkolu",
   "Visual_TaskSettings_Color": "Barva úkolu",
   "Visual_TaskSettings_Height": "Výška",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Zaoblené rohy pruhů",
   "Visual_DataLabels": "Popisky dat",
   "Visual_CategoryLabels": "Popisky kategorií",
   "Visual_Type": "Typ",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Čtverec",
   "Visual_Shape_Circle": "Kruh",
   "Visual_Description_Milestones": "Zobrazit možnosti milníků",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Rozbalit vše",
+  "Visual_Collapse_All": "Sbalit vše"
 }

@@ -7,11 +7,11 @@
   "Role_Duration": "Varaktighet",
   "Role_Completion": "% färdigt",
   "Role_Resource": "Resurs",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Milstolpar",
   "Role_Tooltips": "Knappbeskrivningar",
   "Visual_General": "Allmänt",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "En typ av stapeldiagram som illustrerar ett projekts tidslinje eller ett schema med resurser",
+  "Visual_Long_Description": "Gantt-diagrammet är en typ av stapeldiagram för att illustrera ett schema med en tidsaxel. När du sätter ett Gantt-schemat tillsammans med andra informativa diagram på en interaktiv arbetsyta så kan du hantera ditt projekt på ett helt nytt sätt. I Power BI eftersom visuella objekt interagerar med varandra, kan du granska din resurstilldelning, slutförande av aktiviteter, återstående aktiviteter med ett nytt perspektiv och få ett fast grepp om framtiden.\nGantt-diagram är en oundgänglig del i en projekthanteringsportfölj. Projekthanterare och chefer älskar Gantt-diagram, eftersom de kan visa på ett effektivt och översiktligt sätt den övergripande tidslinjen för projektet, aktuell status och framsteg (eller brist på framsteg) tillsammans med uppgiften i detalj.\nMed det här anpassade visuella objektet kan du ange uppgifterna, startdatum, varaktighet och %Completion för att återge dem som Gantt. Observera att %Completion förväntar sig ett decimalvärde (till exempel 0,85 innebär 85%) och startdatum, ett datumfält och inte en datumhierarki.\nDu kan även kontrollera stapelns färg med en teckenförklaring. Du kan använda alla relevanta fält från ditt projekt som en teckenförklaring till exempel för uppgiftstyp i detta syfte. Dessutom kan du ange det resursfält som ska listas bredvid stapeln i Gantt-diagrammet.\nDet här är ett visuellt objekt med öppen källkod. Hämta koden från GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Gruppaktiviteter",
   "Visual_ScrollToCurrentTime": "Bläddra till aktuell tidpunkt",
   "Visual_DaysOff": "Lediga dagar",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Uppgiftsinställningar",
   "Visual_TaskSettings_Color": "Uppgift färg",
   "Visual_TaskSettings_Height": "Höjd",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Rundade hörn med staplar",
   "Visual_DataLabels": "Dataetiketter",
   "Visual_CategoryLabels": "Kategorietiketter",
   "Visual_Type": "Typ",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Fyrkant",
   "Visual_Shape_Circle": "Cirkel",
   "Visual_Description_Milestones": "Visa milstolpealternativ",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Visa alla",
+  "Visual_Collapse_All": "Minimera alla"
 }

@@ -7,11 +7,11 @@
   "Role_Duration": "持续时间",
   "Role_Completion": "完成百分比",
   "Role_Resource": "资源",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "里程碑",
   "Role_Tooltips": "工具提示",
   "Visual_General": "常规",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "一种条形图，用于说明项目时间线或资源计划",
+  "Visual_Long_Description": "甘特图是一种条形图，用于通过时间轴说明计划。将甘特图与其他富有见解的图表一起放在交互式画布中后，可以通过全新方式管理项目。在 Power BI 中，由于视觉对象相互交互，用户可以从不同角度查看资源分配、任务完成情况和剩余任务，从而牢牢把握未来。\n甘特图是项目管理组合中不可或缺的一部分。项目经理和管理人员喜欢使用甘特图，因为它们以非常高效且一目了然的方式直观地显示项目的总体时间线、当前的状态和进度(或没有)以及相当详细的任务分配。\n使用此自定义视觉对象，可以指定任务、开始日期、持续时间和完成百分比以呈现为甘特图。请注意，完成百分比应为十进制值(例如 0.85 即表示 85%)，开始日期是一个日期字段，而不是日期层次结构。\n还可以使用图例控制条形图的颜色。为此，可以将项目中的任何相关字段用作图例，例如，任务类型。此外，还可以指定资源字段，该字段将在甘特图中的条形图旁边列出。\n这是一个开放源代码视觉对象。从 GitHub 获取代码: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "组任务",
   "Visual_ScrollToCurrentTime": "滚动到当前时间",
   "Visual_DaysOff": "休息日",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "任务设置",
   "Visual_TaskSettings_Color": "任务颜色",
   "Visual_TaskSettings_Height": "高度",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "条形圆角",
   "Visual_DataLabels": "数据标签",
   "Visual_CategoryLabels": "类别标签",
   "Visual_Type": "类型",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "正方形",
   "Visual_Shape_Circle": "圆圈",
   "Visual_Description_Milestones": "显示里程碑选项",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "全部展开",
+  "Visual_Collapse_All": "全部折叠"
 }

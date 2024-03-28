@@ -7,11 +7,11 @@
   "Role_Duration": "अवधि",
   "Role_Completion": "% पूर्णता",
   "Role_Resource": "संसाधन",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "माइलस्टोन",
   "Role_Tooltips": "टूलटिप",
   "Visual_General": "सामान्य",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "बार चार्ट का एक प्रकार, जो संसाधनों सहित किसी प्रोजेक्ट टाइमलाइन या शेड्यूल को समझाता है",
+  "Visual_Long_Description": "गैंट चार्ट समय अक्ष के साथ किसी शेड्यूल को समझाने के लिए बार चार्ट का एक प्रकार है. जब आप किसी सहभागी कैनवास में गैंट चार्ट को अन्य गहरी जानकारी वाले चार्ट्स के साथ रखते हैं, तो आप अपने प्रोजेक्ट को एकदम नए तरीके से प्रबंधित कर सकते हैं. Power BI में जैसे विज़ुअल एक दूसरे के साथ सहभागिता करते हैं, आप भिन्न परिप्रेक्ष्य में अपना संसाधन आबंटन, कार्य पूर्णता, शेष बचे कार्यों को देख सकते हैं और भविष्य में सख्ती से हैंडल कर सकते हैं.\nगैंट चार्ट प्रोजेक्ट मैनेजमेंट पोर्टफ़ोलियो का अपरिहार्य हिस्सा होते हैं. प्रोजेक्ट प्रबंधक और कार्यकारी गैंट चार्ट्स को बेहद पसंद करते हैं, क्योंकि ये एक ही नजर में बेहद प्रभावशाली ढंग से यथेष्ट विवरण के साथ प्रोजेक्ट की समूची टाइम लाइन, असाइनमेंट के साथ-साथ वर्तमान स्थिति और प्रगति (या इसमें कमी) को विज़ुअली दिखाते हैं.\nइस कस्टम विज़ुअल से आप कार्यों, प्रारंभ दिनांक, अवधि और %Completion को गैंट के रूप में रेंडरिंग के लिए निर्दिष्ट कर सकते हैं. कृपया नोट करें कि %Completion में एक दशमलव मान (उदाहरण के लिए, 0.85 का अर्थ है 85%) और प्रारंभ दिनांक, जो एक दिनांक फ़ील्ड है न कि दिनांक पदानुक्रम, अपेक्षित है.\nआप एक लेजेंड के साथ पट्टी का रंग भी नियंत्रित कर सकते हैं. इस उद्देश्य के लिए लेजेंड के रूप में आप अपने प्रोजेक्ट से किसी भी प्रासंगिक फ़ील्ड का उपयोग कर सकते हैं, उदाहरण के लिए, कार्य प्रकार. इसके अलावा आप संसाधन फ़ील्ड को भी निर्दिष्ट कर सकते हैं, जो गैंट में पट्टी के आगे सूचीबद्ध होगा.\nयह एक ओपन सोर्स विज़ुअल है. GitHub से कोड प्राप्त करें: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "समूह कार्य",
   "Visual_ScrollToCurrentTime": "वर्तमान समय में स्क्रॉल करें",
   "Visual_DaysOff": "दिन का अवकाश",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "कार्य सेटिंग्स",
   "Visual_TaskSettings_Color": "कार्य का रंग",
   "Visual_TaskSettings_Height": "ऊंचाई",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "गोल कोनों वाली बार",
   "Visual_DataLabels": "डेटा लेबल्स",
   "Visual_CategoryLabels": "श्रेणी लेबल",
   "Visual_Type": "प्रकार",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "वर्ग",
   "Visual_Shape_Circle": "वृत",
   "Visual_Description_Milestones": "माइलस्टोन विकल्प प्रदर्शित करें",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "सभी को विस्तृत करें",
+  "Visual_Collapse_All": "सभी को संक्षिप्त करें"
 }

@@ -7,11 +7,11 @@
   "Role_Duration": "Süre",
   "Role_Completion": "% Tamamlanma",
   "Role_Resource": "Kaynak",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Kilometre Taşları",
   "Role_Tooltips": "Araç İpuçları",
   "Visual_General": "Genel",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Proje zaman çizelgesini veya kaynaklarla yapılan zamanlamayı gösteren bir tür çubuk grafiği",
+  "Visual_Long_Description": "Gantt grafiği, zaman ekseniyle bir zamanlamayı göstermek için kullanılan bir çubuk grafiğidir. Gantt grafiğini diğer içgörü sağlayan grafiklerle etkileşimli bir kanvasa koyduğunuzda, projenizi tamamen yeni bir şekilde yönetebilirsiniz. Power BI'da, görseller birbirleriyle etkileşirken kaynak ayırmanıza, görev tamamlamanıza, kalan görevlere farklı bir bakış açısından bakabilir ve geleceğe dair daha net fikirleriniz olabilir.\nGantt grafikleri proje yönetim portföyünün ayrılmaz bir parçasıdır. Proje Yöneticileri ve üst düzey yöneticiler, projenin genel zaman çizgisini, şimdiki durumu ve ilerlemesini (veya ilerleme kaydedilmediğini) atamanın kendisi ile tek bakışta çok etkili bir şekilde gösterdiği için Gantt grafiklerini çok sever.\nBu özel görsel ile Görevleri, Başlangıç Tarihini, Süreyi ve Tamamlanma Yüzdesini Gantt olarak işlenmek üzere belirtebilirsiniz. Tamamlanma Yüzdesinin ondalık bir değer gerektirdiğini (örneğin 0,85'in %85 anlamına geldiğini) ve bir tarih alanı olan Başlangıç Tarihi'nin bir tarih hiyerarşisi olmadığını unutmayın.\nAyrıca çubuğun rengini bir Gösterge ile denetleyebilirsiniz. Bu amaçla projenizdeki istediğiniz bir alanı, örneğin görev türünü Gösterge olarak kullanabilirsiniz. Ayrıca Gantt grafiğinde çubuğun yanında listelenen kaynak alanını da belirtebilirsiniz.\nBu, açık kaynaklı bir grafiktir. Kodu GitHub'dan alabilirsiniz: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Grup Görevleri",
   "Visual_ScrollToCurrentTime": "Geçerli zamana kaydır",
   "Visual_DaysOff": "İzinli günler",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Görev Ayarları",
   "Visual_TaskSettings_Color": "Görev rengi",
   "Visual_TaskSettings_Height": "Yükseklik",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Yuvarlatılmış Köşeli Çubuklar",
   "Visual_DataLabels": "Veri Etiketleri",
   "Visual_CategoryLabels": "Kategori Etiketleri",
   "Visual_Type": "Tür",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Kare",
   "Visual_Shape_Circle": "Daire",
   "Visual_Description_Milestones": "Kilometre taşı seçeneklerini göster",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Tümünü Genişlet",
+  "Visual_Collapse_All": "Tümünü Daralt"
 }

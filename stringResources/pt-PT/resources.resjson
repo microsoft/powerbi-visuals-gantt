@@ -7,11 +7,11 @@
   "Role_Duration": "Duração",
   "Role_Completion": "% Conclusão",
   "Role_Resource": "Recurso",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Marcos",
   "Role_Tooltips": "Descrições",
   "Visual_General": "Geral",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Um tipo de gráfico de barras que ilustra uma linha cronológica de projeto ou agenda com recursos",
+  "Visual_Long_Description": "O Gráfico Gantt é um tipo de gráfico de barras que ilustra uma agenda com o eixo de tempo. Quando junta o gráfico Gantt a outros gráficos informativos numa tela interativa, pode gerir o seu projeto de uma forma totalmente nova. No Power BI, como os visuais interagem entre si, pode ver a sua alocação de recursos, a conclusão de tarefas, as restantes tarefas em perspetivas diferentes e obter um controlo firme sobre o futuro da empresa.\nOs gráficos Gantt são uma parte fundamental do portefólio de gestão de projetos. Os gestores de projetos e executivos gostam de gráficos Gantt porque estes mostram visualmente, de forma muito eficaz e de relance, a linha cronológica geral do projeto, o estado atual e o progresso (ou falta do mesmo), juntamente com a tarefa em bastante detalhe.\nCom este visual personalizado, pode especificar as Tarefas, a Data de Início, a Duração e a Percentagem de Conclusão, compostas em formato Gantt. Tenha em atenção que %Completion espera um valor decimal (por exemplo, 0,85 corresponde a 85%) e a Data de Início, um campo de data e não uma hierarquia de datas.\nTambém pode controlar a cor das barras com uma Legenda. Pode utilizar qualquer campo relevante do seu projeto como Legenda para os tipos de tarefa de exemplo para este fim. Além disso, também é possível especificar o campo de recursos que seria listado junto à barra no Gantt.\nEste é uma visual de open source. Obtenha o código do GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Tarefas de Grupo",
   "Visual_ScrollToCurrentTime": "Deslocar para o tempo atual",
   "Visual_DaysOff": "Dias livres",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Definições de Tarefa",
   "Visual_TaskSettings_Color": "Cor de tarefa",
   "Visual_TaskSettings_Height": "Altura",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Barras com Cantos Arredondados",
   "Visual_DataLabels": "Etiquetas de Dados",
   "Visual_CategoryLabels": "Etiquetas de Categoria",
   "Visual_Type": "Tipo",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Quadrado",
   "Visual_Shape_Circle": "Círculo",
   "Visual_Description_Milestones": "Apresentar opções de marcos",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Expandir Tudo",
+  "Visual_Collapse_All": "Fechar Tudo"
 }

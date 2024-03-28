@@ -7,11 +7,11 @@
   "Role_Duration": "‏‏משך",
   "Role_Completion": "אחוזי השלמה",
   "Role_Resource": "משאב",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "אבני דרך",
   "Role_Tooltips": "תיאורי כלים",
   "Visual_General": "כללי",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "סוג של תרשים עמודות שממחיש ציר זמן או לוח זמנים של פרויקט עם משאבים",
+  "Visual_Long_Description": "תרשים גנט הוא סוג של תרשים עמודות להמחשת לוח זמנים עם ציר זמן. בעת הצבת תרשים גנט יחד עם תרשימים אחרים מלאי תובנות בבד ציור אינטראקטיבי, תוכל לנהל את הפרויקט באופן חדש לחלוטין. מכיוון שעזרים חזותיים ב- Power BI מקיימים אינטראקציה עם זה, באפשרותך לסקור את ההקצאה של משאבים, ההשלמה של משימות והמשימות שנותרו בנקודת מבט שונה ולהתמודד בהצלחה עם המשך הפרויקט.\nתרשימי גנט הם חלק הכרחי בתיק ניהול פרויקטים. מנהלי פרויקטים ומנהלים בכירים אוהבים תרשימי גנט, מכיוון שהם מציגים חזותית ובאופן אפקטיבי מאוד ובמבט מהיר, את ציר הזמן הכולל של הפרויקט, את המצב הנוכחי וההתקדמות (או היעדר התקדמות) ביחד עם ההקצאה ברמת פירוט סבירה.\nבאפשרותך לציין באמצעות עזר חזותי מותאם אישית זה את הפרמטרים Tasks, Start Date, Duration ו- %Completion לעיבודם בתור תרשים גנט. לתשומת לבך, לפרמטר %Completion דרוש ערך עשרוני (לדוגמה, 0.85 פירושו 85%) ותאריך התחלה, שדה תאריך ולא הירארכיית תאריכים.\nבאפשרותך לשלוט גם בצבע העמודה באמצעות מקרא. באפשרותך להשתמש בכל שדה רלוונטי מהפרויקט שלך בתור מקרא, כגון סוג משימה למטרה זו. בנוסף, באפשרותך לציין גם את שדה המשאבים, שיירשם בצמוד לעמודה בתרשים הגנט.\nזהו עזר חזותי בקוד פתוח. הורד את הקוד מ- GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "משימות קבוצתיות",
   "Visual_ScrollToCurrentTime": "גלול אל השעה הנוכחית",
   "Visual_DaysOff": "ימי חופש",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "הגדרות משימה",
   "Visual_TaskSettings_Color": "צבע עבור משימות",
   "Visual_TaskSettings_Height": "גובה",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "פינות מעוגלות של עמודות",
   "Visual_DataLabels": "תוויות נתונים",
   "Visual_CategoryLabels": "תוויות קטגוריה",
   "Visual_Type": "סוג",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "ריבוע",
   "Visual_Shape_Circle": "מעגל",
   "Visual_Description_Milestones": "הצג אפשרויות של אבני דרך",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "הרחב הכל",
+  "Visual_Collapse_All": "כווץ הכל"
 }

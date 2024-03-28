@@ -7,11 +7,11 @@
   "Role_Duration": "Trajanje",
   "Role_Completion": "% dokončanja",
   "Role_Resource": "Vir",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Mejniki",
   "Role_Tooltips": "Zaslonski namigi",
   "Visual_General": "Splošno",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Vrsta paličnega grafikona, ki omogoča ponazoritev časovnice projekta ali razporeda z viri",
+  "Visual_Long_Description": "Gantogram je vrsta paličnega grafikona, s katerim prikažete razpored s časovno osjo. Ko na interaktivnem platnu uporabite gantogram skupaj z drugimi podrobnimi grafikoni, lahko upravljate svoj projekt na povsem novi ravni. Ker so te ponazoritve v storitvi Power BI medsebojno povezane, si lahko ogledate dodeljevanje virov, dokončanja opravil in preostala opravila iz različnih perspektiv ter tako zagotovite uspešno obvladovanje prihodnjih projektov.\nGantogrami so nepogrešljiv del portfelja upravljanja projektov. Projektni vodje in vodstveni kadri obožujejo gantograme, saj zagotavljajo učinkovit in pregleden način prikaza celotne časovnice projekta, trenutnega stanja in napredka (ali njegove odsotnosti) ter podrobnosti dodeljenih nalog.\nS to ponazoritvijo po meri lahko določite opravilo, datum začetka, trajanje in odstotek dokončanega ter podatke prikažete na gantogramu. Odstotek dokončanega zahteva decimalno vrednost (npr. 0,85 pomeni 85 %), datum začetka pa zahteva polje z datumom in ne hierarhijo datumov.\nBarvo vrstice lahko upravljate v legendi. Za legendo lahko uporabite katero koli ustrezno polje v projektu – v tem primeru na primer vrsto opravila. Določite lahko tudi polje z viri, ki bo navedeno ob vrstici v gantogramu.\nTo je odprtokodna ponazoritev. Kodo lahko pridobite na spletnem mestu storitve GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Opravila skupine",
   "Visual_ScrollToCurrentTime": "Pojdi na trenutno uro",
   "Visual_DaysOff": "Prosti dnevi",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Nastavitve opravila",
   "Visual_TaskSettings_Color": "Barva opravila",
   "Visual_TaskSettings_Height": "Višina",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Zaobljeni vogali vrstic",
   "Visual_DataLabels": "Oznake podatkov",
   "Visual_CategoryLabels": "Oznake kategorij",
   "Visual_Type": "Vrsta",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Kvadrat",
   "Visual_Shape_Circle": "Krog",
   "Visual_Description_Milestones": "Prikaži možnosti za mejnike",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Razširi vse",
+  "Visual_Collapse_All": "Strni vse"
 }
