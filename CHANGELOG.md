@@ -1,3 +1,12 @@
+## 3.0.9
+* Upgrade API to 5.9.0
+* Fix axis position compared to tasks position
+* Increase axis and tasks padding so axis is visible when "Date type" is set to "Hour"
+* Remove magic numbers
+
+## 3.0.8
+* Fix bar start position and axis visibility on scroll
+
 ## 3.0.7
 * Fix issue with showing multiple context menus
 * Fix npm vulnerabilities
