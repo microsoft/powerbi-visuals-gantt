@@ -7,11 +7,11 @@
   "Role_Duration": "Időtartam",
   "Role_Completion": "Befejezettség %-ban",
   "Role_Resource": "Erőforrás",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Mérföldkövek",
   "Role_Tooltips": "Elemleírások",
   "Visual_General": "Általános",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Olyan sávdiagram, amely egy projekt idővonalát vagy ütemezését jeleníti meg erőforrásokkal",
+  "Visual_Long_Description": "A Gantt-diagram ütemezéseket ábrázol egy időtengellyel. Ha Gantt-diagramot helyez el más információkat tartalmazó diagramokkal együtt egy interaktív vászonra, egészen új módon kezelheti a projektjét. Ahogy a Power BI-ban hatnak egymásra a látványelemek, másik nézőpontból figyelheti meg az erőforrás-elosztást, a feladatok előrehaladási állapotát és a fennmaradó feladatokat, és jobb képe lehet a jövőről.\nA Gantt-diagramok a projektkezelési portfóliók elengedhetetlen részei. A projektmenedzserek és a vezetők kedvelik a Gantt-diagramokat, mert első pillantásra látható módon jelenítik meg a projektek átfogó idővonalát valamint az aktuális előrehaladás (vagy azok hiányának) részletes információit a hozzárendelésekkel. \nAz egyéni vizualizációval megadhat feladatokat, kezdő dátumokat, időtartamokat és %Completion állapotokat, és a program ezeket rendereli Gantt-diagramként. Vegye figyelembe, hogy a %Completion (százalékos elkészülési) állapot tizedesjegyeket tartalmazó értéket ad (például a 0,85 érték 85%-ot jelent), a Kezdő dátum pedig egy dátummező, nem dátumhierarchia.\nA jelmagyarázat segítségével a sáv színét is megadhatja. Jelmagyarázatként használhatja a projekt bármely releváns területét, például a cél szerinti feladattípusokat. Emellett meghatározhatja az erőforrás mező tartalmát is, amely a Gantt-diagram sávja mellett fog megjelenni.\nEz a vizualizáció nyílt forráskódú. A kódot letöltheti a GitHubról: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Csoportos feladatok",
   "Visual_ScrollToCurrentTime": "Görgetés az aktuális időhöz",
   "Visual_DaysOff": "Szabadnapok",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Feladat beállításai",
   "Visual_TaskSettings_Color": "Feladat színe",
   "Visual_TaskSettings_Height": "Magasság",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Sávok, lekerekített sarkok",
   "Visual_DataLabels": "Adatfeliratok",
   "Visual_CategoryLabels": "Kategóriacímkék",
   "Visual_Type": "Típus",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Négyzet",
   "Visual_Shape_Circle": "Kör",
   "Visual_Description_Milestones": "Mérföldkő-beállítások megjelenítése",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Az összes kibontása",
+  "Visual_Collapse_All": "Az összes összecsukása"
 }

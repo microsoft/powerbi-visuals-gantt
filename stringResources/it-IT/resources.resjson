@@ -7,11 +7,11 @@
   "Role_Duration": "Durata",
   "Role_Completion": "% di completamento",
   "Role_Resource": "Risorsa",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Attività cardine",
   "Role_Tooltips": "Descrizioni comando",
   "Visual_General": "Generale",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Tipo di grafico a barre che illustra la sequenza temporale o la pianificazione di un progetto con le risorse",
+  "Visual_Long_Description": "Il diagramma di Gantt è un tipo di grafico a barre che consente di illustrare una pianificazione con asse temporale. Quando si inserisce un diagramma di Gantt ad altri grafici dettagliati in un'area di disegno interattiva, è possibile gestire il progetto in un modo completamente nuovo. Quando in Power BI gli oggetti visivi interagiscono tra loro, è possibile esaminare l'allocazione delle risorse, il completamento delle attività, le attività rimanenti da un altro punto di vista e controllare meglio le attività future.\nI diagrammi di Gantt sono una parte indispensabile del portfolio di soluzioni per la gestione progetti. Project manager e dirigenti preferiscono i diagrammi di Gantt perché mostrano visivamente e in modo efficace la linea temporale generale del progetto, lo stato corrente e lo stato di avanzamento (o l'assenza di informazioni sullo stato) oltre all'assegnazione, tutto in modo molto dettagliato.\nCon questo oggetto visivo personalizzato, è possibile specificare le attività, la data di inizio, la durata e la percentuale di completamento per il rendering in un diagramma di Gantt. Tenere presente che per la percentuale di completamento è previsto un valore decimale, ovvero 0,85 per indicare l'85%, mentre per la data di inizio è previsto un campo data e non una gerarchia di date.\nÈ anche possibile controllare il colore della barra con una legenda. Come legenda si può usare qualsiasi campo del progetto, ad esempio il tipo di attività per questo scopo. È anche possibile specificare il campo risorsa, che verrà indicato accanto alla barra nel diagramma di Gantt.\nOggetto visivo open source. Il codice sorgente è disponibile su GitHub all'indirizzo https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Attività del gruppo",
   "Visual_ScrollToCurrentTime": "Scorri fino all'ora corrente",
   "Visual_DaysOff": "Giorni non lavorativi",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Impostazioni dell'attività",
   "Visual_TaskSettings_Color": "Colore per Attività",
   "Visual_TaskSettings_Height": "Altezza",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Angoli arrotondati delle barre",
   "Visual_DataLabels": "Etichette dati",
   "Visual_CategoryLabels": "Etichette categorie",
   "Visual_Type": "Tipo",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Quadrato",
   "Visual_Shape_Circle": "Cerchio",
   "Visual_Description_Milestones": "Visualizza opzioni attività cardine",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Espandi tutto",
+  "Visual_Collapse_All": "Comprimi tutto"
 }

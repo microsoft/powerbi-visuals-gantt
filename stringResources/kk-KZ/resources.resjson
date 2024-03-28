@@ -7,11 +7,11 @@
   "Role_Duration": "Ұзақтық",
   "Role_Completion": "% аяқталу",
   "Role_Resource": "Ресурс",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Аралық кезеңдер",
   "Role_Tooltips": "Кеңестер",
   "Visual_General": "Жалпы",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Жобаның уақыт шкаласын немесе ресурстармен бірге кестені көрсететін жолақты диаграмма түрі",
+  "Visual_Long_Description": "Гант диаграммасы жоспарды уақыт осімен көрсетуге арналған жолақты диаграмма түрі болып табылады. Гант диаграммасын басқа ақпараттық диаграммалармен бірге интерактивтік кенепке қойсаңыз, жобаңызды бүтіндей басқа жолмен басқара аласыз. Power BI жүйесінде көрнекі элементтер бір-бірімен әрекеттесетіндіктен, ресурстарды бөлуге, тапсырмаларды орындауға, қалған тапсырмаларға басқа перспективадан қарай аласыз және болашаққа нық қарай аласыз.\nГант диаграммалары жобаны басқару портфелінің қажетті бөлігі болып табылады. Жоба менеджерлері мен басшылары Гант диаграммаларын ұнатады, себебі олар өте тиімді жолмен көрнекі түрде жобаның жалпы уақыт шкаласын, ағымдағы күйді және орындалу барысын (немесе оның жоқтығын) егжей-тегжейлі көрсетеді.\nБұл реттелетін көрнекі элемент көмегімен тапсырмаларды, басталу уақытын, ұзақтықты және %Орындалуды оларды Гант ретінде қарастыру үшін көрсете аласыз. %Орындалу үшін ондық мән (мысалы, 0,85 мәні 85% білдіреді) және басталу күні, күн өрісі, қажет, күн иерархиясы емес.\nЖолақ түсін шартты белгілермен басқара аласыз. Жобадан кез келген тиісті өрісті шартты белгілер ретінде пайдалануға болады, мысалы, осы мақсат үшін тапсырма түрі. Сонымен қатар, ресурс өрісін көрсете аласыз, ол Гант диаграммасында жолақтан кейін көрсетіледі.\nБұл ашық кодты көрнекі элемент. Кодты алыңыз: GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Тапсырмаларды топтау",
   "Visual_ScrollToCurrentTime": "Ағымдағы уақытқа жылжыту",
   "Visual_DaysOff": "Демалыс күндері",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Тапсырма параметрлері",
   "Visual_TaskSettings_Color": "Тапсырма түсі",
   "Visual_TaskSettings_Height": "Биіктігі",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Жолақтардың дөңгелек бұрыштары",
   "Visual_DataLabels": "Деректер белгілері",
   "Visual_CategoryLabels": "Санат белгілері",
   "Visual_Type": "Түр",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Шаршы",
   "Visual_Shape_Circle": "Дөңгелек",
   "Visual_Description_Milestones": "Аралық кезең параметрлерін көрсету",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Бәрін шығарып алу",
+  "Visual_Collapse_All": "Бәрін тасалау"
 }

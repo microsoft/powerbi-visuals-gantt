@@ -7,11 +7,11 @@
   "Role_Duration": "Varighet",
   "Role_Completion": "% fullført",
   "Role_Resource": "Ressurs",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Milepæler",
   "Role_Tooltips": "Verktøytips",
   "Visual_General": "Generelt",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "En stolpediagramtype som illustrerer en prosjekttidslinje eller tidsplan med ressurser",
+  "Visual_Long_Description": "Gantt-diagrammet er et type stolpediagram som brukes til å illustrere en tidsplan med tidsakse. Når du plasserer Gantt-diagrammet sammen med andre illustrerende diagrammer på et interaktivt lerret, kan du administrere prosjektet på helt ny måte. Når visualobjekter samhandler i Power BI, kan du ved å vise ressurstildelingen, oppgavegjennomføringen og gjenstående aktiviteter med ulike perspektiver, få god oversikt over fremdriften.\nGantt-diagram er en uunnværlig del av prosjektlederens portefølje. Prosjektledere og overordnede elsker Gantt-diagrammer fordi de raskt og effektivt viser hele tidslinjen til prosjektet, gjeldende status og fremdrift (eller mangel på fremdrift) sammen med tilordningen, med mange detaljer.\nMed dette tilpassede visualobjektet kan du angi aktiviteter, startdato, varighet og %fullføring, og gjengi dem i et Gantt-diagram. Legg merke til at %fullføring forventer en desimalverdi (0,85 betyr for eksempel 85%) og startdato, et datofelt og ikke et datohierarki.\nDu kan også kontrollere fargen på feltet med en forklaring. Du kan bruke alle relevante felt fra prosjektet som forklaring, for eksempel aktivitetstype. I tillegg kan du også angi ressursfeltet som skal vises ved siden av feltet i Gantt-diagrammet.\nDette er et visualobjekt med åpen kildekode. Hent koden fra GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Gruppeaktiviteter",
   "Visual_ScrollToCurrentTime": "Rull til gjeldende klokkeslett",
   "Visual_DaysOff": "Fridager",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Oppgaveinnstillinger",
   "Visual_TaskSettings_Color": "Oppgavefarge",
   "Visual_TaskSettings_Height": "Høyde",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Stolper avrundede hjørner",
   "Visual_DataLabels": "Dataetiketter",
   "Visual_CategoryLabels": "Kategorietiketter",
   "Visual_Type": "Type",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Kvadrat",
   "Visual_Shape_Circle": "Sirkel",
   "Visual_Description_Milestones": "Vis alternativer for milepæler",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Utvid alle",
+  "Visual_Collapse_All": "Skjul alle"
 }

@@ -7,11 +7,11 @@
   "Role_Duration": "Kesto",
   "Role_Completion": "Valmistumisprosentti",
   "Role_Resource": "Resurssi",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Välitavoitteet",
   "Role_Tooltips": "Työkaluvihjeet",
   "Visual_General": "Yleinen",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Palkkikaavion tyyppi, joka esittää projektin aikajanan tai aikataulun resurssien kanssa",
+  "Visual_Long_Description": "Gantt-kaavio on palkkikaaviotyyppi, joka havainnollistaa aikataulun aika-akselin kanssa. Kun asetat Gantt-kaavion yhdessä muiden merkityksellisten kaavioiden kanssa vuorovaikutteiselle pohjalle, voit hallita projektiasi kokonaan uudella tavalla. Power BI:ssä visualisoinnit ovat vuorovaikutuksessa toistensa kanssa, ja voit tarkastella resurssien varaamista, tehtävien valmistumista sekä jäljellä olevia tehtäviä eri perspektiivistä ja saada vakaan käsityksen tulevaisuudesta.\nGantt-kaaviot kuuluvat olennaisesti projektinhallinnan portfolioon. Projektipäälliköt ja johtajat rakastavat Gantt-kaavioita, koska ne näyttävät visuaalisesti erittäin tehokkaalla yhdellä silmäyksellä nähtävällä tavalla projektin kokonaisaikajanan, nykyisen tilan ja edistymisen (tai sen puutteen) yhdessä tehtävän kanssa merkittävän yksityiskohtaisesti.\nTämän mukautetun visualisoinnin avulla voit määrittää tehtävät, alkamispäivän, keston ja valmistumisprosentin hahmonnettaviksi Gantt-kaaviossa. Huomaa, että valmistumisprosentti odottaa desimaaliarvoa (esimerkiksi 0,85 tarkoittaa 85 prosenttia) ja alkamispäivää, joa on päivämääräkenttä, ei päivämäärähierarkia.\nVoit myös määrittää palkin värin selitteen avulla. Voit käyttää mitä tahansa asianmukaista kenttää projektistasi selitteenä esimerkiksi tehtävätyypille tähän tarkoitukseen. Lisäksi voit määrittää myös resurssikentän, joka näkyy palkin vieressä Gantt-kaaviossa.\nTämä on avoimeen lähdekoodiin perustuva visualisointi. Hanki koodi GitHubista: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Ryhmitä tehtävät",
   "Visual_ScrollToCurrentTime": "Selaa nykyiseen aikaan",
   "Visual_DaysOff": "Vapaapäivät",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Tehtäväasetukset",
   "Visual_TaskSettings_Color": "Tehtävän väri",
   "Visual_TaskSettings_Height": "Korkeus",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Palkit, pyöristetyt kulmat",
   "Visual_DataLabels": "Arvopisteiden nimet",
   "Visual_CategoryLabels": "Luokkaotsikot",
   "Visual_Type": "Tyyppi",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Neliö",
   "Visual_Shape_Circle": "Ympyrä",
   "Visual_Description_Milestones": "Näytä välitavoitteiden asetukset",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Laajenna kaikki",
+  "Visual_Collapse_All": "Kutista kaikki"
 }

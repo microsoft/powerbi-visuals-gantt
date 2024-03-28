@@ -7,11 +7,11 @@
   "Role_Duration": "Khoảng thời gian",
   "Role_Completion": "% Hoàn thành",
   "Role_Resource": "Tài nguyên",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Mốc",
   "Role_Tooltips": "Chú giải công cụ",
   "Visual_General": "Chung",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Một loại biểu đồ thanh minh họa lịch biểu hoặc mốc thời gian dự án với các tài nguyên",
+  "Visual_Long_Description": "Biểu đồ Gantt là một dạng biểu đồ thanh để minh họa lịch biểu bằng trục thời gian. Khi bạn đặt biểu đồ Gantt cùng các loại biểu đồ có chứa thông tin chi tiết khác ở dạng bức vẽ có tính tương tác, bạn có thể quản lý dự án của mình theo cách hoàn toàn mới. Trong Power BI, vì hình ảnh tương tác với những hình ảnh khác, bạn có thể xem mục phân bổ tài nguyên, nhiệm vụ hoàn thành, nhiệm vụ chưa hoàn theo các góc nhìn khác nhau và xử lý sau.\nBiểu đồ Gantt là một phần không thể thiếu trong danh mục quản lý dự án. Những người điều phối và quản lý dự án rất ưa chuộng biểu đồ Gantt vì loại biểu đồ này hiển thị một cách trực quan theo cách mang lại hiệu quả ngay tức thì, thời gian tổng thể của dự án, hiện trạng & tiến trình (hoặc không có) cùng với nhiệm vụ ở mức chi tiết phù hợp.\nVới hình ảnh tùy chỉnh này, bạn có thể xác định Nhiệm vụ, Ngày bắt đầu, Khoảng thời gian và %Hoàn thành để hiển thị dưới dạng Gantt. Xin hãy lưu ý rằng %Hoàn thành nên là giá trị thập phân ( ví dụ 0,85 tương ứng với 85%) và Ngày bắt đầu, trường ngày và không phải dạng cấp bậc ngày.\nBạn cũng có thể kiểm soát màu sắc của thanh bằng Chú giải. Bạn cũng có thể sử dụng mọi trường liên quan từ dự án của mình như Chú giải cho loại nhiệm vụ minh họa cho mục đích này. Ngoài ra, bạn cũng có thể xác định trường tài nguyên, được liệt kê bên cạnh thanh trong biểu đồ Gantt.\nĐây là hình ảnh nguồn mở. Tải mã từ GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Nhiệm vụ nhóm",
   "Visual_ScrollToCurrentTime": "Cuộn đến thời gian hiện tại",
   "Visual_DaysOff": "Số ngày nghỉ",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Cài đặt nhiệm vụ",
   "Visual_TaskSettings_Color": "Màu cho nhiệm vụ",
   "Visual_TaskSettings_Height": "Chiều cao",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Góc bo tròn của thanh",
   "Visual_DataLabels": "Nhãn Dữ liệu",
   "Visual_CategoryLabels": "Nhãn danh mục",
   "Visual_Type": "Loại",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Hình vuông",
   "Visual_Shape_Circle": "Hình tròn",
   "Visual_Description_Milestones": "Hiển thị tùy chọn mốc",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Bung rộng tất cả",
+  "Visual_Collapse_All": "Thu gọn tất cả"
 }

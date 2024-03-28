@@ -7,11 +7,11 @@
   "Role_Duration": "Тривалість",
   "Role_Completion": "% завершення",
   "Role_Resource": "Ресурс",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Проміжні етапи",
   "Role_Tooltips": "Підказки",
   "Visual_General": "Загальні",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Тип гістограми з часовою шкалою проекту або розкладом із ресурсами.",
+  "Visual_Long_Description": "Діаграма Ганта – це тип гістограми, яка зручно ілюструє розклад відносно осі часу. Додавши до інтерактивного полотна діаграму Ганта та інші наочні діаграми, ви отримуєте абсолютно нові можливості керування проектом. Взаємодія візуалізацій у Power BI надасть вам цілісну актуальну картину й можливість із різних перспектив відстежувати виділення ресурсів, відсоток завершення завдань і невиконані завдання.\nДіаграми Ганта незамінні для керування проектами. Менеджери проектів і керівники надають перевагу цьому дуже ефективному способу візуалізації, що дає змогу швидко й досить докладно оцінити загальний розклад, поточний стан, дані про призначення й перебіг виконання.\nДля цієї спеціальної візуалізації можна вказати завдання, дату початку, тривалість і відсоток виконання. Зверніть увагу: відсоток виконання слід указати як десятковий дріб (наприклад, 0,85 означає 85%), а дата початку – це поле дати, а не ієрархія дат.\nТакож можна налаштувати колір смуги й легенду. Як легенду можна використовувати будь-яке відповідне поле проекту, як-от тип завдання. Крім того, ви можете вказати поле ресурсу, що відображатиметься поруч зі смугою на діаграмі Ганта.\nЦе візуалізація з відкритим кодом. Отримайте його на сайті GitHub https://github.com/Microsoft/powerbi-visuals-gantt.",
   "Visual_GroupTasks": "Групувати завдання",
   "Visual_ScrollToCurrentTime": "Прокрутити до поточного часу",
   "Visual_DaysOff": "Вихідні дні",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Параметри завдання",
   "Visual_TaskSettings_Color": "Колір завдання",
   "Visual_TaskSettings_Height": "Висота",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Заокруглені кути панелей",
   "Visual_DataLabels": "Підписи даних",
   "Visual_CategoryLabels": "Мітки категорій",
   "Visual_Type": "Тип",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Квадрат",
   "Visual_Shape_Circle": "Коло",
   "Visual_Description_Milestones": "Показувати параметри проміжних етапів",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Розгорнути все",
+  "Visual_Collapse_All": "Згорнути все"
 }

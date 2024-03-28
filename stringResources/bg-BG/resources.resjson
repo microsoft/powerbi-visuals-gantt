@@ -7,11 +7,11 @@
   "Role_Duration": "Продължителност",
   "Role_Completion": "% завършване",
   "Role_Resource": "Ресурс",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Контролни точки",
   "Role_Tooltips": "Пояснения",
   "Visual_General": "Общи",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Вид стълбовидна диаграма, която показва времева линия на проект или график с ресурси",
+  "Visual_Long_Description": "Диаграмата на Гант е вид стълбовидна диаграма, която илюстрира график с времева ос. При поставяне на диаграмата на Гант до други аналитични диаграми в интерактивно платно можете да управлявате проекта си по изцяло нов начин. В Power BI, където визуалните обекти си взаимодействат, може да преглеждате разпределението на ресурсите, степента на завършване на задачите и оставащите задачи в различна перспектива и да получите инструменти за по-ефективен контрол на бъдещите резултати.\nДиаграмите на Гант са необходима част от портфолиото за управление на проекти. Проектните мениджъри и ръководителите обичат да използват диаграмите на Гант, тъй като само с един поглед те показват визуално по много ефективен начин цялата времева линия на проекта, текущото състояние и напредъка (или липсата на такъв), както и възложената задача със значителни подробности.\nЧрез този персонализиран визуален обект можете да укажете задачите, началната дата, продължителността и % на завършване и да ги рендирате като диаграма на Гант. Обърнете внимание, че %Completion изисква десетична стойност (например 0,85 означава 85%), а началната дата изисква поле за дата вместо йерархия на дати.\nМожете също така да управлявате цвета на стълба чрез легенда. За целта можете да използвате всяко подходящо поле от проекта като легенда, като например типа на задачата. Освен това можете да укажете полето с ресурси, което ще бъде показано до стълба в диаграмата на Гант.\nТова е визуален обект с отворен код. Може да получите кода от GitHub на адрес: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Групови задачи",
   "Visual_ScrollToCurrentTime": "Превъртане до текущия час",
   "Visual_DaysOff": "Почивни дни",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Настройки на задача",
   "Visual_TaskSettings_Color": "Цвят на задача",
   "Visual_TaskSettings_Height": "Височина",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Заоблени ъгли",
   "Visual_DataLabels": "Етикети на данни",
   "Visual_CategoryLabels": "Етикети на категория",
   "Visual_Type": "Тип",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Квадрат",
   "Visual_Shape_Circle": "Кръг",
   "Visual_Description_Milestones": "Показване на опциите за контролни точки",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Разгъване на всички",
+  "Visual_Collapse_All": "Сгъване на всички"
 }

@@ -7,11 +7,11 @@
   "Role_Duration": "مدة",
   "Role_Completion": "نسبة الاكتمال",
   "Role_Resource": "المورد",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "المراحل الرئيسية",
   "Role_Tooltips": "تلميحات الأداة",
   "Visual_General": "عام",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "أحد أنواع المخطط الشريطي التي توضح فترة زمنية لمشروع أو جدوله الزمني مع الموارد",
+  "Visual_Long_Description": "مخطط جانت هو أحد أنواع المخطط الشريطي لتوضيح جدول مع محور الوقت. عند وضع مخطط جانت جنبًا إلى جنب مع مخططات مميزة أخرى في لوحة تفاعلية، يمكنك إدارة مشروعك بطريقة جديدة. في Power BI مع تفاعل مرئيات مع بعضها البعض، يمكنك الاطلاع على تخصيص الموارد واكتمال المهمة والمهام المتبقية من منظور مختلف والتحكم في المستقبل.\nتعتبر مخططات جانت جزءًا ضروريًا في قائمة إدارة المشروع. يحب المدراء التنفيذيون ومدراء المشروع مخططات جانت، وذلك لأنها تعرض بطريقة موجزة وفعالة جدًا، الخط الزمني الشامل للمشروع والحالة الحالية والتقدم (أو النقص في هذا وذاك) مع المهمة بتفاصيل كبيرة.\nباستخدام هذه المرئيات المخصصة، يمكنك تحديد المهام وتاريخ البدء والمدة والنسبة المئوية للاكتمال لعرضها على جانت. الرجاء ملاحظة أنه من المتوقع أن تكون النسبة المئوية للاكتمال قيمة عشرية (على سبيل المثال فإن 0.85 تعني 85%) و تاريخ البدء حقل تاريخ وليس تسلسل هيكلي للتاريخ.\nيمكنك أيضا التحكم في لون الشريط بوسيلة إيضاح. يمكنك استخدام أي حقل ذي صلة من مشروعك كوسيلة إيضاح على سبيل المثال نوع المهمة لهذا الغرض. بالإضافة إلى ذلك، يمكنك أيضا تحديد حقل المورد، والذي قد يكون مسردًا بجانب الشريط في جانت.\nفيما يلي مرئيات مصدر مفتوح. احصل على التعليمات البرمجية من GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "مهام المجموعة",
   "Visual_ScrollToCurrentTime": "تمرير إلى الوقت الحالي",
   "Visual_DaysOff": "العطلات",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "إعدادات المهمة",
   "Visual_TaskSettings_Color": "لون المهمة",
   "Visual_TaskSettings_Height": "الارتفاع",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "زوايا أشرطة مستديرة",
   "Visual_DataLabels": "تسميات البيانات",
   "Visual_CategoryLabels": "تسميات الفئة",
   "Visual_Type": "النوع",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "تربيع",
   "Visual_Shape_Circle": "دائرة",
   "Visual_Description_Milestones": "عرض خيارات المراحل الرئيسية",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "توسيع الكل",
+  "Visual_Collapse_All": "طي الكل"
 }

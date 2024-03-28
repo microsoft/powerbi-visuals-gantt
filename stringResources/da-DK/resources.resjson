@@ -7,11 +7,11 @@
   "Role_Duration": "Varighed",
   "Role_Completion": "% fuldført",
   "Role_Resource": "Ressource",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Milepæle",
   "Role_Tooltips": "Værktøjstip",
   "Visual_General": "Generelt",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "En type liggende søjlediagram, som illustrerer en projekts tidslinje eller tidsplan med ressourcer",
+  "Visual_Long_Description": "Ganttdiagrammet er en type søjlediagram til at illustrere en tidsplan med tidsakse. Når du lægger Ganttdiagrammet sammen med andre nyttige diagrammer i et interaktivt lærred, kan du administrere projektet på en helt ny måde. Mens visualiseringer interagerer med hinanden i Power BI, kan du se på din ressourceallokering, opgaveudførelse og resterende opgaver i et andet perspektiv og få godt styr på fremtiden.\nGanttdiagrammer er en uundværlig del af projektstyringsporteføljen. Projektledere og direktører er glade for Ganttdiagrammer, da de visuelt præsenter, i en effektiv og hurtigt opfattet form, den overordnede tidslinje i projektet, den aktuelle status og fremdrift (eller mangel på samme) sammen med en detaljeret gennemgang af opgaven.\nMed denne brugerdefinerede visualisering kan du angive opgaver, startdato, varighed og %Completion (fuldførelse) og gengive dem som Gantt. Bemærk, at %Completion forventer en decimalværdi (for eksempel 0,85 betyder 85 %) og startdatoen, en dato og ikke en datohierarki.\nDu kan også styre farven på værktøjslinjen med en forklaring. Du kan bruge de relevante felter fra projektet som forklaring f.eks. opgavetype til dette formål. Derudover kan du også angive ressourcefeltet, der ville blive angivet ved siden af bjælken i Gantt.\nDette er en visualisering med åben kildekode. Koden kan hentes hos GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Gruppeopgaver",
   "Visual_ScrollToCurrentTime": "Rul til aktuel tid",
   "Visual_DaysOff": "Fridage",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Indstillinger for opgave",
   "Visual_TaskSettings_Color": "Opgavefarve",
   "Visual_TaskSettings_Height": "Højde",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Afrundede hjørner af søjler",
   "Visual_DataLabels": "Datamærkater",
   "Visual_CategoryLabels": "Kategorietiketter",
   "Visual_Type": "Type",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Kvadrat",
   "Visual_Shape_Circle": "Cirkel",
   "Visual_Description_Milestones": "Vis indstillinger for milepæle",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Udvid alt",
+  "Visual_Collapse_All": "Skjul alle"
 }

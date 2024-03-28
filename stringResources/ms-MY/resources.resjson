@@ -7,11 +7,11 @@
   "Role_Duration": "Tempoh",
   "Role_Completion": "% Pelengkapan",
   "Role_Resource": "Sumber",
-  "Role_Milestones": "Milestones",
+  "Role_Milestones": "Pencapaian",
   "Role_Tooltips": "Petua alat",
   "Visual_General": "Umum",
-  "Visual_Short_Description": "A type of bar chart which illustrates a project timeline or schedule with resources",
-  "Visual_Long_Description": "Gantt chart is a type of bar chart to illustrate a schedule with time axis. When you put Gantt chart along with other insightful charts in an interactive canvas, you can manage your project in whole new way. In Power BI as visuals interact with each other, you can look at your resource allocation, task completion, remaining tasks in different perspective and get a firm handle on the future.\nGantt charts are indispensable part of project management portfolio. Project Managers and executives love Gantt charts, since they visually show in a very effective at-a-glance way, the overall time line of the project, the current status & progress (or lack thereof) along with the assignment at considerable details.\nWith this custom visual, you can specify the Tasks, Start Date, Duration and %Completion for rendering them as Gantt. Please note that the %Completion expects a decimal value ( for example 0.85 means 85%) and Start Date , a date field and not a date hierarchy.\nYou can also control the color of the bar with a Legend. You can use any relevant field from your project as Legend for example task type for this purpose. Additionally, you can also specify the resource field, which would be listed next the bar in the Gantt.\nThis is an open source visual. Get the code from GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
+  "Visual_Short_Description": "Jenis carta bar yang menggambarkan garis waktu projek atau jadual dengan sumber",
+  "Visual_Long_Description": "Carta Gantt adalah sejenis carta bar untuk menggambarkan jadual dengan paksi masa. Apabila anda meletakkan carta Gantt bersama-sama dengan carta wawasan lain dalam kanvas interaktif, anda boleh menguruskan projek anda dengan cara yang baru. Dalam Power BI sebagai visual berinteraksi antara satu sama lain, anda boleh melihat peruntukan sumber anda, penyelesaian tugas, baki tugas dalam perspektif yang berbeza dan dapatkan pegangan yang kukuh pada masa depan.\nCarta Gantt adalah sebahagian daripada portfolio pengurusan projek yang tidak diperlukan. Pengurus Projek dan eksekutif suka carta Gantt, kerana mereka secara visual menunjukkan dengan cara yang sangat berkesan, garis masa keseluruhan projek, status semasa & kemajuan (atau kekurangannya) bersama dengan tugasan pada butiran yang besar.\nDengan visual tersuai ini, anda boleh menentukan Tugas, Tarikh Mula, Tempoh dan %Completion untuk menjadikannya sebagai Gantt. Sila ambil perhatian bahawa %Completion menjangka nilai perpuluhan (contohnya 0.85 bermaksud 85%) dan Tarikh Mula, bidang tarikh dan bukan hierarki tarikh.\nAnda juga boleh mengawal warna bar dengan Legenda. Anda boleh menggunakan mana-mana medan yang berkaitan dari projek anda sebagai Legenda contoh jenis tugas untuk tujuan ini. Di samping itu, anda juga boleh menentukan medan sumber, yang akan disenaraikan di bar seterusnya dalam Gantt.\nIni adalah visual sumber terbuka. Dapatkan kod dari GitHub: https://github.com/Microsoft/powerbi-visuals-gantt",
   "Visual_GroupTasks": "Tugas Kumpulan",
   "Visual_ScrollToCurrentTime": "Tatal ke masa semasa",
   "Visual_DaysOff": "Hari cuti",
@@ -54,7 +54,7 @@
   "Visual_TaskSettings": "Pengaturan Tugas",
   "Visual_TaskSettings_Color": "Warna tugas",
   "Visual_TaskSettings_Height": "Ketinggian",
-  "Visual_BarsRoundedCorners": "Bars Rounded Corners",
+  "Visual_BarsRoundedCorners": "Bar Sudut Bulat",
   "Visual_DataLabels": "Label Data",
   "Visual_CategoryLabels": "Label Kategori",
   "Visual_Type": "Jenis",
@@ -95,6 +95,6 @@
   "Visual_Shape_Square": "Segi Empat Sama",
   "Visual_Shape_Circle": "Kumpulan",
   "Visual_Description_Milestones": "Paparkan opsyen pencapaian",
-  "Visual_Expand_All": "Expand All",
-  "Visual_Collapse_All": "Collapse All"
+  "Visual_Expand_All": "Kembangkan Semua",
+  "Visual_Collapse_All": "Runtuhkan Semua"
 }
