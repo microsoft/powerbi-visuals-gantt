@@ -1,4 +1,5 @@
 ## 3.0.9
+* Upgrade API to 5.9.0
 * Fix axis position compared to tasks position
 * Increase axis and tasks padding so axis is visible when "Date type" is set to "Hour"
 * Remove magic numbers

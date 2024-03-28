@@ -9,7 +9,7 @@
     "supportUrl": "https://community.powerbi.com",
     "gitHubUrl": "https://github.com/Microsoft/powerbi-visuals-gantt"
   },
-  "apiVersion": "5.8.0",
+  "apiVersion": "5.9.0",
   "author": {
     "name": "Microsoft",
     "email": "pbicvsupport@microsoft.com"

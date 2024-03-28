@@ -44,7 +44,7 @@
     "lodash.toarray": "^4.4.0",
     "lodash.uniq": "^4.5.0",
     "lodash.uniqby": "^4.7.0",
-    "powerbi-visuals-api": "^5.8.0",
+    "powerbi-visuals-api": "^5.9.0",
     "powerbi-visuals-utils-chartutils": "^6.0.3",
     "powerbi-visuals-utils-colorutils": "^6.0.3",
     "powerbi-visuals-utils-dataviewutils": "^6.0.2",
