@@ -309,6 +309,8 @@ export class Gantt implements IVisual {
     private static TaskLineCoordinateX: number = 15;
     private static AxisLabelClip: number = 40;
     private static AxisLabelStrokeWidth: number = 1;
+    private static AxisTopMargin: number = 6;
+    private static CollapseAllLeftShift: number = 7.5;
     private static BarHeightMargin: number = 5;
     private static ChartLineHeightDivider: number = 4;
     private static ResourceWidthPadding: number = 10;
@@ -330,7 +332,7 @@ export class Gantt implements IVisual {
 
 
     private static TimeScale: timeScale<any, any>;
-    private static xAxisProperties: IAxisProperties;
+    private xAxisProperties: IAxisProperties;
 
     private static get DefaultMargin(): IMargin {
         return {
@@ -1700,7 +1702,7 @@ export class Gantt implements IVisual {
             };
 
             const xAxisProperties: IAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, ticks, false);
-            Gantt.xAxisProperties = xAxisProperties;
+            this.xAxisProperties = xAxisProperties;
             Gantt.TimeScale = <timeScale<Date, Date>>xAxisProperties.scale;
 
             this.renderAxis(xAxisProperties);
@@ -2153,7 +2155,7 @@ export class Gantt implements IVisual {
                 .attr("viewBox", "0 0 48 48")
                 .attr("width", this.groupLabelSize)
                 .attr("height", this.groupLabelSize)
-                .attr("x", 7.5 + Gantt.xAxisProperties.outerPadding || 0)
+                .attr("x", Gantt.CollapseAllLeftShift + this.xAxisProperties.outerPadding || 0)
                 .attr("y", this.secondExpandAllIconOffset)
                 .attr(this.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
 
@@ -3114,7 +3116,7 @@ export class Gantt implements IVisual {
         this.lineGroup
             .attr("transform", SVGManipulations.translate(translateXValue, 0));
         this.collapseAllGroup
-            .attr("transform", SVGManipulations.translate(0, margin.top / 4 + 6));
+            .attr("transform", SVGManipulations.translate(0, margin.top / 4 + Gantt.AxisTopMargin));
     }
 
     private getMilestoneLineLength(numOfTasks: number): number {
