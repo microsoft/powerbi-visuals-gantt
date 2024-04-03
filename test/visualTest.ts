@@ -79,7 +79,7 @@ describe("Gantt", () => {
         defaultDataViewBuilder = new VisualData();
         dataView = defaultDataViewBuilder.getDataView();
         fixDataViewDateValuesAggregation(dataView);
-        
+
     });
 
     function fixDataViewDateValuesAggregation(dataView: DataView) {
@@ -990,7 +990,7 @@ describe("Gantt", () => {
             if (dataView.categorical?.categories && !dataView.categorical.categories[milestoneColumnIndex].objects) {
                 dataView.categorical.categories[milestoneColumnIndex].objects = [];
             }
-            
+
             categoriesColumn?.values.forEach((value: PrimitiveValue) => {
                 let milestoneSettingsObject: { milestones: { fill: any; shapeType: string } } | null = null;
                 if (value) {
@@ -1002,7 +1002,7 @@ describe("Gantt", () => {
                         }
                     };
                 }
-                
+
                 dataView?.categorical?.categories?.[milestoneColumnIndex]?.objects?.push(milestoneSettingsObject);
             });
 
@@ -1666,7 +1666,7 @@ describe("Gantt", () => {
                         const text: string | null = e.textContent;
                         const taskResourcesX = +(e.getAttribute("x") ?? 0);
                         const taskResourcesY = +(e.getAttribute("y") ?? 0);
-                        const taskRectX = taskRects[i].getBBox().x + VisualClass.RectRound * 2;
+                        const taskRectX = taskRects[i].getBBox().x + VisualClass.RectRound;
                         const taskRectY = taskRects[i].getBBox().y;
 
                         if (text) {
@@ -1977,7 +1977,7 @@ describe("Gantt", () => {
             dataView.metadata.objects = {
                 taskResource: {
                     show: true,
-                    fill: { solid: { color: "#A3A3A3" } }, 
+                    fill: { solid: { color: "#A3A3A3" } },
                     fontSize
                 }
             };
@@ -2145,7 +2145,7 @@ describe("Gantt", () => {
     describe("PersistProperties test", () => {
 
         const collapsedTasksUpdateIDs: string = "collapsedTasksUpdateIDs";
-        
+
         it("Synchronous one task", (done) => {
             const newId = crypto?.randomUUID() || Math.random().toString();
 
@@ -2165,7 +2165,7 @@ describe("Gantt", () => {
 
         it("Synchronous multiple tasks", (done) => {
             const collapsedTasksUpdateIDsRandom : string[] = []
-            
+
             for (let count = 0; count < 3; count++) {
                 const newId = crypto?.randomUUID() || Math.random().toString();
                 collapsedTasksUpdateIDsRandom.push(newId);
@@ -2196,7 +2196,7 @@ describe("Gantt", () => {
             visualBuilder.update(dataView);
             expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(2);
 
-            
+
             dataView.metadata.objects = objects2;
             visualBuilder.update(dataView);
             expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(1);
@@ -2211,7 +2211,7 @@ describe("Gantt", () => {
 
         it("Asynchronous multiple tasks", async () => {
             const collapsedTasksUpdateIDsRandom : string[] = []
-            
+
             for (let count = 0; count < 3; count++) {
                 const newId = crypto?.randomUUID() || Math.random().toString();
                 collapsedTasksUpdateIDsRandom.push(newId);
@@ -2243,7 +2243,7 @@ describe("Gantt", () => {
                     dataView.metadata.objects = objects1;
                     visualBuilder.update(dataView);
                     resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[0]));
-                }, 
+                },
                 1_000);
             });
 
