@@ -39,7 +39,7 @@
     "powerbi-visuals-utils-formattingutils": "^4.4.1",
     "powerbi-visuals-utils-interactivityutils": "5.5.2",
     "powerbi-visuals-utils-svgutils": "2.2.0",
-    "powerbi-visuals-utils-tooltiputils": "^2.3.0",
+    "powerbi-visuals-utils-tooltiputils": "^2.4.0",
     "powerbi-visuals-utils-typeutils": "2.2.0"
   },
   "devDependencies": {
