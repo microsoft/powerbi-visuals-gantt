@@ -643,8 +643,41 @@
                         "bool": true
                     }
                 },
-                "fill": {
-                    "displayName": "Fill",
+                "sidebarColor": {
+                    "displayName": "Sidebar Color",
+                    "displayNameKey": "Visual_SidebarColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "sidebarBorderColor": {
+                    "displayName": "Sidebar Border Color",
+                    "displayNameKey": "Visual_SidebarBorderColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "gridLinesColor": {
+                    "displayName": "Grid lines color",
+                    "displayNameKey": "Visual_GridLinesColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontColor": {
+                    "displayName": "Font Color",
                     "displayNameKey": "Visual_Fill",
                     "type": {
                         "fill": {

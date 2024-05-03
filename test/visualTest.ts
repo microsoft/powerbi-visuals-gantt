@@ -1862,7 +1862,7 @@ describe("Gantt", () => {
                 let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     taskLabels: {
-                        fill: VisualBuilder.getSolidColorStructuralObject(color)
+                        fontColor: VisualBuilder.getSolidColorStructuralObject(color)
                     }
                 };
 
