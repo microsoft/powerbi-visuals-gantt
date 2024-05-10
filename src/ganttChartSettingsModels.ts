@@ -79,19 +79,16 @@ class DurationMinSettings {
 class FontSizeSettings {
     public static readonly DefaultFontSize: number = 9;
     public static readonly MinFontSize: number = 8;
-    public static readonly MaxFontSize: number = 60;
 }
 
 class WidthSettings {
     public static readonly DefaultFontSize: number = 110;
     public static readonly MinFontSize: number = 0;
-    public static readonly MaxFontSize: number = 200;
 }
 
 class HeightSettings {
     public static readonly DefaultFontSize: number = 40;
     public static readonly MinFontSize: number = 1;
-    public static readonly MaxFontSize: number = 50;
 }
 
 export class GeneralCardSettings extends Card {
@@ -271,10 +268,6 @@ export class LegendCardSettings extends Card {
                 type: powerbiVisualsApi.visuals.ValidatorType.Min,
                 value: FontSizeSettings.MinFontSize,
             },
-            maxValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Max,
-                value: FontSizeSettings.MaxFontSize,
-            }
         }
     });
 
@@ -332,10 +325,6 @@ export class TaskLabelsCardSettings extends Card {
                 type: powerbiVisualsApi.visuals.ValidatorType.Min,
                 value: FontSizeSettings.MinFontSize,
             },
-            maxValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Max,
-                value: FontSizeSettings.MaxFontSize,
-            }
         }
     });
 
@@ -348,10 +337,6 @@ export class TaskLabelsCardSettings extends Card {
                 type: powerbiVisualsApi.visuals.ValidatorType.Min,
                 value: WidthSettings.MinFontSize,
             },
-            maxValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Max,
-                value: WidthSettings.MaxFontSize,
-            }
         }
     });
 
@@ -414,10 +399,6 @@ export class TaskConfigCardSettings extends Card {
                 type: powerbiVisualsApi.visuals.ValidatorType.Min,
                 value: HeightSettings.MinFontSize,
             },
-            maxValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Max,
-                value: HeightSettings.MaxFontSize,
-            }
         }
     });
 
@@ -449,10 +430,6 @@ export class TaskResourceCardSettings extends Card {
                 type: powerbiVisualsApi.visuals.ValidatorType.Min,
                 value: FontSizeSettings.MinFontSize,
             },
-            maxValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Max,
-                value: FontSizeSettings.MaxFontSize,
-            }
         }
     });
 
