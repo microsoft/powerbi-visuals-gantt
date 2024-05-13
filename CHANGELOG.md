@@ -1,3 +1,9 @@
+## 3.0.11
+# Remove restrictions on legend width
+
+## 3.0.10
+* Fix small task rendering
+
 ## 3.0.9
 * Upgrade API to 5.9.0
 * Fix axis position compared to tasks position
