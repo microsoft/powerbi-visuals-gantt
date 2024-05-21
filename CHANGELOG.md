@@ -1,3 +1,6 @@
+## 3.0.0
+* Removed all polyfills
+
 ## 2.2.3
 * Completion issue fix
 
