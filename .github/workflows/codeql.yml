@@ -13,6 +13,7 @@ jobs:
     name: Analyze
     runs-on: ubuntu-latest
     timeout-minutes: 60
+
     permissions:
       actions: read
       contents: read
@@ -47,3 +48,4 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
+

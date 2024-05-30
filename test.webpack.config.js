@@ -12,18 +12,6 @@ module.exports = {
                 exclude: /node_modules/
             },
             {
-                test: /\.json$/,
-                loader: 'json-loader'
-            },
-            {
-                test: /\.tsx?$/i,
-                enforce: 'post',
-                include: /(src)/,
-                exclude: /(node_modules|resources\/js\/vendor)/,
-                loader: 'istanbul-instrumenter-loader',
-                options: { esModules: true }
-            },
-            {
                 test: /\.less$/,
                 use: [
                     {
@@ -35,7 +23,11 @@ module.exports = {
                     {
                         loader: 'less-loader',
                         options: {
-                            paths: [path.resolve(__dirname, 'node_modules')]
+                            lessOptions: () => {
+                                return {
+                                    paths: [path.resolve(__dirname, 'node_modules')],
+                                };
+                            },
                         }
                     }
                 ]

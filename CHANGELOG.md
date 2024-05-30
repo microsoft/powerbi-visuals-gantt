@@ -1,3 +1,58 @@
+## 3.0.11
+# Remove restrictions on legend width
+
+## 3.0.10
+* Fix small task rendering
+
+## 3.0.9
+* Upgrade API to 5.9.0
+* Fix axis position compared to tasks position
+* Increase axis and tasks padding so axis is visible when "Date type" is set to "Hour"
+* Remove magic numbers
+
+## 3.0.8
+* Fix bar start position and axis visibility on scroll
+
+## 3.0.7
+* Fix issue with showing multiple context menus
+* Fix npm vulnerabilities
+
+## 3.0.6
+* Rollback shifted task bars in order to have backwards compatibility
+* NPM vulnerabilities fixed
+
+## 3.0.5
+* Fix issue with disappearing of the task bar
+* Fix issue with shifted task bar when `barsRoundedCorners` is enabled
+
+## 3.0.4
+* Fix issue when milestones were rendered twice
+* Show customized legend name in the tooltips
+* Packages update
+
+## 3.0.3
+* Render "Collapse all" / "Expand all" even if "Category labels" is disabled
+
+## 3.0.2
+* Fix tests
+* Fix label name
+
+
+## 3.0.1
+* Upgraded to API 5.8.0
+* Fixed bugs related to UI 
+
+## 3.0.0
+* Upgraded to API 5.7.0
+* Dependencies update
+* Major bugs fixes
+* Support Highlight feature add
+* Eslint support
+* Playwright support
+
+## 2.2.5
+* Feature to turn on/off rectangle roundness
+
 ## 2.2.3
 * Completion issue fix
 
@@ -82,7 +137,7 @@
 ## 1.9.4
  * Fixed issue with tooltip duration
  * Fixed issue with invisible task line when duration is 1
- * Renamed "Extra imformation" field bucket to "Tooltips"
+ * Renamed "Extra information" field bucket to "Tooltips"
 
 ## 1.9.3
  * Fixed issue with tooltip duration

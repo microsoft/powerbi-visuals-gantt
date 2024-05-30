@@ -25,13 +25,13 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import * as _ from "lodash";
 
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 
-import { VisualBuilderBase, getRandomNumber } from "powerbi-visuals-utils-testutils";
+import { VisualBuilderBase } from "powerbi-visuals-utils-testutils";
 import { Task } from "../src/interfaces";
 import { Gantt as VisualClass } from "../src/gantt";
+import {DurationUnit} from "../src/enums";
 
 interface TaskMockParamsInterface {
     id: number;
@@ -53,129 +53,216 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
         return this.visual;
     }
 
-    public get body() {
-        return this.element
-            .children("div.gantt-body");
+    public get body(): HTMLElement {
+        return this.element.querySelector("div.gantt-body") as HTMLElement;
     }
 
-    public get mainElement() {
-        return this.body
-            .children("svg.gantt");
+    public get mainElement(): HTMLElement {
+        return this.body.querySelector("svg.gantt") as HTMLElement;
     }
 
-    public get collapseAllRect() {
-        return this.mainElement
-            .children("g.task-lines")
-            .children("g.collapse-all");
+    public get collapseAllRect(): HTMLElement[] {
+        return Array.from(this.mainElement.querySelectorAll("g.task-lines > g.collapse-all"));
     }
 
-    public get collapseAllArrow() {
-        return this.collapseAllRect
-            .children(".collapse-all-arrow");
+    public get collapseAllArrow(): HTMLElement[] {
+        const arrows: HTMLElement[] = [];
+        this.collapseAllRect.forEach((rect: HTMLElement) => {
+            const arrowsNode: NodeListOf<HTMLElement> = rect.querySelectorAll(".collapse-all-arrow");
+            arrowsNode.forEach((element: HTMLElement) => {
+                arrows.push(element);
+            });
+          });
+
+        return arrows;
     }
 
-    public get chartLine() {
-        return this.chart
-            .children("line.chart-line");
+    public get axis(): HTMLElement {
+        return this.mainElement.querySelector("g.axis") as HTMLElement;
     }
 
-    public get axis() {
-        return this.mainElement
-            .children("g.axis");
+    public get axisBackgroundRect(): SVGElement {
+        return this.axis.querySelector("rect") as SVGElement;
     }
 
-    public get axisBackgroundRect() {
-        return this.axis
-            .children("rect");
+    public get axisTicks(): NodeListOf<HTMLElement> {
+        return this.axis.querySelectorAll("g.tick");
     }
 
-    public get axisTicks() {
-        return this.axis
-            .children("g.tick");
+    public get axisTicksLine(): SVGElement[] {
+        const axisTicksLine: SVGLineElement[] = [];
+        this.axisTicks.forEach((element: HTMLElement) => {
+            const linesNode: NodeListOf<SVGLineElement> = element.querySelectorAll("line");
+            axisTicksLine.forEach((element: SVGLineElement) => {
+                axisTicksLine.push(element);
+            });
+        });
+
+        return axisTicksLine;
     }
 
-    public get axisTicksLine() {
-        return this.axisTicks
-            .children("line");
+    public get axisTicksText(): SVGElement[] {
+        const axisTicksText: SVGElement[] = [];
+        this.axisTicks.forEach((element: HTMLElement) => {
+            const textsNode: NodeListOf<SVGTextElement> = element.querySelectorAll("text");
+            textsNode.forEach((element: SVGTextElement) => {
+                axisTicksText.push(element);
+            });
+        });
+
+        return axisTicksText;
     }
 
-    public get axisTicksText() {
-        return this.axisTicks
-            .children("text");
+    public get chart(): HTMLElement {
+        return this.mainElement.querySelector("g.chart") as HTMLElement;
     }
 
-    public get chart() {
-        return this.mainElement
-            .children("g.chart");
+    public get chartLine(): HTMLElement[] {
+        return Array.from(this.chart.querySelectorAll("line.chart-line"));
     }
 
-    public get taskLine() {
-        return this.tasks
-            .children("rect.task-lines");
+    public get taskLines(): HTMLElement[] {
+        return Array.from(this.mainElement.querySelectorAll("g.task-lines"));
     }
 
-    public get taskLineRect() {
-        return this.mainElement
-            .children("g.task-lines")
-            .children("rect.task-lines-rect");
+    public get taskLabels(): HTMLElement[] {
+        const taskLabels: HTMLElement[] = [];
+        this.taskLines.forEach((element: HTMLElement) => {
+            const taskLabelsNode: NodeListOf<HTMLElement> = element.querySelectorAll("g.label");
+            taskLabelsNode.forEach((element: HTMLElement) => {
+                taskLabels.push(element);
+            });
+        });
+
+        return taskLabels;
     }
 
-    public get taskDaysOffRect() {
-        return this.tasks
-            .children("path.task-days-off");
+    public get taskLabelsText(): HTMLElement[]  {
+        const taskLabelsText: HTMLElement[] = [];
+        this.taskLines.forEach((element: HTMLElement) => {
+            const taskLabelsTextNode: NodeListOf<HTMLElement> = element.querySelectorAll("g.label text");
+            taskLabelsTextNode.forEach((element: HTMLElement) => {
+                taskLabelsText.push(element);
+            });
+        });
+
+        return taskLabelsText;
     }
 
-    public get taskLabels() {
-        return this.mainElement
-            .children("g.task-lines")
-            .children("g.label");
+    public get taskLineRect(): HTMLElement[] {
+        const taskLineRects: HTMLElement[] = [];
+        this.taskLines.forEach((element: HTMLElement) => {
+            const taskLinesRectNode: NodeListOf<HTMLElement> = element.querySelectorAll("rect.task-lines-rect");
+            taskLinesRectNode.forEach((element: HTMLElement) => {
+                taskLineRects.push(element);
+            });
+        });
+
+        return taskLineRects;
     }
 
-    public get taskLabelsText() {
-        return this.mainElement
-            .children("g.task-lines")
-            .find("g.label text");
+    public get tasksGroups(): HTMLElement[] {
+        const tasksGroupsNodeList: NodeListOf<HTMLElement> = this.chart.querySelectorAll<HTMLElement>('g.tasks > g.task-group');
+        return Array.from(tasksGroupsNodeList);
     }
 
-    public get tasksGroups() {
-        return this.chart
-            .children("g.tasks")
-            .children("g.task-group");
+    public get tasks(): HTMLElement[] {
+        const tasks: HTMLElement[] = [];
+        this.tasksGroups.forEach((element: HTMLElement) => {
+            const tasksNode: NodeListOf<HTMLElement> = element.querySelectorAll("g.task");
+            tasksNode.forEach((element: HTMLElement) => {
+                tasks.push(element);
+            });
+        });
+
+        return tasks;
     }
 
-    public get tasks() {
-        return this.tasksGroups
-            .children("g.task");
+    public get taskLine(): HTMLElement[] {
+        const taskLines: HTMLElement[] = [];
+        this.tasks.forEach((element: HTMLElement) => {
+            const tasksLineNode: NodeListOf<HTMLElement> = element.querySelectorAll("rect.task-lines");
+            tasksLineNode.forEach((element: HTMLElement) => {
+                taskLines.push(element);
+            });
+        });
+
+        return taskLines;
     }
 
-    public get milestones() {
-        return this.tasks
-            .children("g.task-milestone")
-            .children("path");
+    public get taskDaysOffRect(): HTMLElement[] {
+        const taskDaysOffRect: HTMLElement[] = [];
+        this.tasks.forEach((element: HTMLElement) => {
+            const taskDaysOffRectNode: NodeListOf<HTMLElement> = element.querySelectorAll("path.task-days-off");
+            taskDaysOffRectNode.forEach((element: HTMLElement) => {
+                taskDaysOffRect.push(element);
+            });
+        });
+
+        return taskDaysOffRect;
     }
 
-    public get taskRect() {
-        return this.tasks
-            .children("path.task-rect");
+    public get milestones(): SVGElement[] {
+        const taskMilestones: HTMLElement[] = [];
+        this.tasks.forEach((element: HTMLElement) => {
+            const taskMilestonesNode: NodeListOf<HTMLElement> = element.querySelectorAll("g.task-milestone");
+            taskMilestonesNode.forEach((element: HTMLElement) => {
+                taskMilestones.push(element);
+            });
+        });
+
+        const paths: SVGPathElement[] = [];
+        taskMilestones.forEach((element: HTMLElement) => {
+            const pathsNode: NodeListOf<SVGPathElement> = element.querySelectorAll("path");
+            pathsNode.forEach((element: SVGPathElement) => {
+                paths.push(element);
+            });
+        });
+
+        return paths;
     }
 
-    public get taskResources() {
-        return this.tasks
-            .children("text.task-resource");
+    public get taskRect(): HTMLElement[]  {
+        const taskRects: HTMLElement[] = [];
+        this.tasks.forEach((element: HTMLElement) => {
+            const taskRectsNode: NodeListOf<HTMLElement> = element.querySelectorAll("path.task-rect");
+            taskRectsNode.forEach((element: HTMLElement) => {
+                taskRects.push(element);
+            });
+        });
+
+        return taskRects;
     }
 
-    public get taskProgress() {
-        return this.tasks
-            .children("path.task-progress");
+    public get taskResources(): HTMLElement[] {
+        const taskResources: HTMLElement[] = [];
+        this.tasks.forEach((element: HTMLElement) => {
+            const taskResourcesNode: NodeListOf<HTMLElement> = element.querySelectorAll("text.task-resource");
+            taskResourcesNode.forEach((element: HTMLElement) => {
+                taskResources.push(element);
+            });
+        });
+
+        return taskResources;
     }
 
-    public get legendGroup() {
-        return this.element
-            .children("svg.legend")
-            .children("g#legendGroup");
+    public get taskProgress(): HTMLElement[] {
+        const taskProgress: HTMLElement[] = [];
+        this.tasks.forEach((element: HTMLElement) => {
+            const progressNode: NodeListOf<HTMLElement> = element.querySelectorAll("linearGradient.task-progress");
+            progressNode.forEach((element: HTMLElement) => {
+                taskProgress.push(element);
+            });
+        });
+
+        return taskProgress;
     }
 
-    public downgradeDurationUnit(tasks: any, durationUnit: string) {
+    public get legendGroup(): HTMLElement {
+        return this.element.querySelector<HTMLElement>('.legend #legendGroup') as HTMLElement;
+    }
+
+    public downgradeDurationUnit(tasks: any, durationUnit: DurationUnit) {
         VisualClass.downgradeDurationUnitIfNeeded(tasks, durationUnit);
     }
 
@@ -223,48 +310,48 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public static getDowngradeDurationUnitMocks() {
-        const GanttDurationUnitType = [
-            "second",
-            "minute",
-            "hour",
-            "day",
+        const GanttDurationUnitType: DurationUnit[] = [
+            DurationUnit.Second,
+            DurationUnit.Minute,
+            DurationUnit.Hour,
+            DurationUnit.Day,
         ];
 
-        let downgradeDurationUnitMock = {
+        const downgradeDurationUnitMock = {
             days: {
                 "data": [
-                    { "unit": GanttDurationUnitType.indexOf("day"), "duration": 1.5 },
-                    { "unit": GanttDurationUnitType.indexOf("day"), "duration": 0.84 }
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Day), "duration": 1.5 },
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Day), "duration": 0.84 }
                 ],
                 "expected": [
-                    "hour",
-                    "second"
+                    DurationUnit.Hour,
+                    DurationUnit.Second
                 ]
             },
             hours: {
                 "data": [
-                    { "unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.05 },
-                    { "unit": GanttDurationUnitType.indexOf("hour"), "duration": 0.005 }
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Hour), "duration": 0.05 },
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Hour), "duration": 0.005 }
                 ],
                 "expected": [
-                    "minute",
-                    "second"
+                    DurationUnit.Minute,
+                    DurationUnit.Second
                 ]
             },
             minutes: {
                 "data": [
-                    { "unit": GanttDurationUnitType.indexOf("minute"), "duration": 0.01 }
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Minute), "duration": 0.01 }
                 ],
                 "expected": [
-                    "second"
+                    DurationUnit.Second
                 ]
             },
             seconds: {
                 "data": [
-                    { "unit": GanttDurationUnitType.indexOf("second"), "duration": 0.5 }
+                    { "unit": GanttDurationUnitType.indexOf(DurationUnit.Second), "duration": 0.5 }
                 ],
                 "expected": [
-                    "second"
+                    DurationUnit.Second
                 ]
             }
         };

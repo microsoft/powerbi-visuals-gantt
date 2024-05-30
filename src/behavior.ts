@@ -23,10 +23,9 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-import * as d3 from "d3";
-import * as _ from "lodash";
+import { Selection as d3Selection } from "d3-selection";
 
-type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
+type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
 import { interactivityBaseService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
 import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
@@ -38,8 +37,6 @@ import { IBehaviorOptions } from "powerbi-visuals-utils-interactivityutils/lib/i
 
 export const DimmedOpacity: number = 0.4;
 export const DefaultOpacity: number = 1.0;
-
-const getEvent = () => require("d3-selection").event;
 
 export function getFillOpacity(
     selected: boolean,
@@ -71,46 +68,49 @@ export interface BehaviorOptions extends IBehaviorOptions<Task> {
 
 export class Behavior implements IInteractiveBehavior {
     private options: BehaviorOptions;
+    private selectionHandler: ISelectionHandler;
 
     public bindEvents(options: BehaviorOptions, selectionHandler: ISelectionHandler) {
         this.options = options;
-        let clearCatcher = options.clearCatcher;
+        this.selectionHandler = selectionHandler;
+        const clearCatcher = options.clearCatcher;
 
-        options.taskSelection.on("click", (dataPoint: Task) => {
-            const event: MouseEvent = d3.event as MouseEvent;
-            selectionHandler.handleSelection(dataPoint, event.ctrlKey);
+        this.bindContextMenu();
+
+        options.taskSelection.on("click", (event: MouseEvent, dataPoint: Task) => {
+            selectionHandler.handleSelection(dataPoint, event.ctrlKey || event.metaKey);
 
             event.stopPropagation();
         });
 
-        options.legendSelection.on("click", (d: any) => {
-            if (!d.selected) {
-
-                selectionHandler.handleSelection(d, getEvent().ctrlKey);
-                (d3.event as MouseEvent).stopPropagation();
-
-                let selectedType: string = d.tooltip;
-                options.taskSelection.each((d: Task) => {
-                    if (d.taskType === selectedType && d.parent && !d.selected) {
-                        selectionHandler.handleSelection(d, getEvent().ctrlKey);
-                    }
-                });
-            } else {
+        options.legendSelection.on("click", (event: MouseEvent, d: any) => {
+            if (d.selected) {
                 selectionHandler.handleClearSelection();
-            }
-        });
-
-        options.subTasksCollapse.selection.on("click", (d: GroupedTask) => {
-            if (!_.flatten(d.tasks.map(task => task.children)).length) {
                 return;
             }
 
-            (d3.event as MouseEvent).stopPropagation();
+            selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey);
+            event.stopPropagation();
+
+            const selectedType: string = d.tooltipInfo;
+            options.taskSelection.each((d: Task) => {
+                if (d.taskType === selectedType && d.parent && !d.selected) {
+                    selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey);
+                }
+            });
+        });
+
+        options.subTasksCollapse.selection.on("click", (event: MouseEvent, d: GroupedTask) => {
+            if (!d.tasks.map(task => task.children).flat().length) {
+                return;
+            }
+
+            event.stopPropagation();
             options.subTasksCollapse.callback(d);
         });
 
-        options.allSubtasksCollapse.selection.on("click", () => {
-            (d3.event as MouseEvent).stopPropagation();
+        options.allSubtasksCollapse.selection.on("click", (event: MouseEvent) => {
+            event.stopPropagation();
             options.allSubtasksCollapse.callback();
         });
 
@@ -134,6 +134,46 @@ export class Behavior implements IInteractiveBehavior {
                 !dataPoint.highlight && hasSelection,
                 !dataPoint.selected && hasHighlights
             );
+        });
+    }
+
+    private bindContextMenu(): void {
+        this.options.taskSelection.on("contextmenu", (event: MouseEvent, task: Task) => {
+            if (event) {
+                this.selectionHandler.handleContextMenu(
+                    task,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
+
+        this.options.legendSelection.on("contextmenu", (event: MouseEvent, legend: any) => {
+            if (event) {
+                this.selectionHandler.handleContextMenu(
+                    legend,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
+
+        this.options.clearCatcher.on("contextmenu", (event: MouseEvent) => {
+            if (event) {
+                this.selectionHandler.handleContextMenu(
+                    null,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                event.preventDefault();
+            }
         });
     }
 }
