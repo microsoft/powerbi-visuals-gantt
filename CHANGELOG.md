@@ -1,3 +1,6 @@
+## 3.0.12
+* Fix not showing collapse button for parent tasks
+
 ## 3.0.11
 # Remove restrictions on legend width
 
