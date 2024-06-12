@@ -1892,47 +1892,57 @@ export class Gantt implements IVisual {
             const taskKeys: string[] = Object.keys(groupedTasks);
             const alreadyReviewedKeys: string[] = [];
 
-            taskKeys.forEach((key: string) => {
+            for (const key of taskKeys) {
                 const isKeyAlreadyReviewed = alreadyReviewedKeys.includes(key);
-                if (!isKeyAlreadyReviewed) {
-                    let name: string = key;
-                    if (groupedTasks[key] && groupedTasks[key].length && groupedTasks[key][0].parent && key.indexOf(groupedTasks[key][0].parent) !== -1) {
-                        name = key.substr(groupedTasks[key][0].parent.length + 1, key.length);
+                if (isKeyAlreadyReviewed) continue;
+
+                let name: string = key;
+                if (groupedTasks[key] && groupedTasks[key].length && groupedTasks[key][0].parent && key.indexOf(groupedTasks[key][0].parent) !== -1) {
+                    name = key.substr(groupedTasks[key][0].parent.length + 1, key.length);
+                }
+
+                // add current task
+                const taskRecord = <GroupedTask>{
+                    name,
+                    tasks: groupedTasks[key]
+                };
+                result.push(taskRecord);
+                alreadyReviewedKeys.push(key);
+
+                // see all the children and add them
+
+                for (const task of groupedTasks[key]) {
+                    if (task.children && !collapsedTasks.includes(task.name)) {
+                        for (const childrenTask of task.children) {
+                            const childrenFullName = `${name}.${childrenTask.name}`;
+                            const isChildrenKeyAlreadyReviewed = alreadyReviewedKeys.includes(childrenFullName);
+
+                            if (!isChildrenKeyAlreadyReviewed) {
+                                const childrenRecord = <GroupedTask>{
+                                    name: childrenTask.name,
+                                    tasks: groupedTasks[childrenFullName]
+                                };
+                                result.push(childrenRecord);
+                                alreadyReviewedKeys.push(childrenFullName);
+                            }
+
+                        }
                     }
 
-                    // add current task
-                    const taskRecord = <GroupedTask>{
-                        name,
-                        tasks: groupedTasks[key]
-                    };
-                    result.push(taskRecord);
-                    alreadyReviewedKeys.push(key);
-
-                    // see all the children and add them
-                    groupedTasks[key].forEach((task: Task) => {
-                        if (task.children && !collapsedTasks.includes(task.name)) {
-                            task.children.forEach((childrenTask: Task) => {
-                                const childrenFullName = `${name}.${childrenTask.name}`;
-                                const isChildrenKeyAlreadyReviewed = alreadyReviewedKeys.includes(childrenFullName);
-
-                                if (!isChildrenKeyAlreadyReviewed) {
-                                    const childrenRecord = <GroupedTask>{
-                                        name: childrenTask.name,
-                                        tasks: groupedTasks[childrenFullName]
-                                    };
-                                    result.push(childrenRecord);
-                                    alreadyReviewedKeys.push(childrenFullName);
-                                }
-                            });
-                        }
-                    });
                 }
-            });
+
+            }
 
             result.forEach((x, i) => {
                 x.tasks.forEach(t => t.index = i);
                 x.index = i;
             });
+
+            // Ensure that the tasks with children are displayed first
+            // https://dev.azure.com/powerbi/PowerBICustomVisuals/_workitems/edit/1421305
+            result.forEach((group: GroupedTask) => {
+                group.tasks.sort((a, b) => (b.children?.length || 0) - (a.children?.length || 0));
+            })
 
             return result;
         }
