@@ -78,7 +78,7 @@ export class Behavior implements IInteractiveBehavior {
         this.bindContextMenu();
 
         options.taskSelection.on("click", (event: MouseEvent, dataPoint: Task) => {
-            selectionHandler.handleSelection(dataPoint, event.ctrlKey || event.metaKey);
+            selectionHandler.handleSelection(dataPoint, event.ctrlKey || event.metaKey || event.shiftKey);
 
             event.stopPropagation();
         });
@@ -89,13 +89,13 @@ export class Behavior implements IInteractiveBehavior {
                 return;
             }
 
-            selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey);
+            selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey || event.shiftKey);
             event.stopPropagation();
 
             const selectedType: string = d.tooltipInfo;
             options.taskSelection.each((d: Task) => {
                 if (d.taskType === selectedType && d.parent && !d.selected) {
-                    selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey);
+                    selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey || event.shiftKey);
                 }
             });
         });
