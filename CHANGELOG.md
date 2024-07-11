@@ -1,4 +1,5 @@
 # 3.0.13
+* Update API to 5.11.0, tools to 5.5.1 and other packages"
 * Add all font settings (italic, bold, etc.) for the "Expand All" button, also make the default value satisfy the contrast ration of 4.6:1
 
 ## 3.0.12
