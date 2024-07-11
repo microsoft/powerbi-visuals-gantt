@@ -218,10 +218,10 @@ export class DaysOffCardSettings extends Card {
         value: dayOfWeekOptions[0]
     });
 
+    topLevelSlice = this.show;
     name: string = "daysOff";
     displayNameKey: string = "Visual_DaysOff";
     slices = [this.fill, this.firstDayOfWeek];
-    topLevelSlice?: formattingSettings.SimpleSlice<any> = this.show;
 }
 
 export class LegendCardSettings extends Card {
@@ -303,7 +303,6 @@ export class MilestonesCardSettings extends Card {
 }
 
 export class TaskLabelsCardSettings extends Card {
-
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
@@ -340,10 +339,44 @@ export class TaskLabelsCardSettings extends Card {
         }
     });
 
+    collapseAllColor = new formattingSettings.ColorPicker({
+        name: "collapseAllColor",
+        displayNameKey: "Visual_Collapse_All_Color",
+        value: { value: "#000" },
+    });
+
+    collapseAll = new formattingSettings.FontControl({
+        name: "collapseAll",
+        displayNameKey: "Visual_Collapse_All",
+        fontSize: new formattingSettings.NumUpDown({
+            name: "collapseAllFontSize",
+            value: 12,
+            options: {
+                minValue: { value: 1, type: powerbiVisualsApi.visuals.ValidatorType.Min },
+            },
+        }),
+        fontFamily: new formattingSettings.FontPicker({
+            name: "collapseAllFontFamily",
+            value: "Arial, sans-serif"
+        }),
+        bold: new formattingSettings.ToggleSwitch({
+            name: "collapseAllBold",
+            value: false,
+        }),
+        italic: new formattingSettings.ToggleSwitch({
+            name: "collapseAllItalic",
+            value: false,
+        }),
+        underline: new formattingSettings.ToggleSwitch({
+            name: "collapseAllUnderline",
+            value: false,
+        }),
+    });
+
+    topLevelSlice = this.show;
     name: string = "taskLabels";
     displayNameKey: string = "Visual_CategoryLabels";
-    slices = [this.fill, this.fontSize, this.width];
-    topLevelSlice?: formattingSettings.SimpleSlice<any> = this.show;
+    slices = [this.fill, this.fontSize, this.width, this.collapseAllColor, this.collapseAll];
 }
 
 export class TaskCompletionCardSettings extends Card {
@@ -360,10 +393,10 @@ export class TaskCompletionCardSettings extends Card {
         value: undefined
     });
 
+    topLevelSlice= this.show;
     name: string = "taskCompletion";
     displayNameKey: string = "Visual_TaskCompletion";
     slices = [this.maxCompletion];
-    topLevelSlice?: formattingSettings.SimpleSlice<any> = this.show;
 }
 
 export class TooltipConfigCardSettings extends Card {
@@ -452,10 +485,10 @@ export class TaskResourceCardSettings extends Card {
         value: false
     });
 
+    topLevelSlice = this.show;
     name: string = "taskResource";
     displayNameKey: string = "Visual_DataLabels";
     slices = [this.fill, this.fontSize, this.position, this.fullText, this.widthByTask];
-    topLevelSlice?: formattingSettings.SimpleSlice<any> = this.show;
 }
 
 export class DateTypeCardSettings extends Card {

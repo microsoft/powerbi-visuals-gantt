@@ -1,3 +1,6 @@
+# 3.0.13
+* Add all font settings (italic, bold, etc.) for the "Expand All" button, also make the default value satisfy the contrast ration of 4.6:1
+
 ## 3.0.12
 * Fix not showing collapse button for parent tasks
 

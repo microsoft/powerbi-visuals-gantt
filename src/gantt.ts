@@ -280,7 +280,7 @@ export class Gantt implements IVisual {
         TaskLineColor: "#ccc",
         CollapseAllColor: "#000",
         PlusMinusColor: "#5F6B6D",
-        CollapseAllTextColor: "#aaa",
+        CollapseAllTextColor: "#000",
         MilestoneLineColor: "#ccc",
         TaskCategoryLabelsRectColor: "#fafafa",
         TaskLineWidth: 15,
@@ -1471,6 +1471,7 @@ export class Gantt implements IVisual {
     public parseSettings(dataView: DataView, colorHelper: ColorHelper): GanttChartSettingsModel {
 
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(GanttChartSettingsModel, dataView);
+        this.formattingSettings.setLocalizedOptions(this.localizationManager);
         const settings: GanttChartSettingsModel = this.formattingSettings;
 
         if (!colorHelper) {
@@ -2188,8 +2189,12 @@ export class Gantt implements IVisual {
                     .append("text")
                     .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
                     .attr("y", this.groupLabelSize)
-                    .attr("font-size", "12px")
-                    .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllTextColor))
+                    .style("font-size", this.formattingSettings.taskLabelsCardSettings.collapseAll.fontSize.value)
+                    .style("font-family", this.formattingSettings.taskLabelsCardSettings.collapseAll.fontFamily.value)
+                    .style("font-style", this.formattingSettings.taskLabelsCardSettings.collapseAll.italic.value ? "italic" : "normal")
+                    .style("font-weight", this.formattingSettings.taskLabelsCardSettings.collapseAll.bold.value ? "bold" : "normal")
+                    .style("text-decoration", this.formattingSettings.taskLabelsCardSettings.collapseAll.underline.value ? "underline" : "none")
+                    .style("fill", this.colorHelper.getHighContrastColor("foreground", this.formattingSettings.taskLabelsCardSettings.collapseAllColor.value.value))
                     .text(this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
             }
         }
@@ -3149,12 +3154,23 @@ export class Gantt implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-        this.filterSettingsCards();
-        this.formattingSettings.setLocalizedOptions(this.localizationManager);
+        this.localizeSettings();
+        this.populateDynamicDataPoints();
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 
-    public filterSettingsCards() {
+    private localizeSettings(): void {
+        // TODO: Check if introducing Visual_Expand_All_Color/Visual_Collapse_All_Color is worth it
+        if (this.collapsedTasks.length) {
+            this.formattingSettings.taskLabelsCardSettings.collapseAll.displayNameKey = "Visual_Expand_All";
+            this.formattingSettings.taskLabelsCardSettings.collapseAllColor.displayNameKey = "Visual_Expand_All_Color";
+        } else {
+            this.formattingSettings.taskLabelsCardSettings.collapseAll.displayNameKey = "Visual_Collapse_All";
+            this.formattingSettings.taskLabelsCardSettings.collapseAllColor.displayNameKey = "Visual_Collapse_All_Color";
+        }
+    }
+
+    private populateDynamicDataPoints(): void {
         const settings: GanttChartSettingsModel = this.formattingSettings;
 
         settings.cards.forEach(element => {
