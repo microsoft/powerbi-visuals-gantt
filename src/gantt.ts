@@ -282,7 +282,6 @@ export class Gantt implements IVisual {
         PlusMinusColor: "#5F6B6D",
         CollapseAllTextColor: "#000",
         MilestoneLineColor: "#ccc",
-        TaskCategoryLabelsRectColor: "#fafafa",
         TaskLineWidth: 15,
         IconMargin: 12,
         IconHeight: 16,
@@ -400,7 +399,6 @@ export class Gantt implements IVisual {
      * Create the viewport area of the gantt chart
      */
     private createViewport(element: HTMLElement): void {
-        const axisBackgroundColor: string = this.colorHelper.getThemeColor();
         // create div container to the whole viewport area
         this.ganttDiv = this.body.append("div")
             .classed(Gantt.Body.className, true);
@@ -432,19 +430,18 @@ export class Gantt implements IVisual {
             .attr("width", "100%")
             .attr("y", "-20")
             .attr("height", "40px")
-            .attr("fill", axisBackgroundColor);
 
         // create task lines container
         this.lineGroup = this.ganttSvg
             .append("g")
-            .classed(Gantt.TaskLines.className, true);
+            .classed(Gantt.TaskLines.className, true)
+            .attr("fill", "none");
 
         this.lineGroupWrapper = this.lineGroup
             .append("rect")
             .classed(Gantt.TaskLinesRect.className, true)
             .attr("height", "100%")
             .attr("width", "0")
-            .attr("fill", axisBackgroundColor)
             .attr("y", this.margin.top);
 
         this.lineGroup
@@ -457,7 +454,8 @@ export class Gantt implements IVisual {
 
         this.collapseAllGroup = this.lineGroup
             .append("g")
-            .classed(Gantt.CollapseAll.className, true);
+            .classed(Gantt.CollapseAll.className, true)
+            .attr("fill", "none");
 
         // create legend container
         const interactiveBehavior: IInteractiveBehavior = this.colorHelper.isHighContrast ? new OpacityLegendBehavior() : null;
@@ -2018,15 +2016,12 @@ export class Gantt implements IVisual {
         const taskLabelsFontSize: number = this.viewModel.settings.taskLabelsCardSettings.fontSize.value;
         const taskLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.width.value;
         const taskConfigHeight: number = this.viewModel.settings.taskConfigCardSettings.height.value || DefaultChartLineHeight;
-        const categoriesAreaBackgroundColor: string = this.colorHelper.getThemeColor();
-        const isHighContrast: boolean = this.colorHelper.isHighContrast;
 
-        this.updateCollapseAllGroup(categoriesAreaBackgroundColor, taskLabelsShow);
+        this.updateCollapseAllGroup(taskLabelsShow);
 
         if (taskLabelsShow) {
             this.lineGroupWrapper
                 .attr("width", taskLabelsWidth)
-                .attr("fill", isHighContrast ? categoriesAreaBackgroundColor : Gantt.DefaultValues.TaskCategoryLabelsRectColor)
                 .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
                 .attr("stroke-width", 1);
 
@@ -2135,7 +2130,7 @@ export class Gantt implements IVisual {
         }
     }
 
-    private updateCollapseAllGroup(categoriesAreaBackgroundColor: string, taskLabelShow: boolean) {
+    private updateCollapseAllGroup(taskLabelShow: boolean) {
         this.collapseAllGroup
             .selectAll("svg")
             .remove();
@@ -2157,7 +2152,6 @@ export class Gantt implements IVisual {
                 .append("rect")
                 .attr("width", categoryLabelsWidth)
                 .attr("height", 2 * Gantt.TaskLabelsMarginTop)
-                .attr("fill", categoriesAreaBackgroundColor);
 
             const expandCollapseButton = this.collapseAllGroup
                 .append("svg")
