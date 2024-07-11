@@ -456,6 +456,20 @@
         },
         "milestones": {
             "properties": {
+                "displayDottedLines": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "dottedLinesColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
                 "fill": {
                     "type": {
                         "fill": {

@@ -283,6 +283,17 @@ export class LegendCardSettings extends Card {
 }
 
 export class MilestonesCardSettings extends Card {
+    displayDottedLines = new formattingSettings.ToggleSwitch({
+        name: "displayDottedLines",
+        displayNameKey: "Visual_DisplayDottedLines",
+        value: true
+    });
+
+    dottedLinesColor = new formattingSettings.ColorPicker({
+        name: "dottedLinesColor",
+        displayNameKey: "Visual_DottedLinesColor",
+        value: { value: "#cccccc" }
+    });
 
     fill = new formattingSettings.ColorPicker({
         name: "fill",
@@ -299,7 +310,7 @@ export class MilestonesCardSettings extends Card {
 
     name: string = "milestones";
     displayNameKey: string = "Visual_Milestones";
-    slices = [];
+    slices = [this.displayDottedLines, this.dottedLinesColor];
 }
 
 export class TaskLabelsCardSettings extends Card {
@@ -554,8 +565,8 @@ export class GanttChartSettingsModel extends Model {
     populateMilestones(milestonesWithoutDuplicates: {
         [name: string]: MilestoneDataPoint
     }) {
-        const newSlices = [];
 
+        const newSlices: FormattingSettingsSlice[] = this.milestonesCardSettings.slices;
         if (milestonesWithoutDuplicates) {
             for (const uniqMilestones in milestonesWithoutDuplicates) {
                 const milestone = milestonesWithoutDuplicates[uniqMilestones];
