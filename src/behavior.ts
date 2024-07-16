@@ -83,6 +83,13 @@ export class Behavior implements IInteractiveBehavior {
             event.stopPropagation();
         });
 
+        options.taskSelection.on("keydown", (event: KeyboardEvent, dataPoint: Task) => {
+            if (event.code === "Enter" || event.code === "Space") {
+                event.preventDefault();
+                selectionHandler.handleSelection(dataPoint, event.ctrlKey || event.metaKey || event.shiftKey);
+            }
+        });
+
         options.legendSelection.on("click", (event: MouseEvent, d: any) => {
             if (d.selected) {
                 selectionHandler.handleClearSelection();
@@ -112,6 +119,13 @@ export class Behavior implements IInteractiveBehavior {
         options.allSubtasksCollapse.selection.on("click", (event: MouseEvent) => {
             event.stopPropagation();
             options.allSubtasksCollapse.callback();
+        });
+
+        options.allSubtasksCollapse.selection.select(".collapse-all-arrow").on("keydown", (event: KeyboardEvent) => {
+            if (event.code === "Enter" || event.code === "Space") {
+                event.stopPropagation();
+                options.allSubtasksCollapse.callback();
+            }
         });
 
         clearCatcher.on("click", () => {

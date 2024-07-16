@@ -676,5 +676,6 @@
         "default": {}
     },
     "privileges": [],
-    "supportsHighlight": true
+    "supportsHighlight": true,
+    "supportsKeyboardFocus": true
 }

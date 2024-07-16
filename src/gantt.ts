@@ -410,6 +410,12 @@ export class Gantt implements IVisual {
         // create clear catcher
         this.clearCatcher = appendClearCatcher(this.ganttSvg);
 
+        // create task lines container before chart container
+        this.lineGroup = this.ganttSvg
+            .append("g")
+            .classed(Gantt.TaskLines.className, true)
+            .attr("fill", "none");
+
         // create chart container
         this.chartGroup = this.ganttSvg
             .append("g")
@@ -429,12 +435,6 @@ export class Gantt implements IVisual {
             .attr("width", "100%")
             .attr("y", "-20")
             .attr("height", "40px")
-
-        // create task lines container
-        this.lineGroup = this.ganttSvg
-            .append("g")
-            .classed(Gantt.TaskLines.className, true)
-            .attr("fill", "none");
 
         this.lineGroupWrapper = this.lineGroup
             .append("rect")
@@ -2155,6 +2155,8 @@ export class Gantt implements IVisual {
             const expandCollapseButton = this.collapseAllGroup
                 .append("svg")
                 .classed(Gantt.CollapseAllArrow.className, true)
+                .attr("focusable", true)
+                .attr("tabindex", 0)
                 .attr("viewBox", "0 0 48 48")
                 .attr("width", this.groupLabelSize)
                 .attr("height", this.groupLabelSize)
@@ -2444,7 +2446,7 @@ export class Gantt implements IVisual {
             .append("path")
             .merge(taskRect);
 
-        taskRectMerged.classed(Gantt.TaskRect.className, true);
+        taskRectMerged.classed(Gantt.TaskRect.className, true)
 
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight, barsRoundedCorners))
@@ -2456,6 +2458,18 @@ export class Gantt implements IVisual {
                 .style("stroke", (task: Task) => this.colorHelper.getHighContrastColor("foreground", task.color))
                 .style("stroke-width", highContrastModeTaskRectStroke);
         }
+
+        taskRectMerged.filter(function () {
+            const node = d3Select(this);
+            const width = Number(node.attr("width"));
+            if (isNaN(width) || width === 0) {
+                return false;
+            }
+
+            return true;
+        })
+            .attr("focusable", true)
+            .attr("tabindex", 0);
 
         taskRect
             .exit()

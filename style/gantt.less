@@ -69,6 +69,17 @@
                     opacity: .4;
                     fill: white !important;
                 }
+
+                .task-rect {
+                    &:focus, &:focus-visible {
+                        outline: none;
+                    }
+
+                    &:focus-visible {
+                        stroke: #000;
+                        stroke-width: 2px;
+                    }
+                }
             }
         }
 
@@ -116,5 +127,10 @@
         /* stroke enabled for a bigger click target, but smaller visible arrow size */
         stroke: #FFF;
         stroke-width: 2px;
+    }
+
+    .collapse-all-arrow:focus-visible {
+        outline: #000 solid 2px;
+        outline-offset: -12px;
     }
 }
