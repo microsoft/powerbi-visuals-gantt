@@ -405,7 +405,9 @@ export class Gantt implements IVisual {
         // create container to the svg area
         this.ganttSvg = this.ganttDiv
             .append("svg")
-            .classed(Gantt.ClassName.className, true);
+            .classed(Gantt.ClassName.className, true)
+            .attr("role", "listbox")
+            .attr("aria-multiselectable", "true");
 
         // create clear catcher
         this.clearCatcher = appendClearCatcher(this.ganttSvg);
@@ -2068,7 +2070,9 @@ export class Gantt implements IVisual {
                 .attr("width", Gantt.DefaultValues.IconWidth)
                 .attr("height", Gantt.DefaultValues.IconHeight)
                 .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
-                .attr("x", Gantt.DefaultValues.BarMargin);
+                .attr("x", Gantt.DefaultValues.BarMargin)
+                // .attr("focusable", true)
+                // .attr("tabindex", 0);
 
             clickableArea
                 .append("rect")
@@ -2155,8 +2159,10 @@ export class Gantt implements IVisual {
             const expandCollapseButton = this.collapseAllGroup
                 .append("svg")
                 .classed(Gantt.CollapseAllArrow.className, true)
-                .attr("focusable", true)
                 .attr("tabindex", 0)
+                .attr("focusable", true)
+                .attr("role", "option")
+                .attr("aria-label", this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"))
                 .attr("viewBox", "0 0 48 48")
                 .attr("width", this.groupLabelSize)
                 .attr("height", this.groupLabelSize)
@@ -2459,17 +2465,17 @@ export class Gantt implements IVisual {
                 .style("stroke-width", highContrastModeTaskRectStroke);
         }
 
-        taskRectMerged.filter(function () {
+        taskRectMerged.each(function () {
             const node = d3Select(this);
             const width = Number(node.attr("width"));
             if (isNaN(width) || width === 0) {
-                return false;
+                node.attr("focusable", false);
+                node.attr("tabindex", -1);
+            } else {
+                node.attr("focusable", true);
+                node.attr("tabindex", 0);
             }
-
-            return true;
-        })
-            .attr("focusable", true)
-            .attr("tabindex", 0);
+        });
 
         taskRect
             .exit()
@@ -2572,7 +2578,9 @@ export class Gantt implements IVisual {
             taskMilestonesSelectionMerged
                 .attr("d", (data: MilestonePath) => this.getMilestonePath(data.type, taskConfigHeight))
                 .attr("transform", (data: MilestonePath) => transformForMilestone(data.taskID, data.start))
-                .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type));
+                .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type))
+                .attr("focusable", true)
+                .attr("tabindex", 0);
         }
 
         this.renderTooltip(taskMilestonesSelectionMerged);

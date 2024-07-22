@@ -24,6 +24,8 @@
  *  THE SOFTWARE.
  */
 
+@focus-color: rgb(94, 158, 214);
+
 .visual {
     .gantt-body {
         overflow: auto;
@@ -70,13 +72,13 @@
                     fill: white !important;
                 }
 
-                .task-rect {
+                .task-rect, .task-milestone > path {
                     &:focus, &:focus-visible {
                         outline: none;
                     }
 
                     &:focus-visible {
-                        stroke: #000;
+                        stroke: @focus-color;
                         stroke-width: 2px;
                     }
                 }
@@ -130,7 +132,7 @@
     }
 
     .collapse-all-arrow:focus-visible {
-        outline: #000 solid 2px;
+        outline: @focus-color solid 2px;
         outline-offset: -12px;
     }
 }
