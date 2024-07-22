@@ -242,7 +242,7 @@ export class VisualData extends TestDataViewBuilder {
     public getDataViewWithHighlights(): DataView {
         const categoriesColumns: TestDataViewBuilderCategoryColumnOptions[] = this.getCategoryColumns();
 
-        let highlightedElementIndex: number = Math.round(getRandomNumber(0, this.valuesDuration.length - 1));
+        const highlightedElementIndex: number = 0;
 
         const valuesColumns: DataViewBuilderValuesColumnOptions[] = [
             {

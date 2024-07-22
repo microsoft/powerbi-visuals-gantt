@@ -8,6 +8,17 @@
             "port": 9222,
             "sourceMaps": true,
             "webRoot": "${cwd}/"
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Karma Attach",
+            "address": "localhost",
+            "port": 9333,
+            "pathMapping": {
+                "/": "${workspaceRoot}/",
+                "/base/": "${workspaceRoot}/"
+            }
         }
     ]
 }

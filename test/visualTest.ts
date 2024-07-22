@@ -1161,9 +1161,9 @@ describe("Gantt", () => {
             it("two data points should be selected", () => {
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
-                let firstGroup = visualBuilder.tasks[0];
-                let secondGroup = visualBuilder.tasks[1];
-                let thirdGroup = visualBuilder.tasks[2];
+                const firstGroup = visualBuilder.tasks[0];
+                const secondGroup = visualBuilder.tasks[1];
+                const thirdGroup = visualBuilder.tasks[2];
 
                 clickElement(firstGroup);
                 clickElement(secondGroup, true);
@@ -1172,6 +1172,48 @@ describe("Gantt", () => {
                 expect(parseFloat(secondGroup.style.opacity)).toBe(1);
                 expect(parseFloat(thirdGroup.style.opacity)).toBeLessThan(1);
             });
+        });
+
+        describe("Selection with keyboard", () => {
+            it("data point is selected on 'Enter'", () => {
+                visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                const firstGroup = visualBuilder.tasks[0];
+                const secondGroup = visualBuilder.tasks[1];
+                const thirdGroup = visualBuilder.tasks[2];
+
+                firstGroup.dispatchEvent(new KeyboardEvent("keydown", { code: "Enter" }));
+
+                expect(parseFloat(firstGroup.style.opacity)).toBe(1);
+                expect(parseFloat(secondGroup.style.opacity)).toBeLessThan(1);
+                expect(parseFloat(thirdGroup.style.opacity)).toBeLessThan(1);
+            });
+
+            it("data point are selected on 'Enter' with modifier keys", () => {
+                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Enter"}), new KeyboardEvent("keydown", { code: "Enter", ctrlKey: true }));
+                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Enter"}), new KeyboardEvent("keydown", { code: "Enter", shiftKey: true }));
+                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Enter"}), new KeyboardEvent("keydown", { code: "Enter", metaKey: true }));
+
+                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Space"}), new KeyboardEvent("keydown", { code: "Space", ctrlKey: true }));
+                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Space"}), new KeyboardEvent("keydown", { code: "Space", shiftKey: true }));
+                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Space"}), new KeyboardEvent("keydown", { code: "Space", metaKey: true }));
+            });
+
+            function testKeyboardEvent(firstKeyboardEvent: KeyboardEvent, secondKeyboardEvent: KeyboardEvent) {
+                visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                const firstGroup = visualBuilder.tasks[0];
+                const secondGroup = visualBuilder.tasks[1];
+                const thirdGroup = visualBuilder.tasks[2];
+
+                firstGroup.dispatchEvent(firstKeyboardEvent);
+                secondGroup.dispatchEvent(secondKeyboardEvent);
+
+                expect(parseFloat(firstGroup.style.opacity)).toBe(1);
+                expect(parseFloat(secondGroup.style.opacity)).toBe(1);
+                expect(parseFloat(thirdGroup.style.opacity)).toBeLessThan(1);
+
+            }
         });
     });
 
@@ -1955,7 +1997,7 @@ describe("Gantt", () => {
             });
 
             function checkColor(
-                elements: Element[] | SVGElement[],
+                elements: HTMLElement[] | SVGElement[],
                 color: string,
                 cssStyle: string,
                 done: () => void
