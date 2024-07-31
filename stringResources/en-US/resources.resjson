@@ -96,5 +96,9 @@
 	"Visual_Shape_Circle": "Circle",
 	"Visual_Description_Milestones": "Display milestones options",
 	"Visual_Expand_All": "Expand All",
-	"Visual_Collapse_All": "Collapse All"
+	"Visual_Collapse_All": "Collapse All",
+	"Visual_Collapse_All_Color": "Collapse All Color",
+	"Visual_Expand_All_Color": "Expand All Color",
+	"Visual_DisplayDottedLines": "Display dotted lines",
+	"Visual_DottedLinesColor": "Dotted lines color"
 }

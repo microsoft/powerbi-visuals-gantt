@@ -78,9 +78,16 @@ export class Behavior implements IInteractiveBehavior {
         this.bindContextMenu();
 
         options.taskSelection.on("click", (event: MouseEvent, dataPoint: Task) => {
-            selectionHandler.handleSelection(dataPoint, event.ctrlKey || event.metaKey);
+            selectionHandler.handleSelection(dataPoint, event.ctrlKey || event.metaKey || event.shiftKey);
 
             event.stopPropagation();
+        });
+
+        options.taskSelection.on("keydown", (event: KeyboardEvent, dataPoint: Task) => {
+            if (event.code === "Enter" || event.code === "Space") {
+                event.preventDefault();
+                selectionHandler.handleSelection(dataPoint, event.ctrlKey || event.metaKey || event.shiftKey);
+            }
         });
 
         options.legendSelection.on("click", (event: MouseEvent, d: any) => {
@@ -89,13 +96,13 @@ export class Behavior implements IInteractiveBehavior {
                 return;
             }
 
-            selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey);
+            selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey || event.shiftKey);
             event.stopPropagation();
 
             const selectedType: string = d.tooltipInfo;
             options.taskSelection.each((d: Task) => {
                 if (d.taskType === selectedType && d.parent && !d.selected) {
-                    selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey);
+                    selectionHandler.handleSelection(d, event.ctrlKey || event.metaKey || event.shiftKey);
                 }
             });
         });
@@ -109,9 +116,29 @@ export class Behavior implements IInteractiveBehavior {
             options.subTasksCollapse.callback(d);
         });
 
+        options.subTasksCollapse.selection.on("keydown", (event: KeyboardEvent, d: GroupedTask) => {
+            if (event.code === "Enter" || event.code === "Space") {
+                event.stopPropagation();
+                event.preventDefault();
+
+                if (!d.tasks.map(task => task.children).flat().length) {
+                    return;
+                }
+                options.subTasksCollapse.callback(d);
+            }
+        });
+
         options.allSubtasksCollapse.selection.on("click", (event: MouseEvent) => {
             event.stopPropagation();
             options.allSubtasksCollapse.callback();
+        });
+
+        options.allSubtasksCollapse.selection.select(".collapse-all-arrow").on("keydown", (event: KeyboardEvent) => {
+            if (event.code === "Enter" || event.code === "Space") {
+                event.stopPropagation();
+                event.preventDefault();
+                options.allSubtasksCollapse.callback();
+            }
         });
 
         clearCatcher.on("click", () => {

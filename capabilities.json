@@ -456,6 +456,20 @@
         },
         "milestones": {
             "properties": {
+                "displayDottedLines": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "dottedLinesColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
                 "fill": {
                     "type": {
                         "fill": {
@@ -498,6 +512,44 @@
                 "width": {
                     "type": {
                         "numeric": true
+                    }
+                },
+                "collapseAllColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "collapseAllFontSize": {
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "collapseAllFontFamily": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "collapseAllBold": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "collapseAllItalic": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "collapseAllUnderline": {
+                    "type": {
+                        "bool": true
                     }
                 }
             }
@@ -624,5 +676,6 @@
         "default": {}
     },
     "privileges": [],
-    "supportsHighlight": true
+    "supportsHighlight": true,
+    "supportsKeyboardFocus": true
 }

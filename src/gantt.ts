@@ -280,9 +280,7 @@ export class Gantt implements IVisual {
         TaskLineColor: "#ccc",
         CollapseAllColor: "#000",
         PlusMinusColor: "#5F6B6D",
-        CollapseAllTextColor: "#aaa",
-        MilestoneLineColor: "#ccc",
-        TaskCategoryLabelsRectColor: "#fafafa",
+        CollapseAllTextColor: "#000",
         TaskLineWidth: 15,
         IconMargin: 12,
         IconHeight: 16,
@@ -400,7 +398,6 @@ export class Gantt implements IVisual {
      * Create the viewport area of the gantt chart
      */
     private createViewport(element: HTMLElement): void {
-        const axisBackgroundColor: string = this.colorHelper.getThemeColor();
         // create div container to the whole viewport area
         this.ganttDiv = this.body.append("div")
             .classed(Gantt.Body.className, true);
@@ -408,10 +405,18 @@ export class Gantt implements IVisual {
         // create container to the svg area
         this.ganttSvg = this.ganttDiv
             .append("svg")
-            .classed(Gantt.ClassName.className, true);
+            .classed(Gantt.ClassName.className, true)
+            .attr("role", "listbox")
+            .attr("aria-multiselectable", "true");
 
         // create clear catcher
         this.clearCatcher = appendClearCatcher(this.ganttSvg);
+
+        // create task lines container before chart container
+        this.lineGroup = this.ganttSvg
+            .append("g")
+            .classed(Gantt.TaskLines.className, true)
+            .attr("fill", "none");
 
         // create chart container
         this.chartGroup = this.ganttSvg
@@ -432,19 +437,12 @@ export class Gantt implements IVisual {
             .attr("width", "100%")
             .attr("y", "-20")
             .attr("height", "40px")
-            .attr("fill", axisBackgroundColor);
-
-        // create task lines container
-        this.lineGroup = this.ganttSvg
-            .append("g")
-            .classed(Gantt.TaskLines.className, true);
 
         this.lineGroupWrapper = this.lineGroup
             .append("rect")
             .classed(Gantt.TaskLinesRect.className, true)
             .attr("height", "100%")
             .attr("width", "0")
-            .attr("fill", axisBackgroundColor)
             .attr("y", this.margin.top);
 
         this.lineGroup
@@ -457,7 +455,8 @@ export class Gantt implements IVisual {
 
         this.collapseAllGroup = this.lineGroup
             .append("g")
-            .classed(Gantt.CollapseAll.className, true);
+            .classed(Gantt.CollapseAll.className, true)
+            .attr("fill", "none");
 
         // create legend container
         const interactiveBehavior: IInteractiveBehavior = this.colorHelper.isHighContrast ? new OpacityLegendBehavior() : null;
@@ -1471,6 +1470,7 @@ export class Gantt implements IVisual {
     public parseSettings(dataView: DataView, colorHelper: ColorHelper): GanttChartSettingsModel {
 
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(GanttChartSettingsModel, dataView);
+        this.formattingSettings.setLocalizedOptions(this.localizationManager);
         const settings: GanttChartSettingsModel = this.formattingSettings;
 
         if (!colorHelper) {
@@ -2017,15 +2017,12 @@ export class Gantt implements IVisual {
         const taskLabelsFontSize: number = this.viewModel.settings.taskLabelsCardSettings.fontSize.value;
         const taskLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.width.value;
         const taskConfigHeight: number = this.viewModel.settings.taskConfigCardSettings.height.value || DefaultChartLineHeight;
-        const categoriesAreaBackgroundColor: string = this.colorHelper.getThemeColor();
-        const isHighContrast: boolean = this.colorHelper.isHighContrast;
 
-        this.updateCollapseAllGroup(categoriesAreaBackgroundColor, taskLabelsShow);
+        this.updateCollapseAllGroup(taskLabelsShow);
 
         if (taskLabelsShow) {
             this.lineGroupWrapper
                 .attr("width", taskLabelsWidth)
-                .attr("fill", isHighContrast ? categoriesAreaBackgroundColor : Gantt.DefaultValues.TaskCategoryLabelsRectColor)
                 .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
                 .attr("stroke-width", 1);
 
@@ -2073,7 +2070,9 @@ export class Gantt implements IVisual {
                 .attr("width", Gantt.DefaultValues.IconWidth)
                 .attr("height", Gantt.DefaultValues.IconHeight)
                 .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
-                .attr("x", Gantt.DefaultValues.BarMargin);
+                .attr("x", Gantt.DefaultValues.BarMargin)
+                .attr("focusable", true)
+                .attr("tabindex", 0);
 
             clickableArea
                 .append("rect")
@@ -2134,7 +2133,7 @@ export class Gantt implements IVisual {
         }
     }
 
-    private updateCollapseAllGroup(categoriesAreaBackgroundColor: string, taskLabelShow: boolean) {
+    private updateCollapseAllGroup(taskLabelShow: boolean) {
         this.collapseAllGroup
             .selectAll("svg")
             .remove();
@@ -2156,11 +2155,14 @@ export class Gantt implements IVisual {
                 .append("rect")
                 .attr("width", categoryLabelsWidth)
                 .attr("height", 2 * Gantt.TaskLabelsMarginTop)
-                .attr("fill", categoriesAreaBackgroundColor);
 
             const expandCollapseButton = this.collapseAllGroup
                 .append("svg")
                 .classed(Gantt.CollapseAllArrow.className, true)
+                .attr("tabindex", 0)
+                .attr("focusable", true)
+                .attr("role", "option")
+                .attr("aria-label", this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"))
                 .attr("viewBox", "0 0 48 48")
                 .attr("width", this.groupLabelSize)
                 .attr("height", this.groupLabelSize)
@@ -2188,8 +2190,12 @@ export class Gantt implements IVisual {
                     .append("text")
                     .attr("x", this.secondExpandAllIconOffset + this.groupLabelSize)
                     .attr("y", this.groupLabelSize)
-                    .attr("font-size", "12px")
-                    .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllTextColor))
+                    .style("font-size", this.formattingSettings.taskLabelsCardSettings.collapseAll.fontSize.value)
+                    .style("font-family", this.formattingSettings.taskLabelsCardSettings.collapseAll.fontFamily.value)
+                    .style("font-style", this.formattingSettings.taskLabelsCardSettings.collapseAll.italic.value ? "italic" : "normal")
+                    .style("font-weight", this.formattingSettings.taskLabelsCardSettings.collapseAll.bold.value ? "bold" : "normal")
+                    .style("text-decoration", this.formattingSettings.taskLabelsCardSettings.collapseAll.underline.value ? "underline" : "none")
+                    .style("fill", this.colorHelper.getHighContrastColor("foreground", this.formattingSettings.taskLabelsCardSettings.collapseAllColor.value.value))
                     .text(this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
             }
         }
@@ -2446,32 +2452,30 @@ export class Gantt implements IVisual {
             .append("path")
             .merge(taskRect);
 
-        taskRectMerged.classed(Gantt.TaskRect.className, true);
+        taskRectMerged.classed(Gantt.TaskRect.className, true)
 
-        let index = 0, groupedTaskIndex = 0;
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight, barsRoundedCorners))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
-            .style("fill", (task: Task) => {
-                // logic used for grouped tasks, when there are several bars related to one category
-                if (index === task.index) {
-                    groupedTaskIndex++;
-                } else {
-                    groupedTaskIndex = 0;
-                    index = task.index;
-                }
-
-                const url = `${task.index}-${groupedTaskIndex}-${isStringNotNullEmptyOrUndefined(task.taskType) ? task.taskType.toString() : "taskType"}`;
-                const encodedUrl = `task${hashCode(url)}`;
-
-                return `url(#${encodedUrl})`;
-            });
+            .style("fill", (task: Task) => task.color);
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
                 .style("stroke", (task: Task) => this.colorHelper.getHighContrastColor("foreground", task.color))
                 .style("stroke-width", highContrastModeTaskRectStroke);
         }
+
+        taskRectMerged.each(function () {
+            const node = d3Select(this);
+            const width = Number(node.attr("width"));
+            if (isNaN(width) || width === 0) {
+                node.attr("focusable", false);
+                node.attr("tabindex", -1);
+            } else {
+                node.attr("focusable", true);
+                node.attr("tabindex", 0);
+            }
+        });
 
         taskRect
             .exit()
@@ -2574,7 +2578,9 @@ export class Gantt implements IVisual {
             taskMilestonesSelectionMerged
                 .attr("d", (data: MilestonePath) => this.getMilestonePath(data.type, taskConfigHeight))
                 .attr("transform", (data: MilestonePath) => transformForMilestone(data.taskID, data.start))
-                .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type));
+                .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type))
+                .attr("focusable", true)
+                .attr("tabindex", 0);
         }
 
         this.renderTooltip(taskMilestonesSelectionMerged);
@@ -3031,7 +3037,6 @@ export class Gantt implements IVisual {
         }
 
         const todayColor: string = this.viewModel.settings.dateTypeCardSettings.todayColor.value.value;
-        // TODO: add not today milestones color
         const milestoneDates = [new Date(timestamp)];
         tasks.forEach((task: GroupedTask) => {
             const subtasks: Task[] = task.tasks;
@@ -3060,32 +3065,42 @@ export class Gantt implements IVisual {
             line.push(lineOptions);
         });
 
-        const chartLineSelection: Selection<Line> = this.chartGroup
-            .selectAll(Gantt.ChartLine.selectorName)
-            .data(line);
+        this.renderMilestoneDottedLines(line, timestamp, todayColor);
+    }
 
-        const chartLineSelectionMerged = chartLineSelection
-            .enter()
-            .append("line")
-            .merge(chartLineSelection);
+    private renderMilestoneDottedLines(line: Line[], timestamp: number, todayColor: string) {
+        if (this.formattingSettings.milestonesCardSettings.displayDottedLines.value) {
+            const chartLineSelection: Selection<Line> = this.chartGroup
+                .selectAll(Gantt.ChartLine.selectorName)
+                .data(line);
 
-        chartLineSelectionMerged.classed(Gantt.ChartLine.className, true);
+            const chartLineSelectionMerged = chartLineSelection
+                .enter()
+                .append("line")
+                .merge(chartLineSelection);
 
-        chartLineSelectionMerged
-            .attr("x1", (line: Line) => line.x1)
-            .attr("y1", (line: Line) => line.y1)
-            .attr("x2", (line: Line) => line.x2)
-            .attr("y2", (line: Line) => line.y2)
-            .style("stroke", (line: Line) => {
-                const color: string = line.x1 === Gantt.TimeScale(timestamp) ? todayColor : Gantt.DefaultValues.MilestoneLineColor;
-                return this.colorHelper.getHighContrastColor("foreground", color);
-            });
+            chartLineSelectionMerged.classed(Gantt.ChartLine.className, true);
 
-        this.renderTooltip(chartLineSelectionMerged);
+            chartLineSelectionMerged
+                .attr("x1", (line: Line) => line.x1)
+                .attr("y1", (line: Line) => line.y1)
+                .attr("x2", (line: Line) => line.x2)
+                .attr("y2", (line: Line) => line.y2)
+                .style("stroke", (line: Line) => {
+                    const color: string = line.x1 === Gantt.TimeScale(timestamp) ? todayColor : this.formattingSettings.milestonesCardSettings.dottedLinesColor.value.value;
+                    return this.colorHelper.getHighContrastColor("foreground", color);
+                });
 
-        chartLineSelection
-            .exit()
-            .remove();
+            this.renderTooltip(chartLineSelectionMerged);
+
+            chartLineSelection
+                .exit()
+                .remove();
+        } else {
+            this.chartGroup
+                .selectAll(Gantt.ChartLine.selectorName)
+                .remove();
+        }
     }
 
     private scrollToMilestoneLine(axisLength: number,
@@ -3149,12 +3164,22 @@ export class Gantt implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-        this.filterSettingsCards();
-        this.formattingSettings.setLocalizedOptions(this.localizationManager);
+        this.localizeSettings();
+        this.populateDynamicDataPoints();
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 
-    public filterSettingsCards() {
+    private localizeSettings(): void {
+        if (this.collapsedTasks.length) {
+            this.formattingSettings.taskLabelsCardSettings.collapseAll.displayNameKey = "Visual_Expand_All";
+            this.formattingSettings.taskLabelsCardSettings.collapseAllColor.displayNameKey = "Visual_Expand_All_Color";
+        } else {
+            this.formattingSettings.taskLabelsCardSettings.collapseAll.displayNameKey = "Visual_Collapse_All";
+            this.formattingSettings.taskLabelsCardSettings.collapseAllColor.displayNameKey = "Visual_Collapse_All_Color";
+        }
+    }
+
+    private populateDynamicDataPoints(): void {
         const settings: GanttChartSettingsModel = this.formattingSettings;
 
         settings.cards.forEach(element => {
