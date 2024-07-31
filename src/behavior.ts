@@ -116,17 +116,17 @@ export class Behavior implements IInteractiveBehavior {
             options.subTasksCollapse.callback(d);
         });
 
-        // options.subTasksCollapse.selection.on("keydown", (event: KeyboardEvent, d: GroupedTask) => {
-        //     if (event.code === "Enter" || event.code === "Space") {
-        //         event.stopPropagation();
-        //         event.preventDefault();
+        options.subTasksCollapse.selection.on("keydown", (event: KeyboardEvent, d: GroupedTask) => {
+            if (event.code === "Enter" || event.code === "Space") {
+                event.stopPropagation();
+                event.preventDefault();
 
-        //         if (!d.tasks.map(task => task.children).flat().length) {
-        //             return;
-        //         }
-        //         options.subTasksCollapse.callback(d);
-        //     }
-        // });
+                if (!d.tasks.map(task => task.children).flat().length) {
+                    return;
+                }
+                options.subTasksCollapse.callback(d);
+            }
+        });
 
         options.allSubtasksCollapse.selection.on("click", (event: MouseEvent) => {
             event.stopPropagation();

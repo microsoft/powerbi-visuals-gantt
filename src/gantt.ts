@@ -2071,8 +2071,8 @@ export class Gantt implements IVisual {
                 .attr("height", Gantt.DefaultValues.IconHeight)
                 .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
                 .attr("x", Gantt.DefaultValues.BarMargin)
-                // .attr("focusable", true)
-                // .attr("tabindex", 0);
+                .attr("focusable", true)
+                .attr("tabindex", 0);
 
             clickableArea
                 .append("rect")
@@ -3170,7 +3170,6 @@ export class Gantt implements IVisual {
     }
 
     private localizeSettings(): void {
-        // TODO: Check if introducing Visual_Expand_All_Color/Visual_Collapse_All_Color is worth it
         if (this.collapsedTasks.length) {
             this.formattingSettings.taskLabelsCardSettings.collapseAll.displayNameKey = "Visual_Expand_All";
             this.formattingSettings.taskLabelsCardSettings.collapseAllColor.displayNameKey = "Visual_Expand_All_Color";
