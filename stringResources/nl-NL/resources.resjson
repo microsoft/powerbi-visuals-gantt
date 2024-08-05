@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Cirkel",
   "Visual_Description_Milestones": "Opties voor mijlpalen weergeven",
   "Visual_Expand_All": "Alles uitvouwen",
-  "Visual_Collapse_All": "Alles samenvouwen"
+  "Visual_Collapse_All": "Alles samenvouwen",
+  "Visual_Collapse_All_Color": "Alle regels samenvouwen",
+  "Visual_Expand_All_Color": "Alle kleuren uitvouwen",
+  "Visual_DisplayDottedLines": "Stippellijnen weergeven",
+  "Visual_DottedLinesColor": "Kleur van stippellijnen"
 }

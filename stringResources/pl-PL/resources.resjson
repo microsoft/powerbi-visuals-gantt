@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Okrąg",
   "Visual_Description_Milestones": "Wyświetl opcje kamieni milowych",
   "Visual_Expand_All": "Rozwiń wszystkie",
-  "Visual_Collapse_All": "Zwiń wszystko"
+  "Visual_Collapse_All": "Zwiń wszystko",
+  "Visual_Collapse_All_Color": "Zwiń wszystkie kolory",
+  "Visual_Expand_All_Color": "Rozwiń wszystkie kolory",
+  "Visual_DisplayDottedLines": "Wyświetl linie kropkowane",
+  "Visual_DottedLinesColor": "Kolor linii kropkowanych"
 }

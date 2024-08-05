@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Cirkel",
   "Visual_Description_Milestones": "Vis indstillinger for milepæle",
   "Visual_Expand_All": "Udvid alt",
-  "Visual_Collapse_All": "Skjul alle"
+  "Visual_Collapse_All": "Skjul alle",
+  "Visual_Collapse_All_Color": "Skjul alle farver",
+  "Visual_Expand_All_Color": "Udvid alle farver",
+  "Visual_DisplayDottedLines": "Vis stiplede linjer",
+  "Visual_DottedLinesColor": "Farve på stiplede linjer"
 }

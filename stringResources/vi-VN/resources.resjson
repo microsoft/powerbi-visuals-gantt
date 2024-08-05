@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Hình tròn",
   "Visual_Description_Milestones": "Hiển thị tùy chọn mốc",
   "Visual_Expand_All": "Bung rộng tất cả",
-  "Visual_Collapse_All": "Thu gọn tất cả"
+  "Visual_Collapse_All": "Thu gọn tất cả",
+  "Visual_Collapse_All_Color": "Thu gọn tất cả màu",
+  "Visual_Expand_All_Color": "Bung rộng tất cả màu",
+  "Visual_DisplayDottedLines": "Hiển thị đường chấm",
+  "Visual_DottedLinesColor": "Màu đường chấm"
 }

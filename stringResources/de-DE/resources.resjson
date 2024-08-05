@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Kreis",
   "Visual_Description_Milestones": "Optionen für Meilensteine anzeigen",
   "Visual_Expand_All": "Alle erweitern",
-  "Visual_Collapse_All": "Alle reduzieren"
+  "Visual_Collapse_All": "Alle reduzieren",
+  "Visual_Collapse_All_Color": "Alle Farben zuklappen",
+  "Visual_Expand_All_Color": "Alle Farben erweitern",
+  "Visual_DisplayDottedLines": "Gepunktete Linien anzeigen",
+  "Visual_DottedLinesColor": "Farbe für gepunktete Linien"
 }

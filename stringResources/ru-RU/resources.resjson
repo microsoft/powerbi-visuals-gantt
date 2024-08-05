@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Круг",
   "Visual_Description_Milestones": "Показать параметры вех",
   "Visual_Expand_All": "Развернуть все",
-  "Visual_Collapse_All": "Свернуть все"
+  "Visual_Collapse_All": "Свернуть все",
+  "Visual_Collapse_All_Color": "Свернуть все цвета",
+  "Visual_Expand_All_Color": "Развернуть все цвета",
+  "Visual_DisplayDottedLines": "Отобразить пунктирные линии",
+  "Visual_DottedLinesColor": "Цвет пунктирных линий"
 }

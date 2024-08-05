@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "圆圈",
   "Visual_Description_Milestones": "显示里程碑选项",
   "Visual_Expand_All": "全部展开",
-  "Visual_Collapse_All": "全部折叠"
+  "Visual_Collapse_All": "全部折叠",
+  "Visual_Collapse_All_Color": "折叠所有颜色",
+  "Visual_Expand_All_Color": "展开所有颜色",
+  "Visual_DisplayDottedLines": "显示虚线",
+  "Visual_DottedLinesColor": "虚线颜色"
 }

@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Daire",
   "Visual_Description_Milestones": "Kilometre taşı seçeneklerini göster",
   "Visual_Expand_All": "Tümünü Genişlet",
-  "Visual_Collapse_All": "Tümünü Daralt"
+  "Visual_Collapse_All": "Tümünü Daralt",
+  "Visual_Collapse_All_Color": "Tüm Renkleri Daralt",
+  "Visual_Expand_All_Color": "Tüm Renkleri Genişlet",
+  "Visual_DisplayDottedLines": "Noktalı çizgileri görüntüle",
+  "Visual_DottedLinesColor": "Noktalı çizgi rengi"
 }

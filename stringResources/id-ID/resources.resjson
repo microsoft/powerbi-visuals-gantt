@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Lingkaran",
   "Visual_Description_Milestones": "Tampilkan opsi pencapaian",
   "Visual_Expand_All": "Perluas Semua",
-  "Visual_Collapse_All": "Ciutkan Semua"
+  "Visual_Collapse_All": "Ciutkan Semua",
+  "Visual_Collapse_All_Color": "Ciutkan Semua Warna",
+  "Visual_Expand_All_Color": "Luaskan Semua Warna",
+  "Visual_DisplayDottedLines": "Tampilkan garis putus-putus",
+  "Visual_DottedLinesColor": "Warna garis putus-putus"
 }

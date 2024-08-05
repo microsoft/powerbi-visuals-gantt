@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Cerc",
   "Visual_Description_Milestones": "Afișați opțiunile pentru repere",
   "Visual_Expand_All": "Extindere totală",
-  "Visual_Collapse_All": "Restrângere totală"
+  "Visual_Collapse_All": "Restrângere totală",
+  "Visual_Collapse_All_Color": "Restrângeți toate culorile",
+  "Visual_Expand_All_Color": "Extindeți toate culorile",
+  "Visual_DisplayDottedLines": "Afișați linii punctate",
+  "Visual_DottedLinesColor": "Culoare linii punctate"
 }

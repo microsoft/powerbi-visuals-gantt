@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Sirkel",
   "Visual_Description_Milestones": "Vis alternativer for milepæler",
   "Visual_Expand_All": "Utvid alle",
-  "Visual_Collapse_All": "Skjul alle"
+  "Visual_Collapse_All": "Skjul alle",
+  "Visual_Collapse_All_Color": "Skjul alle farger",
+  "Visual_Expand_All_Color": "Vis alle farger",
+  "Visual_DisplayDottedLines": "Vis prikkete linjer",
+  "Visual_DottedLinesColor": "Farge på prikkete linjer"
 }

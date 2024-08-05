@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Cercle",
   "Visual_Description_Milestones": "Afficher les options de jalons",
   "Visual_Expand_All": "Développer tout",
-  "Visual_Collapse_All": "Tout réduire"
+  "Visual_Collapse_All": "Tout réduire",
+  "Visual_Collapse_All_Color": "Réduire toutes les coueurs",
+  "Visual_Expand_All_Color": "Développer toutes les couleurs",
+  "Visual_DisplayDottedLines": "Afficher les lignes pointillées",
+  "Visual_DottedLinesColor": "Couleur des lignes pointillées"
 }

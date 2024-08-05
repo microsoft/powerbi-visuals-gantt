@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Круг",
   "Visual_Description_Milestones": "Прикажи опције контролних тачака",
   "Visual_Expand_All": "Развиј све",
-  "Visual_Collapse_All": "Скупи све"
+  "Visual_Collapse_All": "Скупи све",
+  "Visual_Collapse_All_Color": "Скупи све боје",
+  "Visual_Expand_All_Color": "Развиј све боје",
+  "Visual_DisplayDottedLines": "Прикажи тачкасте линије",
+  "Visual_DottedLinesColor": "Боја тачкастих линија"
 }

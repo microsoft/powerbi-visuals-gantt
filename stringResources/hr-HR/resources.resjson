@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Krug",
   "Visual_Description_Milestones": "Mogućnosti prikaza prekretnice",
   "Visual_Expand_All": "Proširi sve",
-  "Visual_Collapse_All": "Sažmi sve"
+  "Visual_Collapse_All": "Sažmi sve",
+  "Visual_Collapse_All_Color": "Sažmi sve boje",
+  "Visual_Expand_All_Color": "Proširi sve boje",
+  "Visual_DisplayDottedLines": "Prikaži točkaste linije",
+  "Visual_DottedLinesColor": "Boja točkastih linija"
 }

@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "מעגל",
   "Visual_Description_Milestones": "הצג אפשרויות של אבני דרך",
   "Visual_Expand_All": "הרחב הכל",
-  "Visual_Collapse_All": "כווץ הכל"
+  "Visual_Collapse_All": "כווץ הכל",
+  "Visual_Collapse_All_Color": "כווץ את ‘כל הצבעים‘",
+  "Visual_Expand_All_Color": "הרחב את ‘כל הצבעים‘",
+  "Visual_DisplayDottedLines": "הצג קווים מקווקווים",
+  "Visual_DottedLinesColor": "צבע הקווים המקווקווים"
 }

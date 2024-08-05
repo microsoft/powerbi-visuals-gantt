@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Zirkulua",
   "Visual_Description_Milestones": "Bistaratu mugarrien aukerak",
   "Visual_Expand_All": "Zabaldu dena",
-  "Visual_Collapse_All": "Tolestu dena"
+  "Visual_Collapse_All": "Tolestu dena",
+  "Visual_Collapse_All_Color": "Tolestu kolore guztiak",
+  "Visual_Expand_All_Color": "Hedatu kolore guztiak",
+  "Visual_DisplayDottedLines": "Bistaratu lerro puntudunak",
+  "Visual_DottedLinesColor": "Lerro puntudunen kolorea"
 }

@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Kruh",
   "Visual_Description_Milestones": "Zobraziť možností medzníkov",
   "Visual_Expand_All": "Rozbaliť všetko",
-  "Visual_Collapse_All": "Zbaliť všetko"
+  "Visual_Collapse_All": "Zbaliť všetko",
+  "Visual_Collapse_All_Color": "Zbaliť všetky farby",
+  "Visual_Expand_All_Color": "Rozbaliť všetky farby",
+  "Visual_DisplayDottedLines": "Zobraziť bodkované čiary",
+  "Visual_DottedLinesColor": "Farba bodkovaných čiar"
 }

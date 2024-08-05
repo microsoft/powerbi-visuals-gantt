@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Círculo",
   "Visual_Description_Milestones": "Exibir as opções de marco",
   "Visual_Expand_All": "Expandir Tudo",
-  "Visual_Collapse_All": "Recolher Tudo"
+  "Visual_Collapse_All": "Recolher Tudo",
+  "Visual_Collapse_All_Color": "Recolher Todas as Cores",
+  "Visual_Expand_All_Color": "Expandir Todas as Cores",
+  "Visual_DisplayDottedLines": "Exibir linhas pontilhadas",
+  "Visual_DottedLinesColor": "Cor das linhas pontilhadas"
 }

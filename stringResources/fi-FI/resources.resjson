@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Ympyrä",
   "Visual_Description_Milestones": "Näytä välitavoitteiden asetukset",
   "Visual_Expand_All": "Laajenna kaikki",
-  "Visual_Collapse_All": "Kutista kaikki"
+  "Visual_Collapse_All": "Kutista kaikki",
+  "Visual_Collapse_All_Color": "Kutista kaikki värit",
+  "Visual_Expand_All_Color": "Laajenna kaikki värit",
+  "Visual_DisplayDottedLines": "Näytä pisteviivat",
+  "Visual_DottedLinesColor": "Pisteviivojen väri"
 }

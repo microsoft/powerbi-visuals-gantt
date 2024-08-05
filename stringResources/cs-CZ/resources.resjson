@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Kruh",
   "Visual_Description_Milestones": "Zobrazit možnosti milníků",
   "Visual_Expand_All": "Rozbalit vše",
-  "Visual_Collapse_All": "Sbalit vše"
+  "Visual_Collapse_All": "Sbalit vše",
+  "Visual_Collapse_All_Color": "Sbalit všechny barvy",
+  "Visual_Expand_All_Color": "Rozbalit všechny barvy",
+  "Visual_DisplayDottedLines": "Zobrazit tečkované čáry",
+  "Visual_DottedLinesColor": "Barva tečkovaných čar"
 }

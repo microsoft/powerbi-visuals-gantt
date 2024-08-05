@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "원",
   "Visual_Description_Milestones": "중요 시점 옵션 표시",
   "Visual_Expand_All": "모두 펼치기",
-  "Visual_Collapse_All": "모두 접기"
+  "Visual_Collapse_All": "모두 접기",
+  "Visual_Collapse_All_Color": "모든 색 축소",
+  "Visual_Expand_All_Color": "모든 색 확장",
+  "Visual_DisplayDottedLines": "점선 표시",
+  "Visual_DottedLinesColor": "점선 색"
 }
