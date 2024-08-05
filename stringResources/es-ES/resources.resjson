@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Círculo",
   "Visual_Description_Milestones": "Mostrar opciones de hitos",
   "Visual_Expand_All": "Expandir todo",
-  "Visual_Collapse_All": "Contraer todo"
+  "Visual_Collapse_All": "Contraer todo",
+  "Visual_Collapse_All_Color": "Contraer todo el color",
+  "Visual_Expand_All_Color": "Expandir todo el color",
+  "Visual_DisplayDottedLines": "Mostrar líneas de puntos",
+  "Visual_DottedLinesColor": "Color de líneas de puntos"
 }

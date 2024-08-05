@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Cirkel",
   "Visual_Description_Milestones": "Visa milstolpealternativ",
   "Visual_Expand_All": "Visa alla",
-  "Visual_Collapse_All": "Minimera alla"
+  "Visual_Collapse_All": "Minimera alla",
+  "Visual_Collapse_All_Color": "Dölj alla celler",
+  "Visual_Expand_All_Color": "Visa alla celler",
+  "Visual_DisplayDottedLines": "Visa prickade linjer",
+  "Visual_DottedLinesColor": "Färg på prickade linjer"
 }

@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "円",
   "Visual_Description_Milestones": "マイルストーン オプションを表示します",
   "Visual_Expand_All": "すべて展開",
-  "Visual_Collapse_All": "すべて折りたたむ"
+  "Visual_Collapse_All": "すべて折りたたむ",
+  "Visual_Collapse_All_Color": "すべての色を折りたたむ",
+  "Visual_Expand_All_Color": "すべての色を展開",
+  "Visual_DisplayDottedLines": "点線を表示する",
+  "Visual_DottedLinesColor": "点線の色"
 }

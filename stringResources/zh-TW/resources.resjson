@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "圓形",
   "Visual_Description_Milestones": "顯示里程碑選項",
   "Visual_Expand_All": "全部展開",
-  "Visual_Collapse_All": "全部摺疊"
+  "Visual_Collapse_All": "全部摺疊",
+  "Visual_Collapse_All_Color": "摺疊所有色彩",
+  "Visual_Expand_All_Color": "展開所有色彩",
+  "Visual_DisplayDottedLines": "顯示虛線",
+  "Visual_DottedLinesColor": "虛線色彩"
 }

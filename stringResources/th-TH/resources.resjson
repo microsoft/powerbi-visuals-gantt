@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "วงกลม",
   "Visual_Description_Milestones": "แสดงตัวเลือกหลักเป้าหมาย",
   "Visual_Expand_All": "ขยายทั้งหมด",
-  "Visual_Collapse_All": "ยุบทั้งหมด"
+  "Visual_Collapse_All": "ยุบทั้งหมด",
+  "Visual_Collapse_All_Color": "ยุบสีทั้งหมด",
+  "Visual_Expand_All_Color": "ขยายสีทั้งหมด",
+  "Visual_DisplayDottedLines": "แสดงเส้นประ",
+  "Visual_DottedLinesColor": "สีเส้นประ"
 }

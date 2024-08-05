@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Ring",
   "Visual_Description_Milestones": "Kuva vahekokkuvõtete suvandid",
   "Visual_Expand_All": "Laienda kõik",
-  "Visual_Collapse_All": "Ahenda kõik"
+  "Visual_Collapse_All": "Ahenda kõik",
+  "Visual_Collapse_All_Color": "Ahenda kõik värvid",
+  "Visual_Expand_All_Color": "Laienda kõik värvid",
+  "Visual_DisplayDottedLines": "Kuva punktiirjooned",
+  "Visual_DottedLinesColor": "Punktiirjoonte värv"
 }

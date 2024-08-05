@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Кръг",
   "Visual_Description_Milestones": "Показване на опциите за контролни точки",
   "Visual_Expand_All": "Разгъване на всички",
-  "Visual_Collapse_All": "Сгъване на всички"
+  "Visual_Collapse_All": "Сгъване на всички",
+  "Visual_Collapse_All_Color": "Свиване на целия цвят",
+  "Visual_Expand_All_Color": "Разширяване на целия цвят",
+  "Visual_DisplayDottedLines": "Показване на пунктирани линии",
+  "Visual_DottedLinesColor": "Цвят на пунктирани линии"
 }

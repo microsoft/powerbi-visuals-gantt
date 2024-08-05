@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Коло",
   "Visual_Description_Milestones": "Показувати параметри проміжних етапів",
   "Visual_Expand_All": "Розгорнути все",
-  "Visual_Collapse_All": "Згорнути все"
+  "Visual_Collapse_All": "Згорнути все",
+  "Visual_Collapse_All_Color": "Згорнути всі кольори",
+  "Visual_Expand_All_Color": "Розгорнути всі кольори",
+  "Visual_DisplayDottedLines": "Відображати пунктирні лінії",
+  "Visual_DottedLinesColor": "Колір пунктирних ліній"
 }

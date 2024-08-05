@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Aplis",
   "Visual_Description_Milestones": "Rādīt atskaites punktu opcijas",
   "Visual_Expand_All": "Izvērst visu",
-  "Visual_Collapse_All": "Sakļaut visu"
+  "Visual_Collapse_All": "Sakļaut visu",
+  "Visual_Collapse_All_Color": "Sakļaut visu krāsu",
+  "Visual_Expand_All_Color": "Izvērst visu krāsu",
+  "Visual_DisplayDottedLines": "Rādīt punktētas līnijas",
+  "Visual_DottedLinesColor": "Punktētu līniju krāsa"
 }

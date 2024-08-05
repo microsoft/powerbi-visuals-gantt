@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Kumpulan",
   "Visual_Description_Milestones": "Paparkan opsyen pencapaian",
   "Visual_Expand_All": "Kembangkan Semua",
-  "Visual_Collapse_All": "Runtuhkan Semua"
+  "Visual_Collapse_All": "Runtuhkan Semua",
+  "Visual_Collapse_All_Color": "Runtuhkan Semua Warna",
+  "Visual_Expand_All_Color": "Kembangkan Semua Warna",
+  "Visual_DisplayDottedLines": "Paparkan garisan bertitik",
+  "Visual_DottedLinesColor": "Warna garisan bertitik"
 }

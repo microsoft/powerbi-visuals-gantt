@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "دائرة",
   "Visual_Description_Milestones": "عرض خيارات المراحل الرئيسية",
   "Visual_Expand_All": "توسيع الكل",
-  "Visual_Collapse_All": "طي الكل"
+  "Visual_Collapse_All": "طي الكل",
+  "Visual_Collapse_All_Color": "طي اللون كله",
+  "Visual_Expand_All_Color": "توسيع اللون كله",
+  "Visual_DisplayDottedLines": "عرض الخطوط المنقطة",
+  "Visual_DottedLinesColor": "لون الخطوط المنقطة"
 }

@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Κύκλος",
   "Visual_Description_Milestones": "Εμφάνιση επιλογών ορόσημων",
   "Visual_Expand_All": "Ανάπτυξη όλων",
-  "Visual_Collapse_All": "Σύμπτυξη όλων"
+  "Visual_Collapse_All": "Σύμπτυξη όλων",
+  "Visual_Collapse_All_Color": "Σύμπτυξη όλων των χρωμάτων",
+  "Visual_Expand_All_Color": "Ανάπτυξη όλων των χρωμάτων",
+  "Visual_DisplayDottedLines": "Εμφάνιση διάστικτων γραμμών",
+  "Visual_DottedLinesColor": "Χρώμα διάστικτων γραμμών"
 }

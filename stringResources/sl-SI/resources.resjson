@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Krog",
   "Visual_Description_Milestones": "Prikaži možnosti za mejnike",
   "Visual_Expand_All": "Razširi vse",
-  "Visual_Collapse_All": "Strni vse"
+  "Visual_Collapse_All": "Strni vse",
+  "Visual_Collapse_All_Color": "Strni vse barve",
+  "Visual_Expand_All_Color": "Razširi vse barve",
+  "Visual_DisplayDottedLines": "Prikaži pikčaste črte",
+  "Visual_DottedLinesColor": "Barva pikčastih črt"
 }

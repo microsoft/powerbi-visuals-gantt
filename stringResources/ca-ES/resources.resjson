@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Cercle",
   "Visual_Description_Milestones": "Mostra les opcions de fites",
   "Visual_Expand_All": "Expandeix-ho tot",
-  "Visual_Collapse_All": "Redueix-ho tot"
+  "Visual_Collapse_All": "Redueix-ho tot",
+  "Visual_Collapse_All_Color": "Redueix tot el color",
+  "Visual_Expand_All_Color": "Expandeix tot el color",
+  "Visual_DisplayDottedLines": "Mostra les línies amb punts",
+  "Visual_DottedLinesColor": "Color de les línies amb punts"
 }

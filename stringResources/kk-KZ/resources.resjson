@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Дөңгелек",
   "Visual_Description_Milestones": "Аралық кезең параметрлерін көрсету",
   "Visual_Expand_All": "Бәрін шығарып алу",
-  "Visual_Collapse_All": "Бәрін тасалау"
+  "Visual_Collapse_All": "Бәрін тасалау",
+  "Visual_Collapse_All_Color": "Барлық т.үсті тасалау",
+  "Visual_Expand_All_Color": "Барлық түсті кеңейту",
+  "Visual_DisplayDottedLines": "Үзік сызықтарды көрсету",
+  "Visual_DottedLinesColor": "Үзік сызықтар түсі"
 }

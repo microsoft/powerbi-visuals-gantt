@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "वृत",
   "Visual_Description_Milestones": "माइलस्टोन विकल्प प्रदर्शित करें",
   "Visual_Expand_All": "सभी को विस्तृत करें",
-  "Visual_Collapse_All": "सभी को संक्षिप्त करें"
+  "Visual_Collapse_All": "सभी को संक्षिप्त करें",
+  "Visual_Collapse_All_Color": "सभी रंग संक्षिप्त करें",
+  "Visual_Expand_All_Color": "सभी रंग विस्तृत करें",
+  "Visual_DisplayDottedLines": "डॉटेड रेखाएँ प्रदर्शित करें",
+  "Visual_DottedLinesColor": "डॉटेड रेखाओं का रंग"
 }

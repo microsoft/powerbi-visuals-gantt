@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Kör",
   "Visual_Description_Milestones": "Mérföldkő-beállítások megjelenítése",
   "Visual_Expand_All": "Az összes kibontása",
-  "Visual_Collapse_All": "Az összes összecsukása"
+  "Visual_Collapse_All": "Az összes összecsukása",
+  "Visual_Collapse_All_Color": "Az összes szín összecsukása",
+  "Visual_Expand_All_Color": "Az összes szín kibontása",
+  "Visual_DisplayDottedLines": "Pontozott vonalak megjelenítése",
+  "Visual_DottedLinesColor": "Pontozott vonalak színe"
 }

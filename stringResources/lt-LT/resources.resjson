@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Apskritimas",
   "Visual_Description_Milestones": "Rodyti gairių parinktis",
   "Visual_Expand_All": "Išplėsti viską",
-  "Visual_Collapse_All": "Sutraukti viską"
+  "Visual_Collapse_All": "Sutraukti viską",
+  "Visual_Collapse_All_Color": "Sutraukti visas spalvas",
+  "Visual_Expand_All_Color": "Išplėsti visas spalvas",
+  "Visual_DisplayDottedLines": "Rodyti taškines linijas",
+  "Visual_DottedLinesColor": "Taškinių linijų spalva"
 }

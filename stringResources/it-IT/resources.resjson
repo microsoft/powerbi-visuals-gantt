@@ -96,5 +96,9 @@
   "Visual_Shape_Circle": "Cerchio",
   "Visual_Description_Milestones": "Visualizza opzioni attività cardine",
   "Visual_Expand_All": "Espandi tutto",
-  "Visual_Collapse_All": "Comprimi tutto"
+  "Visual_Collapse_All": "Comprimi tutto",
+  "Visual_Collapse_All_Color": "Comprimi tutti i colori",
+  "Visual_Expand_All_Color": "Espandi tutti i colori",
+  "Visual_DisplayDottedLines": "Visualizza linee punteggiate",
+  "Visual_DottedLinesColor": "Colore linee punteggiate"
 }
