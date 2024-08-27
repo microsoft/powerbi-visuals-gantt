@@ -4,6 +4,7 @@
 * Fix visual background color not applying to axis, collapse all button, task labels
 * Add toggle to enable/disable milestones dotted lines and color picker for it's color
 * Add keyboard focus animation to better visualize focus
+* Add settings to control milestone line type / organize milestones in groups
 
 ### Code improvements
 * Update API to 5.11.0, tools to 5.5.1 and other packages"

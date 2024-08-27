@@ -123,7 +123,7 @@ import {TextProperties} from "powerbi-visuals-utils-formattingutils/lib/src/inte
 
 import {FormattingSettingsService} from "powerbi-visuals-utils-formattingmodel";
 import {DateTypeCardSettings, GanttChartSettingsModel} from "./ganttChartSettingsModels";
-import {DateType, DurationUnit, GanttRole, LabelForDate, MilestoneShape, ResourceLabelPosition} from "./enums";
+import {DateType, DurationUnit, GanttRole, LabelForDate, MilestoneLineType, MilestoneShape, ResourceLabelPosition} from "./enums";
 
 // d3
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
@@ -3071,7 +3071,7 @@ export class Gantt implements IVisual {
     }
 
     private renderMilestoneDottedLines(line: Line[], timestamp: number, todayColor: string) {
-        if (this.formattingSettings.milestonesCardSettings.displayDottedLines.value) {
+        if (this.formattingSettings.milestonesCardSettings.showLines.value) {
             const chartLineSelection: Selection<Line> = this.chartGroup
                 .selectAll(Gantt.ChartLine.selectorName)
                 .data(line);
@@ -3081,7 +3081,8 @@ export class Gantt implements IVisual {
                 .append("line")
                 .merge(chartLineSelection);
 
-            chartLineSelectionMerged.classed(Gantt.ChartLine.className, true);
+            chartLineSelectionMerged.classed(Gantt.ChartLine.className, true)
+
 
             chartLineSelectionMerged
                 .attr("x1", (line: Line) => line.x1)
@@ -3089,9 +3090,19 @@ export class Gantt implements IVisual {
                 .attr("x2", (line: Line) => line.x2)
                 .attr("y2", (line: Line) => line.y2)
                 .style("stroke", (line: Line) => {
-                    const color: string = line.x1 === Gantt.TimeScale(timestamp) ? todayColor : this.formattingSettings.milestonesCardSettings.dottedLinesColor.value.value;
+                    const color: string = line.x1 === Gantt.TimeScale(timestamp) ? todayColor : this.formattingSettings.milestonesCardSettings.lineColor.value.value;
                     return this.colorHelper.getHighContrastColor("foreground", color);
                 });
+
+            switch (<MilestoneLineType>this.formattingSettings.milestonesCardSettings.lineType.value.value) {
+                case MilestoneLineType.Solid:
+                    chartLineSelectionMerged.style("stroke-dasharray", "none")
+                    break;
+                case MilestoneLineType.Dotted:
+                default:
+                    chartLineSelectionMerged.style("stroke-dasharray", "3,3")
+                    break;
+            }
 
             this.renderTooltip(chartLineSelectionMerged);
 

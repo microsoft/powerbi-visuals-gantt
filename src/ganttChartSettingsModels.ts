@@ -3,7 +3,7 @@ import {formattingSettings} from "powerbi-visuals-utils-formattingmodel";
 import {legendInterfaces} from "powerbi-visuals-utils-chartutils";
 import {LegendDataPoint} from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
 import {ColorHelper} from "powerbi-visuals-utils-colorutils";
-import {MilestoneShape} from "./enums";
+import {MilestoneLineType, MilestoneShape} from "./enums";
 import {DateType} from "./enums";
 import {ResourceLabelPosition} from "./enums";
 import {DurationUnit} from "./enums";
@@ -13,7 +13,9 @@ import LegendPosition = legendInterfaces.LegendPosition;
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 import Card = formattingSettings.SimpleCard;
+import CompositeCard = formattingSettings.CompositeCard;
 import Model = formattingSettings.Model;
+import Group = formattingSettings.Group;
 import FormattingSettingsSlice = formattingSettings.SimpleSlice;
 
 import IEnumMember = powerbi.IEnumMember;
@@ -69,6 +71,11 @@ const resourcePositionOptions : IEnumMember[] = [
     { displayName: "Visual_Position_Top", value: ResourceLabelPosition.Top },
     { displayName: "Visual_Position_Right", value: ResourceLabelPosition.Right },
     { displayName: "Visual_Position_Inside", value: ResourceLabelPosition.Inside }
+];
+
+const milestoneLineTypes: IEnumMember[] = [
+    { displayName: "Visual_Milestones_LineType_Dotted", value: MilestoneLineType.Dotted },
+    { displayName: "Visual_Milestones_LineType_Solid", value: MilestoneLineType.Solid },
 ];
 
 class DurationMinSettings {
@@ -282,35 +289,36 @@ export class LegendCardSettings extends Card {
     ];
 }
 
-export class MilestonesCardSettings extends Card {
-    displayDottedLines = new formattingSettings.ToggleSwitch({
-        name: "displayDottedLines",
-        displayNameKey: "Visual_DisplayDottedLines",
+export class MilestonesCardSettings extends CompositeCard {
+    showLines = new formattingSettings.ToggleSwitch({
+        name: "showLines",
+        displayNameKey: "Visual_Show",
         value: true
     });
 
-    dottedLinesColor = new formattingSettings.ColorPicker({
-        name: "dottedLinesColor",
-        displayNameKey: "Visual_DottedLinesColor",
+    lineColor = new formattingSettings.ColorPicker({
+        name: "lineColor",
+        displayNameKey: "Visual_Color",
         value: { value: "#cccccc" }
     });
 
-    fill = new formattingSettings.ColorPicker({
-        name: "fill",
-        displayNameKey: "Visual_Fill",
-        value: { value: "#000000" }
+    lineType = new formattingSettings.ItemDropdown({
+        name: "lineType",
+        displayNameKey: "Visual_Type",
+        items: milestoneLineTypes,
+        value: milestoneLineTypes[0]
     });
 
-    shapeType = new formattingSettings.ItemDropdown({
-        name: "shapeType",
-        displayNameKey: "Visual_Shape",
-        items: shapesOptions,
-        value: shapesOptions[0]
+    lineGroup = new Group({
+        name: "lineGroup",
+        displayNameKey: "Visual_Line",
+        topLevelSlice: this.showLines,
+        slices: [this.lineColor, this.lineType]
     });
 
     name: string = "milestones";
     displayNameKey: string = "Visual_Milestones";
-    slices = [this.displayDottedLines, this.dottedLinesColor];
+    groups = [this.lineGroup];
 }
 
 export class TaskLabelsCardSettings extends Card {
@@ -560,34 +568,43 @@ export class GanttChartSettingsModel extends Model {
         this.setLocalizedDisplayName(shapesOptions, localizationManager);
         this.setLocalizedDisplayName(resourcePositionOptions, localizationManager);
         this.setLocalizedDisplayName(dateTypeOptions, localizationManager);
+        this.setLocalizedDisplayName(milestoneLineTypes, localizationManager);
     }       
 
     populateMilestones(milestonesWithoutDuplicates: {
         [name: string]: MilestoneDataPoint
     }) {
 
-        const newSlices: FormattingSettingsSlice[] = this.milestonesCardSettings.slices;
+        const milestoneGroups = this.milestonesCardSettings.groups || [];
+
         if (milestonesWithoutDuplicates) {
             for (const uniqMilestones in milestonesWithoutDuplicates) {
                 const milestone = milestonesWithoutDuplicates[uniqMilestones];
-                newSlices.push(new formattingSettings.ColorPicker({
-                    name: this.milestonesCardSettings.fill.name,
-                    displayName: `${milestone.name} color`,
+
+                const color = new formattingSettings.ColorPicker({
+                    name: "fill",
+                    displayNameKey: "Visual_Color",
                     selector: ColorHelper.normalizeSelector((<ISelectionId>milestone.identity).getSelector(), false),
                     value: { value: milestone.color }
-                }));
-    
-                newSlices.push(new formattingSettings.ItemDropdown({
-                    name: this.milestonesCardSettings.shapeType.name,
-                    displayName: `${milestone.name} shape`,
+                });
+
+                const shape = new formattingSettings.ItemDropdown({
+                    name: "shapeType",
+                    displayNameKey: "Visual_Shape",
                     items: shapesOptions,
                     value: shapesOptions.filter(el => el.value === milestone.shapeType)[0],
                     selector: ColorHelper.normalizeSelector((<ISelectionId>milestone.identity).getSelector(), false),
-                }));
+                });
+
+                const newGroup = new Group({
+                    name: milestone.name,
+                    displayName: milestone.name,
+                    slices: [color, shape]
+                });
+
+                milestoneGroups.push(newGroup);
             }
         }
-
-        this.milestonesCardSettings.slices = newSlices;
     }
 
     public populateLegend(dataPoints: LegendDataPoint[], localizationManager: ILocalizationManager) {

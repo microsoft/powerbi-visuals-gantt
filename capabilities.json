@@ -456,18 +456,23 @@
         },
         "milestones": {
             "properties": {
-                "displayDottedLines": {
+                "showLines": {
                     "type": {
                         "bool": true
                     }
                 },
-                "dottedLinesColor": {
+                "lineColor": {
                     "type": {
                         "fill": {
                             "solid": {
                                 "color": true
                             }
                         }
+                    }
+                },
+                "lineType": {
+                    "type": {
+                        "enumeration": []
                     }
                 },
                 "fill": {
