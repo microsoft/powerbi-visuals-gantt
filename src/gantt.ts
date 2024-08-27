@@ -2457,7 +2457,8 @@ export class Gantt implements IVisual {
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight, barsRoundedCorners))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
-            .style("fill", (task: Task) => task.color);
+            .style("fill", (task: Task) => task.color)
+            .style("stroke", (task: Task) => task.color);
 
         if (this.colorHelper.isHighContrast) {
             taskRectMerged
@@ -2579,6 +2580,7 @@ export class Gantt implements IVisual {
                 .attr("d", (data: MilestonePath) => this.getMilestonePath(data.type, taskConfigHeight))
                 .attr("transform", (data: MilestonePath) => transformForMilestone(data.taskID, data.start))
                 .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type))
+                .attr("stroke", (data: MilestonePath) => this.getMilestoneColor(data.type))
                 .attr("focusable", true)
                 .attr("tabindex", 0);
         }

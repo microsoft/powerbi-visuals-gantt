@@ -1,8 +1,12 @@
 # 3.0.13
-* Update API to 5.11.0, tools to 5.5.1 and other packages"
+### Visual changes
 * Add all font settings (italic, bold, etc.) for the "Expand All" button, also make the default value satisfy the contrast ration of 4.6:1
 * Fix visual background color not applying to axis, collapse all button, task labels
 * Add toggle to enable/disable milestones dotted lines and color picker for it's color
+* Add keyboard focus animation to better visualize focus
+
+### Code improvements
+* Update API to 5.11.0, tools to 5.5.1 and other packages"
 
 ## 3.0.12
 * Fix not showing collapse button for parent tasks
