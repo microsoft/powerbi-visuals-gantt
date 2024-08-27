@@ -680,6 +680,15 @@
     "sorting": {
         "default": {}
     },
+    "tooltips": {
+        "supportedTypes": {
+            "default": true,
+            "canvas": true
+        },
+        "roles": [
+            "tooltips"
+        ]
+    },
     "privileges": [],
     "supportsHighlight": true,
     "supportsKeyboardFocus": true
