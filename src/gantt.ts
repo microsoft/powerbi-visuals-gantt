@@ -169,7 +169,6 @@ import ValueType = valueType.ValueType;
 // powerbi.extensibility.utils.formatting
 import IValueFormatter = ValueFormatter.IValueFormatter;
 // powerbi.extensibility.utils.interactivity
-import appendClearCatcher = interactivityService.appendClearCatcher;
 import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
 import IInteractivityService = interactivityService.IInteractivityService;
 import createInteractivityService = interactivitySelectionService.createInteractivitySelectionService;
@@ -359,7 +358,6 @@ export class Gantt implements IVisual {
     private lineGroup: Selection<any>;
     private lineGroupWrapper: Selection<any>;
     private lineGroupWrapperRightBorder: Selection<any>;
-    private clearCatcher: Selection<any>;
     private ganttDiv: Selection<any>;
     private behavior: Behavior;
     private interactivityService: IInteractivityService<Task | LegendDataPoint>;
@@ -411,9 +409,6 @@ export class Gantt implements IVisual {
             .classed(Gantt.ClassName.className, true)
             .attr("role", "listbox")
             .attr("aria-multiselectable", "true");
-
-        // create clear catcher
-        this.clearCatcher = appendClearCatcher(this.ganttSvg);
 
         // create task lines container before chart container
         this.lineGroup = this.ganttSvg
