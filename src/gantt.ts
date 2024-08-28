@@ -3266,11 +3266,9 @@ export class Gantt implements IVisual {
 
     private localizeSettings(): void {
         if (this.collapsedTasks.length) {
-            this.formattingSettings.taskLabelsCardSettings.collapseAll.displayNameKey = "Visual_Expand_All";
-            this.formattingSettings.taskLabelsCardSettings.collapseAllColor.displayNameKey = "Visual_Expand_All_Color";
+            this.formattingSettings.taskLabelsCardSettings.collapseAllGroup.displayNameKey = "Visual_Expand_All";
         } else {
-            this.formattingSettings.taskLabelsCardSettings.collapseAll.displayNameKey = "Visual_Collapse_All";
-            this.formattingSettings.taskLabelsCardSettings.collapseAllColor.displayNameKey = "Visual_Collapse_All_Color";
+            this.formattingSettings.taskLabelsCardSettings.collapseAllGroup.displayNameKey = "Visual_Collapse_All";
         }
     }
 

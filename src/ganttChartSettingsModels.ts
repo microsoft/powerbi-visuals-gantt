@@ -332,7 +332,7 @@ export class MilestonesCardSettings extends CompositeCard {
     groups = [this.lineGroup];
 }
 
-export class TaskLabelsCardSettings extends Card {
+export class TaskLabelsCardSettings extends CompositeCard {
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
@@ -369,15 +369,21 @@ export class TaskLabelsCardSettings extends Card {
         }
     });
 
+    labelsGroup = new Group({
+        name: "labelsGroup",
+        displayNameKey: "Visual_CategoryLabels",
+        slices: [this.fill, this.fontSize, this.width],
+    });
+
     collapseAllColor = new formattingSettings.ColorPicker({
         name: "collapseAllColor",
-        displayNameKey: "Visual_Collapse_All_Color",
+        displayNameKey: "Visual_Color",
         value: { value: "#000" },
     });
 
     collapseAll = new formattingSettings.FontControl({
         name: "collapseAll",
-        displayNameKey: "Visual_Collapse_All",
+        displayNameKey: "Visual_Font",
         fontSize: new formattingSettings.NumUpDown({
             name: "collapseAllFontSize",
             value: 12,
@@ -403,10 +409,16 @@ export class TaskLabelsCardSettings extends Card {
         }),
     });
 
+    collapseAllGroup = new Group({
+        name: "expandAllGroup",
+        displayNameKey: "Visual_Expand_All",
+        slices: [this.collapseAllColor, this.collapseAll]
+    })
+
     topLevelSlice = this.show;
     name: string = "taskLabels";
     displayNameKey: string = "Visual_CategoryLabels";
-    slices = [this.fill, this.fontSize, this.width, this.collapseAllColor, this.collapseAll];
+    groups = [this.labelsGroup, this.collapseAllGroup];
 }
 
 export class TaskCompletionCardSettings extends Card {
