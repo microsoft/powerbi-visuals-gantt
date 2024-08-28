@@ -656,6 +656,11 @@
                         "bool": true
                     }
                 },
+                "matchLegendColors": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "fill": {
                     "type": {
                         "fill": {
@@ -670,6 +675,28 @@
                         "formatting": {
                             "fontSize": true
                         }
+                    }
+                },
+                "fontFamily": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "bold": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "italic": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underline": {
+                    "type": {
+                        "bool": true
                     }
                 },
                 "position": {

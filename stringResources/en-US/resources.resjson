@@ -59,6 +59,7 @@
 	"Visual_TaskSettings_Height": "Height",
 	"Visual_BarsRoundedCorners": "Bars Rounded Corners",
 	"Visual_DataLabels": "Data Labels",
+	"Visual_MatchLegendColors": "Match legend colors",
 	"Visual_CategoryLabels": "Category Labels",
 	"Visual_Type": "Type",
 	"Visual_DateType": "Date type",

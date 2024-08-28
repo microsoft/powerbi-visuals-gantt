@@ -276,7 +276,7 @@ export class LegendCardSettings extends CompositeCard {
         }),
         fontFamily: new formattingSettings.FontPicker({
             name: "fontFamily",
-            value: "Arial, sans-serif"
+            value: "'Segoe UI',wf_segoe-ui_normal,helvetica,arial,sans-serif"
         }),
         bold: new formattingSettings.ToggleSwitch({
             name: "bold",
@@ -430,7 +430,7 @@ export class TaskLabelsCardSettings extends CompositeCard {
         }),
         fontFamily: new formattingSettings.FontPicker({
             name: "collapseAllFontFamily",
-            value: "Arial, sans-serif"
+            value: "'Roboto', -apple-system, BlinkMacSystemFont, sans-serif"
         }),
         bold: new formattingSettings.ToggleSwitch({
             name: "collapseAllBold",
@@ -526,22 +526,45 @@ export class TaskResourceCardSettings extends Card {
         value: true
     });
 
+    matchLegendColors = new formattingSettings.ToggleSwitch({
+        name: "matchLegendColors",
+        displayNameKey: "Visual_MatchLegendColors",
+        value: false,
+    });
+
     fill = new formattingSettings.ColorPicker({
         name: "fill",
         displayNameKey: "Visual_Color",
         value: { value: "#000000" }
     });
 
-    fontSize = new formattingSettings.NumUpDown({
-        name: "fontSize",
-        displayNameKey: "Visual_FontSize",
-        value: FontSizeSettings.DefaultFontSize,
-        options: {
-            minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
-                value: FontSizeSettings.MinFontSize,
+    font = new formattingSettings.FontControl({
+        name: "font",
+        displayNameKey: "Visual_Font",
+        fontSize: new formattingSettings.NumUpDown({
+            name: "fontSize",
+            displayNameKey: "Visual_FontSize",
+            value: FontSizeSettings.DefaultFontSize,
+            options: {
+                minValue: { value: FontSizeSettings.MinFontSize, type: ValidatorType.Min },
             },
-        }
+        }),
+        fontFamily: new formattingSettings.FontPicker({
+            name: "fontFamily",
+            value: "'Roboto', -apple-system, BlinkMacSystemFont, sans-serif"
+        }),
+        bold: new formattingSettings.ToggleSwitch({
+            name: "bold",
+            value: false,
+        }),
+        italic: new formattingSettings.ToggleSwitch({
+            name: "italic",
+            value: false,
+        }),
+        underline: new formattingSettings.ToggleSwitch({
+            name: "underline",
+            value: false,
+        }),
     });
 
     position = new formattingSettings.ItemDropdown({
@@ -566,7 +589,7 @@ export class TaskResourceCardSettings extends Card {
     topLevelSlice = this.show;
     name: string = "taskResource";
     displayNameKey: string = "Visual_DataLabels";
-    slices = [this.fill, this.fontSize, this.position, this.fullText, this.widthByTask];
+    slices = [this.matchLegendColors, this.fill, this.font, this.position, this.fullText, this.widthByTask];
 }
 
 export class DateTypeCardSettings extends Card {

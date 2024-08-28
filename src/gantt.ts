@@ -2881,8 +2881,7 @@ export class Gantt implements IVisual {
 
         const isResourcesFilled: boolean = this.viewModel.isResourcesFilled;
         const taskResourceShow: boolean = this.viewModel.settings.taskResourceCardSettings.show.value;
-        const taskResourceColor: string = this.viewModel.settings.taskResourceCardSettings.fill.value.value;
-        const taskResourceFontSize: number = this.viewModel.settings.taskResourceCardSettings.fontSize.value;
+        const taskResourceFontSize: number = this.viewModel.settings.taskResourceCardSettings.font.fontSize.value;
         const taskResourcePosition: ResourceLabelPosition = ResourceLabelPosition[this.viewModel.settings.taskResourceCardSettings.position.value.value];
         const taskResourceFullText: boolean = this.viewModel.settings.taskResourceCardSettings.fullText.value;
         const taskResourceWidthByTask: boolean = this.viewModel.settings.taskResourceCardSettings.widthByTask.value;
@@ -2906,8 +2905,15 @@ export class Gantt implements IVisual {
                     + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition)
                     + (task.index + 1) * this.getResourceLabelTopMargin())
                 .text((task: Task) => lodashIsEmpty(task.Milestones) && task.resource || "")
-                .style("fill", taskResourceColor)
+                .style("fill", (task: Task) =>
+                    this.viewModel.settings.taskResourceCardSettings.matchLegendColors.value
+                        ? task.color
+                        : this.viewModel.settings.taskResourceCardSettings.fill.value.value)
                 .style("font-size", PixelConverter.fromPoint(taskResourceFontSize))
+                .style("font-family", this.viewModel.settings.taskResourceCardSettings.font.fontFamily.value)
+                .style("font-weight", this.viewModel.settings.taskResourceCardSettings.font.bold.value ? "bold" : "normal")
+                .style("font-style", this.viewModel.settings.taskResourceCardSettings.font.italic.value ? "italic" : "normal")
+                .style("text-decoration", this.viewModel.settings.taskResourceCardSettings.font.underline.value ? "underline" : "none")
                 .style("alignment-baseline", taskResourcePosition === ResourceLabelPosition.Inside ? "central" : "auto");
 
             const hasNotNullableDates: boolean = this.hasNotNullableDates;
@@ -3074,7 +3080,7 @@ export class Gantt implements IVisual {
     private getResourceLabelTopMargin(): number {
         const isResourcesFilled: boolean = this.viewModel.isResourcesFilled;
         const taskResourceShow: boolean = this.viewModel.settings.taskResourceCardSettings.show.value;
-        const taskResourceFontSize: number = this.viewModel.settings.taskResourceCardSettings.fontSize.value;
+        const taskResourceFontSize: number = this.viewModel.settings.taskResourceCardSettings.font.fontSize.value;
         const taskResourcePosition: ResourceLabelPosition = ResourceLabelPosition[this.viewModel.settings.taskResourceCardSettings.position.value.value];
 
         let margin: number = 0;
@@ -3338,6 +3344,10 @@ export class Gantt implements IVisual {
                 case Gantt.TaskResourcePropertyIdentifier.objectName:
                     if (!this.viewModel.isResourcesFilled) {
                         settings.taskResourceCardSettings.visible = false;
+                    } else {
+                        if (settings.taskResourceCardSettings.matchLegendColors.value) {
+                            settings.taskResourceCardSettings.fill.visible = false;
+                        }
                     }
                     break;
             }
