@@ -17,7 +17,6 @@ import Card = formattingSettings.SimpleCard;
 import CompositeCard = formattingSettings.CompositeCard;
 import Model = formattingSettings.Model;
 import Group = formattingSettings.Group;
-import FormattingSettingsSlice = formattingSettings.SimpleSlice;
 
 import IEnumMember = powerbi.IEnumMember;
 import {Day} from "./enums";
@@ -232,26 +231,24 @@ export class DaysOffCardSettings extends Card {
     slices = [this.fill, this.firstDayOfWeek];
 }
 
-export class LegendCardSettings extends Card {
+export class LegendCardSettings extends CompositeCard {
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
         value: true
     });
 
-    topLevelSlice = this.show;
+    showTitle = new formattingSettings.ToggleSwitch({
+        name: "showTitle",
+        displayNameKey: "Visual_Title",
+        value: true
+    });
 
     position = new formattingSettings.ItemDropdown({
         name: "position",
         displayNameKey: "Visual_Position",
         items: positionOptions,
         value: positionOptions[3]
-    });
-
-    showTitle = new formattingSettings.ToggleSwitch({
-        name: "showTitle",
-        displayNameKey: "Visual_Title",
-        value: true
     });
 
     titleText = new formattingSettings.TextInput({
@@ -267,27 +264,50 @@ export class LegendCardSettings extends Card {
         value: { value: "#000000" }
     });
 
-    fontSize = new formattingSettings.NumUpDown({
-        name: "fontSize",
-        displayNameKey: "Visual_TextSize",
-        value: FontSizeSettings.MinFontSize,
-        options: {
-            minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
-                value: FontSizeSettings.MinFontSize,
+    font = new formattingSettings.FontControl({
+        name: "font",
+        displayNameKey: "Visual_Font",
+        fontSize: new formattingSettings.NumUpDown({
+            name: "fontSize",
+            value: FontSizeSettings.MinFontSize,
+            options: {
+                minValue: { value: 5, type: ValidatorType.Min },
             },
-        }
+        }),
+        fontFamily: new formattingSettings.FontPicker({
+            name: "fontFamily",
+            value: "Arial, sans-serif"
+        }),
+        bold: new formattingSettings.ToggleSwitch({
+            name: "bold",
+            value: false,
+        }),
+        italic: new formattingSettings.ToggleSwitch({
+            name: "italic",
+            value: false,
+        }),
+        underline: new formattingSettings.ToggleSwitch({
+            name: "underline",
+            value: false,
+        }),
     });
 
+    legendGroup = new Group({
+        name: "legendGroup",
+        displayNameKey: "Visual_General",
+        slices: [
+            this.showTitle,
+            this.position,
+            this.titleText,
+            this.labelColor,
+            this.font,
+        ],
+    });
+
+    topLevelSlice = this.show;
     name: string = "legend";
     displayNameKey: string = "Visual_Legend";
-    slices: FormattingSettingsSlice[] = [
-        this.position,
-        this.showTitle,
-        this.titleText,
-        this.labelColor,
-        this.fontSize,
-    ];
+    groups = [this.legendGroup];
 }
 
 export class MilestonesCardSettings extends CompositeCard {
@@ -631,29 +651,26 @@ export class GanttChartSettingsModel extends Model {
     }
 
     public populateLegend(dataPoints: LegendDataPoint[], localizationManager: ILocalizationManager) {
-        const newSlices: FormattingSettingsSlice[] = [
-            this.legendCardSettings.position,
-            this.legendCardSettings.showTitle,
-            this.legendCardSettings.titleText,
-            this.legendCardSettings.labelColor,
-            this.legendCardSettings.fontSize,
-        ];
-
         if (!dataPoints || dataPoints.length === 0) {
-            this.legendCardSettings.slices = newSlices;
             return;
         }
 
+        const legendColorsGroup = new Group({
+            name: "legendColorsGroup",
+            displayNameKey: "Visual_Colors",
+            slices: []
+        });
+
+        this.legendCardSettings.groups.push(legendColorsGroup);
+
         for (const dataPoint of dataPoints) {
-            newSlices.push(new formattingSettings.ColorPicker({
+            legendColorsGroup.slices.push(new formattingSettings.ColorPicker({
                 name: "fill",
                 displayName: dataPoint.label || localizationManager.getDisplayName("Visual_LegendColor"),
                 selector: ColorHelper.normalizeSelector((<ISelectionId>dataPoint.identity).getSelector(), false),
                 value: { value: dataPoint.color }
             }));
         }
-
-        this.legendCardSettings.slices = newSlices;
     }
 
     public setLocalizedDisplayName(options: IEnumMember[], localizationManager: ILocalizationManager) {

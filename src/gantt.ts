@@ -775,7 +775,8 @@ export class Gantt implements IVisual {
 
         const colorHelper = new ColorHelper(colorPalette, Gantt.LegendPropertyIdentifier);
         const legendData: LegendData = {
-            fontSize: settings.legendCardSettings.fontSize.value,
+            fontSize: settings.legendCardSettings.font.fontSize.value,
+            fontFamily: settings.legendCardSettings.font.fontFamily.value,
             dataPoints: [],
             title: settings.legendCardSettings.showTitle.value ? (settings.legendCardSettings.titleText.value || taskTypes?.typeName) : null,
             labelColor: settings.legendCardSettings.labelColor.value.value
@@ -1619,6 +1620,16 @@ export class Gantt implements IVisual {
 
         this.legend.changeOrientation(position as LegendPosition);
         this.legend.drawLegend(this.viewModel.legendData, lodashClone(this.viewport));
+
+        this.body
+            .selectAll(Gantt.LegendItems.selectorName)
+            .style("font-size", this.formattingSettings.legendCardSettings.font.fontSize.value + "px")
+            .style("font-family", this.formattingSettings.legendCardSettings.font.fontFamily.value)
+            .style("font-weight", this.formattingSettings.legendCardSettings.font.bold.value ? "bold" : "normal")
+            .style("font-style", this.formattingSettings.legendCardSettings.font.italic.value ? "italic" : "normal")
+            .style("text-decoration", this.formattingSettings.legendCardSettings.font.underline.value ? "underline" : "none");
+
+
         LegendModule.positionChartArea(this.ganttDiv, this.legend);
 
         switch (this.legend.getOrientation()) {
