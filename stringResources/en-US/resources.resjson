@@ -43,6 +43,7 @@
 	"Visual_Position_RightCenter": "Right Center",
 	"Visual_Title": "Title",
 	"Visual_Color": "Color",
+	"Visual_Opacity": "Opacity",
 	"Visual_TextSize": "Text Size",
 	"Visual_Fill": "Fill",
 	"Visual_FontSize": "Font Size",

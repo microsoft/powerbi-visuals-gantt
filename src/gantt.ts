@@ -3178,7 +3178,8 @@ export class Gantt implements IVisual {
                 .style("stroke", (line: Line) => {
                     const color: string = line.x1 === Gantt.TimeScale(timestamp) ? todayColor : this.formattingSettings.milestonesCardSettings.lineColor.value.value;
                     return this.colorHelper.getHighContrastColor("foreground", color);
-                });
+                })
+                .style("stroke-opacity", this.formattingSettings.milestonesCardSettings.lineOpacity.value / 100);
 
             switch (<MilestoneLineType>this.formattingSettings.milestonesCardSettings.lineType.value.value) {
                 case MilestoneLineType.Solid:

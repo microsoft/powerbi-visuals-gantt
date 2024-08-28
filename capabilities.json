@@ -470,6 +470,11 @@
                         }
                     }
                 },
+                "lineOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "lineType": {
                     "type": {
                         "enumeration": []

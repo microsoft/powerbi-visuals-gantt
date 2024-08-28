@@ -7,6 +7,7 @@ import {MilestoneLineType, MilestoneShape} from "./enums";
 import {DateType} from "./enums";
 import {ResourceLabelPosition} from "./enums";
 import {DurationUnit} from "./enums";
+import ValidatorType = powerbiVisualsApi.visuals.ValidatorType;
 import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
 import LegendPosition = legendInterfaces.LegendPosition;
 
@@ -302,6 +303,16 @@ export class MilestonesCardSettings extends CompositeCard {
         value: { value: "#cccccc" }
     });
 
+    lineOpacity = new formattingSettings.Slider({
+        name: "lineOpacity",
+        displayNameKey: "Visual_Opacity",
+        value: 100,
+        options: {
+            minValue: { value: 0, type: ValidatorType.Min },
+            maxValue: { value: 100, type: ValidatorType.Max },
+        }
+    });
+
     lineType = new formattingSettings.ItemDropdown({
         name: "lineType",
         displayNameKey: "Visual_Type",
@@ -313,7 +324,7 @@ export class MilestonesCardSettings extends CompositeCard {
         name: "lineGroup",
         displayNameKey: "Visual_Line",
         topLevelSlice: this.showLines,
-        slices: [this.lineColor, this.lineType]
+        slices: [this.lineColor, this.lineOpacity, this.lineType]
     });
 
     name: string = "milestones";
