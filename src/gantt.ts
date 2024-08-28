@@ -2454,10 +2454,24 @@ export class Gantt implements IVisual {
 
         taskRectMerged.classed(Gantt.TaskRect.className, true)
 
+        let index = 0, groupedTaskIndex = 0;
         taskRectMerged
             .attr("d", (task: Task) => this.drawTaskRect(task, taskConfigHeight, barsRoundedCorners))
             .attr("width", (task: Task) => this.getTaskRectWidth(task))
-            .style("fill", (task: Task) => task.color)
+            .style("fill", (task: Task) => {
+                // logic used for grouped tasks, when there are several bars related to one category
+                if (index === task.index) {
+                    groupedTaskIndex++;
+                } else {
+                    groupedTaskIndex = 0;
+                    index = task.index;
+                }
+
+                const url = `${task.index}-${groupedTaskIndex}-${isStringNotNullEmptyOrUndefined(task.taskType) ? task.taskType.toString() : "taskType"}`;
+                const encodedUrl = `task${hashCode(url)}`;
+
+                return `url(#${encodedUrl})`;
+            })
             .style("stroke", (task: Task) => task.color);
 
         if (this.colorHelper.isHighContrast) {

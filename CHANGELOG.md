@@ -9,6 +9,7 @@
 
 ### Code improvements
 * Update API to 5.11.0, tools to 5.5.1 and other packages"
+* Fix task fill gradient and keyboard focus styles
 
 ## 3.0.12
 * Fix not showing collapse button for parent tasks

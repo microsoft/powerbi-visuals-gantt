@@ -28,13 +28,13 @@
 
 @keyframes pulse {
     0% {
-        stroke-width: 2px;
+        stroke-width: 0px;
     }
     50% {
-        stroke-width: 4px;
+        stroke-width: 2px;
     }
     100% {
-        stroke-width: 2px;
+        stroke-width: 0px;
     }
 }
 
@@ -85,14 +85,16 @@
                 }
 
                 .task-rect, .task-milestone > path {
+                    & {
+                        stroke-width: 0;
+                    }
+
                     &:focus, &:focus-visible {
                         outline: none;
                     }
 
                     &:focus-visible {
-                        // stroke: @focus-color;
                         animation: pulse 1s infinite;
-                        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
                     }
                 }
             }
