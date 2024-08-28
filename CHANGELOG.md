@@ -8,7 +8,7 @@
 * Add report page tooltips support
 * Make clickable elements have "pointer" cursor
 * Make task column draggable
-* Add legend font settings
+* Add legend/task labels font settings
 
 ### Code improvements
 * Update API to 5.11.0, tools to 5.5.1 and other packages"

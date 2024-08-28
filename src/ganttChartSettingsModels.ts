@@ -365,16 +365,33 @@ export class TaskLabelsCardSettings extends CompositeCard {
         value: { value: "#000000" }
     });
 
-    fontSize = new formattingSettings.NumUpDown({
-        name: "fontSize",
-        displayNameKey: "Visual_FontSize",
-        value: FontSizeSettings.DefaultFontSize,
-        options: {
-            minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
-                value: FontSizeSettings.MinFontSize,
+    font = new formattingSettings.FontControl({
+        name: "font",
+        displayNameKey: "Visual_Font",
+        fontSize: new formattingSettings.NumUpDown({
+            name: "fontSize",
+            displayNameKey: "Visual_FontSize",
+            value: FontSizeSettings.DefaultFontSize,
+            options: {
+                minValue: { value: FontSizeSettings.MinFontSize, type: ValidatorType.Min },
             },
-        }
+        }),
+        fontFamily: new formattingSettings.FontPicker({
+            name: "fontFamily",
+            value: "'Roboto', -apple-system, BlinkMacSystemFont, sans-serif"
+        }),
+        bold: new formattingSettings.ToggleSwitch({
+            name: "bold",
+            value: false,
+        }),
+        italic: new formattingSettings.ToggleSwitch({
+            name: "italic",
+            value: false,
+        }),
+        underline: new formattingSettings.ToggleSwitch({
+            name: "underline",
+            value: false,
+        }),
     });
 
     width = new formattingSettings.NumUpDown({
@@ -391,8 +408,8 @@ export class TaskLabelsCardSettings extends CompositeCard {
 
     labelsGroup = new Group({
         name: "labelsGroup",
-        displayNameKey: "Visual_CategoryLabels",
-        slices: [this.fill, this.fontSize, this.width],
+        displayNameKey: "Visual_General",
+        slices: [this.fill, this.font, this.width],
     });
 
     collapseAllColor = new formattingSettings.ColorPicker({
@@ -503,7 +520,6 @@ export class TaskConfigCardSettings extends Card {
 }
 
 export class TaskResourceCardSettings extends Card {
-
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
@@ -599,9 +615,20 @@ export class GanttChartSettingsModel extends Model {
     taskResourceCardSettings = new TaskResourceCardSettings();
     dateTypeCardSettings = new DateTypeCardSettings();
     
-    cards = [this.generalCardSettings, this.collapsedTasksCardSettings, this.collapsedTasksUpdateIdCardSettings, this.daysOffCardSettings, this.legendCardSettings, 
-            this.milestonesCardSettings, this.taskLabelsCardSettings, this.taskCompletionCardSettings, 
-            this.tooltipConfigCardSettings, this.taskConfigCardSettings, this.taskResourceCardSettings, this.dateTypeCardSettings];
+    cards = [
+        this.generalCardSettings,
+        this.collapsedTasksCardSettings,
+        this.collapsedTasksUpdateIdCardSettings,
+        this.daysOffCardSettings,
+        this.legendCardSettings,
+        this.milestonesCardSettings,
+        this.taskLabelsCardSettings,
+        this.taskCompletionCardSettings,
+        this.tooltipConfigCardSettings,
+        this.taskConfigCardSettings,
+        this.taskResourceCardSettings,
+        this.dateTypeCardSettings,
+    ];
 
     
     setLocalizedOptions(localizationManager: ILocalizationManager) {

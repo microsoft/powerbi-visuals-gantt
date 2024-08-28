@@ -1623,7 +1623,7 @@ export class Gantt implements IVisual {
 
         this.body
             .selectAll(Gantt.LegendItems.selectorName)
-            .style("font-size", this.formattingSettings.legendCardSettings.font.fontSize.value + "px")
+            .style("font-size", PixelConverter.fromPoint(this.formattingSettings.legendCardSettings.font.fontSize.value))
             .style("font-family", this.formattingSettings.legendCardSettings.font.fontFamily.value)
             .style("font-weight", this.formattingSettings.legendCardSettings.font.bold.value ? "bold" : "normal")
             .style("font-style", this.formattingSettings.legendCardSettings.font.italic.value ? "italic" : "normal")
@@ -2080,7 +2080,6 @@ export class Gantt implements IVisual {
         const taskLabelsShow: boolean = this.viewModel.settings.taskLabelsCardSettings.show.value;
         const displayGridLines: boolean = this.viewModel.settings.generalCardSettings.displayGridLines.value;
         const taskLabelsColor: string = this.viewModel.settings.taskLabelsCardSettings.fill.value.value;
-        const taskLabelsFontSize: number = this.viewModel.settings.taskLabelsCardSettings.fontSize.value;
         const taskLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.width.value;
         const taskConfigHeight: number = this.viewModel.settings.taskConfigCardSettings.height.value || DefaultChartLineHeight;
 
@@ -2126,10 +2125,27 @@ export class Gantt implements IVisual {
                         ? Gantt.SubtasksLeftMargin
                         : (task.tasks[0].children && !!task.tasks[0].children.length) ? this.parentLabelOffset : 0)))
                 .attr("class", (task: GroupedTask) => task.tasks[0].children ? "parent" : task.tasks[0].parent ? "child" : "normal-node")
+                .style("font-weight", (task: GroupedTask) => {
+                    const isParent = Boolean(task.tasks[0].children);
+                    const isBold = this.viewModel.settings.taskLabelsCardSettings.font.bold.value;
+
+                    if (isParent && isBold) {
+                        return "900";
+                    }
+                    if (isBold || isParent) {
+                        return "700";
+                    }
+                    return "400";
+
+                    // return this.viewModel.settings.taskLabelsCardSettings.font.bold.value ? "bold" : "normal";
+                })
+                .style("font-size", PixelConverter.fromPoint(this.viewModel.settings.taskLabelsCardSettings.font.fontSize.value))
+                .style("font-family", this.viewModel.settings.taskLabelsCardSettings.font.fontFamily.value)
+                .style("font-style", this.viewModel.settings.taskLabelsCardSettings.font.italic.value ? "italic" : "normal")
+                .style("text-decoration", this.viewModel.settings.taskLabelsCardSettings.font.underline.value ? "underline" : "none")
+                .attr("stroke-width", Gantt.AxisLabelStrokeWidth)
                 .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin())
                 .attr("fill", taskLabelsColor)
-                .attr("stroke-width", Gantt.AxisLabelStrokeWidth)
-                .style("font-size", PixelConverter.fromPoint(taskLabelsFontSize))
                 .text((task: GroupedTask) => task.name)
                 .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis)
                 .append("title")
@@ -2188,7 +2204,7 @@ export class Gantt implements IVisual {
                     const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
                     return drawStandardMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
                 })
-                .attr("y", (task: GroupedTask) => (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabelsCardSettings.fontSize.value) / 2)
+                .attr("y", (task: GroupedTask) => (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabelsCardSettings.font.fontSize.value) / 2)
                 .attr("width", () => displayGridLines ? this.viewport.width : 0)
                 .attr("height", 1)
                 .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
@@ -2997,7 +3013,7 @@ export class Gantt implements IVisual {
      */
     private getTaskLabelCoordinateY(taskIndex: number): number {
         const settings = this.viewModel.settings;
-        const fontSize: number = + settings.taskLabelsCardSettings.fontSize.value;
+        const fontSize: number = + settings.taskLabelsCardSettings.font.fontSize.value;
         const taskConfigHeight = settings.taskConfigCardSettings.height.value || DefaultChartLineHeight;
         const taskYCoordinate = taskConfigHeight * taskIndex;
         const barHeight = Gantt.getBarHeight(taskConfigHeight);
