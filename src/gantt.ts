@@ -26,6 +26,7 @@
 
 import "./../style/gantt.less";
 
+import "d3-transition";
 import {select as d3Select, Selection as d3Selection} from "d3-selection";
 import {ScaleTime as timeScale} from "d3-scale";
 import {
@@ -35,7 +36,8 @@ import {
     timeSecond as d3TimeSecond
 } from "d3-time";
 import {nest as d3Nest} from "d3-collection";
-import "d3-transition";
+import { drag as d3Drag, D3DragEvent, SubjectPosition } from "d3-drag";
+
 
 //lodash
 import lodashIsEmpty from "lodash.isempty";
@@ -356,6 +358,7 @@ export class Gantt implements IVisual {
     private taskGroup: Selection<any>;
     private lineGroup: Selection<any>;
     private lineGroupWrapper: Selection<any>;
+    private lineGroupWrapperRightBorder: Selection<any>;
     private clearCatcher: Selection<any>;
     private ganttDiv: Selection<any>;
     private behavior: Behavior;
@@ -445,6 +448,16 @@ export class Gantt implements IVisual {
             .attr("width", "0")
             .attr("y", this.margin.top);
 
+        // Used to make right border a little thicker and draggable
+        this.lineGroupWrapperRightBorder = this.lineGroup
+            .append("rect")
+            .attr("height", "100%")
+            .attr("width", "1")
+            .attr("y", this.margin.top)
+            .attr("cursor", "ew-resize");
+
+        this.handleTaskLabelResize();
+
         this.lineGroup
             .append("rect")
             .classed(Gantt.TaskTopLine.className, true)
@@ -484,6 +497,53 @@ export class Gantt implements IVisual {
                     .attr("height", 20);
             }
         }, false);
+    }
+
+    private handleTaskLabelResize() {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const self = this;
+        this.lineGroupWrapperRightBorder
+            .each(function () {
+                d3Select(this).datum({
+                    initialX: 0,
+                    initialY: 0,
+                });
+            })
+            .call(d3Drag<SVGRectElement, unknown>()
+                .on("start", (event: D3DragEvent<SVGRectElement, unknown, SubjectPosition>, datum: { initialX: number; initialY: number; }) => {
+                    datum.initialX = event.x;
+                })
+                .on("drag", function (event: D3DragEvent<SVGRectElement, unknown, SubjectPosition>, datum: { initialX: number; initialY: number; }) {
+                    const initialX = datum.initialX;
+                    const dx = event.x - initialX;
+                    const currentWidth = self.formattingSettings.taskLabelsCardSettings.width.value;
+                    const newWidth = currentWidth + dx;
+
+                    const ganttDiv = self.ganttDiv.node() as HTMLDivElement;
+
+                    self.lineGroupWrapper.attr("width", newWidth.toString());
+                    d3Select(this).attr("x", newWidth.toString());
+
+                    const translateXValue: number = newWidth + self.margin.left + Gantt.SubtasksLeftMargin;
+                    self.axisGroup.attr("transform", SVGManipulations.translate(translateXValue, Gantt.TaskLabelsMarginTop + ganttDiv.scrollTop));
+                    self.chartGroup.attr("transform", SVGManipulations.translate(translateXValue, self.margin.top));
+                })
+                .on("end", (event: D3DragEvent<SVGRectElement, unknown, SubjectPosition>, datum: { initialX: number; initialY: number; }) => {
+                    const dx = event.x - datum.initialX;
+                    const currentWidth = this.formattingSettings.taskLabelsCardSettings.width.value;
+                    const newWidth = currentWidth + dx;
+
+                    this.host.persistProperties({
+                        merge: [{
+                            objectName: "taskLabels",
+                            selector: null,
+                            properties: {
+                                width: newWidth
+                            }
+                        }]
+                    });
+                })
+            );
     }
 
     /**
@@ -2025,6 +2085,12 @@ export class Gantt implements IVisual {
                 .attr("width", taskLabelsWidth)
                 .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
                 .attr("stroke-width", 1);
+        
+            this.lineGroupWrapperRightBorder
+                .attr("x", taskLabelsWidth)
+                .attr("width", 1)
+                .attr("stroke-width", 1)
+                .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
 
             this.lineGroup
                 .selectAll(Gantt.Label.selectorName)
@@ -2128,6 +2194,10 @@ export class Gantt implements IVisual {
             this.lineGroupWrapper
                 .attr("width", 0)
                 .attr("fill", "transparent");
+            
+            this.lineGroupWrapperRightBorder
+                .attr("width", 0)
+                .attr("stroke", "none");
 
             this.lineGroup
                 .selectAll(Gantt.Label.selectorName)

@@ -28,6 +28,7 @@
   "homepage": "https://github.com/Microsoft/powerbi-visuals-gantt#readme",
   "dependencies": {
     "d3-collection": "^1.0.7",
+    "d3-drag": "^3.0.0",
     "d3-scale": "^4.0.2",
     "d3-selection": "^3.0.0",
     "d3-time": "^3.1.0",
@@ -57,6 +58,7 @@
   },
   "devDependencies": {
     "@types/d3-collection": "^1.0.13",
+    "@types/d3-drag": "^3.0.7",
     "@types/d3-scale": "^4.0.8",
     "@types/d3-selection": "^3.0.10",
     "@types/d3-time": "^3.0.3",
