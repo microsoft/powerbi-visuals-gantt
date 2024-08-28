@@ -2082,6 +2082,8 @@ export class Gantt implements IVisual {
                 .attr("x", Gantt.DefaultValues.BarMargin)
                 .attr("fill", "transparent");
 
+            clickableArea.classed("pointerCursor", (task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length);
+
             const buttonPlusMinusColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.PlusMinusColor);
             buttonSelection
                 .each(function (task: GroupedTask) {

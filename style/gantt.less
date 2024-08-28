@@ -87,6 +87,7 @@
                 .task-rect, .task-milestone > path {
                     & {
                         stroke-width: 0;
+                        cursor: pointer;
                     }
 
                     &:focus, &:focus-visible {
@@ -123,6 +124,12 @@
                     font-style: oblique
                 }
             }
+
+            g.clickableArea.pointerCursor,
+            g.collapse-all
+            {
+                cursor: pointer;
+            }
         }
     }
 
@@ -145,8 +152,16 @@
         stroke-width: 2px;
     }
 
+    g.legendItem {
+        cursor: pointer;
+    }
+
     .collapse-all-arrow:focus-visible {
         outline: @focus-color solid 2px;
         outline-offset: -12px;
     }
+}
+
+body.visual-sandbox {
+    cursor: default;
 }
