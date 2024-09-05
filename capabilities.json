@@ -534,6 +534,20 @@
                         }
                     }
                 },
+                "backgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "backgroundOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "fontSize": {
                     "type": {
                         "formatting": {
@@ -748,6 +762,20 @@
                                 "color": true
                             }
                         }
+                    }
+                },
+                "backgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "backgroundOpacity": {
+                    "type": {
+                        "numeric": true
                     }
                 }
             }

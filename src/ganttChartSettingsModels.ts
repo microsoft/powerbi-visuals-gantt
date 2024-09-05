@@ -292,8 +292,8 @@ export class LegendCardSettings extends CompositeCard {
         }),
     });
 
-    legendGroup = new Group({
-        name: "legendGroup",
+    legendGeneralGroup = new Group({
+        name: "legendGeneralGroup",
         displayNameKey: "Visual_General",
         slices: [
             this.showTitle,
@@ -307,7 +307,7 @@ export class LegendCardSettings extends CompositeCard {
     topLevelSlice = this.show;
     name: string = "legend";
     displayNameKey: string = "Visual_Legend";
-    groups = [this.legendGroup];
+    groups = [this.legendGeneralGroup];
 }
 
 export class MilestonesCardSettings extends CompositeCard {
@@ -362,7 +362,7 @@ export class TaskLabelsCardSettings extends CompositeCard {
     fill = new formattingSettings.ColorPicker({
         name: "fill",
         displayNameKey: "Visual_Fill",
-        value: { value: "#000000" }
+        value: { value: "#000000" },
     });
 
     font = new formattingSettings.FontControl({
@@ -406,8 +406,8 @@ export class TaskLabelsCardSettings extends CompositeCard {
         }
     });
 
-    labelsGroup = new Group({
-        name: "labelsGroup",
+    taskLabelsGeneralGroup = new Group({
+        name: "taskLabelsGeneralGroup",
         displayNameKey: "Visual_General",
         slices: [this.fill, this.font, this.width],
     });
@@ -446,16 +446,41 @@ export class TaskLabelsCardSettings extends CompositeCard {
         }),
     });
 
-    collapseAllGroup = new Group({
-        name: "expandAllGroup",
+    taskLabelsCollapseAllGroup = new Group({
+        name: "taskLabelsCollapseAllGroup",
         displayNameKey: "Visual_Expand_All",
         slices: [this.collapseAllColor, this.collapseAll]
-    })
+    });
+
+    backgroundColor = new formattingSettings.ColorPicker({
+        name: "backgroundColor",
+        displayName: "Color",
+        displayNameKey: "Visual_Color",
+        value: { value: "#FAFAFA" },
+    });
+
+    backgroundOpacity = new formattingSettings.Slider({
+        name: "backgroundOpacity",
+        displayName: "Opacity",
+        displayNameKey: "Visual_Opacity",
+        value: 100,
+        options: {
+            minValue: { value: 0, type: ValidatorType.Min },
+            maxValue: { value: 100, type: ValidatorType.Max },
+        },
+    });
+
+    taskLabelsBackgroundGroup = new Group({
+        name: "taskLabelsBackgroundGroup",
+        displayName: "Background",
+        displayNameKey: "Visual_Background",
+        slices: [this.backgroundColor, this.backgroundOpacity],
+    });
 
     topLevelSlice = this.show;
     name: string = "taskLabels";
     displayNameKey: string = "Visual_CategoryLabels";
-    groups = [this.labelsGroup, this.collapseAllGroup];
+    groups = [this.taskLabelsGeneralGroup, this.taskLabelsCollapseAllGroup, this.taskLabelsBackgroundGroup];
 }
 
 export class TaskCompletionCardSettings extends Card {
@@ -499,7 +524,7 @@ export class TaskConfigCardSettings extends Card {
         displayNameKey: "Visual_TaskSettings_Color",
         description: "This ONLY takes effect when you have no legend specified",
         descriptionKey: "Visual_Description_TaskSettings_Color",
-        value: { value: "#00B099" }
+        value: { value: "#00B099" },
     });
 
     height = new formattingSettings.NumUpDown({
@@ -535,7 +560,7 @@ export class TaskResourceCardSettings extends Card {
     fill = new formattingSettings.ColorPicker({
         name: "fill",
         displayNameKey: "Visual_Color",
-        value: { value: "#000000" }
+        value: { value: "#000000" },
     });
 
     font = new formattingSettings.FontControl({
@@ -592,8 +617,7 @@ export class TaskResourceCardSettings extends Card {
     slices = [this.matchLegendColors, this.fill, this.font, this.position, this.fullText, this.widthByTask];
 }
 
-export class DateTypeCardSettings extends Card {
-
+export class DateTypeCardSettings extends CompositeCard {
     type = new formattingSettings.ItemDropdown({
         name: "type",
         displayNameKey: "Visual_Type",
@@ -604,24 +628,56 @@ export class DateTypeCardSettings extends Card {
     todayColor = new formattingSettings.ColorPicker({
         name: "todayColor",
         displayNameKey: "Visual_DateType_TodayColor",
-        value: { value: "#000000" }
+        value: { value: "#000000" },
     });
 
     axisColor = new formattingSettings.ColorPicker({
         name: "axisColor",
         displayNameKey: "Visual_DateType_AxisColor",
-        value: { value: "#000000" }
+        value: { value: "#000000" },
     });
 
     axisTextColor = new formattingSettings.ColorPicker({
         name: "axisTextColor",
         displayNameKey: "Visual_DateType_AxisTextColor",
-        value: { value: "#000000" }
+        value: { value: "#000000" },
+    });
+
+    dateTypeGeneralGroup = new Group({
+        name: "dateTypeGeneralGroup",
+        displayName: "General",
+        displayNameKey: "Visual_General",
+        slices: [this.type, this.todayColor, this.axisColor, this.axisTextColor],
+    });
+
+    backgroundColor = new formattingSettings.ColorPicker({
+        name: "backgroundColor",
+        displayName: "Color",
+        displayNameKey: "Visual_Color",
+        value: { value: "#FFFFFF" },
+    });
+
+    backgroundOpacity = new formattingSettings.Slider({
+        name: "backgroundOpacity",
+        displayName: "Opacity",
+        displayNameKey: "Visual_Opacity",
+        value: 100,
+        options: {
+            minValue: { value: 0, type: ValidatorType.Min },
+            maxValue: { value: 100, type: ValidatorType.Max },
+        }
+    });
+
+    backgroundGroup = new Group({
+        name: "backgroundGroup",
+        displayName: "Background",
+        displayNameKey: "Visual_Background",
+        slices: [this.backgroundColor, this.backgroundOpacity],
     });
 
     name: string = "dateType";
     displayNameKey: string = "Visual_DateType";
-    slices = [this.type, this.todayColor, this.axisColor, this.axisTextColor];
+    groups = [this.dateTypeGeneralGroup, this.backgroundGroup];
 }
 
 export class GanttChartSettingsModel extends Model { 

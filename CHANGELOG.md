@@ -10,6 +10,7 @@
 * Make task column draggable
 * Add legend/task labels/data labels font settings
 * Add toggle switch to match data labels colors with legend colors
+* Add axis/task labels background color
 
 ### Code improvements
 * Update API to 5.11.0, tools to 5.5.1 and other packages"
