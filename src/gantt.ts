@@ -231,7 +231,7 @@ export class Gantt implements IVisual {
     private static TaskLabels: ClassAndSelector = createClassAndSelector("task-labels");
     private static TaskLines: ClassAndSelector = createClassAndSelector("task-lines");
     private static TaskLinesRect: ClassAndSelector = createClassAndSelector("task-lines-rect");
-    private static TaskLinesRectRightBorder: ClassAndSelector = createClassAndSelector("task-lines-rect-right-border");
+    private static TaskLinesRectRightLine: ClassAndSelector = createClassAndSelector("task-lines-rect-right-line");
     private static TaskTopLine: ClassAndSelector = createClassAndSelector("task-top-line");
     private static CollapseAll: ClassAndSelector = createClassAndSelector("collapse-all");
     private static CollapseAllArrow: ClassAndSelector = createClassAndSelector("collapse-all-arrow");
@@ -352,17 +352,17 @@ export class Gantt implements IVisual {
     private margin: IMargin = Gantt.DefaultMargin;
 
     private body: Selection<any>;
-    private ganttSvg: Selection<any>;
+    private ganttSvg: d3Selection<SVGSVGElement, unknown, any, unknown>;
     private viewModel: GanttViewModel;
     private collapseAllGroup: Selection<any>;
     private axisGroup: Selection<any>;
     private axisBackground: Selection<any>;
     private chartGroup: Selection<any>;
     private taskGroup: Selection<any>;
-    private lineGroup: Selection<any>;
-    private lineGroupWrapper: Selection<any>;
-    private lineGroupWrapperRightBorder: Selection<any>;
-    private ganttDiv: Selection<any>;
+    private lineGroup: d3Selection<SVGGElement, unknown, any, unknown>;
+    private lineGroupWrapper: d3Selection<SVGRectElement, unknown, any, unknown>;
+    private lineGroupWrapperRightBorder: d3Selection<SVGRectElement, unknown, any, unknown>;
+    private ganttDiv: d3Selection<HTMLDivElement, unknown, any, unknown>;
     private behavior: Behavior;
     private interactivityService: IInteractivityService<Task | LegendDataPoint>;
     private eventService: IVisualEventService;
@@ -444,16 +444,16 @@ export class Gantt implements IVisual {
         this.lineGroupWrapper = this.lineGroup
             .append("rect")
             .classed(Gantt.TaskLinesRect.className, true)
-            .attr("height", "100%")
-            .attr("width", "0")
+            .attr("height", 0)
+            .attr("width", 0)
             .attr("y", this.margin.top)
 
         // Used to make right border a little thicker and draggable
         this.lineGroupWrapperRightBorder = this.lineGroup
             .append("rect")
-            .classed(Gantt.TaskLinesRectRightBorder.className, true)
-            .attr("height", "100%")
-            .attr("width", "1")
+            .classed(Gantt.TaskLinesRectRightLine.className, true)
+            .attr("height", 0)
+            .attr("width", 0)
             .attr("y", this.margin.top)
             .attr("cursor", "ew-resize");
 
@@ -496,7 +496,7 @@ export class Gantt implements IVisual {
                 this.axisGroup.attr("transform", SVGManipulations.translate(translateX, translateY));
                 this.axisBackground.attr("transform", SVGManipulations.translate(-Gantt.AxisBackgroundLeftShift, 0));
                 this.lineGroup
-                    .attr("transform", SVGManipulations.translate(scrollLeft, Gantt.AxisTopMargin))
+                    .attr("transform", SVGManipulations.translate(scrollLeft, 0))
                     .attr("height", 20);
             }
         }, false);
@@ -522,15 +522,25 @@ export class Gantt implements IVisual {
                     const currentWidth = self.formattingSettings.taskLabelsCardSettings.width.value;
                     const newWidth = currentWidth + dx;
 
-                    const ganttDiv = self.ganttDiv.node() as HTMLDivElement;
+                    const ganttDiv = self.ganttDiv.node();
+                    const ganttSVG = self.ganttSvg.node();
 
-                    self.lineGroupWrapper.attr("width", newWidth.toString());
+                    self.lineGroupWrapper
+                        .attr("width", newWidth.toString())
+                        .attr("height", (_, i, nodes) => {
+                            const element = nodes[i];
+                            const y = parseFloat(element.getAttribute("y")) || 0;
+                            const newHeight = ganttSVG.clientHeight - y;
+                            return newHeight;
+                        });
+
+                    // update x
                     d3Select(this).attr("x", newWidth.toString());
 
                     const translateXValue: number = newWidth + self.margin.left + Gantt.SubtasksLeftMargin;
                     self.axisGroup.attr("transform", SVGManipulations.translate(translateXValue, Gantt.TaskLabelsMarginTop + ganttDiv.scrollTop));
                     self.axisBackground.attr("transform", SVGManipulations.translate(-translateXValue, 0));
-                    self.chartGroup.attr("transform", SVGManipulations.translate(translateXValue, self.margin.top + Gantt.AxisTopMargin));
+                    self.chartGroup.attr("transform", SVGManipulations.translate(translateXValue, self.margin.top));
                 })
                 .on("end", (event: D3DragEvent<SVGRectElement, unknown, SubjectPosition>, datum: { initialX: number; initialY: number; }) => {
                     const dx = event.x - datum.initialX;
@@ -2101,8 +2111,19 @@ export class Gantt implements IVisual {
         this.updateCollapseAllGroup(taskLabelsShow);
 
         if (taskLabelsShow) {
+            const getGanttSVGRectHeight = (element: SVGRectElement): number => {
+                const y = parseFloat(element.getAttribute("y")) || 0;
+                const ganttDivHeight = this.ganttSvg.node().clientHeight;
+                const newHeight = ganttDivHeight - y;
+                return newHeight;
+            }
+
             this.lineGroupWrapper
                 .attr("width", taskLabelsWidth)
+                .attr("height", (_, i, nodes) => {
+                    const element = nodes[i];
+                    return getGanttSVGRectHeight(element);
+                })
                 .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
                 .attr("stroke-width", 1)
                 .attr("fill", this?.formattingSettings?.taskLabelsCardSettings?.backgroundColor?.value?.value || "#FAFAFA")
@@ -2111,6 +2132,10 @@ export class Gantt implements IVisual {
             this.lineGroupWrapperRightBorder
                 .attr("x", taskLabelsWidth)
                 .attr("width", 1)
+                .attr("height", (_, i, nodes) => {
+                    const element = nodes[i];
+                    return getGanttSVGRectHeight(element);
+                })
                 .attr("stroke-width", 1)
                 .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
 
@@ -2232,10 +2257,12 @@ export class Gantt implements IVisual {
         } else {
             this.lineGroupWrapper
                 .attr("width", 0)
+                .attr("height", 0)
                 .attr("fill", "transparent");
             
             this.lineGroupWrapperRightBorder
                 .attr("width", 0)
+                .attr("height", 0)
                 .attr("stroke", "none");
 
             this.lineGroup
@@ -3275,16 +3302,16 @@ export class Gantt implements IVisual {
             : 0;
 
         let translateXValue: number = taskLabelsWidth + margin.left + Gantt.SubtasksLeftMargin;
-        this.chartGroup.attr("transform", SVGManipulations.translate(translateXValue, margin.top + Gantt.AxisTopMargin));
+        this.chartGroup.attr("transform", SVGManipulations.translate(translateXValue, margin.top));
 
-        const translateYValue: number = Gantt.TaskLabelsMarginTop + (this.ganttDiv.node() as SVGSVGElement).scrollTop;
+        const translateYValue: number = Gantt.TaskLabelsMarginTop + this.ganttSvg.node().scrollTop;
         this.axisGroup.attr("transform", SVGManipulations.translate(translateXValue, translateYValue));
         this.axisBackground
             .attr("transform", SVGManipulations.translate(-Gantt.AxisBackgroundLeftShift, 0));
 
-        translateXValue = (this.ganttDiv.node() as SVGSVGElement).scrollLeft;
+        translateXValue = this.ganttDiv.node().scrollLeft;
         this.lineGroup
-            .attr("transform", SVGManipulations.translate(translateXValue, Gantt.AxisTopMargin));
+            .attr("transform", SVGManipulations.translate(translateXValue, 0));
         this.collapseAllGroup
             .attr("transform", SVGManipulations.translate(0, margin.top / 4 + Gantt.AxisTopMargin));
     }
