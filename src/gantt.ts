@@ -384,6 +384,7 @@ export class Gantt implements IVisual {
     private hasNotNullableDates: boolean = false;
 
     private collapsedTasksUpdateIDs: string[] = [];
+    private sortingOptions: SortingOptions;
 
     constructor(options: VisualConstructorOptions) {
         this.init(options);
@@ -924,17 +925,31 @@ export class Gantt implements IVisual {
      * @param isEndDateFilled
      * @param hasHighlights if any of the tasks has highlights
      */
-    private static createTasks(
-        dataView: DataView,
-        taskTypes: TaskTypes,
-        host: IVisualHost,
-        formatters: GanttChartFormatters,
-        colors: IColorPalette,
-        settings: GanttChartSettingsModel,
-        taskColor: string,
-        localizationManager: ILocalizationManager,
-        isEndDateFilled: boolean,
-        hasHighlights: boolean): Task[] {
+    private static createTasks({
+        dataView,
+        taskTypes,
+        host,
+        formatters,
+        colors,
+        settings,
+        taskColor,
+        localizationManager,
+        isEndDateFilled,
+        hasHighlights,
+        sortingOptions
+    }: {
+        dataView: DataView
+        taskTypes: TaskTypes
+        host: IVisualHost
+        formatters: GanttChartFormatters
+        colors: IColorPalette
+        settings: GanttChartSettingsModel
+        taskColor: string
+        localizationManager: ILocalizationManager
+        isEndDateFilled: boolean
+        hasHighlights: boolean
+        sortingOptions: SortingOptions;
+}    ): Task[] {
         const categoricalValues: DataViewValueColumns = dataView?.categorical?.values;
 
         let tasks: Task[] = [];
@@ -949,7 +964,6 @@ export class Gantt implements IVisual {
 
         const colorHelper: ColorHelper = new ColorHelper(colors, Gantt.LegendPropertyIdentifier);
         const groupValues: GanttColumns<DataViewValueColumn>[] = GanttColumns.getGroupedValueColumns(dataView);
-        const sortingOptions: SortingOptions = Gantt.getSortingOptions(dataView);
 
         const collapsedTasks: string[] = JSON.parse(settings.collapsedTasksCardSettings.list.value);
         let durationUnit: DurationUnit = <DurationUnit>settings.generalCardSettings.durationUnit.value.value.toString();
@@ -1290,15 +1304,8 @@ export class Gantt implements IVisual {
 
     public static sortTasksWithParents(tasks: Task[], sortingOptions: SortingOptions): Task[] {
         const sortingFunction = ((a: Task, b: Task) => {
-            if (a.name < b.name) {
-                return sortingOptions.sortingDirection === SortDirection.Ascending ? -1 : 1;
-            }
-
-            if (a.name > b.name) {
-                return sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1;
-            }
-
-            return 0;
+            const sortValue = (a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
+            return  sortValue * (sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1);
         });
 
         if (sortingOptions.isCustomSortingNeeded) {
@@ -1502,7 +1509,9 @@ export class Gantt implements IVisual {
         host: IVisualHost,
         colors: IColorPalette,
         colorHelper: ColorHelper,
-        localizationManager: ILocalizationManager): GanttViewModel {
+        localizationManager: ILocalizationManager,
+        sortingOptions: SortingOptions
+    ): GanttViewModel {
 
         if (dataView?.categorical?.categories?.length === 0 || !Gantt.isChartHasTask(dataView)) {
             return null;
@@ -1528,7 +1537,7 @@ export class Gantt implements IVisual {
             ? settings.taskConfigCardSettings.fill.value.value
             : null;
 
-        const tasks: Task[] = Gantt.createTasks(dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFilled, this.hasHighlights);
+        const tasks: Task[] = Gantt.createTasks({ dataView, taskTypes, host, formatters, colors, settings, taskColor, localizationManager, isEndDateFilled, hasHighlights: this.hasHighlights, sortingOptions });
 
         // Remove empty legend if tasks isn't exist
         const types = lodashGroupBy(tasks, x => x.taskType);
@@ -1703,7 +1712,8 @@ export class Gantt implements IVisual {
     }
 
     private updateInternal(options: VisualUpdateOptions) : void {
-        this.viewModel = this.converter(options.dataViews[0], this.host, this.colors, this.colorHelper, this.localizationManager);
+        this.sortingOptions = Gantt.getSortingOptions(options.dataViews[0]);
+        this.viewModel = this.converter(options.dataViews[0], this.host, this.colors, this.colorHelper, this.localizationManager, this.sortingOptions);
 
         // for duplicated milestone types
         if (this.viewModel && this.viewModel.milestonesData) {
@@ -1760,7 +1770,7 @@ export class Gantt implements IVisual {
 
         this.collapsedTasks = JSON.parse(settings.collapsedTasksCardSettings.list.value);
         const groupTasks = this.viewModel.settings.generalCardSettings.groupTasks.value;
-        const groupedTasks: GroupedTask[] = Gantt.getGroupTasks(tasks, groupTasks, this.collapsedTasks);
+        const groupedTasks: GroupedTask[] = this.getGroupTasks(tasks, groupTasks, this.collapsedTasks);
         // do something with task ids
         this.updateCommonTasks(groupedTasks);
         this.updateCommonMilestones(groupedTasks);
@@ -1974,7 +1984,7 @@ export class Gantt implements IVisual {
             .attr("width", width);
     }
 
-    private static getGroupTasks(tasks: Task[], groupTasks: boolean, collapsedTasks: string[]): GroupedTask[] {
+    private getGroupTasks(tasks: Task[], groupTasks: boolean, collapsedTasks: string[]): GroupedTask[] {
         if (groupTasks) {
             const groupedTasks: lodashDictionary<Task[]> = lodashGroupBy(tasks,
                 x => (x.parent ? `${x.parent}.${x.name}` : x.name));
@@ -1982,6 +1992,14 @@ export class Gantt implements IVisual {
             const result: GroupedTask[] = [];
             const taskKeys: string[] = Object.keys(groupedTasks);
             const alreadyReviewedKeys: string[] = [];
+
+            if (this.sortingOptions.isCustomSortingNeeded) {
+                const sortingFunction = ((a: string, b: string) => {
+                    const sortValue = (a < b ? -1 : a > b ? 1 : 0)
+                    return  sortValue * (this.sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1);
+                });
+                taskKeys.sort(sortingFunction);
+            }
 
             for (const key of taskKeys) {
                 const isKeyAlreadyReviewed = alreadyReviewedKeys.includes(key);
