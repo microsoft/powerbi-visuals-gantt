@@ -450,7 +450,8 @@ export class Gantt implements IVisual {
             .classed(Gantt.AxisBackground.className, true)
             .attr("width", "100%")
             .attr("y", -1)
-            .attr("height", Gantt.AxisBackgroundHeight);
+            .attr("height", Gantt.AxisBackgroundHeight)
+            .attr("transform", SVGManipulations.translate(-Gantt.AxisBackgroundLeftShift, -Gantt.TaskLabelsMarginTop));
 
         this.lineGroupWrapper = this.lineGroup
             .append("rect")
@@ -498,9 +499,8 @@ export class Gantt implements IVisual {
                 const scrollTop: number = <number>event.target.scrollTop;
                 const scrollLeft: number = <number>event.target.scrollLeft;
 
-                const translateX: number = taskLabelsWidth + this.margin.left + Gantt.SubtasksLeftMargin + (taskLabelShow ? 0 : Gantt.CollapsedAllBackgroundWidthHidden);
-                const translateY: number = Gantt.TaskLabelsMarginTop + scrollTop;
-                this.axisGroup.attr("transform", SVGManipulations.translate(translateX, translateY));
+                const axisTranslateX: number = taskLabelsWidth + this.margin.left + Gantt.SubtasksLeftMargin + (taskLabelShow ? 0 : Gantt.CollapsedAllBackgroundWidthHidden);
+                this.axisGroup.attr("transform", SVGManipulations.translate(axisTranslateX, scrollTop + Gantt.TaskLabelsMarginTop));
                 this.lineGroup.attr("transform", SVGManipulations.translate(scrollLeft, 0))
                 this.collapseAllGroup.attr("transform", SVGManipulations.translate(scrollLeft, scrollTop));
             }
@@ -2102,164 +2102,14 @@ export class Gantt implements IVisual {
     * @param tasks All tasks array
     * @param width The task label width
     */
-    // eslint-disable-next-line max-lines-per-function
-    private updateTaskLabels(
-        tasks: GroupedTask[],
-        width: number): void {
-
-        let axisLabel: Selection<any>;
+    private updateTaskLabels(tasks: GroupedTask[], width: number): void {
         const taskLabelsShow: boolean = this.viewModel.settings.taskLabelsCardSettings.show.value;
-        const displayGridLines: boolean = this.viewModel.settings.generalCardSettings.displayGridLines.value;
-        const taskLabelsColor: string = this.viewModel.settings.taskLabelsCardSettings.fill.value.value;
-        const taskLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.width.value;
-        const taskConfigHeight: number = this.viewModel.settings.taskConfigCardSettings.height.value || DefaultChartLineHeight;
 
         this.updateCollapseAllGroup(taskLabelsShow);
 
         if (taskLabelsShow) {
-            const getGanttSVGRectHeight = (element: SVGRectElement): number => {
-                const y = parseFloat(element.getAttribute("y")) || 0;
-                const ganttDivHeight = this.ganttSvg.node().clientHeight;
-                const newHeight = ganttDivHeight - y;
-                return newHeight;
-            }
-
-            this.lineGroupWrapper
-                .attr("width", taskLabelsWidth)
-                .attr("height", (_, i, nodes) => {
-                    const element = nodes[i];
-                    return getGanttSVGRectHeight(element);
-                })
-                .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
-                .attr("stroke-width", 1)
-                .attr("fill", this?.formattingSettings?.taskLabelsCardSettings?.backgroundColor?.value?.value || "#FAFAFA")
-                .attr("fill-opacity", this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100 || 1);
-        
-            this.lineGroupWrapperRightBorder
-                .attr("x", taskLabelsWidth)
-                .attr("width", 1)
-                .attr("height", (_, i, nodes) => {
-                    const element = nodes[i];
-                    return getGanttSVGRectHeight(element);
-                })
-                .attr("stroke-width", 1)
-                .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
-
-            this.lineGroup
-                .selectAll(Gantt.Label.selectorName)
-                .remove();
-
-            axisLabel = this.lineGroup
-                .selectAll(Gantt.Label.selectorName)
-                .data(tasks);
-
-            const axisLabelGroup = axisLabel
-                .enter()
-                .append("g")
-                .merge(axisLabel);
-
-            axisLabelGroup.classed(Gantt.Label.className, true)
-                .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.index)));
-
-            const clickableArea = axisLabelGroup
-                .append("g")
-                .classed(Gantt.ClickableArea.className, true)
-                .merge(axisLabelGroup);
-
-            clickableArea
-                .append("text")
-                .attr("x", (task: GroupedTask) => (Gantt.TaskLineCoordinateX +
-                    (task.tasks.every((task: Task) => !!task.parent)
-                        ? Gantt.SubtasksLeftMargin
-                        : (task.tasks[0].children && !!task.tasks[0].children.length) ? this.parentLabelOffset : 0)))
-                .attr("class", (task: GroupedTask) => task.tasks[0].children ? "parent" : task.tasks[0].parent ? "child" : "normal-node")
-                .style("font-weight", (task: GroupedTask) => {
-                    const isParent = Boolean(task.tasks[0].children);
-                    const isBold = this.viewModel.settings.taskLabelsCardSettings.font.bold.value;
-
-                    if (isParent && isBold) {
-                        return "900";
-                    }
-                    if (isBold || isParent) {
-                        return "700";
-                    }
-                    return "400";
-
-                    // return this.viewModel.settings.taskLabelsCardSettings.font.bold.value ? "bold" : "normal";
-                })
-                .style("font-size", PixelConverter.fromPoint(this.viewModel.settings.taskLabelsCardSettings.font.fontSize.value))
-                .style("font-family", this.viewModel.settings.taskLabelsCardSettings.font.fontFamily.value)
-                .style("font-style", this.viewModel.settings.taskLabelsCardSettings.font.italic.value ? "italic" : "normal")
-                .style("text-decoration", this.viewModel.settings.taskLabelsCardSettings.font.underline.value ? "underline" : "none")
-                .attr("stroke-width", Gantt.AxisLabelStrokeWidth)
-                .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin())
-                .attr("fill", taskLabelsColor)
-                .text((task: GroupedTask) => task.name)
-                .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis)
-                .append("title")
-                .text((task: GroupedTask) => task.name);
-
-            const buttonSelection = clickableArea
-                .filter((task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length)
-                .append("svg")
-                .attr("viewBox", "0 0 32 32")
-                .attr("width", Gantt.DefaultValues.IconWidth)
-                .attr("height", Gantt.DefaultValues.IconHeight)
-                .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
-                .attr("x", Gantt.DefaultValues.BarMargin)
-                .attr("focusable", true)
-                .attr("tabindex", 0);
-
-            clickableArea
-                .append("rect")
-                .attr("width", 2 * Gantt.DefaultValues.IconWidth)
-                .attr("height", 2 * Gantt.DefaultValues.IconWidth)
-                .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
-                .attr("x", Gantt.DefaultValues.BarMargin)
-                .attr("fill", "transparent");
-
-            clickableArea.classed("pointerCursor", (task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length);
-
-            const buttonPlusMinusColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.PlusMinusColor);
-            buttonSelection
-                .each(function (task: GroupedTask) {
-                    const element = d3Select(this);
-                    if (!task.tasks[0].children[0].visibility) {
-                        drawPlusButton(element, buttonPlusMinusColor);
-                    } else {
-                        drawMinusButton(element, buttonPlusMinusColor);
-                    }
-                });
-
-            let parentTask: string = "";
-            let childrenCount = 0;
-            let currentChildrenIndex = 0;
-            axisLabelGroup
-                .append("rect")
-                .attr("x", (task: GroupedTask) => {
-                    const isGrouped = this.viewModel.settings.generalCardSettings.groupTasks.value;
-                    const drawStandardMargin: boolean = !task.tasks[0].parent || task.tasks[0].parent && task.tasks[0].parent !== parentTask;
-                    parentTask = task.tasks[0].parent ? task.tasks[0].parent : task.tasks[0].name;
-                    if (task.tasks[0].children) {
-                        parentTask = task.tasks[0].name;
-                        childrenCount = isGrouped ? lodashUniqBy(task.tasks[0].children, "name").length : task.tasks[0].children.length;
-                        currentChildrenIndex = 0;
-                    }
-
-                    if (task.tasks[0].parent === parentTask) {
-                        currentChildrenIndex++;
-                    }
-                    const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
-                    return drawStandardMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
-                })
-                .attr("y", (task: GroupedTask) => (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabelsCardSettings.font.fontSize.value) / 2)
-                .attr("width", () => displayGridLines ? this.viewport.width : 0)
-                .attr("height", 1)
-                .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
-
-            axisLabel
-                .exit()
-                .remove();
+            this.renderTaskColumnsRightLine();
+            this.renderTaskLabels(tasks, width);
         } else {
             this.lineGroupWrapper
                 .attr("width", 0)
@@ -2275,6 +2125,163 @@ export class Gantt implements IVisual {
                 .selectAll(Gantt.Label.selectorName)
                 .remove();
         }
+    }
+
+    private renderTaskLabels(tasks: GroupedTask[], width: number) {
+        const displayGridLines: boolean = this.viewModel.settings.generalCardSettings.displayGridLines.value;
+        const taskLabelsColor: string = this.viewModel.settings.taskLabelsCardSettings.fill.value.value;
+        const taskConfigHeight: number = this.viewModel.settings.taskConfigCardSettings.height.value || DefaultChartLineHeight;
+
+        this.lineGroup
+            .selectAll(Gantt.Label.selectorName)
+            .remove();
+
+        const axisLabel: Selection<any> = this.lineGroup
+            .selectAll(Gantt.Label.selectorName)
+            .data(tasks);
+
+        const axisLabelGroup = axisLabel
+            .enter()
+            .append("g")
+            .merge(axisLabel);
+
+        axisLabelGroup
+            .classed(Gantt.Label.className, true)
+            .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.index)));
+
+        this.renderClickableAreas(axisLabelGroup, taskLabelsColor, width);
+
+        let parentTask: string = "";
+        let childrenCount = 0;
+        let currentChildrenIndex = 0;
+        axisLabelGroup
+            .append("rect")
+            .attr("x", (task: GroupedTask) => {
+                const isGrouped = this.viewModel.settings.generalCardSettings.groupTasks.value;
+                const drawStandardMargin: boolean = !task.tasks[0].parent || task.tasks[0].parent && task.tasks[0].parent !== parentTask;
+                parentTask = task.tasks[0].parent ? task.tasks[0].parent : task.tasks[0].name;
+                if (task.tasks[0].children) {
+                    parentTask = task.tasks[0].name;
+                    childrenCount = isGrouped ? lodashUniqBy(task.tasks[0].children, "name").length : task.tasks[0].children.length;
+                    currentChildrenIndex = 0;
+                }
+
+                if (task.tasks[0].parent === parentTask) {
+                    currentChildrenIndex++;
+                }
+                const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
+                return drawStandardMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
+            })
+            .attr("y", (task: GroupedTask) => (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.viewModel.settings.taskLabelsCardSettings.font.fontSize.value) / 2)
+            .attr("width", () => displayGridLines ? this.viewport.width : 0)
+            .attr("height", 1)
+            .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
+
+        axisLabel
+            .exit()
+            .remove();
+    }
+
+    private renderClickableAreas(axisLabelGroup: d3Selection<SVGGElement, GroupedTask, any, any>, taskLabelsColor: string, width: number) {
+        const clickableArea = axisLabelGroup
+            .append("g")
+            .classed(Gantt.ClickableArea.className, true)
+            .merge(axisLabelGroup);
+
+        clickableArea
+            .append("text")
+            .attr("x", (task: GroupedTask) => (Gantt.TaskLineCoordinateX +
+                (task.tasks.every((task: Task) => !!task.parent)
+                    ? Gantt.SubtasksLeftMargin
+                    : (task.tasks[0].children && !!task.tasks[0].children.length) ? this.parentLabelOffset : 0)))
+            .attr("class", (task: GroupedTask) => task.tasks[0].children ? "parent" : task.tasks[0].parent ? "child" : "normal-node")
+            .style("font-weight", (task: GroupedTask) => {
+                const isParent = Boolean(task.tasks[0].children);
+                const isBold = this.viewModel.settings.taskLabelsCardSettings.font.bold.value;
+
+                if (isParent && isBold) {
+                    return "900";
+                }
+                if (isBold || isParent) {
+                    return "700";
+                }
+                return "400";
+            })
+            .style("font-size", PixelConverter.fromPoint(this.viewModel.settings.taskLabelsCardSettings.font.fontSize.value))
+            .style("font-family", this.viewModel.settings.taskLabelsCardSettings.font.fontFamily.value)
+            .style("font-style", this.viewModel.settings.taskLabelsCardSettings.font.italic.value ? "italic" : "normal")
+            .style("text-decoration", this.viewModel.settings.taskLabelsCardSettings.font.underline.value ? "underline" : "none")
+            .attr("stroke-width", Gantt.AxisLabelStrokeWidth)
+            .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin())
+            .attr("fill", taskLabelsColor)
+            .text((task: GroupedTask) => task.name)
+            .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis)
+            .append("title")
+            .text((task: GroupedTask) => task.name);
+
+        const buttonSelection = clickableArea
+            .filter((task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length)
+            .append("svg")
+            .attr("viewBox", "0 0 32 32")
+            .attr("width", Gantt.DefaultValues.IconWidth)
+            .attr("height", Gantt.DefaultValues.IconHeight)
+            .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
+            .attr("x", Gantt.DefaultValues.BarMargin)
+            .attr("focusable", true)
+            .attr("tabindex", 0);
+
+        clickableArea
+            .append("rect")
+            .attr("width", 2 * Gantt.DefaultValues.IconWidth)
+            .attr("height", 2 * Gantt.DefaultValues.IconWidth)
+            .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
+            .attr("x", Gantt.DefaultValues.BarMargin)
+            .attr("fill", "transparent");
+
+        clickableArea.classed("pointerCursor", (task: GroupedTask) => task.tasks[0].children && !!task.tasks[0].children.length);
+
+        const buttonPlusMinusColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.PlusMinusColor);
+        buttonSelection
+            .each(function (task: GroupedTask) {
+                const element = d3Select(this);
+                if (!task.tasks[0].children[0].visibility) {
+                    drawPlusButton(element, buttonPlusMinusColor);
+                } else {
+                    drawMinusButton(element, buttonPlusMinusColor);
+                }
+            });
+    }
+
+    private renderTaskColumnsRightLine() {
+        const taskLabelsWidth: number = this.viewModel.settings.taskLabelsCardSettings.width.value;
+
+        const getGanttSVGRectHeight = (element: SVGRectElement): number => {
+            const y = parseFloat(element.getAttribute("y")) || 0;
+            const ganttDivHeight = this.ganttSvg.node().clientHeight;
+            const newHeight = ganttDivHeight - y;
+            return newHeight;
+        };
+
+        this.lineGroupWrapper
+            .attr("width", taskLabelsWidth)
+            .attr("height", (_, i, nodes) => {
+                const element = nodes[i];
+                return getGanttSVGRectHeight(element);
+            })
+            .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
+            .attr("stroke-width", 1)
+            .attr("fill", this?.formattingSettings?.taskLabelsCardSettings?.backgroundColor?.value?.value || "#FAFAFA")
+            .attr("fill-opacity", this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100 || 1);
+
+        this.lineGroupWrapperRightBorder
+            .attr("x", taskLabelsWidth)
+            .attr("width", 1)
+            .attr("height", (_, i, nodes) => {
+                const element = nodes[i];
+                return getGanttSVGRectHeight(element);
+            })
+            .attr("stroke-width", 1)
+            .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
     }
 
     private updateCollapseAllGroup(taskLabelShow: boolean) {
@@ -2377,7 +2384,7 @@ export class Gantt implements IVisual {
             }
         });
 
-        // eslint-disable-next-line
+        // eslint-disable-next-line powerbi-visuals/insecure-random
         const newId = crypto?.randomUUID() || Math.random().toString();
         this.collapsedTasksUpdateIDs.push(newId);
 
@@ -2410,7 +2417,7 @@ export class Gantt implements IVisual {
             });
         }
 
-        // eslint-disable-next-line
+        // eslint-disable-next-line powerbi-visuals/insecure-random
         const newId = crypto?.randomUUID() || Math.random().toString();
         this.collapsedTasksUpdateIDs.push(newId);
 
@@ -3324,8 +3331,6 @@ export class Gantt implements IVisual {
 
         this.axisGroup
             .attr("transform", SVGManipulations.translate(translateX + (taskLabelShow ? 0 : Gantt.CollapsedAllBackgroundWidthHidden), translateY));
-        this.axisBackground
-            .attr("transform", SVGManipulations.translate(-Gantt.AxisBackgroundLeftShift, -Gantt.TaskLabelsMarginTop));
         this.collapseAllGroup
             .attr("transform", SVGManipulations.translate(ganttDiv.scrollLeft, ganttDiv.scrollTop));
         this.lineGroup
