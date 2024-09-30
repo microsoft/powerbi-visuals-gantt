@@ -2289,7 +2289,7 @@ export class Gantt implements IVisual {
             .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
             .attr("stroke-width", 1)
             .attr("fill", this?.formattingSettings?.taskLabelsCardSettings?.backgroundColor?.value?.value || "#FAFAFA")
-            .attr("fill-opacity", this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100 || 1);
+            .attr("fill-opacity", !isNaN(this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100) ? this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100 : 1);
 
         this.lineGroupWrapperRightBorder
             .attr("x", taskLabelsWidth)

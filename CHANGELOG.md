@@ -13,6 +13,7 @@
 ### Code improvements
 * Fix task fill gradient and keyboard focus styles
 * Fix sorting tasks when "Group tasks" is enabled
+* Fix the bug with task labels background opacity resetting to 100 when specifying 0 opacity
 
 
 # 3.0.13
