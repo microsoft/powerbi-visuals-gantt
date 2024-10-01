@@ -33,9 +33,6 @@ import DataViewValueColumnGroup = powerbi.DataViewValueColumnGroup;
 import ISelectionId = powerbi.visuals.ISelectionId;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 
-import { interactivitySelectionService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
-import SelectableDataPoint = interactivityService.SelectableDataPoint;
-
 import { valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
 import IValueFormatter = vf.IValueFormatter;
 
@@ -46,6 +43,7 @@ import * as SVGUtil from "powerbi-visuals-utils-svgutils";
 import IMargin = SVGUtil.IMargin;
 
 import { GanttChartSettingsModel } from "./ganttChartSettingsModels";
+import { SelectableDataPoint } from "./behavior";
 
 export type DayOffData = [Date, number];
 

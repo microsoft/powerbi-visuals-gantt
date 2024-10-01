@@ -27,15 +27,15 @@
 import "./../style/gantt.less";
 
 import "d3-transition";
-import {select as d3Select, Selection as d3Selection} from "d3-selection";
-import {ScaleTime as timeScale} from "d3-scale";
+import { select as d3Select, Selection as d3Selection } from "d3-selection";
+import { ScaleTime as timeScale } from "d3-scale";
 import {
     timeDay as d3TimeDay,
     timeHour as d3TimeHour,
     timeMinute as d3TimeMinute,
     timeSecond as d3TimeSecond
 } from "d3-time";
-import {nest as d3Nest} from "d3-collection";
+import { nest as d3Nest } from "d3-collection";
 import { drag as d3Drag, D3DragEvent, SubjectPosition } from "d3-drag";
 
 
@@ -48,7 +48,7 @@ import lodashMaxBy from "lodash.maxby";
 import lodashGroupBy from "lodash.groupby";
 import lodashClone from "lodash.clone";
 import lodashUniqBy from "lodash.uniqby";
-import {Dictionary as lodashDictionary} from "lodash";
+import { Dictionary as lodashDictionary } from "lodash";
 
 import powerbi from "powerbi-visuals-api";
 
@@ -56,16 +56,10 @@ import powerbi from "powerbi-visuals-api";
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
 
 // powerbi.extensibility.utils.type
-import {pixelConverter as PixelConverter, valueType} from "powerbi-visuals-utils-typeutils";
+import { pixelConverter as PixelConverter, valueType } from "powerbi-visuals-utils-typeutils";
 
 // powerbi.extensibility.utils.formatting
-import {textMeasurementService, valueFormatter as ValueFormatter} from "powerbi-visuals-utils-formattingutils";
-
-// powerbi.extensibility.utils.interactivity
-import {
-    interactivityBaseService as interactivityService,
-    interactivitySelectionService
-} from "powerbi-visuals-utils-interactivityutils";
+import { textMeasurementService, valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
 
 // powerbi.extensibility.utils.tooltip
 import {
@@ -75,7 +69,7 @@ import {
 } from "powerbi-visuals-utils-tooltiputils";
 
 // powerbi.extensibility.utils.color
-import {ColorHelper} from "powerbi-visuals-utils-colorutils";
+import { ColorHelper } from "powerbi-visuals-utils-colorutils";
 
 // powerbi.extensibility.utils.chart.legend
 import {
@@ -84,11 +78,10 @@ import {
     axisScale,
     legend as LegendModule,
     legendInterfaces,
-    OpacityLegendBehavior
 } from "powerbi-visuals-utils-chartutils";
 
 // behavior
-import {Behavior, BehaviorOptions} from "./behavior";
+import { Behavior, BehaviorOptions } from "./behavior";
 import {
     DayOffData,
     DaysOffDataForAddition,
@@ -108,8 +101,8 @@ import {
     TaskTypeMetadata,
     TaskTypes
 } from "./interfaces";
-import {DurationHelper} from "./durationHelper";
-import {GanttColumns} from "./columns";
+import { DurationHelper } from "./durationHelper";
+import { GanttColumns } from "./columns";
 import {
     drawCircle,
     drawDiamond,
@@ -120,12 +113,12 @@ import {
     isStringNotNullEmptyOrUndefined,
     isValidDate
 } from "./utils";
-import {drawCollapseButton, drawExpandButton, drawMinusButton, drawPlusButton} from "./drawButtons";
-import {TextProperties} from "powerbi-visuals-utils-formattingutils/lib/src/interfaces";
+import { drawCollapseButton, drawExpandButton, drawMinusButton, drawPlusButton } from "./drawButtons";
+import { TextProperties } from "powerbi-visuals-utils-formattingutils/lib/src/interfaces";
 
-import {FormattingSettingsService} from "powerbi-visuals-utils-formattingmodel";
-import {DateTypeCardSettings, GanttChartSettingsModel} from "./ganttChartSettingsModels";
-import {DateType, DurationUnit, GanttRole, LabelForDate, MilestoneLineType, MilestoneShape, ResourceLabelPosition} from "./enums";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
+import { DateTypeCardSettings, GanttChartSettingsModel } from "./ganttChartSettingsModels";
+import { DateType, DurationUnit, GanttRole, LabelForDate, MilestoneLineType, MilestoneShape, ResourceLabelPosition } from "./enums";
 
 // d3
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
@@ -148,6 +141,7 @@ import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifi
 import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 
 import IColorPalette = powerbi.extensibility.IColorPalette;
+import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
@@ -168,10 +162,6 @@ import PrimitiveType = valueType.PrimitiveType;
 import ValueType = valueType.ValueType;
 // powerbi.extensibility.utils.formatting
 import IValueFormatter = ValueFormatter.IValueFormatter;
-// powerbi.extensibility.utils.interactivity
-import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
-import IInteractivityService = interactivityService.IInteractivityService;
-import createInteractivityService = interactivitySelectionService.createInteractivitySelectionService;
 // powerbi.extensibility.utils.chart.legend
 import ILegend = legendInterfaces.ILegend;
 import LegendPosition = legendInterfaces.LegendPosition;
@@ -369,10 +359,10 @@ export class Gantt implements IVisual {
     private lineGroupWrapperRightBorder: d3Selection<SVGRectElement, unknown, any, unknown>;
     private ganttDiv: d3Selection<HTMLDivElement, unknown, any, unknown>;
     private behavior: Behavior;
-    private interactivityService: IInteractivityService<Task | LegendDataPoint>;
     private eventService: IVisualEventService;
     private tooltipServiceWrapper: ITooltipServiceWrapper;
     private host: IVisualHost;
+    private selectionManager: ISelectionManager;
     private localizationManager: ILocalizationManager;
     private isInteractiveChart: boolean = false;
     private groupTasksPrevValue: boolean = false;
@@ -392,14 +382,14 @@ export class Gantt implements IVisual {
 
     private init(options: VisualConstructorOptions): void {
         this.host = options.host;
+        this.selectionManager = this.host.createSelectionManager();
         this.localizationManager = this.host.createLocalizationManager();
         this.formattingSettingsService = new FormattingSettingsService(this.localizationManager);
         this.colors = options.host.colorPalette;
         this.colorHelper = new ColorHelper(this.colors);
         this.body = d3Select(options.element);
         this.tooltipServiceWrapper = createTooltipServiceWrapper(this.host.tooltipService, options.element);
-        this.behavior = new Behavior();
-        this.interactivityService = createInteractivityService(this.host);
+        this.behavior = new Behavior(this.selectionManager);
         this.eventService = options.host.eventService;
 
         this.createViewport(options.element);
@@ -481,14 +471,10 @@ export class Gantt implements IVisual {
             .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
 
         // create legend container
-        const interactiveBehavior: IInteractiveBehavior = this.colorHelper.isHighContrast ? new OpacityLegendBehavior() : null;
         this.legend = createLegend(
             element,
-            this.isInteractiveChart,
-            this.interactivityService,
-            true,
-            LegendPosition.Top,
-            interactiveBehavior);
+            false,
+            LegendPosition.Top);
 
         this.ganttDiv.on("scroll", (event) => {
             if (this.viewModel) {
@@ -1760,10 +1746,6 @@ export class Gantt implements IVisual {
                 return task;
             });
 
-        if (this.interactivityService) {
-            this.interactivityService.applySelectionStateToData(tasks);
-        }
-
         if (tasks.length < Gantt.MinTasks) {
             return;
         }
@@ -1821,33 +1803,32 @@ export class Gantt implements IVisual {
             this.scrollToMilestoneLine(axisLength);
         }
 
-        this.bindInteractivityService(tasks);
+        this.bindBehaviorOptions(tasks);
     }
 
-    private bindInteractivityService(tasks: Task[]): void {
-        if (this.interactivityService) {
-            const behaviorOptions: BehaviorOptions = {
-                clearCatcher: this.body,
-                taskSelection: this.taskGroup.selectAll(Gantt.SingleTask.selectorName),
-                legendSelection: this.body.selectAll(Gantt.LegendItems.selectorName),
-                subTasksCollapse: {
-                    selection: this.body.selectAll(Gantt.ClickableArea.selectorName),
-                    callback: this.subTasksCollapseCb.bind(this)
-                },
-                allSubtasksCollapse: {
-                    selection: this.body
-                        .selectAll(Gantt.CollapseAll.selectorName),
-                    callback: this.subTasksCollapseAll.bind(this)
-                },
-                interactivityService: this.interactivityService,
-                behavior: this.behavior,
-                dataPoints: tasks
-            };
+    private bindBehaviorOptions(tasks: Task[]): void {
+        const legendItemsSelection: d3Selection<SVGGElement, LegendDataPoint, any, any> = this.body.selectAll(Gantt.LegendItems.selectorName);
+        const legendDataPoints = legendItemsSelection.data();
+        const behaviorOptions: BehaviorOptions = {
+            dataPoints: tasks,
+            legendDataPoints: legendDataPoints,
+            hasHighlights: this.hasHighlights,
+            clearCatcher: this.body,
+            taskSelection: this.taskGroup.selectAll(Gantt.SingleTask.selectorName),
+            legendSelection: legendItemsSelection,
+            subTasksCollapse: {
+                selection: this.body.selectAll(Gantt.ClickableArea.selectorName),
+                callback: this.subTasksCollapseCb.bind(this)
+            },
+            allSubTasksCollapse: {
+                selection: this.body.select(Gantt.CollapseAll.selectorName),
+                arrowSelection: this.body.select(Gantt.CollapseAll.selectorName).select(Gantt.CollapseAllArrow.selectorName),
+                callback: this.subTasksCollapseAll.bind(this)
+            },
+        };
 
-            this.interactivityService.bind(behaviorOptions);
-
-            this.behavior.renderSelection(this.hasHighlights);
-        }
+        this.behavior.bindEvents(behaviorOptions);
+        this.behavior.renderSelection(this.hasHighlights);
     }
 
     private static getDateType(dateType: DateType): number {
@@ -3345,7 +3326,6 @@ export class Gantt implements IVisual {
         this.chartGroup.attr("transform", SVGManipulations.translate(translateX, margin.top));
 
         const translateY: number = Gantt.TaskLabelsMarginTop + ganttDiv.scrollTop;
-        console.log({ scrollLeft:  ganttDiv.scrollLeft, scrollTop: ganttDiv.scrollTop, translateY: translateY });
 
         this.axisGroup
             .attr("transform", SVGManipulations.translate(translateX + (taskLabelShow ? 0 : Gantt.CollapsedAllBackgroundWidthHidden), translateY));
