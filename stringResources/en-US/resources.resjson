@@ -51,7 +51,7 @@
 	"Visual_Fill": "Fill",
 	"Visual_Font": "Font",
 	"Visual_FontSize": "Font Size",
-	"Visual_Width": "Width",
+	"Visual_ColumnWidth": "Column width",
 	"Visual_TooltipSettings": "Tooltip Settings",
 	"Visual_TooltipSettings_DateFormat": "Date format",
 	"Visual_TaskCompletion": "Task Completion",

@@ -304,6 +304,7 @@ export class Gantt implements IVisual {
     private static AxisBackgroundHeight: number = 40;
     private static AxisBackgroundLeftShift: number = 18;
     private static CollapseAllLeftShift: number = 15;
+    private static CollapseAllFontAdditionalSize: number = 3;
     // It' used to hide right border of the task-lines rect
     private static CollapseAllBackgroundWidthPadding: number = 4;
     private static CollapsedAllBackgroundWidthHidden: number = 50;
@@ -2334,7 +2335,7 @@ export class Gantt implements IVisual {
                 .attr("y", this.secondExpandAllIconOffset)
                 .attr("fill", "transparent");
 
-            const buttonExpandCollapseColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
+            const buttonExpandCollapseColor = this.colorHelper.getHighContrastColor("foreground", this.formattingSettings.taskLabelsCardSettings.fill?.value?.value || Gantt.DefaultValues.CollapseAllColor);
             if (this.collapsedTasks.length) {
                 drawExpandButton(expandCollapseButton, buttonExpandCollapseColor);
             } else {
@@ -2346,12 +2347,12 @@ export class Gantt implements IVisual {
                     .append("text")
                     .attr("x", Math.ceil(this.secondExpandAllIconOffset + this.groupLabelSize + Gantt.CollapseAllLeftShift / 2))
                     .attr("y", this.groupLabelSize)
-                    .style("font-size", this.formattingSettings.taskLabelsCardSettings.collapseAll.fontSize.value)
-                    .style("font-family", this.formattingSettings.taskLabelsCardSettings.collapseAll.fontFamily.value)
-                    .style("font-style", this.formattingSettings.taskLabelsCardSettings.collapseAll.italic.value ? "italic" : "normal")
-                    .style("font-weight", this.formattingSettings.taskLabelsCardSettings.collapseAll.bold.value ? "bold" : "normal")
-                    .style("text-decoration", this.formattingSettings.taskLabelsCardSettings.collapseAll.underline.value ? "underline" : "none")
-                    .style("fill", this.colorHelper.getHighContrastColor("foreground", this.formattingSettings.taskLabelsCardSettings.collapseAllColor.value.value))
+                    .style("font-size", this.formattingSettings.taskLabelsCardSettings.font.fontSize.value + Gantt.CollapseAllFontAdditionalSize)
+                    .style("font-family", this.formattingSettings.taskLabelsCardSettings.font.fontFamily.value)
+                    .style("font-style", this.formattingSettings.taskLabelsCardSettings.font.italic.value ? "italic" : "normal")
+                    .style("font-weight", this.formattingSettings.taskLabelsCardSettings.font.bold.value ? "bold" : "normal")
+                    .style("text-decoration", this.formattingSettings.taskLabelsCardSettings.font.underline.value ? "underline" : "none")
+                    .style("fill", this.colorHelper.getHighContrastColor("foreground", this.formattingSettings.taskLabelsCardSettings.fill.value.value))
                     .text(this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
             }
         }
@@ -3355,17 +3356,8 @@ export class Gantt implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-        this.localizeSettings();
         this.populateDynamicDataPoints();
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
-    }
-
-    private localizeSettings(): void {
-        if (this.collapsedTasks.length) {
-            this.formattingSettings.taskLabelsCardSettings.taskLabelsCollapseAllGroup.displayNameKey = "Visual_Expand_All";
-        } else {
-            this.formattingSettings.taskLabelsCardSettings.taskLabelsCollapseAllGroup.displayNameKey = "Visual_Collapse_All";
-        }
     }
 
     private populateDynamicDataPoints(): void {

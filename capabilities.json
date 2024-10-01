@@ -581,44 +581,6 @@
                     "type": {
                         "numeric": true
                     }
-                },
-                "collapseAllColor": {
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                },
-                "collapseAllFontSize": {
-                    "type": {
-                        "formatting": {
-                            "fontSize": true
-                        }
-                    }
-                },
-                "collapseAllFontFamily": {
-                    "type": {
-                        "formatting": {
-                            "fontFamily": true
-                        }
-                    }
-                },
-                "collapseAllBold": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "collapseAllItalic": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "collapseAllUnderline": {
-                    "type": {
-                        "bool": true
-                    }
                 }
             }
         },

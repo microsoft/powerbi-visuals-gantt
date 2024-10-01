@@ -361,7 +361,7 @@ export class TaskLabelsCardSettings extends CompositeCard {
 
     fill = new formattingSettings.ColorPicker({
         name: "fill",
-        displayNameKey: "Visual_Fill",
+        displayNameKey: "Visual_Color",
         value: { value: "#000000" },
     });
 
@@ -396,7 +396,7 @@ export class TaskLabelsCardSettings extends CompositeCard {
 
     width = new formattingSettings.NumUpDown({
         name: "width",
-        displayNameKey: "Visual_Width",
+        displayNameKey: "Visual_ColumnWidth",
         value: WidthSettings.DefaultFontSize,
         options: {
             minValue: {
@@ -410,46 +410,6 @@ export class TaskLabelsCardSettings extends CompositeCard {
         name: "taskLabelsGeneralGroup",
         displayNameKey: "Visual_General",
         slices: [this.fill, this.font, this.width],
-    });
-
-    collapseAllColor = new formattingSettings.ColorPicker({
-        name: "collapseAllColor",
-        displayNameKey: "Visual_Color",
-        value: { value: "#000" },
-    });
-
-    collapseAll = new formattingSettings.FontControl({
-        name: "collapseAll",
-        displayNameKey: "Visual_Font",
-        fontSize: new formattingSettings.NumUpDown({
-            name: "collapseAllFontSize",
-            value: 12,
-            options: {
-                minValue: { value: 1, type: powerbiVisualsApi.visuals.ValidatorType.Min },
-            },
-        }),
-        fontFamily: new formattingSettings.FontPicker({
-            name: "collapseAllFontFamily",
-            value: "'Roboto', -apple-system, BlinkMacSystemFont, sans-serif"
-        }),
-        bold: new formattingSettings.ToggleSwitch({
-            name: "collapseAllBold",
-            value: false,
-        }),
-        italic: new formattingSettings.ToggleSwitch({
-            name: "collapseAllItalic",
-            value: false,
-        }),
-        underline: new formattingSettings.ToggleSwitch({
-            name: "collapseAllUnderline",
-            value: false,
-        }),
-    });
-
-    taskLabelsCollapseAllGroup = new Group({
-        name: "taskLabelsCollapseAllGroup",
-        displayNameKey: "Visual_Expand_All",
-        slices: [this.collapseAllColor, this.collapseAll]
     });
 
     backgroundColor = new formattingSettings.ColorPicker({
@@ -480,7 +440,7 @@ export class TaskLabelsCardSettings extends CompositeCard {
     topLevelSlice = this.show;
     name: string = "taskLabels";
     displayNameKey: string = "Visual_CategoryLabels";
-    groups = [this.taskLabelsGeneralGroup, this.taskLabelsCollapseAllGroup, this.taskLabelsBackgroundGroup];
+    groups = [this.taskLabelsGeneralGroup, this.taskLabelsBackgroundGroup];
 }
 
 export class TaskCompletionCardSettings extends Card {
