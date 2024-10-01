@@ -16,6 +16,7 @@
 * Fix the bug with task labels background opacity resetting to 100 when specifying 0 opacity
 * Remove interactivity-utils
 * Apply font settings to "Collapse All/Expand All" button
+* Rename all "Fill" properties to "Color"
 
 
 # 3.0.13

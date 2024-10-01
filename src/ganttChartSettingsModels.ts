@@ -214,7 +214,7 @@ export class DaysOffCardSettings extends Card {
 
     fill = new formattingSettings.ColorPicker({
         name: "fill",
-        displayNameKey: "Visual_Fill",
+        displayNameKey: "Visual_Color",
         value: { value: "#00B093" }
     });
 
