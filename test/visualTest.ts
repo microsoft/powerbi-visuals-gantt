@@ -1152,7 +1152,8 @@ describe("Gantt", () => {
             });
 
             function getSelectedTasks(visualBuilder: VisualBuilder): Task[] {
-                return (visualBuilder.instance["interactivityService"]["selectableDataPoints"] as Task[])
+                // access private properties
+                return (visualBuilder.instance["behavior"]["options"]["dataPoints"] as Task[])
                     .filter((task: Task) => task && task.selected);
             }
         });

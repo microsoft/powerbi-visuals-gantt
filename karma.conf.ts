@@ -48,10 +48,11 @@ module.exports = (config) => {
           }
         },
         colors: true,
-        frameworks: ["jasmine"],
+        frameworks: ["jasmine", "webpack"],
         reporters: [
             "progress",
-            "junit"
+            "junit",
+            "coverage"
         ],
         junitReporter: {
             outputDir: path.join(__dirname, coverageFolder),
