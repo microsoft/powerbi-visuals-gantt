@@ -9,6 +9,7 @@
 * Add toggle switch to match data labels colors with legend colors
 * Add axis/task labels background color
 * Make sticky header with axis and "Collapse all" button
+* Make draggable column bigger
 
 ### Code improvements
 * Fix task fill gradient and keyboard focus styles

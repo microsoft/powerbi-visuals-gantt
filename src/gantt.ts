@@ -459,7 +459,8 @@ export class Gantt implements IVisual {
             .attr("height", 0)
             .attr("width", 0)
             .attr("y", this.margin.top)
-            .attr("cursor", "ew-resize");
+            .attr("cursor", "ew-resize")
+            .attr("fill", "transparent");
 
         this.handleTaskLabelResize();
 
@@ -2118,8 +2119,7 @@ export class Gantt implements IVisual {
             
             this.lineGroupWrapperRightBorder
                 .attr("width", 0)
-                .attr("height", 0)
-                .attr("stroke", "none");
+                .attr("height", 0);
 
             this.lineGroup
                 .selectAll(Gantt.Label.selectorName)
@@ -2274,14 +2274,12 @@ export class Gantt implements IVisual {
             .attr("fill-opacity", !isNaN(this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100) ? this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100 : 1);
 
         this.lineGroupWrapperRightBorder
-            .attr("x", taskLabelsWidth)
-            .attr("width", 1)
+            .attr("x", taskLabelsWidth - 5)
+            .attr("width", 11)
             .attr("height", (_, i, nodes) => {
                 const element = nodes[i];
                 return getGanttSVGRectHeight(element);
-            })
-            .attr("stroke-width", 1)
-            .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
+            });
     }
 
     private updateCollapseAllGroup(taskLabelShow: boolean) {
