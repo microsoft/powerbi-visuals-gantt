@@ -18,6 +18,7 @@
 * Remove interactivity-utils
 * Apply font settings to "Collapse All/Expand All" button
 * Rename all "Fill" properties to "Color"
+* Enable the support multiple visual selection feature
 
 
 # 3.0.13
