@@ -2556,9 +2556,14 @@ export class Gantt implements IVisual {
     private getTaskRectWidth(task: Task): number {
         const taskIsCollapsed = this.collapsedTasks.includes(task.name);
 
-        return this.hasNotNullableDates && (taskIsCollapsed || lodashIsEmpty(task.Milestones))
-            ? Gantt.taskDurationToWidth(task.start, task.end)
-            : 0;
+        if (this.hasNotNullableDates &&
+            (taskIsCollapsed || lodashIsEmpty(task.Milestones)) &&
+            (task.start != null && task.end != null)
+        ) {
+            return Gantt.taskDurationToWidth(task.start, task.end);
+        }
+
+        return 0;
     }
 
 
@@ -2624,6 +2629,8 @@ export class Gantt implements IVisual {
 
                 return `url(#${encodedUrl})`;
             })
+            // stroke width is 0, so it will be invisible, but you'll be able to know the actual color
+            // instead of selecting <linearGradient> element and getting it's color
             .style("stroke", (task: Task) => task.color);
 
         if (this.colorHelper.isHighContrast) {
