@@ -53,213 +53,122 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
         return this.visual;
     }
 
-    public get body(): HTMLElement {
-        return this.element.querySelector("div.gantt-body") as HTMLElement;
+    public get body(): HTMLDivElement | null {
+        return this.element.querySelector("div.gantt-body");
     }
 
-    public get mainElement(): HTMLElement {
-        return this.body.querySelector("svg.gantt") as HTMLElement;
+    public get mainElement(): SVGSVGElement | null {
+        return this.body?.querySelector("svg.gantt") || null;
     }
 
-    public get collapseAllRect(): HTMLElement[] {
-        return Array.from(this.mainElement.querySelectorAll("g.task-lines > g.collapse-all"));
+    public get collapseAllRect(): SVGGElement | null {
+        return this.mainElement?.querySelector<SVGGElement>("g.collapse-all") || null;
     }
 
-    public get collapseAllArrow(): HTMLElement[] {
-        const arrows: HTMLElement[] = [];
-        this.collapseAllRect.forEach((rect: HTMLElement) => {
-            const arrowsNode: NodeListOf<HTMLElement> = rect.querySelectorAll(".collapse-all-arrow");
-            arrowsNode.forEach((element: HTMLElement) => {
-                arrows.push(element);
-            });
-          });
-
-        return arrows;
+    public get collapseAllArrow(): SVGSVGElement | null {
+        return this.collapseAllRect?.querySelector<SVGSVGElement>("svg.collapse-all-arrow") || null;
     }
 
-    public get axis(): HTMLElement {
-        return this.mainElement.querySelector("g.axis") as HTMLElement;
+    public get axis(): SVGGElement | null {
+        return this.mainElement?.querySelector("g.axis") || null;
     }
 
-    public get axisBackgroundRect(): SVGElement {
-        return this.axis.querySelector("rect") as SVGElement;
+    public get axisBackgroundRect(): SVGRectElement | null {
+        return this.axis?.querySelector("rect") || null;
     }
 
-    public get axisTicks(): NodeListOf<HTMLElement> {
-        return this.axis.querySelectorAll("g.tick");
+    public get axisTicks(): SVGGElement[] {
+        if (!this.axis) {
+            return [];
+        }
+
+        return Array.from(this.axis.querySelectorAll("g.tick"));
     }
 
-    public get axisTicksLine(): SVGElement[] {
-        const axisTicksLine: SVGLineElement[] = [];
-        this.axisTicks.forEach((element: HTMLElement) => {
-            const linesNode: NodeListOf<SVGLineElement> = element.querySelectorAll("line");
-            axisTicksLine.forEach((element: SVGLineElement) => {
-                axisTicksLine.push(element);
-            });
-        });
-
-        return axisTicksLine;
+    public get axisTicksLine(): SVGLineElement[] {
+        return this.axisTicks.map((element) => element.querySelector("line")!);
     }
 
-    public get axisTicksText(): SVGElement[] {
-        const axisTicksText: SVGElement[] = [];
-        this.axisTicks.forEach((element: HTMLElement) => {
-            const textsNode: NodeListOf<SVGTextElement> = element.querySelectorAll("text");
-            textsNode.forEach((element: SVGTextElement) => {
-                axisTicksText.push(element);
-            });
-        });
-
-        return axisTicksText;
+    public get axisTicksText(): SVGTextElement[] {
+        return this.axisTicks.map((element) => element.querySelector("text")!);
     }
 
-    public get chart(): HTMLElement {
-        return this.mainElement.querySelector("g.chart") as HTMLElement;
+    public get chart(): SVGGElement | null {
+        return this.mainElement?.querySelector("g.chart") || null;
     }
 
-    public get chartLine(): HTMLElement[] {
+    public get chartLine(): SVGLineElement[] {
+        if (!this.chart) {
+            return [];
+        }
         return Array.from(this.chart.querySelectorAll("line.chart-line"));
     }
 
-    public get taskLines(): HTMLElement[] {
-        return Array.from(this.mainElement.querySelectorAll("g.task-lines"));
+    public get taskLines(): SVGGElement | null {
+        return this.mainElement?.querySelector("g.task-lines") || null;
     }
 
-    public get taskLabels(): HTMLElement[] {
-        const taskLabels: HTMLElement[] = [];
-        this.taskLines.forEach((element: HTMLElement) => {
-            const taskLabelsNode: NodeListOf<HTMLElement> = element.querySelectorAll("g.label");
-            taskLabelsNode.forEach((element: HTMLElement) => {
-                taskLabels.push(element);
-            });
-        });
+    public get taskLabels(): SVGGElement[] {
+        if (!this.taskLines) {
+            return [];
+        }
 
-        return taskLabels;
+        return Array.from(this.taskLines.querySelectorAll("g.label"));
     }
 
-    public get taskLabelsText(): HTMLElement[]  {
-        const taskLabelsText: HTMLElement[] = [];
-        this.taskLines.forEach((element: HTMLElement) => {
-            const taskLabelsTextNode: NodeListOf<HTMLElement> = element.querySelectorAll("g.label text");
-            taskLabelsTextNode.forEach((element: HTMLElement) => {
-                taskLabelsText.push(element);
-            });
-        });
-
-        return taskLabelsText;
+    public get taskLabelsText(): SVGTextElement[]  {
+        return this.taskLabels.map((element) => element.querySelector("text")!);        
     }
 
-    public get taskLineRect(): HTMLElement[] {
-        const taskLineRects: HTMLElement[] = [];
-        this.taskLines.forEach((element: HTMLElement) => {
-            const taskLinesRectNode: NodeListOf<HTMLElement> = element.querySelectorAll("rect.task-lines-rect");
-            taskLinesRectNode.forEach((element: HTMLElement) => {
-                taskLineRects.push(element);
-            });
-        });
-
-        return taskLineRects;
+    public get taskLineRect(): SVGRectElement | null {
+        return this.taskLines?.querySelector("rect.task-lines-rect") || null;
     }
 
-    public get tasksGroups(): HTMLElement[] {
-        const tasksGroupsNodeList: NodeListOf<HTMLElement> = this.chart.querySelectorAll<HTMLElement>('g.tasks > g.task-group');
-        return Array.from(tasksGroupsNodeList);
+    public get tasksGroups(): SVGGElement[] {
+        if (!this.chart) return [];
+        
+        const tasks = this.chart.querySelector<SVGGElement>("g.tasks");
+        if (!tasks) return [];
+
+        const taskGroups = tasks.querySelectorAll<SVGGElement>("g.task-group");
+        return Array.from(taskGroups);
     }
 
-    public get tasks(): HTMLElement[] {
-        const tasks: HTMLElement[] = [];
-        this.tasksGroups.forEach((element: HTMLElement) => {
-            const tasksNode: NodeListOf<HTMLElement> = element.querySelectorAll("g.task");
-            tasksNode.forEach((element: HTMLElement) => {
-                tasks.push(element);
-            });
-        });
-
-        return tasks;
+    public get tasks(): SVGGElement[] {
+        return this.tasksGroups.map((element) => element.querySelector<SVGGElement>("g.task")!);
     }
 
-    public get taskLine(): HTMLElement[] {
-        const taskLines: HTMLElement[] = [];
-        this.tasks.forEach((element: HTMLElement) => {
-            const tasksLineNode: NodeListOf<HTMLElement> = element.querySelectorAll("rect.task-lines");
-            tasksLineNode.forEach((element: HTMLElement) => {
-                taskLines.push(element);
-            });
-        });
-
-        return taskLines;
+    public get taskDaysOffRect(): (SVGPathElement | null)[] {
+        return this.tasks.map((element) => element.querySelector<SVGPathElement>("path.task-days-off"));
     }
 
-    public get taskDaysOffRect(): HTMLElement[] {
-        const taskDaysOffRect: HTMLElement[] = [];
-        this.tasks.forEach((element: HTMLElement) => {
-            const taskDaysOffRectNode: NodeListOf<HTMLElement> = element.querySelectorAll("path.task-days-off");
-            taskDaysOffRectNode.forEach((element: HTMLElement) => {
-                taskDaysOffRect.push(element);
-            });
-        });
+    public get milestones(): (SVGPathElement | null)[] {
+        const milestones = this.tasks
+            .map((element) => element.querySelector<SVGGElement>("g.task-milestone")?.querySelectorAll("path"))
+            .filter((element) => element != null);
 
-        return taskDaysOffRect;
-    }
-
-    public get milestones(): SVGElement[] {
-        const taskMilestones: HTMLElement[] = [];
-        this.tasks.forEach((element: HTMLElement) => {
-            const taskMilestonesNode: NodeListOf<HTMLElement> = element.querySelectorAll("g.task-milestone");
-            taskMilestonesNode.forEach((element: HTMLElement) => {
-                taskMilestones.push(element);
-            });
-        });
-
-        const paths: SVGPathElement[] = [];
-        taskMilestones.forEach((element: HTMLElement) => {
-            const pathsNode: NodeListOf<SVGPathElement> = element.querySelectorAll("path");
-            pathsNode.forEach((element: SVGPathElement) => {
-                paths.push(element);
-            });
-        });
-
+        const paths = milestones.reduce((acc: SVGPathElement[], curr: NodeListOf<SVGPathElement>) => acc.concat(Array.from(curr)), []);
         return paths;
     }
 
-    public get taskRect(): HTMLElement[]  {
-        const taskRects: HTMLElement[] = [];
-        this.tasks.forEach((element: HTMLElement) => {
-            const taskRectsNode: NodeListOf<HTMLElement> = element.querySelectorAll("path.task-rect");
-            taskRectsNode.forEach((element: HTMLElement) => {
-                taskRects.push(element);
-            });
-        });
-
-        return taskRects;
+    public get taskRect(): (SVGPathElement | null)[]  {
+        return this.tasks.map((element) => element.querySelector<SVGPathElement>("path.task-rect"));
     }
 
-    public get taskResources(): HTMLElement[] {
-        const taskResources: HTMLElement[] = [];
-        this.tasks.forEach((element: HTMLElement) => {
-            const taskResourcesNode: NodeListOf<HTMLElement> = element.querySelectorAll("text.task-resource");
-            taskResourcesNode.forEach((element: HTMLElement) => {
-                taskResources.push(element);
-            });
-        });
-
-        return taskResources;
+    public get taskResources(): SVGTextElement[] {
+        const resources = this.tasks.map((element) => element.querySelectorAll<SVGTextElement>("text.task-resource"));
+        const result = resources.reduce((acc: SVGTextElement[], curr: NodeListOf<SVGTextElement>) => acc.concat(Array.from(curr)), []);
+        return result;
     }
 
-    public get taskProgress(): HTMLElement[] {
-        const taskProgress: HTMLElement[] = [];
-        this.tasks.forEach((element: HTMLElement) => {
-            const progressNode: NodeListOf<HTMLElement> = element.querySelectorAll("linearGradient.task-progress");
-            progressNode.forEach((element: HTMLElement) => {
-                taskProgress.push(element);
-            });
-        });
-
-        return taskProgress;
+    public get taskProgress(): SVGLinearGradientElement[] {
+        const gradients = this.tasks.map((element) => element.querySelectorAll<SVGLinearGradientElement>("linearGradient.task-progress"));
+        const result = gradients.reduce((acc: SVGLinearGradientElement[], curr: NodeListOf<SVGLinearGradientElement>) => acc.concat(Array.from(curr)), []);
+        return result;
     }
 
-    public get legendGroup(): HTMLElement {
-        return this.element.querySelector<HTMLElement>('.legend #legendGroup') as HTMLElement;
+    public get legendGroup(): SVGGElement | null {
+        return this.element.querySelector('.legend #legendGroup');
     }
 
     public downgradeDurationUnit(tasks: any, durationUnit: DurationUnit) {

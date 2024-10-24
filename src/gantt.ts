@@ -313,7 +313,7 @@ export class Gantt implements IVisual {
     private static CompletionMin: number = 0;
     private static CompletionMaxInPercent: number = 100;
     private static MinTasks: number = 1;
-    private static ChartLineProportion: number = 1.5;
+    public static ChartLineProportion: number = 1.5;
     private static MilestoneTop: number = 0;
     private static DividerForCalculatingPadding: number = 4;
     private static LabelTopOffsetForPadding: number = 0.5;

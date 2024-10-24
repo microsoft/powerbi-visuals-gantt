@@ -39,11 +39,15 @@ export function areColorsEqual(firstColor: string, secondColor: string): boolean
 }
 
 export function isColorAppliedToElements(
-    elements: HTMLElement[] | SVGElement[],
+    elements: (SVGElement | null)[],
     color?: string,
     colorStyleName: string = "fill"
 ): boolean {
-    return elements.some((element: HTMLElement | SVGElement) => {
+    return elements.some((element: SVGElement | null) => {
+        if (element == null) {
+            return;
+        }
+
         const currentColor: string = element.style.getPropertyValue(colorStyleName);
 
         if (!currentColor || !color) {

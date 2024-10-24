@@ -25,7 +25,7 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import {BaseType, select as d3Select} from "d3-selection";
+import { select as d3Select, selectAll as d3SelectAll, Selection as d3Selection } from 'd3-selection';
 import {timeDay as d3TimeDay} from "d3-time";
 
 import lodashMinBy from "lodash.minby";
@@ -35,7 +35,7 @@ import lodashUniqBy from "lodash.uniqby";
 
 import {VisualData} from "./visualData";
 import {VisualBuilder} from "./visualBuilder";
-import {getEndDate, isColorAppliedToElements} from "./helpers/helpers";
+import {areColorsEqual, getEndDate, isColorAppliedToElements} from "./helpers/helpers";
 import {
     assertColorsMatch,
     clickElement,
@@ -51,7 +51,7 @@ import {valueFormatter} from "powerbi-visuals-utils-formattingutils";
 
 import {Milestone, Task, TaskDaysOff} from "../src/interfaces";
 import {DurationHelper} from "../src/durationHelper";
-import {Gantt as VisualClass} from "../src/gantt";
+import {Gantt, Gantt as VisualClass} from "../src/gantt";
 import {getRandomHexColor, isValidDate} from "../src/utils";
 
 import {DefaultOpacity, DimmedOpacity} from "../src/behavior";
@@ -83,7 +83,7 @@ describe("Gantt", () => {
     });
 
     function fixDataViewDateValuesAggregation(dataView: DataView) {
-        let values = dataView.categorical.values[0].values;
+        let values = dataView.categorical!.values![0].values;
 
         for (let i = 0; i < values.length; ++i) {
             let stringValue: string = values[i].toString();
@@ -98,7 +98,7 @@ describe("Gantt", () => {
     function getUniqueParentsCount(dataView: DataView, parentColumnIndex: number) {
         let uniqueParents: string[] = [];
 
-        dataView.table.rows.forEach(row => {
+        dataView?.table?.rows?.forEach(row => {
             if (row[parentColumnIndex] && uniqueParents.indexOf(row[parentColumnIndex] as string)) {
                 uniqueParents.push(row[parentColumnIndex] as string);
             }
@@ -110,24 +110,17 @@ describe("Gantt", () => {
     describe("DOM tests", () => {
 
         // function that uses grep to filter
-        function grep(val: BaseType[]) {
-            return val.filter((e: Element) => e.innerHTML === "" || e.textContent === "");
+        function grep(val: SVGElement[]) {
+            return val.filter((e: SVGElement) => e.innerHTML === "" || e.textContent === "");
         }
 
         it("svg element created", () => {
-            expect(visualBuilder.mainElement[0]).not.toBeNull();
+            expect(visualBuilder.mainElement).not.toBeNull();
         });
 
         it("update", (done) => {
             visualBuilder.updateRenderTimeout(dataView, () => {
-                const taskResources: HTMLElement[] = [];
-                visualBuilder.tasks.forEach((element: HTMLElement) => {
-                    const taskResourceNode: NodeListOf<HTMLElement> = element.querySelectorAll(".task-resource");
-                    taskResourceNode.forEach((taskResource: HTMLElement) => {
-                        taskResources.push(taskResource);
-                    });
-                });
-
+                const taskResources = visualBuilder.taskResources;
                 let countOfTaskLabels = taskResources.length;
 
                 let countOfTaskLines = visualBuilder.taskLabels.length;
@@ -281,7 +274,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let resources = d3Select(visualBuilder.element).selectAll(".task-resource").nodes();
+                let resources = visualBuilder.taskResources;
                 let returnResource = grep(resources);
 
                 expect(returnResource.length).toEqual(resources.length);
@@ -300,7 +293,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let progressOfTasks = d3Select(visualBuilder.element).selectAll(".task-progress").nodes();
+                let progressOfTasks = visualBuilder.taskProgress;
                 let returnTasks = grep(progressOfTasks);
 
                 expect(progressOfTasks.length).toEqual(returnTasks.length);
@@ -357,14 +350,16 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let taskLabelsInDom = d3Select(visualBuilder.element).selectAll(".label title").nodes();
-                let taskLabels = d3Select(visualBuilder.element).selectAll(".label").data() as Task[];
+                const taskLabels: d3Selection<SVGGElement, Task, null, undefined> = d3SelectAll(visualBuilder.taskLabels);
+                const titles = taskLabels.select<SVGTitleElement>("title").nodes();
+                const taskData: Task[] = taskLabels.data();
+
                 let tasks: PrimitiveValue[] | undefined = dataView.categorical?.categories?.[0].values;
 
                 if (tasks) {
                     for (let i = 0; i < tasks.length; i++) {
-                        expect(taskLabels[i].name).toEqual((taskLabelsInDom[i] as HTMLElement).textContent);
-                        expect(tasks[i]).toEqual((taskLabelsInDom[i] as HTMLElement).textContent);
+                        expect(taskData[i].name).toEqual((titles[i]).textContent!);
+                        expect(tasks[i]).toEqual((titles[i]).textContent!);
                     }
                 }
 
@@ -553,7 +548,7 @@ describe("Gantt", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
 
                     let collapseArrow = visualBuilder.collapseAllArrow;
-                    expect(collapseArrow.length).toBe(0);
+                    expect(collapseArrow).toBeDefined();
                     done();
                 });
             });
@@ -644,12 +639,17 @@ describe("Gantt", () => {
 
         it("Verify Font Size set to default", (done) => {
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let element = d3Select(visualBuilder.element);
-                let resources = element.selectAll(".task-resource").node();
-                let labels = (element.selectAll(".label > .clickableArea").node() as HTMLElement).firstChild;
+                const resource = visualBuilder.taskResources.find(x => x != null);
+                const label = visualBuilder.taskLabels.find(x => x != null)
+                    ?.querySelector<SVGGElement>("g.clickableArea")
+                    ?.querySelector<SVGTextElement>("text");
 
-                expect((resources as SVGTextElement).style["font-size"]).toEqual("12px");
-                expect((labels as SVGTextElement).style["font-size"]).toEqual("12px");
+                expect(resource).not.toBeNull();
+                expect(label).not.toBeNull();
+
+                expect(resource!.style.fontSize).toEqual("12px");
+                expect(label!.style.fontSize).toEqual("12px");
+
                 done();
             });
         });
@@ -680,14 +680,7 @@ describe("Gantt", () => {
                 });
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    const texts: SVGElement[]  = [];
-                    visualBuilder.axisTicks.forEach((axisTick: HTMLElement) => {
-                        const textsNode: NodeListOf<SVGElement> = axisTick.querySelectorAll("text");
-                        textsNode.forEach((element: SVGElement) => {
-                            texts.push(element);
-                        })
-                    });
-
+                    const texts = visualBuilder.axisTicksText;
                     texts.forEach((e) => {
                         let date: Date = new Date((<any>e).__data__);
                         expect(e.textContent).toEqual(xAxisDateFormatter.format(date));
@@ -817,15 +810,15 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let taskLinesText: HTMLElement[] = visualBuilder.taskLabelsText;
-                let values = dataView.categorical?.categories?.[1].values;
-                let taskGroups: HTMLElement[] = visualBuilder.tasksGroups;
-                let tasks: Task[] = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
+                const taskLinesText = visualBuilder.taskLabelsText;
+                const values = dataView.categorical?.categories?.[1].values;
+                const taskGroups = visualBuilder.tasksGroups;
+                const tasks: Task[] = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
 
                 expect(values?.length).toBeGreaterThan(lodashUniq(values).length);
                 expect(taskLinesText.length).toEqual(lodashUniq(values).length);
 
-                taskGroups.forEach((taskGroup: HTMLElement, index: number) => {
+                taskGroups.forEach((taskGroup: SVGGElement, index: number) => {
                     const taskName: string | null = taskLinesText[index].children[0].textContent;
                     const tasksWithSameName = tasks.filter((task) => task.name === taskName);
                     expect(taskGroup.children.length).toBe(tasksWithSameName.length);
@@ -850,13 +843,13 @@ describe("Gantt", () => {
                 dataView.metadata.objects = { general: { groupTasks: false } };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let countOfTaskLines = visualBuilder.taskLabelsText.length;
-                    let values = dataView.categorical?.categories?.[1].values;
-                    let taskGroups: HTMLElement[] = visualBuilder.tasksGroups;
+                    const countOfTaskLines = visualBuilder.taskLabelsText.length;
+                    const values = dataView.categorical?.categories?.[1].values;
+                    const taskGroups = visualBuilder.tasksGroups;
 
                     expect(countOfTaskLines).toEqual(values?.length ?? 0);
                     // in each row only one task - all the task re-rendered right
-                    taskGroups.forEach((taskGroup: HTMLElement) => {
+                    taskGroups.forEach((taskGroup: SVGGElement) => {
                         expect(taskGroup.children.length).toBe(1);
                     });
                     done();
@@ -886,8 +879,8 @@ describe("Gantt", () => {
                     parentTaskLabel = visualBuilder.taskLabelsText[parentTask.index];
 
 
-                const minChildStart = lodashMinBy(parentTask.children, (t: Task) => t.start).start;
-                const maxChildEnd = lodashMaxBy(parentTask.children, (t: Task) => t.end).end;
+                const minChildStart = lodashMinBy(parentTask.children, (t: Task) => t.start)!.start;
+                const maxChildEnd = lodashMaxBy(parentTask.children, (t: Task) => t.end)!.end;
                 const color = parentTask.children[0].color;
 
 
@@ -901,8 +894,8 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let taskGroups: HTMLElement[] = visualBuilder.tasksGroups;
-                    let updatedTasks = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
+                    const taskGroups = visualBuilder.tasksGroups;
+                    const updatedTasks = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
                     const updatedParentTask = updatedTasks[parentTask.index];
 
                     expect(updatedTasks.length).toBe(tasks.length - parentTask.children.length);
@@ -937,8 +930,8 @@ describe("Gantt", () => {
                     parentTask = parentTasks[parentIndex],
                     parentTaskLabel = visualBuilder.taskLabelsText[parentTask.index];
 
-                const minChildStart = lodashMinBy(parentTask.children, (t: Task) => t.start).start;
-                const maxChildEnd = lodashMaxBy(parentTask.children, (t: Task) => t.end).end;
+                const minChildStart = lodashMinBy(parentTask.children, (t: Task) => t.start)!.start;
+                const maxChildEnd = lodashMaxBy(parentTask.children, (t: Task) => t.end)!.end;
 
                 // Collapse
                 clickElement(parentTaskLabel.parentElement);
@@ -951,8 +944,8 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let taskGroups: HTMLElement[] = visualBuilder.tasksGroups;
-                    let updatedTasks = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
+                    const taskGroups = visualBuilder.tasksGroups;
+                    const updatedTasks = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
                     const updatedParentTask = updatedTasks[parentTask.index];
                     const tasksWithSameName = updatedTasks.filter((task) => task.name === parentTask.name);
 
@@ -1008,9 +1001,9 @@ describe("Gantt", () => {
 
             // check for color and figure
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let tasks: Task[] = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
+                const tasks = d3SelectAll(visualBuilder.tasks).data() as Task[];
                 const taskWithMilestones = tasks.filter((task: Task) => task.Milestones?.length);
-                const milestones: SVGElement[] = visualBuilder.milestones;
+                const milestones = visualBuilder.milestones;
 
                 expect(milestones.length).toBe(taskWithMilestones.length);
 
@@ -1019,7 +1012,7 @@ describe("Gantt", () => {
                     task.Milestones?.forEach((milestone: Milestone) => {
                         const index = uniqueMilestoneTypes.indexOf(milestone.type);
                         const expectedColor = randomColors[index];
-                        const actualColor = milestones[index].getAttribute("fill");
+                        const actualColor = milestones[index]?.getAttribute("fill");
                         expect(actualColor).toBe(expectedColor);
                     });
                 });
@@ -1039,9 +1032,9 @@ describe("Gantt", () => {
                 VisualData.ColumnMilestones
             ], true);
             visualBuilder.updateRenderTimeout(dataView, () => {
-                const tasks: Task[] = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
+                const tasks: Task[] = d3SelectAll(visualBuilder.tasks).data() as Task[];
                 const parentTasks: Task[] = tasks.filter((task: Task) => task.children);
-                const oldMilestones: SVGElement[] = visualBuilder.milestones;
+                const oldMilestones = visualBuilder.milestones;
 
                 let parentIndex: number = getRandomNumber(0, parentTasks.length - 1),
                     parentTask = parentTasks[parentIndex],
@@ -1053,9 +1046,11 @@ describe("Gantt", () => {
                         return childTask.Milestones;
                     }
                 });
-                let mergedMilestone: Milestone[] | undefined  = parentTask.Milestones;
+                let mergedMilestone: Milestone[] = parentTask.Milestones || [];
                 childMilestones.forEach((milestoneArr) => {
-                    mergedMilestone = mergedMilestone?.concat(milestoneArr);
+                    if (milestoneArr) {
+                        mergedMilestone = mergedMilestone.concat(milestoneArr);
+                    }
                 });
 
                 const uniqDates = lodashUniqBy(mergedMilestone, "start");
@@ -1072,7 +1067,7 @@ describe("Gantt", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const updatedTasks: Task[] = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
                     const updatedParentTask = updatedTasks[parentTask.index];
-                    const milestones: SVGElement[] = visualBuilder.milestones;
+                    const milestones = visualBuilder.milestones;
                     const updatedTasksWithMilestones = updatedTasks.filter((t: Task) => t.Milestones?.length && t.index !== parentTask.index);
 
                     expect(milestones.length).toBe(oldMilestones.length - ((updatedParentTask.Milestones?.length ?? 0) - uniqDates.length));
@@ -1241,7 +1236,8 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    expect(visualBuilder.body.scrollLeft).not.toEqual(0);
+                    expect(visualBuilder.body).toBeDefined();
+                    expect(visualBuilder.body!.scrollLeft).not.toEqual(0);
                     done();
                 });
             });
@@ -1356,7 +1352,7 @@ describe("Gantt", () => {
 
         describe("Days off", () => {
             it("color", (done) => {
-                let color: string = getRandomHexColor();
+                const color: string = getRandomHexColor();
                 dataView.metadata.objects = {
                     daysOff: {
                         show: true,
@@ -1368,6 +1364,9 @@ describe("Gantt", () => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     visualBuilder.taskDaysOffRect.forEach(e => {
+                        if (e == null) {
+                            return;
+                        }
                         assertColorsMatch(e.style.fill, color);
                     });
 
@@ -1375,13 +1374,26 @@ describe("Gantt", () => {
                 });
             });
 
-            function checkDaysOff(
-                dayForCheck: number,
-                done: () => void): void {
+            function checkDaysOff(dayForCheck: Day, done: () => void): void {
+                const color: string = getRandomHexColor();
+                dataView.metadata.objects = {
+                    daysOff: {
+                        show: true,
+                        fill: VisualBuilder.getSolidColorStructuralObject(color),
+                        firstDayOfWeek: +dayForCheck
+                    }
+                };
+
+                fixDataViewDateValuesAggregation(dataView);
+
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    visualBuilder.taskDaysOffRect.forEach((e: Element) => {
-                        const isParentTask: boolean = e.hasChildNodes();
-                        let daysOff: TaskDaysOff = e["__data__"].daysOff; // Takes data from an element
+                    visualBuilder.taskDaysOffRect.forEach((e: SVGPathElement | null) => {
+                        if (e == null) {
+                            return;
+                        }
+
+                        const isParentTask: boolean = e!.hasChildNodes();
+                        let daysOff: TaskDaysOff = e!["__data__"].daysOff; // Takes data from an element
 
                         if (!isParentTask) {
                             const amountOfWeekendDays: number = daysOff[1];
@@ -1390,7 +1402,7 @@ describe("Gantt", () => {
                                 daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay)
                             );
 
-                            expect(firstDayOfWeek.getDay()).toEqual(dayForCheck);
+                            expect(firstDayOfWeek.getDay()).toEqual(+dayForCheck);
                         }
                     });
                     done();
@@ -1404,13 +1416,13 @@ describe("Gantt", () => {
                     dataView.metadata.objects = {
                         daysOff: {
                             show: true,
-                            firstDayOfWeek: day
+                            firstDayOfWeek: +Day[day]
                         }
                     };
 
                     fixDataViewDateValuesAggregation(dataView);
 
-                    checkDaysOff(+day, done);
+                    checkDaysOff(Day[day], done);
                 })(day));
             }
 
@@ -1442,7 +1454,7 @@ describe("Gantt", () => {
                     }
                 };
 
-                checkDaysOff(+Day.Monday, done);
+                checkDaysOff(Day.Monday, done);
             });
         });
 
@@ -1497,8 +1509,8 @@ describe("Gantt", () => {
                     let { parents, children } = getChildrenAndParents(tasks);
 
                     parents.forEach((parent: Task) => {
-                        const start: Date = (lodashMinBy(children[parent.name], (childTask: Task) => childTask.start)).start;
-                        const end: Date = (lodashMaxBy(children[parent.name], (childTask: Task) => childTask.end)).end;
+                        const start: Date = (lodashMinBy(children[parent.name], (childTask: Task) => childTask.start))!.start;
+                        const end: Date = (lodashMaxBy(children[parent.name], (childTask: Task) => childTask.end))!.end;
 
                         expect(parent.start).toEqual(start);
                         expect(parent.end).toEqual(end);
@@ -1731,7 +1743,10 @@ describe("Gantt", () => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     visualBuilder.taskResources.forEach(e =>
-                        expect(e.textContent.indexOf("...")).toEqual(-1));
+                        {
+                            expect(e).toBeDefined();
+                            expect(e!.textContent!.indexOf("...")).toEqual(-1);
+                        });
 
                     done();
                 });
@@ -1747,13 +1762,14 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    let taskRects: HTMLElement[] = visualBuilder.taskRect;
+                    const taskRects = visualBuilder.taskRect;
                     visualBuilder.taskResources.forEach((e, i) => {
-                        let labelElRawWidth: string = e.style.width;
-                        let labelElWidth: number = +labelElRawWidth.substring(0, labelElRawWidth.length - 2);
+                        expect(taskRects[i]).toBeDefined();
+                        const labelElRawWidth: string = e.style.width;
+                        const labelElWidth: number = +labelElRawWidth.substring(0, labelElRawWidth.length - 2);
 
-                        let taskElRawWidth: string = taskRects[i].style.width;
-                        let taskElWidth: number = +taskElRawWidth.substring(0, taskElRawWidth.length - 2);
+                        const taskElRawWidth: string = taskRects[i]!.style.width ?? "0";
+                        const taskElWidth: number = +taskElRawWidth.substring(0, taskElRawWidth.length - 2);
 
                         expect(labelElWidth <= taskElWidth).toBeTruthy();
                     });
@@ -1845,24 +1861,35 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    visualBuilder.taskLine.forEach(e =>
-                        assertColorsMatch(e.style.fill, color));
+                    visualBuilder.taskRect.forEach(e =>
+                        {
+                            expect(e).toBeTruthy();
+                            assertColorsMatch(e!.style.stroke, color);
+                        });
 
                     done();
                 });
             });
 
             it("height", (done) => {
-                let height: number = 50;
+                const height: number = 50;
                 dataView.metadata.objects = {
                     taskConfig: {
                         height
                     }
                 };
 
+                const expectedHeight: number = height / Gantt.ChartLineProportion;
+
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    visualBuilder.taskLine.forEach(e =>
-                        expect(+(e.getAttribute("height") ?? 0)).toEqual(height));
+                    visualBuilder.taskRect
+                    // collapsed parent tasks are not rendered so we need to filter them
+                    .filter((rect) => rect!.getAttribute("tabindex") === "0")
+                    .forEach((taskRect) => {
+                        expect(taskRect).toBeTruthy()
+                        const rectHeight = taskRect?.getBBox().height;
+                        expect(rectHeight).toBeCloseTo(expectedHeight, 1);
+                    });
 
                     done();
                 });
@@ -1889,7 +1916,8 @@ describe("Gantt", () => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const taskLabelsWidth: number = 110;
                     expect(visualBuilder.taskLabels).toBeTruthy();
-                    expect(visualBuilder.taskLineRect[0].getAttribute("width")).toEqual(taskLabelsWidth.toString());
+                    expect(visualBuilder.taskLineRect).not.toBeNull();
+                    expect(visualBuilder.taskLineRect!.getAttribute("width")).toEqual(taskLabelsWidth.toString());
                     done();
                 });
             });
@@ -1903,7 +1931,8 @@ describe("Gantt", () => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     expect(visualBuilder.taskLabels.length).toEqual(0);
-                    expect(visualBuilder.taskLineRect[0].getAttribute("width")).toEqual("0");
+                    expect(visualBuilder.taskLineRect).not.toBeNull();
+                    expect(visualBuilder.taskLineRect!.getAttribute("width")).toEqual("0");
                     done();
                 });
             });
@@ -1918,7 +1947,11 @@ describe("Gantt", () => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     visualBuilder.taskLabelsText.forEach(e =>
-                        assertColorsMatch(e.getAttribute("fill"), color));
+                        {
+                            const fill = e.getAttribute("fill");
+                            expect(fill).not.toBeNull();
+                            assertColorsMatch(fill!, color);
+                        });
 
                     done();
                 });
@@ -1943,7 +1976,8 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    expect(visualBuilder.legendGroup.children.length).not.toEqual(0);
+                    expect(visualBuilder.legendGroup).not.toBeNull();
+                    expect(visualBuilder.legendGroup!.children.length).not.toEqual(0);
 
                     done();
                 });
@@ -1957,7 +1991,8 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    expect(visualBuilder.legendGroup.children.length).toEqual(0);
+                    expect(visualBuilder.legendGroup).not.toBeNull();
+                    expect(visualBuilder.legendGroup!.children.length).toEqual(0);
                     done();
                 });
             });
@@ -2072,13 +2107,13 @@ describe("Gantt", () => {
         const backgroundColor: string = "#000000";
         const foregroundColor: string = "#ff00ff";
 
-        let taskRect: HTMLElement[],
-            taskLineRect: HTMLElement[],
+        let taskRect: (SVGPathElement | null)[],
+            taskLineRect: SVGRectElement | null,
             axisTicksText: SVGElement[],
             axisTicksLine: SVGElement[],
-            taskLabels: HTMLElement[],
-            chartLine: HTMLElement[],
-            taskProgress: HTMLElement[];
+            taskLabels: SVGGElement[],
+            chartLine: SVGLineElement[],
+            taskProgress: SVGLinearGradientElement[];
 
         beforeEach(() => {
             visualBuilder.visualHost.colorPalette.isHighContrast = true;
@@ -2109,16 +2144,18 @@ describe("Gantt", () => {
 
         it("axis color and categories background should be taken from theme color", (done) => {
             visualBuilder.updateRenderTimeout(dataView, () => {
-                expect(isColorAppliedToElements(taskLineRect, backgroundColor, "fill"));
+                expect(taskLineRect).not.toBeNull();
+                expect(isColorAppliedToElements([taskLineRect!], backgroundColor, "fill"));
                 done();
             });
         });
 
         it("should not use fill for task rects", (done) => {
             visualBuilder.updateRenderTimeout(dataView, () => {
-                expect(isColorAppliedToElements(taskRect, undefined, "fill"));
-                expect(isColorAppliedToElements(taskRect, foregroundColor, "stroke"));
-                expect(isColorAppliedToElements(taskRect, backgroundColor, "fill"));
+                expect(taskRect).not.toBeNull();
+                expect(isColorAppliedToElements(taskRect!, undefined, "fill"));
+                expect(isColorAppliedToElements(taskRect!, foregroundColor, "stroke"));
+                expect(isColorAppliedToElements(taskRect!, backgroundColor, "fill"));
                 done();
             });
         });
@@ -2147,9 +2184,9 @@ describe("Gantt", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 expect(dataView.categorical?.values?.some(value => value.highlights != null && value.highlights.length > 0)).toBe(false);
 
-                const tasks: HTMLElement[] = visualBuilder.tasks;
+                const tasks = visualBuilder.tasks;
 
-                tasks.forEach((task: HTMLElement) => {
+                tasks.forEach((task: SVGGElement) => {
                     expect(task.style.opacity).toBe(defaultOpacity);
                 });
 
@@ -2166,9 +2203,9 @@ describe("Gantt", () => {
                 let nonHighlightedCount: number = 0;
                 const expectedHighlightedCount: number = 1;
 
-                const tasks: HTMLElement[] = visualBuilder.tasks;
+                const tasks = visualBuilder.tasks;
 
-                tasks.forEach((task: HTMLElement) => {
+                tasks.forEach((task: SVGGElement) => {
                     const opacity: string = task?.style?.opacity;
                     if (opacity === defaultOpacity)
                         highlightedCount++;
