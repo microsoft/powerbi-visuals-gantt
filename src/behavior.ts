@@ -28,7 +28,6 @@ import { Selection as d3Selection } from 'd3-selection';
 
 import ISelectionId = powerbi.visuals.ISelectionId;
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
-type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
 import { Task, GroupedTask } from "./interfaces";
 import { LegendDataPoint } from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
@@ -71,7 +70,7 @@ export interface BehaviorOptions {
     dataPoints: Task[];
     legendDataPoints: LegendDataPoint[];
     hasHighlights: boolean;
-    clearCatcher: Selection<any>;
+    clearCatcher: d3Selection<HTMLElement, null, null, undefined>;
     taskSelection: d3Selection<SVGGElement, Task, any, any>;
     legendSelection: d3Selection<SVGGElement, LegendDataPoint, any, any>;
     subTasksCollapse: {

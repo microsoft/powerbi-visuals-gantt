@@ -65,7 +65,6 @@ import { textMeasurementService, valueFormatter as ValueFormatter } from "powerb
 import {
     createTooltipServiceWrapper,
     ITooltipServiceWrapper,
-    TooltipEnabledDataPoint
 } from "powerbi-visuals-utils-tooltiputils";
 
 // powerbi.extensibility.utils.color
@@ -119,9 +118,6 @@ import { TextProperties } from "powerbi-visuals-utils-formattingutils/lib/src/in
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import { DateTypeCardSettings, GanttChartSettingsModel } from "./ganttChartSettingsModels";
 import { DateType, DurationUnit, GanttRole, LabelForDate, MilestoneLineType, MilestoneShape, ResourceLabelPosition } from "./enums";
-
-// d3
-type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
 // powerbi
 import DataView = powerbi.DataView;
@@ -346,19 +342,19 @@ export class Gantt implements IVisual {
 
     private margin: IMargin = Gantt.DefaultMargin;
 
-    private body: Selection<any>;
-    private ganttSvg: d3Selection<SVGSVGElement, unknown, any, unknown>;
+    private body: d3Selection<HTMLElement, null, null, undefined>;
+    private ganttSvg: d3Selection<SVGSVGElement, null, null, undefined>;
     private viewModel: GanttViewModel;
-    private collapseAllGroup: Selection<any>;
-    private collapseAllBackground: Selection<any>;
-    private axisGroup: Selection<any>;
-    private axisBackground: Selection<any>;
-    private chartGroup: Selection<any>;
-    private taskGroup: Selection<any>;
-    private lineGroup: d3Selection<SVGGElement, unknown, any, unknown>;
-    private lineGroupWrapper: d3Selection<SVGRectElement, unknown, any, unknown>;
-    private lineGroupWrapperRightBorder: d3Selection<SVGRectElement, unknown, any, unknown>;
-    private ganttDiv: d3Selection<HTMLDivElement, unknown, any, unknown>;
+    private collapseAllGroup: d3Selection<SVGGElement, null, null, undefined>;
+    private collapseAllBackground: d3Selection<SVGRectElement, null, null, undefined>;
+    private axisGroup: d3Selection<SVGGElement, null, null, undefined>;
+    private axisBackground: d3Selection<SVGRectElement, null, null, undefined>;
+    private chartGroup: d3Selection<SVGGElement, null, null, undefined>;
+    private taskGroup: d3Selection<SVGGElement, null, null, undefined>;
+    private lineGroup: d3Selection<SVGGElement, null, null, undefined>;
+    private lineGroupWrapper: d3Selection<SVGRectElement, null, null, undefined>;
+    private lineGroupWrapperRightBorder: d3Selection<SVGRectElement, null, null, undefined>;
+    private ganttDiv: d3Selection<HTMLDivElement, null, null, undefined>;
     private behavior: Behavior;
     private eventService: IVisualEventService;
     private tooltipServiceWrapper: ITooltipServiceWrapper;
@@ -401,7 +397,8 @@ export class Gantt implements IVisual {
      */
     private createViewport(element: HTMLElement): void {
         // create div container to the whole viewport area
-        this.ganttDiv = this.body.append("div")
+        this.ganttDiv = this.body
+            .append("div")
             .classed(Gantt.Body.className, true);
 
         // create container to the svg area
@@ -2136,8 +2133,8 @@ export class Gantt implements IVisual {
             .selectAll(Gantt.Label.selectorName)
             .remove();
 
-        const axisLabel: Selection<any> = this.lineGroup
-            .selectAll(Gantt.Label.selectorName)
+        const axisLabel = this.lineGroup
+            .selectAll<SVGGElement, GroupedTask>(Gantt.Label.selectorName)
             .data(tasks);
 
         const axisLabelGroup = axisLabel
@@ -2447,8 +2444,8 @@ export class Gantt implements IVisual {
     private renderTasks(groupedTasks: GroupedTask[]): void {
         const taskConfigHeight: number = this.viewModel.settings.taskConfigCardSettings.height.value || DefaultChartLineHeight;
         const generalBarsRoundedCorners: boolean = this.viewModel.settings.generalCardSettings.barsRoundedCorners.value;
-        const taskGroupSelection: Selection<any> = this.taskGroup
-            .selectAll(Gantt.TaskGroup.selectorName)
+        const taskGroupSelection = this.taskGroup
+            .selectAll<SVGGElement, GroupedTask>(Gantt.TaskGroup.selectorName)
             .data(groupedTasks);
 
         taskGroupSelection
@@ -2463,7 +2460,7 @@ export class Gantt implements IVisual {
 
         taskGroupSelectionMerged.classed(Gantt.TaskGroup.className, true);
 
-        const taskSelection: Selection<Task> = this.taskSelectionRectRender(taskGroupSelectionMerged);
+        const taskSelection = this.taskSelectionRectRender(taskGroupSelectionMerged);
         this.taskMainRectRender(taskSelection, taskConfigHeight, generalBarsRoundedCorners);
         this.MilestonesRender(taskSelection, taskConfigHeight);
         this.taskProgressRender(taskSelection);
@@ -2534,9 +2531,9 @@ export class Gantt implements IVisual {
      * Render task progress rect
      * @param taskGroupSelection Task Group Selection
      */
-    private taskSelectionRectRender(taskGroupSelection: Selection<any>) {
-        const taskSelection: Selection<Task> = taskGroupSelection
-            .selectAll(Gantt.SingleTask.selectorName)
+    private taskSelectionRectRender(taskGroupSelection: d3Selection<SVGGElement, GroupedTask, SVGGElement, null>) {
+        const taskSelection = taskGroupSelection
+            .selectAll<SVGGElement, GroupedTask>(Gantt.SingleTask.selectorName)
             .data((d: GroupedTask) => d.tasks);
 
         taskSelection
@@ -2593,13 +2590,13 @@ export class Gantt implements IVisual {
      * @param barsRoundedCorners are bars with rounded corners
      */
     private taskMainRectRender(
-        taskSelection: Selection<Task>,
+        taskSelection: d3Selection<SVGGElement, Task, SVGGElement, GroupedTask>,
         taskConfigHeight: number,
         barsRoundedCorners: boolean): void {
         const highContrastModeTaskRectStroke: number = 1;
 
-        const taskRect: Selection<Task> = taskSelection
-            .selectAll(Gantt.TaskRect.selectorName)
+        const taskRect = taskSelection
+            .selectAll<SVGPathElement, Task>(Gantt.TaskRect.selectorName)
             .data((d: Task) => [d]);
 
         const taskRectMerged = taskRect
@@ -2686,10 +2683,13 @@ export class Gantt implements IVisual {
      * @param taskConfigHeight Task heights from settings
      */
     private MilestonesRender(
-        taskSelection: Selection<Task>,
+        taskSelection: d3Selection<SVGGElement, Task, SVGGElement, GroupedTask>,
         taskConfigHeight: number): void {
-            const taskMilestones: Selection<any> = taskSelection
-            .selectAll(Gantt.TaskMilestone.selectorName)
+            const taskMilestones = taskSelection
+            .selectAll<SVGGElement, {
+                key: number;
+                values: MilestonePath[];
+            }>(Gantt.TaskMilestone.selectorName)
             .data((d: Task) => {
                 const nestedByDate = d3Nest().key((d: Milestone) => d.start.toDateString()).entries(d.Milestones);
                 const updatedMilestones: MilestonePath[] = nestedByDate.map((nestedObj) => {
@@ -2731,7 +2731,9 @@ export class Gantt implements IVisual {
         };
 
         const taskMilestonesSelection = taskMilestonesMerged.selectAll("path");
-        const taskMilestonesSelectionData = taskMilestonesSelection.data(milestonesData => <MilestonePath[]>milestonesData.values);
+        const taskMilestonesSelectionData = taskMilestonesSelection.data(milestonesData => {
+            return <MilestonePath[]>milestonesData.values;
+        });
 
         // add milestones: for collapsed task may be several milestones of its children, in usual case - just 1 milestone
         const taskMilestonesSelectionAppend = taskMilestonesSelectionData.enter()
@@ -2763,7 +2765,7 @@ export class Gantt implements IVisual {
      * @param taskConfigHeight Task heights from settings
      */
     private taskDaysOffRender(
-        taskSelection: Selection<Task>,
+        taskSelection: d3Selection<SVGGElement, Task, SVGGElement, GroupedTask>,
         taskConfigHeight: number): void {
 
         const taskDaysOffColor: string = this.viewModel.settings.daysOffCardSettings.fill.value.value;
@@ -2774,8 +2776,8 @@ export class Gantt implements IVisual {
             .remove();
 
         if (taskDaysOffShow) {
-            const tasksDaysOff: Selection<TaskDaysOff, Task> = taskSelection
-                .selectAll(Gantt.TaskDaysOff.selectorName)
+            const tasksDaysOff = taskSelection
+                .selectAll<SVGPathElement, TaskDaysOff>(Gantt.TaskDaysOff.selectorName)
                 .data((d: Task) => {
                     const tasksDaysOff: TaskDaysOff[] = [];
 
@@ -2851,12 +2853,13 @@ export class Gantt implements IVisual {
      * @param taskSelection Task Selection
      */
     private taskProgressRender(
-        taskSelection: Selection<Task>): void {
+        taskSelection: d3Selection<SVGGElement, Task, SVGGElement, GroupedTask>
+    ): void {
         const taskProgressShow: boolean = this.viewModel.settings.taskCompletionCardSettings.show.value;
 
         let index = 0, groupedTaskIndex = 0;
-        const taskProgress: Selection<any> = taskSelection
-            .selectAll(Gantt.TaskProgress.selectorName)
+        const taskProgress = taskSelection
+            .selectAll<SVGLinearGradientElement, { key: string; values: LinearStop[]; }>(Gantt.TaskProgress.selectorName)
             .data((d: Task) => {
                 const taskProgressPercentage = this.getDaysOffTaskProgressPercent(d);
                 // logic used for grouped tasks, when there are several bars related to one category
@@ -2912,7 +2915,7 @@ export class Gantt implements IVisual {
      * @param taskConfigHeight Task heights from settings
      */
     private taskResourceRender(
-        taskSelection: Selection<Task>,
+        taskSelection: d3Selection<SVGGElement, Task, SVGGElement, GroupedTask>,
         taskConfigHeight: number): void {
 
         const groupTasks: boolean = this.viewModel.settings.generalCardSettings.groupTasks.value;
@@ -2949,8 +2952,8 @@ export class Gantt implements IVisual {
         const isGroupedByTaskName: boolean = this.viewModel.settings.generalCardSettings.groupTasks.value;
 
         if (isResourcesFilled && taskResourceShow) {
-            const taskResource: Selection<Task> = taskSelection
-                .selectAll(Gantt.TaskResource.selectorName)
+            const taskResource = taskSelection
+                .selectAll<SVGTextElement, Task>(Gantt.TaskResource.selectorName)
                 .data((d: Task) => [d]);
 
             const taskResourceMerged = taskResource
@@ -3022,7 +3025,7 @@ export class Gantt implements IVisual {
         }
     }
 
-    private static getSameRowNextTaskStartDate(task: Task, index: number, selection: Selection<Task>) {
+    private static getSameRowNextTaskStartDate(task: Task, index: number, selection: d3Selection<SVGTextElement, Task, SVGGElement, Task>) {
         let sameRowNextTaskStart: Date;
 
         selection
@@ -3247,8 +3250,8 @@ export class Gantt implements IVisual {
 
     private renderMilestoneDottedLines(line: Line[], timestamp: number, todayColor: string) {
         if (this.formattingSettings.milestonesCardSettings.showLines.value) {
-            const chartLineSelection: Selection<Line> = this.chartGroup
-                .selectAll(Gantt.ChartLine.selectorName)
+            const chartLineSelection = this.chartGroup
+                .selectAll<SVGLineElement, Line>(Gantt.ChartLine.selectorName)
                 .data(line);
 
             const chartLineSelectionMerged = chartLineSelection
@@ -3301,15 +3304,15 @@ export class Gantt implements IVisual {
             : 0;
 
         if (axisLength > scrollValue) {
-            (this.body.node() as SVGSVGElement)
+            this.body.node()
                 .querySelector(Gantt.Body.selectorName).scrollLeft = scrollValue;
         }
     }
 
-    private renderTooltip(selection: Selection<Line | Task | MilestonePath>): void {
+    private renderTooltip(selection: d3Selection<SVGElement, Line | Task | MilestonePath, any, any>): void {
         this.tooltipServiceWrapper.addTooltip(
             selection,
-            (tooltipEvent: TooltipEnabledDataPoint) => tooltipEvent.tooltipInfo);
+            (task: Task) => task.tooltipInfo);
     }
 
     private updateElementsPositions(margin: IMargin): void {
