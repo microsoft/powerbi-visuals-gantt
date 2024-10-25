@@ -2225,7 +2225,9 @@ export class Gantt implements IVisual {
             .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin() - Gantt.DefaultValues.IconMargin)
             .attr("x", Gantt.DefaultValues.BarMargin)
             .attr("focusable", true)
-            .attr("tabindex", 0);
+            .attr("tabindex", 1)
+            .attr("role", "option")
+            .attr("aria-label", (task: GroupedTask) => task.name);
 
         clickableArea
             .append("rect")
@@ -2311,7 +2313,8 @@ export class Gantt implements IVisual {
             const expandCollapseButton = this.collapseAllGroup
                 .append("svg")
                 .classed(Gantt.CollapseAllArrow.className, true)
-                .attr("tabindex", 0)
+                .attr("tabindex", 1)
+                .attr("role", "option")
                 .attr("focusable", true)
                 .attr("role", "option")
                 .attr("aria-label", this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"))
@@ -2348,7 +2351,8 @@ export class Gantt implements IVisual {
                     .style("font-weight", this.formattingSettings.taskLabelsCardSettings.font.bold.value ? "bold" : "normal")
                     .style("text-decoration", this.formattingSettings.taskLabelsCardSettings.font.underline.value ? "underline" : "none")
                     .style("fill", this.colorHelper.getHighContrastColor("foreground", this.formattingSettings.taskLabelsCardSettings.fill.value.value))
-                    .text(this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
+                    .text(this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"))
+                    .attr("aria-label", this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
             }
         }
     }
@@ -2639,15 +2643,19 @@ export class Gantt implements IVisual {
                 .style("stroke-width", highContrastModeTaskRectStroke);
         }
 
-        taskRectMerged.each(function () {
+        taskRectMerged.each(function (d: Task) {
             const node = d3Select(this);
             const width = Number(node.attr("width"));
             if (isNaN(width) || width === 0) {
-                node.attr("focusable", false);
-                node.attr("tabindex", -1);
+                node.attr("focusable", null);
+                node.attr("tabindex", null)
+                node.attr("role", null);
+                node.attr("aria-label", null);
             } else {
                 node.attr("focusable", true);
-                node.attr("tabindex", 0);
+                node.attr("tabindex", 2);
+                node.attr("role", "option");
+                node.attr("aria-label", d.name);
             }
         });
 
@@ -2760,7 +2768,9 @@ export class Gantt implements IVisual {
                 .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type))
                 .attr("stroke", (data: MilestonePath) => this.getMilestoneColor(data.type))
                 .attr("focusable", true)
-                .attr("tabindex", 0);
+                .attr("tabindex", 2)
+                .attr("role", "option")
+                .attr("aria-label", (data: MilestonePath) => data.type);
         }
 
         this.renderTooltip(taskMilestonesSelectionMerged);
