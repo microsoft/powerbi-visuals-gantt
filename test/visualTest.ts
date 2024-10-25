@@ -35,7 +35,7 @@ import lodashUniqBy from "lodash.uniqby";
 
 import {VisualData} from "./visualData";
 import {VisualBuilder} from "./visualBuilder";
-import {areColorsEqual, getEndDate, isColorAppliedToElements} from "./helpers/helpers";
+import {getEndDate, isColorAppliedToElements} from "./helpers/helpers";
 import {
     assertColorsMatch,
     clickElement,
@@ -121,12 +121,12 @@ describe("Gantt", () => {
         it("update", (done) => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 const taskResources = visualBuilder.taskResources;
-                let countOfTaskLabels = taskResources.length;
+                const countOfTaskLabels = taskResources.length;
 
-                let countOfTaskLines = visualBuilder.taskLabels.length;
-                let countOfTasks = visualBuilder.tasks.length;
+                const countOfTaskLines = visualBuilder.taskLabels.length;
+                const countOfTasks = visualBuilder.tasks.length;
 
-                let uniqueParents = getUniqueParentsCount(dataView, 5);
+                const uniqueParents = getUniqueParentsCount(dataView, 5);
 
                 expect(countOfTaskLabels).toEqual((dataView.table?.rows?.length ?? 0) + uniqueParents);
                 expect(countOfTaskLines).toEqual((dataView.table?.rows?.length ?? 0) + uniqueParents);
@@ -501,8 +501,7 @@ describe("Gantt", () => {
             fixDataViewDateValuesAggregation(dataView);
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-
-                let tasks = d3Select(visualBuilder.element).selectAll(".task").data(),
+                const tasks = d3SelectAll(visualBuilder.tasks).data() as Task[],
                     uniqueParentsCount: number = getUniqueParentsCount(dataView, 3);
 
                 expect(tasks.length).toEqual(defaultDataViewBuilder.valuesTaskTypeResource.length + uniqueParentsCount);
@@ -514,8 +513,34 @@ describe("Gantt", () => {
                 let childTaskMarginLeft: number = +(visualBuilder.taskLabelsText[++parentIndex].getAttribute("x") ?? 0);
                 expect(childTaskMarginLeft).toEqual(VisualClass["DefaultValues"]["TaskLineWidth"]);
 
-                childTaskMarginLeft = +(visualBuilder.taskLabelsText[++parentIndex].getAttribute("x") ?? 0);
-                expect(childTaskMarginLeft).toEqual(VisualClass["DefaultValues"]["TaskLineWidth"]);
+                done();
+            });
+        });
+
+        it("amount of expand/collapse buttons are the same as amount of parent tasks", (done) => {
+            dataView = defaultDataViewBuilder.getDataView([
+                VisualData.ColumnType,
+                VisualData.ColumnTask,
+                VisualData.ColumnStartDate,
+                VisualData.ColumnDuration,
+                VisualData.ColumnParent,
+                VisualData.ColumnResource]);
+
+            fixDataViewDateValuesAggregation(dataView);
+
+            visualBuilder.updateRenderTimeout(dataView, () => {
+                const tasks = d3SelectAll(visualBuilder.tasks).data() as Task[];
+                const parentTasks = tasks.filter((task) => task.children);
+
+                const taskLabels = visualBuilder.taskLabels;
+                const svgButtons = taskLabels
+                    .map((element) => element.querySelector("svg"))
+                    .filter((element) => element != null);
+
+                const uniqueParentsCount: number = getUniqueParentsCount(dataView, 3);
+
+                expect(parentTasks.length).toEqual(uniqueParentsCount);
+                expect(svgButtons.length).toEqual(uniqueParentsCount);
 
                 done();
             });
