@@ -101,7 +101,6 @@ export interface GanttViewModel {
     settings: GanttChartSettingsModel;
     tasks: Task[];
     legendData: LegendData;
-    milestonesData: MilestoneData;
     taskTypes: TaskTypes;
     isDurationFilled: boolean;
     isEndDateFilled: boolean;
@@ -158,19 +157,11 @@ export interface Milestone {
     category?: string;
     start: Date;
     tooltipInfo: VisualTooltipDataItem[];
+    color?: string;
+    shapeType?: string;
+    identity: ISelectionId | undefined;
 }
 
 export interface MilestonePath extends Milestone {
     taskID: number;
-}
-
-export interface MilestoneDataPoint {
-    name: string;
-    shapeType: string;
-    color: string;
-    identity: ISelectionId;
-}
-
-export interface MilestoneData {
-    dataPoints: MilestoneDataPoint[];
 }

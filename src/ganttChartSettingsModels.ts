@@ -20,7 +20,7 @@ import Group = formattingSettings.Group;
 
 import IEnumMember = powerbi.IEnumMember;
 import {Day} from "./enums";
-import {MilestoneDataPoint} from "./interfaces";
+import {Milestone} from "./interfaces";
 
 const durationUnitsOptions : IEnumMember[] = [
     { displayName: "Visual_DurationUnit_Days", value: DurationUnit.Day },
@@ -680,15 +680,14 @@ export class GanttChartSettingsModel extends Model {
         this.setLocalizedDisplayName(milestoneLineTypes, localizationManager);
     }       
 
-    populateMilestones(milestonesWithoutDuplicates: {
-        [name: string]: MilestoneDataPoint
-    }) {
+    populateMilestones(milestones: Milestone[]) {
+        const milestoneGroups: Group[] = [this.milestonesCardSettings.lineGroup];
 
-        const milestoneGroups = this.milestonesCardSettings.groups || [];
-
-        if (milestonesWithoutDuplicates) {
-            for (const uniqMilestones in milestonesWithoutDuplicates) {
-                const milestone = milestonesWithoutDuplicates[uniqMilestones];
+        if (milestones) {
+            for (const milestone of milestones) {
+                if (!milestone.type) {
+                    continue;
+                }
 
                 const color = new formattingSettings.ColorPicker({
                     name: "fill",
@@ -709,8 +708,8 @@ export class GanttChartSettingsModel extends Model {
                 const identityIndex = identityKey?.match(/"identityIndex":(\d+)/)?.[1] || identityKey;
 
                 const newGroup = new Group({
-                    name: `${milestone.name}#${identityIndex}`,
-                    displayName: milestone.name,
+                    name: `${milestone.type}#${identityIndex}`,
+                    displayName: milestone.type,
                     slices: [color, shape]
                 });
 
