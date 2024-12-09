@@ -152,7 +152,7 @@ export class Behavior {
         this.options.legendSelection.on("contextmenu", (event: MouseEvent, dataPoint: LegendDataPoint) => {
             event.preventDefault();
             event.stopPropagation();
-            this.selectionManager.showContextMenu(dataPoint? dataPoint.identity: {}, {
+            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity: {}, {
                 x: event.clientX,
                 y: event.clientY,
             });

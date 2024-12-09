@@ -705,8 +705,11 @@ export class GanttChartSettingsModel extends Model {
                     selector: ColorHelper.normalizeSelector((<ISelectionId>milestone.identity).getSelector(), false),
                 });
 
+                const identityKey = milestone.identity.getKey();
+                const identityIndex = identityKey?.match(/"identityIndex":(\d+)/)?.[1] || identityKey;
+
                 const newGroup = new Group({
-                    name: milestone.name,
+                    name: `${milestone.name}#${identityIndex}`,
                     displayName: milestone.name,
                     slices: [color, shape]
                 });
