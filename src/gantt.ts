@@ -630,58 +630,67 @@ export class Gantt implements IVisual {
      * @param isEndDateFilled if end date is filled
      * @param roleLegendText customized legend name
      */
-    public getTooltipInfo(
+    public static getTooltipInfo({
+        task,
+        formatters,
+        durationUnit,
+        localizationManager,
+        isEndDateFilled,
+        roleLegendText
+    }: {
         task: Task,
         formatters: GanttChartFormatters,
         durationUnit: DurationUnit,
+        localizationManager: ILocalizationManager,
         isEndDateFilled: boolean,
-        roleLegendText?: string): VisualTooltipDataItem[] {
+        roleLegendText?: string;
+    }): VisualTooltipDataItem[] {
 
         const tooltipDataArray: VisualTooltipDataItem[] = [];
         if (task.taskType) {
             tooltipDataArray.push({
-                displayName: roleLegendText || this.localizationManager.getDisplayName("Role_Legend"),
+                displayName: roleLegendText || localizationManager.getDisplayName("Role_Legend"),
                 value: task.taskType
             });
         }
 
         tooltipDataArray.push({
-            displayName: this.localizationManager.getDisplayName("Role_Task"),
+            displayName: localizationManager.getDisplayName("Role_Task"),
             value: task.name
         });
 
         if (task.start && !isNaN(task.start.getDate())) {
             tooltipDataArray.push({
-                displayName: this.localizationManager.getDisplayName("Role_StartDate"),
+                displayName: localizationManager.getDisplayName("Role_StartDate"),
                 value: formatters.startDateFormatter.format(task.start)
             });
         }
 
         if (lodashIsEmpty(task.Milestones) && task.end && !isNaN(task.end.getDate())) {
             tooltipDataArray.push({
-                displayName: this.localizationManager.getDisplayName("Role_EndDate"),
+                displayName: localizationManager.getDisplayName("Role_EndDate"),
                 value: formatters.startDateFormatter.format(task.end)
             });
         }
 
         if (lodashIsEmpty(task.Milestones) && task.duration && !isEndDateFilled) {
-            const durationLabel: string = DurationHelper.generateLabelForDuration(task.duration, durationUnit, this.localizationManager);
+            const durationLabel: string = DurationHelper.generateLabelForDuration(task.duration, durationUnit, localizationManager);
             tooltipDataArray.push({
-                displayName: this.localizationManager.getDisplayName("Role_Duration"),
+                displayName: localizationManager.getDisplayName("Role_Duration"),
                 value: durationLabel
             });
         }
 
         if (task.completion) {
             tooltipDataArray.push({
-                displayName: this.localizationManager.getDisplayName("Role_Completion"),
+                displayName: localizationManager.getDisplayName("Role_Completion"),
                 value: formatters.completionFormatter.format(task.completion)
             });
         }
 
         if (task.resource) {
             tooltipDataArray.push({
-                displayName: this.localizationManager.getDisplayName("Role_Resource"),
+                displayName: localizationManager.getDisplayName("Role_Resource"),
                 value: task.resource
             });
         }
@@ -1008,7 +1017,7 @@ export class Gantt implements IVisual {
     private addTooltipInfoForCollapsedTasks(tasks: Task[], collapsedTasks: string[], formatters: GanttChartFormatters, durationUnit: DurationUnit, isEndDateFilled: boolean) {
         tasks.forEach((task: Task) => {
             if (!task.children || collapsedTasks.includes(task.name)) {
-                task.tooltipInfo = this.getTooltipInfo(task, formatters, durationUnit, isEndDateFilled, this.formattingSettings.legendCardSettings.titleText.value);
+                task.tooltipInfo = Gantt.getTooltipInfo({ task, formatters, durationUnit, localizationManager: this.localizationManager, isEndDateFilled, roleLegendText: this.formattingSettings.legendCardSettings.titleText.value });
                 if (task.Milestones) {
                     task.Milestones.forEach((milestone) => {
                         const dateFormatted = formatters.startDateFormatter.format(task.start);
@@ -2369,8 +2378,7 @@ export class Gantt implements IVisual {
             }
         });
 
-        // eslint-disable-next-line powerbi-visuals/insecure-random
-        const newId = crypto?.randomUUID() || Math.random().toString();
+        const newId = crypto.randomUUID();
         this.collapsedTasksUpdateIDs.push(newId);
 
         this.setJsonFiltersValues(this.collapsedTasks, newId);
@@ -2402,8 +2410,7 @@ export class Gantt implements IVisual {
             });
         }
 
-        // eslint-disable-next-line powerbi-visuals/insecure-random
-        const newId = crypto?.randomUUID() || Math.random().toString();
+        const newId = crypto.randomUUID();
         this.collapsedTasksUpdateIDs.push(newId);
 
         this.setJsonFiltersValues(this.collapsedTasks, newId);
@@ -2739,9 +2746,7 @@ export class Gantt implements IVisual {
         };
 
         const taskMilestonesSelection = taskMilestonesMerged.selectAll("path");
-        const taskMilestonesSelectionData = taskMilestonesSelection.data(milestonesData => {
-            return <MilestonePath[]>milestonesData.values;
-        });
+        const taskMilestonesSelectionData = taskMilestonesSelection.data(milestonesData => milestonesData.values);
 
         // add milestones: for collapsed task may be several milestones of its children, in usual case - just 1 milestone
         const taskMilestonesSelectionAppend = taskMilestonesSelectionData.enter()
@@ -3405,12 +3410,10 @@ export class Gantt implements IVisual {
                 }
 
                 case Gantt.TaskResourcePropertyIdentifier.objectName:
-                    if (!this.viewModel.isResourcesFilled) {
-                        settings.taskResourceCardSettings.visible = false;
-                    } else {
-                        if (settings.taskResourceCardSettings.matchLegendColors.value) {
-                            settings.taskResourceCardSettings.fill.visible = false;
-                        }
+                    settings.taskResourceCardSettings.visible = this.viewModel.isResourcesFilled;
+
+                    if (this.viewModel.isResourcesFilled && settings.taskResourceCardSettings.matchLegendColors.value) {
+                        settings.taskResourceCardSettings.fill.visible = false;
                     }
                     break;
             }

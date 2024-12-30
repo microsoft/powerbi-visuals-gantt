@@ -480,7 +480,7 @@ describe("Gantt", () => {
             };
             const localizationManager = visualBuilder.visualHost.createLocalizationManager();
 
-            const tooltips = VisualClass.getTooltipInfo(task, formatters, durationUnit, localizationManager, false, undefined);
+            const tooltips = VisualClass.getTooltipInfo({task, formatters, durationUnit, localizationManager, isEndDateFilled: false, roleLegendText: undefined});
             tooltips
                 .filter(t => t.value !== null && t.value !== undefined)
                 .forEach(t => {
@@ -1021,6 +1021,7 @@ describe("Gantt", () => {
                     };
                 }
 
+                // @ts-ignore: Could not fix the type error.
                 dataView?.categorical?.categories?.[milestoneColumnIndex]?.objects?.push(milestoneSettingsObject);
             });
 
@@ -1035,6 +1036,7 @@ describe("Gantt", () => {
                 // for each unique milestone type must be its own color and shapeType
                 taskWithMilestones.forEach((task: Task) => {
                     task.Milestones?.forEach((milestone: Milestone) => {
+                        // TODO: fix errors
                         const index = uniqueMilestoneTypes.indexOf(milestone.type);
                         const expectedColor = randomColors[index];
                         const actualColor = milestones[index]?.getAttribute("fill");
