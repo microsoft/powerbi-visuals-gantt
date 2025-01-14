@@ -726,6 +726,13 @@
                         }
                     }
                 },
+                "axisFontSize": {
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
                 "backgroundColor": {
                     "type": {
                         "fill": {

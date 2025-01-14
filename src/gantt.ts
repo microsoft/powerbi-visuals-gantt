@@ -2043,6 +2043,7 @@ export class Gantt implements IVisual {
         const axisTextColor: string = this.viewModel.settings.dateTypeCardSettings.axisTextColor.value.value;
         const axisBackgroundColor: string = this.viewModel.settings.dateTypeCardSettings.backgroundColor.value.value;
         const axisBackgroundOpacity: number = this.viewModel.settings.dateTypeCardSettings.backgroundOpacity.value;
+        const axisFontSize: number = this.viewModel.settings.dateTypeCardSettings.axisFontSize.value;
 
         const xAxis = xAxisProperties.axis;
         this.axisGroup.call(xAxis.tickSizeOuter(xAxisProperties.outerPadding));
@@ -2062,7 +2063,8 @@ export class Gantt implements IVisual {
 
         this.axisGroup
             .selectAll(".tick text")
-            .style("fill", (timestamp: number) => this.setTickColor(timestamp, axisTextColor));
+            .style("fill", (timestamp: number) => this.setTickColor(timestamp, axisTextColor))
+            .style("font-size", axisFontSize);
 
         this.axisBackground
             .style("fill", axisBackgroundColor)

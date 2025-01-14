@@ -10,6 +10,7 @@
 * Add axis/task labels background color
 * Make sticky header with axis and "Collapse all" button
 * Make draggable column bigger
+* Add font settings for axis text
 
 ### Code improvements
 * Fix task fill gradient and keyboard focus styles
@@ -19,6 +20,7 @@
 * Apply font settings to "Collapse All/Expand All" button
 * Rename all "Fill" properties to "Color"
 * Enable the support multiple visual selection feature
+* Fix bug when "Days off" were not rendered
 
 
 # 3.0.13

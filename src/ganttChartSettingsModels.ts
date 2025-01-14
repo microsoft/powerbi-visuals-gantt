@@ -610,6 +610,23 @@ export class DateTypeCardSettings extends CompositeCard {
         slices: [this.type, this.todayColor, this.axisColor, this.axisTextColor],
     });
 
+    axisFontSize = new formattingSettings.NumUpDown({
+        name: "axisFontSize",
+        displayName: "Font Size",
+        displayNameKey: "Visual_FontSize",
+        value: 10,
+        options: {
+            minValue: { value: 0, type: ValidatorType.Min },
+        },
+    });
+
+    fontGroup = new Group({
+        name: "dateTypeFontGroup",
+        displayName: "Font",
+        displayNameKey: "Visual_Font",
+        slices: [this.axisFontSize],
+    });
+
     backgroundColor = new formattingSettings.ColorPicker({
         name: "backgroundColor",
         displayName: "Color",
@@ -637,7 +654,7 @@ export class DateTypeCardSettings extends CompositeCard {
 
     name: string = "dateType";
     displayNameKey: string = "Visual_DateType";
-    groups = [this.dateTypeGeneralGroup, this.backgroundGroup];
+    groups = [this.dateTypeGeneralGroup, this.fontGroup, this.backgroundGroup];
 }
 
 export class GanttChartSettingsModel extends Model { 
