@@ -1005,7 +1005,7 @@ export class Gantt implements IVisual {
                             : new Date(lastDayOffListItem[0].getFullYear(), lastDayOffListItem[0].getMonth(), lastDayOffListItem[0].getDate() + 1);
                         datesDiff = Math.ceil((task.end.getTime() - lastDayOff.getTime()) / MillisecondsInADay);
                     }
-                } while (task.daysOffList.length && datesDiff - DaysInAWeekend > DaysInAWeek);
+                } while (task.daysOffList.length && datesDiff - DaysInAWeekend >= DaysInAWeek);
             }
 
             if (task.parent) {
@@ -1405,9 +1405,9 @@ export class Gantt implements IVisual {
         return isFirstDayOff || isSecondDayOff;
     }
 
-    private static isOneDay(firstDate: Date, secondDate: Date): boolean {
+    private static isSameDay(firstDate: Date, secondDate: Date): boolean {
         return firstDate.getMonth() === secondDate.getMonth() && firstDate.getFullYear() === secondDate.getFullYear()
-            && firstDate.getDay() === secondDate.getDay();
+            && firstDate.getDate() === secondDate.getDate();
     }
 
     /**
@@ -1425,7 +1425,7 @@ export class Gantt implements IVisual {
             amountOfLastDaysOff: 0
         };
 
-        if (Gantt.isOneDay(fromDate, toDate)) {
+        if (Gantt.isSameDay(fromDate, toDate)) {
             if (!Gantt.isDayOff(fromDate, +firstDayOfWeek)) {
                 return tempDaysOffData.list;
             }
