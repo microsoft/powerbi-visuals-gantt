@@ -20,7 +20,7 @@ import Group = formattingSettings.Group;
 
 import IEnumMember = powerbi.IEnumMember;
 import {Day} from "./enums";
-import {Milestone} from "./interfaces";
+import {MilestoneDescriptor} from "./interfaces";
 
 const durationUnitsOptions : IEnumMember[] = [
     { displayName: "Visual_DurationUnit_Days", value: DurationUnit.Day },
@@ -697,42 +697,41 @@ export class GanttChartSettingsModel extends Model {
         this.setLocalizedDisplayName(milestoneLineTypes, localizationManager);
     }       
 
-    populateMilestones(milestones: Milestone[]) {
-        const milestoneGroups: Group[] = [this.milestonesCardSettings.lineGroup];
-
-        if (milestones) {
-            for (const milestone of milestones) {
-                if (!milestone.type) {
-                    continue;
-                }
-
-                const color = new formattingSettings.ColorPicker({
-                    name: "fill",
-                    displayNameKey: "Visual_Color",
-                    selector: ColorHelper.normalizeSelector((<ISelectionId>milestone.identity).getSelector(), false),
-                    value: { value: milestone.color }
-                });
-
-                const shape = new formattingSettings.ItemDropdown({
-                    name: "shapeType",
-                    displayNameKey: "Visual_Shape",
-                    items: shapesOptions,
-                    value: shapesOptions.filter(el => el.value === milestone.shapeType)[0],
-                    selector: ColorHelper.normalizeSelector((<ISelectionId>milestone.identity).getSelector(), false),
-                });
-
-                const identityKey = milestone.identity.getKey();
-                const identityIndex = identityKey?.match(/"identityIndex":(\d+)/)?.[1] || identityKey;
-
-                const newGroup = new Group({
-                    name: `${milestone.type}#${identityIndex}`,
-                    displayName: milestone.type,
-                    slices: [color, shape]
-                });
-
-                milestoneGroups.push(newGroup);
-            }
+    populateMilestones(milestones: MilestoneDescriptor[]) {
+        if (!milestones) {
+            return;
         }
+
+        const updatedGroups: Group[] = [this.milestonesCardSettings.lineGroup];
+
+        for (const milestone of milestones) {
+            if (!milestone.type) {
+                continue;
+            }
+
+            const color = new formattingSettings.ColorPicker({
+                name: "fill",
+                displayNameKey: "Visual_Color",
+                value: { value: milestone.color },
+            });
+
+            const shape = new formattingSettings.ItemDropdown({
+                name: "shapeType",
+                displayNameKey: "Visual_Shape",
+                items: shapesOptions,
+                value: shapesOptions.find(el => el.value === milestone.shapeType),
+            });
+
+            const newGroup = new Group({
+                name: milestone.type,
+                displayName: milestone.type,
+                slices: [color, shape]
+            });
+
+            updatedGroups.push(newGroup);
+        }
+
+        this.milestonesCardSettings.groups = updatedGroups;
     }
 
     public populateLegend(dataPoints: LegendDataPoint[], localizationManager: ILocalizationManager) {

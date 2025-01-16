@@ -30,7 +30,6 @@ import DataView = powerbi.DataView;
 import IViewport = powerbi.IViewport;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import DataViewValueColumnGroup = powerbi.DataViewValueColumnGroup;
-import ISelectionId = powerbi.visuals.ISelectionId;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 
 import { valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
@@ -44,6 +43,7 @@ import IMargin = SVGUtil.IMargin;
 
 import { GanttChartSettingsModel } from "./ganttChartSettingsModels";
 import { SelectableDataPoint } from "./behavior";
+import { MilestoneShape } from "./enums";
 
 export type DayOffData = [Date, number];
 
@@ -94,6 +94,12 @@ export interface GroupedTask {
 export interface GanttChartFormatters {
     startDateFormatter: IValueFormatter;
     completionFormatter: IValueFormatter;
+}
+
+export interface MilestoneDescriptor {
+    type: string;
+    color?: string;
+    shapeType?: MilestoneShape;
 }
 
 export interface GanttViewModel {
@@ -159,7 +165,6 @@ export interface Milestone {
     tooltipInfo: VisualTooltipDataItem[];
     color?: string;
     shapeType?: string;
-    identity: ISelectionId | undefined;
 }
 
 export interface MilestonePath extends Milestone {
