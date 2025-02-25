@@ -39,7 +39,7 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 import { valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
 
 import { converterHelper } from "powerbi-visuals-utils-dataviewutils";
-import {GanttRole} from "./enums";
+import { GanttRole } from "./enums";
 
 
 const extraInformationRole = GanttRole.ExtraInformation;

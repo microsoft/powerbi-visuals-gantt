@@ -1036,7 +1036,6 @@ describe("Gantt", () => {
                 // for each unique milestone type must be its own color and shapeType
                 taskWithMilestones.forEach((task: Task) => {
                     task.Milestones?.forEach((milestone: Milestone) => {
-                        // TODO: fix errors
                         const index = uniqueMilestoneTypes.indexOf(milestone.type);
                         const expectedColor = randomColors[index];
                         const actualColor = milestones[index]?.getAttribute("fill");

@@ -143,7 +143,7 @@ export class Behavior {
         this.options.taskSelection.on("contextmenu", (event: MouseEvent, dataPoint: Task) => {
             event.preventDefault();
             event.stopPropagation();
-            this.selectionManager.showContextMenu(dataPoint? dataPoint.identity: {}, {
+            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
                 x: event.clientX,
                 y: event.clientY,
             });
@@ -152,7 +152,7 @@ export class Behavior {
         this.options.legendSelection.on("contextmenu", (event: MouseEvent, dataPoint: LegendDataPoint) => {
             event.preventDefault();
             event.stopPropagation();
-            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity: {}, {
+            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
                 x: event.clientX,
                 y: event.clientY,
             });
@@ -189,12 +189,12 @@ export class Behavior {
         });
 
         this.options.allSubTasksCollapse.arrowSelection.on("keydown", (event: KeyboardEvent) => {
-                if (event.code === "Enter" || event.code === "Space") {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    this.options.allSubTasksCollapse.callback();
-                }
-            });
+            if (event.code === "Enter" || event.code === "Space") {
+                event.stopPropagation();
+                event.preventDefault();
+                this.options.allSubTasksCollapse.callback();
+            }
+        });
     }
 
     public renderSelection(hasHighlights?: boolean): void {

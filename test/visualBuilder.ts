@@ -31,7 +31,7 @@ import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructor
 import { VisualBuilderBase } from "powerbi-visuals-utils-testutils";
 import { Task } from "../src/interfaces";
 import { Gantt as VisualClass } from "../src/gantt";
-import {DurationUnit} from "../src/enums";
+import { DurationUnit } from "../src/enums";
 
 interface TaskMockParamsInterface {
     id: number;
@@ -116,8 +116,8 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
         return Array.from(this.taskLines.querySelectorAll("g.label"));
     }
 
-    public get taskLabelsText(): SVGTextElement[]  {
-        return this.taskLabels.map((element) => element.querySelector("text")!);        
+    public get taskLabelsText(): SVGTextElement[] {
+        return this.taskLabels.map((element) => element.querySelector("text")!);
     }
 
     public get taskLineRect(): SVGRectElement | null {
@@ -126,7 +126,7 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
 
     public get tasksGroups(): SVGGElement[] {
         if (!this.chart) return [];
-        
+
         const tasks = this.chart.querySelector<SVGGElement>("g.tasks");
         if (!tasks) return [];
 
@@ -151,7 +151,7 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
         return paths;
     }
 
-    public get taskRect(): (SVGPathElement | null)[]  {
+    public get taskRect(): (SVGPathElement | null)[] {
         return this.tasks.map((element) => element.querySelector<SVGPathElement>("path.task-rect"));
     }
 

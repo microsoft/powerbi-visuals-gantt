@@ -252,16 +252,6 @@ export class Gantt implements IVisual {
         propertyName: "show"
     };
 
-    private static CollapsedTasksPropertyIdentifier: DataViewObjectPropertyIdentifier = {
-        objectName: "collapsedTasks",
-        propertyName: "list"
-    };
-
-    private static CollapsedTasksUpdateIdPropertyIdentifier: DataViewObjectPropertyIdentifier = {
-        objectName: "collapsedTasksUpdateId",
-        propertyName: "value"
-    };
-
     public static DefaultValues = {
         AxisTickSize: 6,
         BarMargin: 2,
@@ -362,7 +352,6 @@ export class Gantt implements IVisual {
     private host: IVisualHost;
     private selectionManager: ISelectionManager;
     private localizationManager: ILocalizationManager;
-    private isInteractiveChart: boolean = false;
     private groupTasksPrevValue: boolean = false;
     private collapsedTasks: string[] = [];
     private collapseAllFlag: "data-is-collapsed";
@@ -928,7 +917,7 @@ export class Gantt implements IVisual {
         isEndDateFilled: boolean
         hasHighlights: boolean
         sortingOptions: SortingOptions;
-}    ): Task[] {
+    }): Task[] {
         const categoricalValues: DataViewValueColumns = dataView?.categorical?.values;
 
         let tasks: Task[] = [];
@@ -1110,7 +1099,7 @@ export class Gantt implements IVisual {
         const milestoneType: string = (values.Milestones && !lodashIsEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
 
         const startDate: Date = (values.StartDate && values.StartDate[index]
-                && isValidDate(new Date(values.StartDate[index])) && new Date(values.StartDate[index]))
+            && isValidDate(new Date(values.StartDate[index])) && new Date(values.StartDate[index]))
             || new Date(Date.now());
 
         const extraInformation: ExtraInformation[] = this.getExtraInformationFromValues(values, index);
@@ -1151,7 +1140,7 @@ export class Gantt implements IVisual {
             highlight: highlight !== null
         };
 
-        return {taskParentName, milestone: milestoneType, startDate, extraInformation, highlight, task};
+        return { taskParentName, milestone: milestoneType, startDate, extraInformation, highlight, task };
     }
 
     private computeTaskGroupAttributes(
@@ -1324,7 +1313,7 @@ export class Gantt implements IVisual {
     public static sortTasksWithParents(tasks: Task[], sortingOptions: SortingOptions): Task[] {
         const sortingFunction = ((a: Task, b: Task) => {
             const sortValue = (a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
-            return  sortValue * (sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1);
+            return sortValue * (sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1);
         });
 
         if (sortingOptions.isCustomSortingNeeded) {
@@ -1718,7 +1707,7 @@ export class Gantt implements IVisual {
         }
     }
 
-    private updateInternal(options: VisualUpdateOptions) : void {
+    private updateInternal(options: VisualUpdateOptions): void {
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(GanttChartSettingsModel, options.dataViews[0]);
         this.formattingSettings.setLocalizedOptions(this.localizationManager);
         this.setHighContrastColors(this.colorHelper);
@@ -2002,7 +1991,7 @@ export class Gantt implements IVisual {
             if (this.sortingOptions.isCustomSortingNeeded) {
                 const sortingFunction = ((a: string, b: string) => {
                     const sortValue = (a < b ? -1 : a > b ? 1 : 0)
-                    return  sortValue * (this.sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1);
+                    return sortValue * (this.sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1);
                 });
                 taskKeys.sort(sortingFunction);
             }
@@ -2142,7 +2131,7 @@ export class Gantt implements IVisual {
                 .attr("width", 0)
                 .attr("height", 0)
                 .attr("fill", "transparent");
-            
+
             this.lineGroupWrapperRightBorder
                 .attr("width", 0)
                 .attr("height", 0);
@@ -2729,7 +2718,7 @@ export class Gantt implements IVisual {
     private MilestonesRender(
         taskSelection: d3Selection<SVGGElement, Task, SVGGElement, GroupedTask>,
         taskConfigHeight: number): void {
-            const taskMilestones = taskSelection
+        const taskMilestones = taskSelection
             .selectAll<SVGGElement, {
                 key: number;
                 values: MilestonePath[];
@@ -3370,7 +3359,7 @@ export class Gantt implements IVisual {
             : 0;
 
         const ganttDiv = this.ganttDiv.node();
-        
+
         const translateX: number = taskLabelsWidth + margin.left + Gantt.SubtasksLeftMargin;
         this.chartGroup.attr("transform", SVGManipulations.translate(translateX, margin.top));
 
@@ -3412,7 +3401,7 @@ export class Gantt implements IVisual {
         const settings: GanttChartSettingsModel = this.formattingSettings;
 
         settings.cards.forEach(element => {
-            switch(element.name) {
+            switch (element.name) {
                 case Gantt.MilestonesPropertyIdentifier.objectName: {
                     if (this.viewModel && !this.viewModel.isDurationFilled && !this.viewModel.isEndDateFilled) {
                         return;

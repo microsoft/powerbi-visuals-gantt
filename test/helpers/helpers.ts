@@ -27,7 +27,7 @@ import { timeSecond as d3TimeSecond, timeMinute as d3TimeMinute, timeHour as d3T
 
 import { RgbColor, parseColorString } from "powerbi-visuals-utils-colorutils";
 
-import {DurationUnit} from "../../src/enums";
+import { DurationUnit } from "../../src/enums";
 
 export function areColorsEqual(firstColor: string, secondColor: string): boolean {
     const firstConvertedColor: RgbColor = parseColorString(firstColor),
