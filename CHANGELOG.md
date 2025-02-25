@@ -2,6 +2,9 @@
 ### Visual changes
 * Add background toggles for category labels and date type axis (they overwrite General background)
 
+### Code improvements
+* Update outdated packages
+
 ## 3.0.14
 ### Visual changes
 * Add keyboard focus animation to better visualize focus
