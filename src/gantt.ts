@@ -51,6 +51,7 @@ import lodashUniqBy from "lodash.uniqby";
 import { Dictionary as lodashDictionary } from "lodash";
 
 import powerbi from "powerbi-visuals-api";
+import ISelectionId = powerbi.visuals.ISelectionId;
 
 // powerbi.extensibility.utils.svg
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
@@ -862,17 +863,30 @@ export class Gantt implements IVisual {
 
         const category = dataView.categorical.categories[milestonesIndex];
         const values = category.values;
+        const map: Record<string, ISelectionId> = {};
 
         const milestones: MilestoneDescriptor[] = values.map((milestone, index) => {
             const milestoneObjects = category.objects?.[index];
 
             const shapeType: MilestoneShape | undefined = milestoneObjects?.milestones?.shapeType as MilestoneShape || MilestoneShape.Rhombus;
             const color: string | undefined = (milestoneObjects?.milestones?.fill as Fill)?.solid?.color || Gantt.DefaultValues.TaskColor;
+            let identity: ISelectionId;
+            if (map[milestone.toString()]) {
+                identity = map[milestone.toString()];
+            } else {
+                identity = this.host.createSelectionIdBuilder()
+                    .withCategory(category, index)
+                    .withMeasure(milestone.toString())
+                    .createSelectionId();
+
+                map[milestone.toString()] = identity;
+            }
             
             const milestoneDescriptor: MilestoneDescriptor = {
                 type: milestone.toString(),
                 shapeType: shapeType,
                 color: color,
+                identity: identity,
             };
 
             return milestoneDescriptor;
@@ -2046,6 +2060,7 @@ export class Gantt implements IVisual {
     private renderAxis(xAxisProperties: IAxisProperties, duration: number = Gantt.DefaultDuration): void {
         const axisColor: string = this.viewModel.settings.dateTypeCardSettings.axisColor.value.value;
         const axisTextColor: string = this.viewModel.settings.dateTypeCardSettings.axisTextColor.value.value;
+        const axisEnableBackground: boolean = this.viewModel.settings.dateTypeCardSettings.enableBackground.value;
         const axisBackgroundColor: string = this.viewModel.settings.dateTypeCardSettings.backgroundColor.value.value;
         const axisBackgroundOpacity: number = this.viewModel.settings.dateTypeCardSettings.backgroundOpacity.value;
         const axisFontSize: number = this.viewModel.settings.dateTypeCardSettings.axisFontSize.value;
@@ -2072,7 +2087,7 @@ export class Gantt implements IVisual {
             .style("font-size", axisFontSize);
 
         this.axisBackground
-            .style("fill", axisBackgroundColor)
+            .style("fill", axisEnableBackground ? axisBackgroundColor : "none")
             .style("fill-opacity", axisBackgroundOpacity / 100);
     }
 
@@ -2271,7 +2286,10 @@ export class Gantt implements IVisual {
             })
             .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
             .attr("stroke-width", 1)
-            .attr("fill", this?.formattingSettings?.taskLabelsCardSettings?.backgroundColor?.value?.value || "#FAFAFA")
+            .attr("fill", this.formattingSettings.taskLabelsCardSettings.enableBackground.value
+                ? this.formattingSettings.taskLabelsCardSettings.backgroundColor.value.value
+                : "none"
+            )
             .attr("fill-opacity", !isNaN(this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100) ? this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100 : 1);
 
         this.lineGroupWrapperRightBorder
@@ -2309,8 +2327,7 @@ export class Gantt implements IVisual {
                 .attr("width", categoryLabelsWidth)
                 .attr("x", -1)
                 .attr("y", -1)
-                .attr("height", 40) // height should be matched with axis height
-                .attr("fill", "#fff")
+                .attr("height", 40); // height should be matched with axis height
 
             const expandCollapseButton = this.collapseAllGroup
                 .append("svg")

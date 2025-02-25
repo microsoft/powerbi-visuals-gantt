@@ -37,6 +37,7 @@ import IValueFormatter = vf.IValueFormatter;
 
 import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
 import LegendData = legendInterfaces.LegendData;
+import ISelectionId = powerbi.visuals.ISelectionId;
 
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
 import IMargin = SVGUtil.IMargin;
@@ -100,6 +101,7 @@ export interface MilestoneDescriptor {
     type: string;
     color?: string;
     shapeType?: MilestoneShape;
+    identity?: ISelectionId;
 }
 
 export interface GanttViewModel {
@@ -165,6 +167,7 @@ export interface Milestone {
     tooltipInfo: VisualTooltipDataItem[];
     color?: string;
     shapeType?: string;
+    selectionId?: ISelectionId;
 }
 
 export interface MilestonePath extends Milestone {

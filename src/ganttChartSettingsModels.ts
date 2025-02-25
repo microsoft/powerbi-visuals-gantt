@@ -412,6 +412,13 @@ export class TaskLabelsCardSettings extends CompositeCard {
         slices: [this.fill, this.font, this.width],
     });
 
+    enableBackground = new formattingSettings.ToggleSwitch({
+        name: "enableBackground",
+        displayName: "Enable background",
+        displayNameKey: "Visual_EnableBackground",
+        value: false
+    });
+
     backgroundColor = new formattingSettings.ColorPicker({
         name: "backgroundColor",
         displayName: "Color",
@@ -434,6 +441,7 @@ export class TaskLabelsCardSettings extends CompositeCard {
         name: "taskLabelsBackgroundGroup",
         displayName: "Background",
         displayNameKey: "Visual_Background",
+        topLevelSlice: this.enableBackground,
         slices: [this.backgroundColor, this.backgroundOpacity],
     });
 
@@ -627,6 +635,13 @@ export class DateTypeCardSettings extends CompositeCard {
         slices: [this.axisFontSize],
     });
 
+    enableBackground = new formattingSettings.ToggleSwitch({
+        name: "enableBackground",
+        displayName: "Enable background",
+        displayNameKey: "Visual_EnableBackground",
+        value: false,
+    });
+
     backgroundColor = new formattingSettings.ColorPicker({
         name: "backgroundColor",
         displayName: "Color",
@@ -649,6 +664,7 @@ export class DateTypeCardSettings extends CompositeCard {
         name: "backgroundGroup",
         displayName: "Background",
         displayNameKey: "Visual_Background",
+        topLevelSlice: this.enableBackground,
         slices: [this.backgroundColor, this.backgroundOpacity],
     });
 
@@ -713,6 +729,7 @@ export class GanttChartSettingsModel extends Model {
                 name: "fill",
                 displayNameKey: "Visual_Color",
                 value: { value: milestone.color },
+                selector: milestone.identity.getSelector(),
             });
 
             const shape = new formattingSettings.ItemDropdown({
@@ -720,6 +737,7 @@ export class GanttChartSettingsModel extends Model {
                 displayNameKey: "Visual_Shape",
                 items: shapesOptions,
                 value: shapesOptions.find(el => el.value === milestone.shapeType),
+                selector: milestone.identity.getSelector(),
             });
 
             const newGroup = new Group({

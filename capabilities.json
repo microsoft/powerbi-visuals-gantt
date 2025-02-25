@@ -534,6 +534,11 @@
                         }
                     }
                 },
+                "enableBackground": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "backgroundColor": {
                     "type": {
                         "fill": {
@@ -731,6 +736,11 @@
                         "formatting": {
                             "fontSize": true
                         }
+                    }
+                },
+                "enableBackground": {
+                    "type": {
+                        "bool": true
                     }
                 },
                 "backgroundColor": {

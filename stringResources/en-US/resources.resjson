@@ -44,6 +44,7 @@
 	"Visual_Position_RightCenter": "Right Center",
 	"Visual_Title": "Title",
 	"Visual_Color": "Color",
+	"Visual_EnableBackground": "Enable background",
 	"Visual_BackgroundColor": "Background color",
 	"Visual_Colors": "Colors",
 	"Visual_Opacity": "Opacity",
