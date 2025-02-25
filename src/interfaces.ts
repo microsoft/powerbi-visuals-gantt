@@ -44,7 +44,6 @@ import IMargin = SVGUtil.IMargin;
 
 import { GanttChartSettingsModel } from "./ganttChartSettingsModels";
 import { SelectableDataPoint } from "./behavior";
-import { MilestoneShape } from "./enums";
 
 export type DayOffData = [Date, number];
 
@@ -97,18 +96,12 @@ export interface GanttChartFormatters {
     completionFormatter: IValueFormatter;
 }
 
-export interface MilestoneDescriptor {
-    type: string;
-    color?: string;
-    shapeType?: MilestoneShape;
-    identity?: ISelectionId;
-}
-
 export interface GanttViewModel {
     dataView: DataView;
     settings: GanttChartSettingsModel;
     tasks: Task[];
     legendData: LegendData;
+    milestoneData: MilestoneData;
     taskTypes: TaskTypes;
     isDurationFilled: boolean;
     isEndDateFilled: boolean;
@@ -165,11 +158,19 @@ export interface Milestone {
     category?: string;
     start: Date;
     tooltipInfo: VisualTooltipDataItem[];
-    color?: string;
-    shapeType?: string;
-    selectionId?: ISelectionId;
 }
 
 export interface MilestonePath extends Milestone {
     taskID: number;
+}
+
+export interface MilestoneDataPoint {
+    name: string;
+    shapeType: string;
+    color: string;
+    identity: ISelectionId;
+}
+
+export interface MilestoneData {
+    dataPoints: MilestoneDataPoint[];
 }
