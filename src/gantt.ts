@@ -428,7 +428,6 @@ export class Gantt implements IVisual {
             .append("rect")
             .classed(Gantt.AxisBackground.className, true)
             .attr("width", "100%")
-            .attr("y", -1)
             .attr("height", Gantt.AxisBackgroundHeight)
             .attr("transform", SVGManipulations.translate(-Gantt.AxisBackgroundLeftShift, -Gantt.TaskLabelsMarginTop));
 
@@ -1312,8 +1311,8 @@ export class Gantt implements IVisual {
 
     public static sortTasksWithParents(tasks: Task[], sortingOptions: SortingOptions): Task[] {
         const sortingFunction = ((a: Task, b: Task) => {
-            const sortValue = (a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
-            return sortValue * (sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1);
+            const sortingDirection = sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1;
+            return a.name.localeCompare(b.name, undefined, { numeric: true }) * sortingDirection;
         });
 
         if (sortingOptions.isCustomSortingNeeded) {
@@ -2327,8 +2326,7 @@ export class Gantt implements IVisual {
                 .classed(Gantt.CollapseAllBackground.className, true)
                 .attr("width", categoryLabelsWidth)
                 .attr("x", -1)
-                .attr("y", -1)
-                .attr("height", 40); // height should be matched with axis height
+                .attr("height", Gantt.AxisBackgroundHeight);
 
             const expandCollapseButton = this.collapseAllGroup
                 .append("svg")
