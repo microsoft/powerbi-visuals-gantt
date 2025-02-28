@@ -78,27 +78,16 @@ const milestoneLineTypes: IEnumMember[] = [
     { displayName: "Visual_Milestones_LineType_Solid", value: MilestoneLineType.Solid },
 ];
 
-class DurationMinSettings {
-    public static readonly DefaultDurationMinValue: number = 1;
-    public static readonly MinDurationMinValue: number = 1;
-}
-
 class FontSizeSettings {
-    public static readonly DefaultFontSize: number = 9;
-    public static readonly MinFontSize: number = 8;
-}
-
-class WidthSettings {
-    public static readonly DefaultFontSize: number = 110;
-    public static readonly MinFontSize: number = 0;
-}
-
-class HeightSettings {
-    public static readonly DefaultFontSize: number = 40;
-    public static readonly MinFontSize: number = 1;
+    public static readonly DefaultTaskLabelFontSize: number = 9;
+    public static readonly MinTaskLabelFontSize: number = 8;
+    public static readonly LegendDefaultFontSize: number = 8;
+    public static readonly LegendMinFontSize: number = 5;
 }
 
 export class GeneralCardSettings extends Card {
+    private DefaultDurationMin: number = 1;
+    private MinDurationMin: number = 1;
 
     groupTasks = new formattingSettings.ToggleSwitch({
         name: "groupTasks",
@@ -128,11 +117,11 @@ export class GeneralCardSettings extends Card {
     durationMin = new formattingSettings.NumUpDown({
         name: "durationMin",
         displayNameKey: "Visual_DurationMinimum",
-        value: DurationMinSettings.DefaultDurationMinValue,
+        value: this.DefaultDurationMin,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
-                value: DurationMinSettings.MinDurationMinValue,
+                type: ValidatorType.Min,
+                value: this.MinDurationMin,
             }
         }
     });
@@ -269,9 +258,9 @@ export class LegendCardSettings extends CompositeCard {
         displayNameKey: "Visual_Font",
         fontSize: new formattingSettings.NumUpDown({
             name: "fontSize",
-            value: FontSizeSettings.MinFontSize,
+            value: FontSizeSettings.LegendDefaultFontSize,
             options: {
-                minValue: { value: 5, type: ValidatorType.Min },
+                minValue: { value: FontSizeSettings.LegendMinFontSize, type: ValidatorType.Min },
             },
         }),
         fontFamily: new formattingSettings.FontPicker({
@@ -353,6 +342,9 @@ export class MilestonesCardSettings extends CompositeCard {
 }
 
 export class TaskLabelsCardSettings extends CompositeCard {
+    private DefaultWidth: number = 110;
+    private MinWidth: number = 0;
+
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
@@ -371,9 +363,9 @@ export class TaskLabelsCardSettings extends CompositeCard {
         fontSize: new formattingSettings.NumUpDown({
             name: "fontSize",
             displayNameKey: "Visual_FontSize",
-            value: FontSizeSettings.DefaultFontSize,
+            value: FontSizeSettings.DefaultTaskLabelFontSize,
             options: {
-                minValue: { value: FontSizeSettings.MinFontSize, type: ValidatorType.Min },
+                minValue: { value: FontSizeSettings.MinTaskLabelFontSize, type: ValidatorType.Min },
             },
         }),
         fontFamily: new formattingSettings.FontPicker({
@@ -397,11 +389,11 @@ export class TaskLabelsCardSettings extends CompositeCard {
     width = new formattingSettings.NumUpDown({
         name: "width",
         displayNameKey: "Visual_ColumnWidth",
-        value: WidthSettings.DefaultFontSize,
+        value: this.DefaultWidth,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
-                value: WidthSettings.MinFontSize,
+                type: ValidatorType.Min,
+                value: this.MinWidth,
             },
         }
     });
@@ -486,6 +478,8 @@ export class TooltipConfigCardSettings extends Card {
 }
 
 export class TaskConfigCardSettings extends Card {
+    private DefaultHeight: number = 40;
+    private MinHeight: number = 1;
 
     fill = new formattingSettings.ColorPicker({
         name: "fill",
@@ -498,11 +492,11 @@ export class TaskConfigCardSettings extends Card {
     height = new formattingSettings.NumUpDown({
         name: "height",
         displayNameKey: "Visual_TaskSettings_Height",
-        value: HeightSettings.DefaultFontSize,
+        value: this.DefaultHeight,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
-                value: HeightSettings.MinFontSize,
+                type: ValidatorType.Min,
+                value: this.MinHeight,
             },
         }
     });
@@ -537,9 +531,9 @@ export class TaskResourceCardSettings extends Card {
         fontSize: new formattingSettings.NumUpDown({
             name: "fontSize",
             displayNameKey: "Visual_FontSize",
-            value: FontSizeSettings.DefaultFontSize,
+            value: FontSizeSettings.DefaultTaskLabelFontSize,
             options: {
-                minValue: { value: FontSizeSettings.MinFontSize, type: ValidatorType.Min },
+                minValue: { value: FontSizeSettings.MinTaskLabelFontSize, type: ValidatorType.Min },
             },
         }),
         fontFamily: new formattingSettings.FontPicker({
