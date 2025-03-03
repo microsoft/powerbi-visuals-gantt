@@ -102,20 +102,20 @@ export interface GanttViewModel {
     tasks: Task[];
     legendData: LegendData;
     milestoneData: MilestoneData;
-    taskTypes: TaskTypes;
+    taskTypes: LegendType;
     isDurationFilled: boolean;
     isEndDateFilled: boolean;
     isParentFilled: boolean;
     isResourcesFilled: boolean;
 }
 
-export interface TaskTypes { /*TODO: change to more proper name*/
-    typeName: string;
-    types: TaskTypeMetadata[];
+export interface LegendType {
+    legendColumnName: string;
+    types: LegendGroup[];
 }
 
-export interface TaskTypeMetadata {
-    name: string;
+export interface LegendGroup {
+    legendName: string;
     columnGroup: DataViewValueColumnGroup;
     selectionColumn: DataViewCategoryColumn;
 }
