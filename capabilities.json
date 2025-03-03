@@ -539,20 +539,6 @@
                         "bool": true
                     }
                 },
-                "backgroundColor": {
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                },
-                "backgroundOpacity": {
-                    "type": {
-                        "numeric": true
-                    }
-                },
                 "fontSize": {
                     "type": {
                         "formatting": {
@@ -742,8 +728,17 @@
                     "type": {
                         "bool": true
                     }
+                }
+            }
+        },
+        "background": {
+            "properties": {
+                "generalBackgroundEnable": {
+                    "type": {
+                        "bool": true
+                    }
                 },
-                "backgroundColor": {
+                "generalBackgroundColor": {
                     "type": {
                         "fill": {
                             "solid": {
@@ -752,7 +747,45 @@
                         }
                     }
                 },
-                "backgroundOpacity": {
+                "generalBackgroundOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "categoryLabelsBackgroundEnable": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "categoryLabelsBackgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "categoryLabelsBackgroundOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "dateTypeBackgroundEnable": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "dateTypeBackgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "dateTypeBackgroundOpacity": {
                     "type": {
                         "numeric": true
                     }

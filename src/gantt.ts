@@ -362,6 +362,7 @@ export class Gantt implements IVisual {
 
     private body: d3Selection<HTMLElement, null, null, undefined>;
     private ganttSvg: d3Selection<SVGSVGElement, null, null, undefined>;
+    private ganttSvgBackground: d3Selection<SVGRectElement, null, null, undefined>;
     private collapseAllGroup: d3Selection<SVGGElement, null, null, undefined>;
     private collapseAllBackground: d3Selection<SVGRectElement, null, null, undefined>;
     private axisGroup: d3Selection<SVGGElement, null, null, undefined>;
@@ -423,6 +424,11 @@ export class Gantt implements IVisual {
             .classed(Gantt.ClassName.className, true)
             .attr("role", "listbox")
             .attr("aria-multiselectable", "true");
+
+        this.ganttSvgBackground = this.ganttSvg
+            .append("rect")
+            .attr("height", "100%")
+            .attr("width", "100%");
 
         // create chart container
         this.chartGroup = this.ganttSvg
@@ -1586,6 +1592,10 @@ export class Gantt implements IVisual {
             this.formattingSettings.taskLabelsCardSettings.fill.value.value = colorHelper.getHighContrastColor("foreground", this.formattingSettings.taskLabelsCardSettings.fill.value.value);
             this.formattingSettings.taskResourceCardSettings.fill.value.value = colorHelper.getHighContrastColor("foreground", this.formattingSettings.taskResourceCardSettings.fill.value.value);
             this.formattingSettings.legendCardSettings.labelColor.value.value = colorHelper.getHighContrastColor("foreground", this.formattingSettings.legendCardSettings.labelColor.value.value);
+
+            this.formattingSettings.backgroundCardSettings.generalBackgroundColor.value.value = colorHelper.getHighContrastColor("background", this.formattingSettings.backgroundCardSettings.generalBackgroundColor.value.value);
+            this.formattingSettings.backgroundCardSettings.categoryLabelsBackgroundColor.value.value = colorHelper.getHighContrastColor("background", this.formattingSettings.backgroundCardSettings.categoryLabelsBackgroundColor.value.value);
+            this.formattingSettings.backgroundCardSettings.dateTypeBackgroundColor.value.value = colorHelper.getHighContrastColor("background", this.formattingSettings.backgroundCardSettings.dateTypeBackgroundColor.value.value);
         }
     }
 
@@ -1820,6 +1830,7 @@ export class Gantt implements IVisual {
 
         this.setDimension(groupedTasks, axisLength, settings);
 
+        this.updateSvgBackgroundColor();
         this.renderTasks(groupedTasks);
         this.updateTaskLabels(groupedTasks, settings.taskLabelsCardSettings.width.value);
         this.updateElementsPositions(this.margin);
@@ -2073,10 +2084,10 @@ export class Gantt implements IVisual {
     private renderAxis(xAxisProperties: IAxisProperties, duration: number = Gantt.DefaultDuration): void {
         const axisColor: string = this.viewModel.settings.dateTypeCardSettings.axisColor.value.value;
         const axisTextColor: string = this.viewModel.settings.dateTypeCardSettings.axisTextColor.value.value;
-        const axisEnableBackground: boolean = this.viewModel.settings.dateTypeCardSettings.enableBackground.value;
-        const axisBackgroundColor: string = this.viewModel.settings.dateTypeCardSettings.backgroundColor.value.value;
-        const axisBackgroundOpacity: number = this.viewModel.settings.dateTypeCardSettings.backgroundOpacity.value;
         const axisFontSize: number = this.viewModel.settings.dateTypeCardSettings.axisFontSize.value;
+        const axisBackgroundEnable: boolean = this.viewModel.settings.backgroundCardSettings.dateTypeBackgroundEnable.value;
+        const axisBackgroundColor: string = this.viewModel.settings.backgroundCardSettings.dateTypeBackgroundColor.value.value;
+        const axisBackgroundOpacity: number = this.viewModel.settings.backgroundCardSettings.dateTypeBackgroundOpacity.value;
 
         const xAxis = xAxisProperties.axis;
         this.axisGroup.call(xAxis.tickSizeOuter(xAxisProperties.outerPadding));
@@ -2100,8 +2111,8 @@ export class Gantt implements IVisual {
             .style("font-size", axisFontSize);
 
         this.axisBackground
-            .style("fill", axisEnableBackground ? axisBackgroundColor : "none")
-            .style("fill-opacity", axisBackgroundOpacity / 100);
+            .style("fill", axisBackgroundEnable ? axisBackgroundColor : "none")
+            .style("fill-opacity", !isNaN(axisBackgroundOpacity) ? axisBackgroundOpacity / 100 : 1);
     }
 
     private setTickColor(
@@ -2299,11 +2310,14 @@ export class Gantt implements IVisual {
             })
             .attr("stroke", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor))
             .attr("stroke-width", 1)
-            .attr("fill", this.formattingSettings.taskLabelsCardSettings.enableBackground.value
-                ? this.formattingSettings.taskLabelsCardSettings.backgroundColor.value.value
+            .attr("fill", this.formattingSettings.backgroundCardSettings.categoryLabelsBackgroundEnable.value
+                ? this?.formattingSettings?.backgroundCardSettings?.categoryLabelsBackgroundColor?.value?.value
                 : "none"
             )
-            .attr("fill-opacity", !isNaN(this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100) ? this?.formattingSettings?.taskLabelsCardSettings?.backgroundOpacity?.value / 100 : 1);
+            .attr("fill-opacity", !isNaN(this?.formattingSettings?.backgroundCardSettings?.categoryLabelsBackgroundOpacity?.value / 100)
+                ? this?.formattingSettings?.backgroundCardSettings?.categoryLabelsBackgroundOpacity?.value / 100
+                : 1
+            );
 
         this.lineGroupWrapperRightBorder
             .attr("x", taskLabelsWidth - 5)
@@ -2339,7 +2353,15 @@ export class Gantt implements IVisual {
                 .classed(Gantt.CollapseAllBackground.className, true)
                 .attr("width", categoryLabelsWidth)
                 .attr("x", -1)
-                .attr("height", Gantt.AxisBackgroundHeight);
+                .attr("height", Gantt.AxisBackgroundHeight)
+                .attr("fill", this.formattingSettings.backgroundCardSettings.dateTypeBackgroundEnable.value
+                    ? this?.formattingSettings.backgroundCardSettings.dateTypeBackgroundColor.value.value
+                    : "none"
+                )
+                .attr("fill-opacity", !isNaN(this?.formattingSettings?.backgroundCardSettings?.dateTypeBackgroundOpacity.value / 100)
+                    ? this?.formattingSettings?.backgroundCardSettings?.dateTypeBackgroundOpacity.value / 100
+                    : 1
+                );
 
             const expandCollapseButton = this.collapseAllGroup
                 .append("svg")
@@ -2468,6 +2490,16 @@ export class Gantt implements IVisual {
                 }
             }]
         });
+    }
+
+    private updateSvgBackgroundColor(): void {
+        const backgroundEnable = this.formattingSettings.backgroundCardSettings.generalBackgroundEnable.value;
+        const color = this.formattingSettings.backgroundCardSettings.generalBackgroundColor.value.value;
+        const opacity = this.formattingSettings.backgroundCardSettings.generalBackgroundOpacity.value;
+
+        this.ganttSvgBackground
+            .attr("fill", backgroundEnable ? color : "none")
+            .attr("fill-opacity", !isNaN(opacity) ? opacity / 100 : 1);
     }
 
     /**

@@ -404,43 +404,10 @@ export class TaskLabelsCardSettings extends CompositeCard {
         slices: [this.fill, this.font, this.width],
     });
 
-    enableBackground = new formattingSettings.ToggleSwitch({
-        name: "enableBackground",
-        displayName: "Enable background",
-        displayNameKey: "Visual_EnableBackground",
-        value: false
-    });
-
-    backgroundColor = new formattingSettings.ColorPicker({
-        name: "backgroundColor",
-        displayName: "Color",
-        displayNameKey: "Visual_Color",
-        value: { value: "#FAFAFA" },
-    });
-
-    backgroundOpacity = new formattingSettings.Slider({
-        name: "backgroundOpacity",
-        displayName: "Opacity",
-        displayNameKey: "Visual_Opacity",
-        value: 100,
-        options: {
-            minValue: { value: 0, type: ValidatorType.Min },
-            maxValue: { value: 100, type: ValidatorType.Max },
-        },
-    });
-
-    taskLabelsBackgroundGroup = new Group({
-        name: "taskLabelsBackgroundGroup",
-        displayName: "Background",
-        displayNameKey: "Visual_Background",
-        topLevelSlice: this.enableBackground,
-        slices: [this.backgroundColor, this.backgroundOpacity],
-    });
-
     topLevelSlice = this.show;
     name: string = "taskLabels";
     displayNameKey: string = "Visual_CategoryLabels";
-    groups = [this.taskLabelsGeneralGroup, this.taskLabelsBackgroundGroup];
+    groups = [this.taskLabelsGeneralGroup];
 }
 
 export class TaskCompletionCardSettings extends Card {
@@ -464,7 +431,6 @@ export class TaskCompletionCardSettings extends Card {
 }
 
 export class TooltipConfigCardSettings extends Card {
-
     dateFormat = new formattingSettings.TextInput({
         name: "dateFormat",
         displayNameKey: "Visual_TooltipSettings_DateFormat",
@@ -629,22 +595,61 @@ export class DateTypeCardSettings extends CompositeCard {
         slices: [this.axisFontSize],
     });
 
-    enableBackground = new formattingSettings.ToggleSwitch({
-        name: "enableBackground",
+    name: string = "dateType";
+    displayNameKey: string = "Visual_DateType";
+    groups = [this.dateTypeGeneralGroup, this.fontGroup];
+}
+
+export class BackgroundCardSettings extends CompositeCard {
+    generalBackgroundEnable = new formattingSettings.ToggleSwitch({
+        name: "generalBackgroundEnable",
         displayName: "Enable background",
-        displayNameKey: "Visual_EnableBackground",
+        displayNameKey: "Visual_Enable_Background",
         value: false,
     });
 
-    backgroundColor = new formattingSettings.ColorPicker({
-        name: "backgroundColor",
+    generalBackgroundColor = new formattingSettings.ColorPicker({
+        name: "generalBackgroundColor",
         displayName: "Color",
         displayNameKey: "Visual_Color",
         value: { value: "#FFFFFF" },
     });
 
-    backgroundOpacity = new formattingSettings.Slider({
-        name: "backgroundOpacity",
+    generalBackgroundOpacity = new formattingSettings.Slider({
+        name: "generalBackgroundOpacity",
+        displayName: "Opacity",
+        displayNameKey: "Visual_Opacity",
+        value: 50,
+        options: {
+            minValue: { value: 0, type: ValidatorType.Min },
+            maxValue: { value: 100, type: ValidatorType.Max },
+        }
+    });
+
+    generalBackgroundGroup = new Group({
+        name: "generalBackgroundGroup",
+        displayName: "General background",
+        displayNameKey: "Visual_General_Background",
+        topLevelSlice: this.generalBackgroundEnable,
+        slices: [this.generalBackgroundColor, this.generalBackgroundOpacity],
+    });
+
+    categoryLabelsBackgroundEnable = new formattingSettings.ToggleSwitch({
+        name: "categoryLabelsBackgroundEnable",
+        displayName: "Enable background",
+        displayNameKey: "Visual_Enable_Background",
+        value: false,
+    });
+
+    categoryLabelsBackgroundColor = new formattingSettings.ColorPicker({
+        name: "categoryLabelsBackgroundColor",
+        displayName: "Color",
+        displayNameKey: "Visual_Color",
+        value: { value: "#FAFAFA" },
+    });
+
+    categoryLabelsBackgroundOpacity = new formattingSettings.Slider({
+        name: "categoryLabelsBackgroundOpacity",
         displayName: "Opacity",
         displayNameKey: "Visual_Opacity",
         value: 100,
@@ -654,17 +659,50 @@ export class DateTypeCardSettings extends CompositeCard {
         }
     });
 
-    backgroundGroup = new Group({
-        name: "backgroundGroup",
-        displayName: "Background",
-        displayNameKey: "Visual_Background",
-        topLevelSlice: this.enableBackground,
-        slices: [this.backgroundColor, this.backgroundOpacity],
+    categoryLabelsBackgroundGroup = new Group({
+        name: "categoryLabelsBackgroundGroup",
+        displayName: "Category Labels background",
+        displayNameKey: "Visual_CategoryLabels_Background",
+        topLevelSlice: this.categoryLabelsBackgroundEnable,
+        slices: [this.categoryLabelsBackgroundColor, this.categoryLabelsBackgroundOpacity],
     });
 
-    name: string = "dateType";
-    displayNameKey: string = "Visual_DateType";
-    groups = [this.dateTypeGeneralGroup, this.fontGroup, this.backgroundGroup];
+    dateTypeBackgroundEnable = new formattingSettings.ToggleSwitch({
+        name: "dateTypeBackgroundEnable",
+        displayName: "Enable background",
+        displayNameKey: "Visual_Enable_Background",
+        value: true,
+    });
+
+    dateTypeBackgroundColor = new formattingSettings.ColorPicker({
+        name: "dateTypeBackgroundColor",
+        displayName: "Color",
+        displayNameKey: "Visual_Color",
+        value: { value: "#FFFFFF" },
+    });
+
+    dateTypeBackgroundOpacity = new formattingSettings.Slider({
+        name: "dateTypeBackgroundOpacity",
+        displayName: "Opacity",
+        displayNameKey: "Visual_Opacity",
+        value: 100,
+        options: {
+            minValue: { value: 0, type: ValidatorType.Min },
+            maxValue: { value: 100, type: ValidatorType.Max },
+        }
+    });
+
+    dateTypeBackgroundGroup = new Group({
+        name: "dateTypeBackgroundGroup",
+        displayName: "Date type background",
+        displayNameKey: "Visual_DateType_Background",
+        topLevelSlice: this.dateTypeBackgroundEnable,
+        slices: [this.dateTypeBackgroundColor, this.dateTypeBackgroundOpacity],
+    });
+
+    name: string = "background";
+    displayNameKey: string = "Visual_Background";
+    groups = [this.generalBackgroundGroup, this.categoryLabelsBackgroundGroup, this.dateTypeBackgroundGroup];
 }
 
 export class GanttChartSettingsModel extends Model {
@@ -680,6 +718,7 @@ export class GanttChartSettingsModel extends Model {
     taskConfigCardSettings = new TaskConfigCardSettings();
     taskResourceCardSettings = new TaskResourceCardSettings();
     dateTypeCardSettings = new DateTypeCardSettings();
+    backgroundCardSettings = new BackgroundCardSettings();
 
     cards = [
         this.generalCardSettings,
@@ -694,6 +733,7 @@ export class GanttChartSettingsModel extends Model {
         this.taskConfigCardSettings,
         this.taskResourceCardSettings,
         this.dateTypeCardSettings,
+        this.backgroundCardSettings,
     ];
 
 

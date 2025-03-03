@@ -1,6 +1,6 @@
 ## 3.0.15
 ### Visual changes
-* Add background toggles for category labels and date type axis (they overwrite General background)
+* Add new card settings for background colors
 
 ### Code improvements
 * Update outdated packages
