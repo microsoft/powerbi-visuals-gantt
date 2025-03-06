@@ -1637,7 +1637,7 @@ export class Gantt implements IVisual {
                     values: null
                 };
                 return {
-                    legendName: group.name.toString(),
+                    legendName: group.name?.toString(),
                     selectionColumn: column,
                     columnGroup: group
                 };
