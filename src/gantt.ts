@@ -46,7 +46,6 @@ import lodashMinBy from "lodash.minby";
 import lodashMax from "lodash.max";
 import lodashMaxBy from "lodash.maxby";
 import lodashGroupBy from "lodash.groupby";
-import lodashClone from "lodash.clone";
 import lodashUniqBy from "lodash.uniqby";
 import { Dictionary as lodashDictionary } from "lodash";
 
@@ -1666,7 +1665,7 @@ export class Gantt implements IVisual {
             : LegendPosition.None;
 
         this.legend.changeOrientation(position as LegendPosition);
-        this.legend.drawLegend(this.viewModel.legendData, lodashClone(this.viewport));
+        this.legend.drawLegend(this.viewModel.legendData, structuredClone(this.viewport));
 
         this.body
             .selectAll(Gantt.LegendItems.selectorName)
@@ -1758,7 +1757,7 @@ export class Gantt implements IVisual {
             return;
         }
 
-        this.viewport = lodashClone(options.viewport);
+        this.viewport = structuredClone(options.viewport);
         this.margin = Gantt.DefaultMargin;
 
         this.eventService.renderingStarted(options);
