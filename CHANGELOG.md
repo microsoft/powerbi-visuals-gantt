@@ -1,4 +1,4 @@
-## 3.0.15
+## 3.1.0
 ### Visual changes
 * Add new card settings for background colors
 
