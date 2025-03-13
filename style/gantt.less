@@ -26,6 +26,18 @@
 
 @focus-color: rgb(94, 158, 214);
 
+@keyframes pulse {
+    0% {
+        stroke-width: 0px;
+    }
+    50% {
+        stroke-width: 2px;
+    }
+    100% {
+        stroke-width: 0px;
+    }
+}
+
 .visual {
     .gantt-body {
         overflow: auto;
@@ -50,15 +62,12 @@
             line {
                 stroke-width: 1;
             }
-
-            font-size: 10px;
         }
 
         .tasks {
             .task {
                 .task-resource {
                     font-size: medium;
-                    font-weight: bold;
                     font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
                     letter-spacing: .22px;
                 }
@@ -73,13 +82,17 @@
                 }
 
                 .task-rect, .task-milestone > path {
+                    & {
+                        stroke-width: 0;
+                        cursor: pointer;
+                    }
+
                     &:focus, &:focus-visible {
                         outline: none;
                     }
 
                     &:focus-visible {
-                        stroke: @focus-color;
-                        stroke-width: 2px;
+                        animation: pulse 1s infinite;
                     }
                 }
             }
@@ -87,7 +100,6 @@
 
         .chart-line {
             stroke-width: 2px;
-            stroke-dasharray: 3, 3;
             stroke: #000;
         }
 
@@ -108,6 +120,12 @@
                 .child {
                     font-style: oblique
                 }
+            }
+
+            g.clickableArea.pointerCursor,
+            g.collapse-all
+            {
+                cursor: pointer;
             }
         }
     }
@@ -131,8 +149,20 @@
         stroke-width: 2px;
     }
 
+    g.legendItem {
+        cursor: pointer;
+    }
+
+    g.collapse-all {
+        cursor: pointer;
+    }
+
     .collapse-all-arrow:focus-visible {
         outline: @focus-color solid 2px;
         outline-offset: -12px;
     }
+}
+
+body.visual-sandbox {
+    cursor: default;
 }

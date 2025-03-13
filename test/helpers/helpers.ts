@@ -27,7 +27,7 @@ import { timeSecond as d3TimeSecond, timeMinute as d3TimeMinute, timeHour as d3T
 
 import { RgbColor, parseColorString } from "powerbi-visuals-utils-colorutils";
 
-import {DurationUnit} from "../../src/enums";
+import { DurationUnit } from "../../src/enums";
 
 export function areColorsEqual(firstColor: string, secondColor: string): boolean {
     const firstConvertedColor: RgbColor = parseColorString(firstColor),
@@ -39,11 +39,15 @@ export function areColorsEqual(firstColor: string, secondColor: string): boolean
 }
 
 export function isColorAppliedToElements(
-    elements: HTMLElement[] | SVGElement[],
+    elements: (SVGElement | null)[],
     color?: string,
     colorStyleName: string = "fill"
 ): boolean {
-    return elements.some((element: HTMLElement | SVGElement) => {
+    return elements.some((element: SVGElement | null) => {
+        if (element == null) {
+            return;
+        }
+
         const currentColor: string = element.style.getPropertyValue(colorStyleName);
 
         if (!currentColor || !color) {

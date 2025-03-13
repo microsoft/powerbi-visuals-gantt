@@ -55,3 +55,8 @@ export enum GanttRole {
     Milestones = "Milestones",
     ExtraInformation = "ExtraInformation",
 }
+
+export enum MilestoneLineType {
+    Dotted = "Dotted",
+    Solid = "Solid"
+}

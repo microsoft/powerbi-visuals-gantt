@@ -443,6 +443,28 @@
                         }
                     }
                 },
+                "fontFamily": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "bold": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "italic": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underline": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "fill": {
                     "type": {
                         "fill": {
@@ -456,18 +478,28 @@
         },
         "milestones": {
             "properties": {
-                "displayDottedLines": {
+                "showLines": {
                     "type": {
                         "bool": true
                     }
                 },
-                "dottedLinesColor": {
+                "lineColor": {
                     "type": {
                         "fill": {
                             "solid": {
                                 "color": true
                             }
                         }
+                    }
+                },
+                "lineOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "lineType": {
+                    "type": {
+                        "enumeration": []
                     }
                 },
                 "fill": {
@@ -502,6 +534,11 @@
                         }
                     }
                 },
+                "enableBackground": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "fontSize": {
                     "type": {
                         "formatting": {
@@ -509,47 +546,31 @@
                         }
                     }
                 },
-                "width": {
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "collapseAllColor": {
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                },
-                "collapseAllFontSize": {
-                    "type": {
-                        "formatting": {
-                            "fontSize": true
-                        }
-                    }
-                },
-                "collapseAllFontFamily": {
+                "fontFamily": {
                     "type": {
                         "formatting": {
                             "fontFamily": true
                         }
                     }
                 },
-                "collapseAllBold": {
+                "bold": {
                     "type": {
                         "bool": true
                     }
                 },
-                "collapseAllItalic": {
+                "italic": {
                     "type": {
                         "bool": true
                     }
                 },
-                "collapseAllUnderline": {
+                "underline": {
                     "type": {
                         "bool": true
+                    }
+                },
+                "width": {
+                    "type": {
+                        "numeric": true
                     }
                 }
             }
@@ -602,6 +623,11 @@
                         "bool": true
                     }
                 },
+                "matchLegendColors": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "fill": {
                     "type": {
                         "fill": {
@@ -616,6 +642,28 @@
                         "formatting": {
                             "fontSize": true
                         }
+                    }
+                },
+                "fontFamily": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "bold": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "italic": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underline": {
+                    "type": {
+                        "bool": true
                     }
                 },
                 "position": {
@@ -668,6 +716,79 @@
                             }
                         }
                     }
+                },
+                "axisFontSize": {
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "enableBackground": {
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
+        "background": {
+            "properties": {
+                "generalBackgroundEnable": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "generalBackgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "generalBackgroundOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "categoryLabelsBackgroundEnable": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "categoryLabelsBackgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "categoryLabelsBackgroundOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "dateTypeBackgroundEnable": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "dateTypeBackgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "dateTypeBackgroundOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
                 }
             }
         }
@@ -675,7 +796,17 @@
     "sorting": {
         "default": {}
     },
+    "tooltips": {
+        "supportedTypes": {
+            "default": true,
+            "canvas": true
+        },
+        "roles": [
+            "tooltips"
+        ]
+    },
     "privileges": [],
     "supportsHighlight": true,
-    "supportsKeyboardFocus": true
+    "supportsKeyboardFocus": true,
+	"supportsMultiVisualSelection": true
 }
