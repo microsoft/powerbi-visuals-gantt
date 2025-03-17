@@ -1,3 +1,7 @@
+## 3.1.1
+* Set category labels background to enabled by default for consistency with previous versions
+* Fix npm vulnerabilities
+
 ## 3.1.0
 ### Visual changes
 * Add new card settings for background colors
