@@ -638,7 +638,7 @@ export class BackgroundCardSettings extends CompositeCard {
         name: "categoryLabelsBackgroundEnable",
         displayName: "Enable background",
         displayNameKey: "Visual_Enable_Background",
-        value: false,
+        value: true,
     });
 
     categoryLabelsBackgroundColor = new formattingSettings.ColorPicker({
