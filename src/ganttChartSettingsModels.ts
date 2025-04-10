@@ -297,9 +297,15 @@ export class MilestonesCardSettings extends Card {
         value: shapesOptions[0]
     });
 
+    showVerticalLines = new formattingSettings.ToggleSwitch({
+        name: "showVerticalLines",
+        displayName: "Show vertical lines",
+        value: true
+    })
+
     name: string = "milestones";
     displayNameKey: string = "Visual_Milestones";
-    slices = [];
+    slices = [this.showVerticalLines];
 }
 
 export class TaskLabelsCardSettings extends Card {
@@ -543,7 +549,7 @@ export class GanttChartSettingsModel extends Model {
             }
         }
 
-        this.milestonesCardSettings.slices = newSlices;
+        this.milestonesCardSettings.slices = [this.milestonesCardSettings.showVerticalLines, ...newSlices];
     }
 
     public populateLegend(dataPoints: LegendDataPoint[], localizationManager: ILocalizationManager) {

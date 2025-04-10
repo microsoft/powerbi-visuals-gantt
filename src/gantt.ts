@@ -1714,7 +1714,7 @@ export class Gantt implements IVisual {
         this.renderTasks(groupedTasks);
         this.updateTaskLabels(groupedTasks, settings.taskLabelsCardSettings.width.value);
         this.updateElementsPositions(this.margin);
-        this.createMilestoneLine(groupedTasks);
+        this.createMilestoneLine(groupedTasks, settings.milestonesCardSettings.showVerticalLines.value);
 
         if (this.formattingSettings.generalCardSettings.scrollToCurrentTime.value && this.hasNotNullableDates) {
             this.scrollToMilestoneLine(axisLength);
@@ -3014,6 +3014,7 @@ export class Gantt implements IVisual {
     */
     private createMilestoneLine(
         tasks: GroupedTask[],
+        showVerticalLine: boolean,
         timestamp: number = Date.now(),
         milestoneTitle?: string): void {
         if (!this.hasNotNullableDates) {
@@ -3054,28 +3055,34 @@ export class Gantt implements IVisual {
             .selectAll(Gantt.ChartLine.selectorName)
             .data(line);
 
-        const chartLineSelectionMerged = chartLineSelection
-            .enter()
-            .append("line")
-            .merge(chartLineSelection);
+        if (showVerticalLine) {
+            const chartLineSelectionMerged = chartLineSelection
+                .enter()
+                .append("line")
+                .merge(chartLineSelection);
 
-        chartLineSelectionMerged.classed(Gantt.ChartLine.className, true);
+            chartLineSelectionMerged.classed(Gantt.ChartLine.className, true);
 
-        chartLineSelectionMerged
-            .attr("x1", (line: Line) => line.x1)
-            .attr("y1", (line: Line) => line.y1)
-            .attr("x2", (line: Line) => line.x2)
-            .attr("y2", (line: Line) => line.y2)
-            .style("stroke", (line: Line) => {
-                const color: string = line.x1 === Gantt.TimeScale(timestamp) ? todayColor : Gantt.DefaultValues.MilestoneLineColor;
-                return this.colorHelper.getHighContrastColor("foreground", color);
-            });
+            chartLineSelectionMerged
+                .attr("x1", (line: Line) => line.x1)
+                .attr("y1", (line: Line) => line.y1)
+                .attr("x2", (line: Line) => line.x2)
+                .attr("y2", (line: Line) => line.y2)
+                .style("stroke", (line: Line) => {
+                    const color: string = line.x1 === Gantt.TimeScale(timestamp) ? todayColor : Gantt.DefaultValues.MilestoneLineColor;
+                    return this.colorHelper.getHighContrastColor("foreground", color);
+                });
 
-        this.renderTooltip(chartLineSelectionMerged);
+            this.renderTooltip(chartLineSelectionMerged);
+            chartLineSelection
+                .exit()
+                .remove();
+        } else {
+            this.renderTooltip(chartLineSelection);
+            chartLineSelection
+                .remove();
+        }
 
-        chartLineSelection
-            .exit()
-            .remove();
     }
 
     private scrollToMilestoneLine(axisLength: number,
