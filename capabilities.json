@@ -469,6 +469,11 @@
                     "type": {
                         "text": true
                     }
+                },
+                "showVerticalLines": {
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         },
