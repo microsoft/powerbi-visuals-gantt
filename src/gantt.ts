@@ -806,12 +806,16 @@ export class Gantt implements IVisual {
         useDefaultColor: boolean): LegendData {
 
         const colorHelper = new ColorHelper(this.colors, Gantt.LegendPropertyIdentifier);
+        const legendSettings = this.formattingSettings.legendCardSettings;
         const legendData: LegendData = {
-            fontSize: this.formattingSettings.legendCardSettings.font.fontSize.value,
-            fontFamily: this.formattingSettings.legendCardSettings.font.fontFamily.value,
+            fontSize: legendSettings.font.fontSize.value,
+            fontFamily: legendSettings.font.fontFamily.value,
+            fontStyle: legendSettings.font.italic.value ? "italic" : "normal",
+            fontWeight: legendSettings.font.bold.value ? "bold" : "normal",
+            textDecoration: legendSettings.font.underline.value ? "underline" : "none",
             dataPoints: [],
-            title: this.formattingSettings.legendCardSettings.showTitle.value ? (this.formattingSettings.legendCardSettings.titleText.value || legendTypes?.legendColumnName) : null,
-            labelColor: this.formattingSettings.legendCardSettings.labelColor.value.value
+            title: legendSettings.showTitle.value ? (legendSettings.titleText.value || legendTypes?.legendColumnName) : null,
+            labelColor: legendSettings.labelColor.value.value
         };
 
         legendData.dataPoints = legendTypes?.types.map(
