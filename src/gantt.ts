@@ -3394,7 +3394,8 @@ export class Gantt implements IVisual {
     private renderTooltip(selection: d3Selection<SVGElement, Line | Task | MilestonePath, any, any>): void {
         this.tooltipServiceWrapper.addTooltip(
             selection,
-            (task: Task) => task.tooltipInfo);
+            (task: Task) => task.tooltipInfo,
+            (task: Task) => task.identity);
     }
 
     private updateElementsPositions(margin: IMargin): void {
