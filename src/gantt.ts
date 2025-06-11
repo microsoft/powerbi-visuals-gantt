@@ -2150,7 +2150,6 @@ export class Gantt implements IVisual {
 
     private renderTaskLabels(tasks: GroupedTask[], width: number) {
         const displayGridLines: boolean = this.formattingSettings.general.displayGridLines.value;
-        const taskLabelsColor: string = this.formattingSettings.taskLabels.general.fill.value.value;
         const taskConfigHeight: number = this.formattingSettings.taskConfig.height.value || DefaultChartLineHeight;
 
         this.lineGroup
@@ -2170,7 +2169,7 @@ export class Gantt implements IVisual {
             .classed(Gantt.Label.className, true)
             .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.index)));
 
-        this.renderClickableAreas(axisLabelGroup, taskLabelsColor, width);
+        this.renderClickableAreas(axisLabelGroup, width);
 
         let parentTask: string = "";
         let childrenCount = 0;
@@ -2203,11 +2202,14 @@ export class Gantt implements IVisual {
             .remove();
     }
 
-    private renderClickableAreas(axisLabelGroup: d3Selection<SVGGElement, GroupedTask, any, any>, taskLabelsColor: string, width: number) {
+    private renderClickableAreas(axisLabelGroup: d3Selection<SVGGElement, GroupedTask, any, any>, width: number) {
         const clickableArea = axisLabelGroup
             .append("g")
             .classed(Gantt.ClickableArea.className, true)
             .merge(axisLabelGroup);
+
+        const { general, nestedLabels} = this.formattingSettings.taskLabels;
+        const useCustom: boolean = nestedLabels.customize.value;
 
         clickableArea
             .append("text")
@@ -2217,84 +2219,57 @@ export class Gantt implements IVisual {
                     : (task.tasks[0].children && !!task.tasks[0].children.length) ? this.parentLabelOffset : 0)))
             .attr("class", (task: GroupedTask) => task.tasks[0].children ? "parent" : task.tasks[0].parent ? "child" : "normal-node")
             .style("font-weight", (task: GroupedTask) => {
-                const isParent = Boolean(task.tasks[0].children);
-                const isChild = Boolean(task.tasks[0].parent);
-                const isBoldGeneral = this.formattingSettings.taskLabels.general.bold.value;
-                const shouldUseCustom: boolean = this.formattingSettings.taskLabels.nestedLabels.customize.value;
-                const isBoldCustomNested = this.formattingSettings.taskLabels.nestedLabels.bold?.value ?? false;
+                const isParent = !!task.tasks[0].children;
+                const isChild = !!task.tasks[0].parent;
 
                 if (isParent) {
-                    return isBoldGeneral ? "900" : "700";
+                    return general.bold.value ? "900" : "700";
                 }
 
-                if (isChild) {
-                    if (shouldUseCustom) {
-                        return isBoldCustomNested ? "700" : "400";
-                    }
+                if (isChild && useCustom) {
+                    return nestedLabels.bold.value ? "700" : "400";
                 }
-                return isBoldGeneral ? "700" : "400";
+
+                return general.bold.value ? "700" : "400";
             })
             .style("font-size", (task: GroupedTask) => {
-                const generalFontSize = PixelConverter.fromPoint(this.formattingSettings.taskLabels.general.fontSize.value)
-                const nestedFontSize = PixelConverter.fromPoint(this.formattingSettings.taskLabels.nestedLabels.fontSize.value)
-                const isChild: boolean = Boolean(task.tasks[0].parent);
-                const shouldUseCustom: boolean = this.formattingSettings.taskLabels.nestedLabels.customize.value;
-
-                if (isChild && shouldUseCustom) {
-                    return nestedFontSize;
-                }
-                else {
-                    return generalFontSize;
-                }
+                const isChild: boolean = !!task.tasks[0].parent;
+                return PixelConverter.fromPoint(isChild && useCustom
+                    ? nestedLabels.fontSize.value
+                    : general.fontSize.value
+                )
             })
             .style("font-family", (task: GroupedTask) => {
-                const generalFontFamily = this.formattingSettings.taskLabels.general.fontFamily.value;
-                const nestedFontFamily = this.formattingSettings.taskLabels.nestedLabels.fontFamily.value;
-                const isChild: boolean = Boolean(task.tasks[0].parent);
-                const shouldUseCustom: boolean = this.formattingSettings.taskLabels.nestedLabels.customize.value;
-
-                if (isChild && shouldUseCustom) {
-                    return nestedFontFamily;
-                }
-                else {
-                    return generalFontFamily;
-                }
+                const isChild: boolean = !!task.tasks[0].parent;
+                return isChild && useCustom
+                    ? nestedLabels.fontFamily.value
+                    : general.fontFamily.value;
             })
             .style("font-style", (task: GroupedTask) => {
-                const isChild: boolean = Boolean(task.tasks[0].parent);
-                const isItalic: boolean = this.formattingSettings.taskLabels.general.italic.value;
-                const shouldUseCustom: boolean = this.formattingSettings.taskLabels.nestedLabels.customize.value;
-                const customItalic: boolean = this.formattingSettings.taskLabels.nestedLabels.italic.value;
+                const isChild: boolean = !!task.tasks[0].parent;
 
                 if (isChild) {
-                    if (shouldUseCustom) {
-                        return customItalic ? "italic" : "normal";
-                    }
-                    else {
-                        return "italic";
-                    }
+                    return useCustom 
+                        ? nestedLabels.italic.value ? "italic" : "normal"
+                        : "italic";
                 }
-                else {
-                    return isItalic ? "italic" : "normal";
-                }
+                return general.italic.value ? "italic" : "normal";
             })
             .style("text-decoration", (task: GroupedTask) => {
-                const generalUnderline = this.formattingSettings.taskLabels.general.underline.value ? "underline" : "none";
-                const customUnderline = this.formattingSettings.taskLabels.nestedLabels.underline.value ? "underline" : "none";
-                const isChild: boolean = Boolean(task.tasks[0].parent);
-                const shouldUseCustom: boolean = this.formattingSettings.taskLabels.nestedLabels.customize.value;
-
-                if (isChild && shouldUseCustom) {
-                    return customUnderline;
-                }
-                else {
-                    return generalUnderline;
-                }
-
+                const isChild: boolean = !!task.tasks[0].parent;
+                return isChild && useCustom
+                    ? nestedLabels.underline.value ? "underline" : "none"
+                    : general.underline.value ? "underline" : "none";
             })
             .attr("stroke-width", Gantt.AxisLabelStrokeWidth)
             .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin())
-            .attr("fill", taskLabelsColor)
+            .attr("fill", (task: GroupedTask) => {
+                const isChild: boolean = !!task.tasks[0].parent;
+
+                return isChild && useCustom
+                    ? nestedLabels.fill.value.value
+                    : general.fill.value.value;
+            })
             .text((task: GroupedTask) => task.name)
             .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis)
             .append("title")
