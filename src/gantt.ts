@@ -310,7 +310,6 @@ export class Gantt implements IVisual {
     private static CollapseAllFontAdditionalSize: number = 3;
     // It' used to hide right border of the task-lines rect
     private static CollapseAllBackgroundWidthPadding: number = 4;
-    private static CollapsedAllBackgroundWidthHidden: number = 50;
     private static BarHeightMargin: number = 5;
     private static ChartLineHeightDivider: number = 4;
     private static ResourceWidthPadding: number = 10;
@@ -328,6 +327,7 @@ export class Gantt implements IVisual {
     private static SubtasksLeftMargin: number = 10;
     private static NotCompletedTaskOpacity: number = .5;
     private static TaskOpacity: number = 1;
+    private static GroupLabelSize: number = 25;
     public static RectRound: number = 7;
 
     private static TimeScale: d3TimeScale<any, any>;
@@ -374,7 +374,6 @@ export class Gantt implements IVisual {
     private collapsedTasks: string[] = [];
     private collapseAllFlag: "data-is-collapsed";
     private parentLabelOffset: number = 5;
-    private groupLabelSize: number = 25;
     private secondExpandAllIconOffset: number = 7;
     private hasNotNullableDates: boolean = false;
 
@@ -498,7 +497,7 @@ export class Gantt implements IVisual {
                 const scrollTop: number = <number>event.target.scrollTop;
                 const scrollLeft: number = <number>event.target.scrollLeft;
 
-                const axisTranslateX: number = taskLabelsWidth + this.margin.left + Gantt.SubtasksLeftMargin + (taskLabelShow ? 0 : Gantt.CollapsedAllBackgroundWidthHidden);
+                const axisTranslateX: number = taskLabelsWidth + this.margin.left + Gantt.SubtasksLeftMargin + (taskLabelShow ? 0 : Gantt.GroupLabelSize);
                 this.axisGroup.attr("transform", SVGManipulations.translate(axisTranslateX, scrollTop + Gantt.TaskLabelsMarginTop));
                 this.lineGroup.attr("transform", SVGManipulations.translate(scrollLeft, 0))
                 this.collapseAllGroup.attr("transform", SVGManipulations.translate(scrollLeft, scrollTop));
@@ -524,7 +523,7 @@ export class Gantt implements IVisual {
                     const initialX = datum.initialX;
                     const dx = event.x - initialX;
                     const currentWidth = self.formattingSettings.taskLabels.general.width.value;
-                    const newWidth = currentWidth + dx;
+                    const newWidth = Math.max(currentWidth + dx, TaskLabelsCardSettings.MinWidth);
 
                     const ganttDiv = self.ganttDiv.node();
                     const ganttSVG = self.ganttSvg.node();
@@ -541,6 +540,17 @@ export class Gantt implements IVisual {
                     // update x
                     d3Select(this).attr("x", newWidth.toString());
 
+                    // Update clipping for collapse/expand all button
+                    const collapseLabel = self.collapseAllGroup.select(`text`);
+                    const text: string = self.collapsedTasks.length ? self.localizationManager.getDisplayName("Visual_Expand_All") : self.localizationManager.getDisplayName("Visual_Collapse_All");
+                    collapseLabel.text(text);
+                    collapseLabel.call(AxisHelper.LabelLayoutStrategy.clip, newWidth - Gantt.GroupLabelSize - Gantt.CollapseAllBackgroundWidthPadding, textMeasurementService.svgEllipsis);
+
+                    // Update clipping for task labels
+                    const taskLabelTextElements = self.lineGroup.selectAll<SVGTextElement, GroupedTask>(`.${Gantt.Label.className} .${Gantt.ClickableArea.className} text`);
+                    taskLabelTextElements.text((task: GroupedTask) => task.name);
+                    taskLabelTextElements.call(AxisHelper.LabelLayoutStrategy.clip, newWidth - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis);
+
                     const translateX: number = newWidth + self.margin.left + Gantt.SubtasksLeftMargin;
                     const scrollTop: number = ganttDiv.scrollTop;
                     self.axisGroup.attr("transform", SVGManipulations.translate(translateX, Gantt.TaskLabelsMarginTop + scrollTop));
@@ -550,7 +560,7 @@ export class Gantt implements IVisual {
                 .on("end", (event: D3DragEvent<SVGRectElement, unknown, d3SubjectPosition>, datum: { initialX: number; initialY: number; }) => {
                     const dx = event.x - datum.initialX;
                     const currentWidth = this.formattingSettings.taskLabels.general.width.value;
-                    const newWidth = currentWidth + dx;
+                    const newWidth = Math.max(currentWidth + dx, TaskLabelsCardSettings.MinWidth);
 
                     this.host.persistProperties({
                         merge: [{
@@ -2376,11 +2386,9 @@ export class Gantt implements IVisual {
             .remove();
 
         if (this.viewModel.isParentFilled) {
-            let categoryLabelsWidth: number = taskLabelShow
+            const categoryLabelsWidth: number = Gantt.CollapseAllBackgroundWidthPadding + (taskLabelShow
                 ? this.formattingSettings.taskLabels.general.width.value
-                : Gantt.CollapsedAllBackgroundWidthHidden;
-
-            categoryLabelsWidth += Gantt.CollapseAllBackgroundWidthPadding
+                : Gantt.GroupLabelSize);
 
             const backgroundSettings: BaseBackroundSettings = this.formattingSettings.background.dateType;
             this.collapseAllBackground = this.collapseAllGroup
@@ -2407,16 +2415,16 @@ export class Gantt implements IVisual {
                 .attr("role", "option")
                 .attr("aria-label", this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"))
                 .attr("viewBox", "0 0 48 48")
-                .attr("width", this.groupLabelSize)
-                .attr("height", this.groupLabelSize)
-                .attr("x", Gantt.CollapseAllLeftShift + this.xAxisProperties.outerPadding || 0)
+                .attr("width", Gantt.GroupLabelSize)
+                .attr("height", Gantt.GroupLabelSize)
+                .attr("x", 0)
                 .attr("y", this.secondExpandAllIconOffset)
                 .attr(this.collapseAllFlag, (this.collapsedTasks.length ? "1" : "0"));
 
             expandCollapseButton
                 .append("rect")
-                .attr("width", this.groupLabelSize)
-                .attr("height", this.groupLabelSize)
+                .attr("width", Gantt.GroupLabelSize)
+                .attr("height", Gantt.GroupLabelSize)
                 .attr("x", 0)
                 .attr("y", this.secondExpandAllIconOffset)
                 .attr("fill", "transparent");
@@ -2439,8 +2447,8 @@ export class Gantt implements IVisual {
 
                 this.collapseAllGroup
                     .append("text")
-                    .attr("x", Math.ceil(this.secondExpandAllIconOffset + this.groupLabelSize + Gantt.CollapseAllLeftShift / 2))
-                    .attr("y", this.groupLabelSize)
+                    .attr("x", Math.ceil(Gantt.GroupLabelSize))
+                    .attr("y", Gantt.GroupLabelSize)
                     .style("font-size", settings.fontSize.value + Gantt.CollapseAllFontAdditionalSize)
                     .style("font-family", settings.fontFamily.value)
                     .style("font-style", settings.italic.value ? "italic" : "normal")
@@ -2448,6 +2456,7 @@ export class Gantt implements IVisual {
                     .style("text-decoration", settings.underline.value ? "underline" : "none")
                     .style("fill", this.colorHelper.getHighContrastColor("foreground", settings.fill.value.value))
                     .text(text)
+                    .call(AxisHelper.LabelLayoutStrategy.clip, this.formattingSettings.taskLabels.general.width.value - Gantt.GroupLabelSize - Gantt.CollapseAllBackgroundWidthPadding, textMeasurementService.svgEllipsis)
                     .attr("aria-label", this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
             }
         }
@@ -3449,15 +3458,18 @@ export class Gantt implements IVisual {
             ? taskSettings.general.width.value
             : 0;
 
-        const ganttDiv = this.ganttDiv.node();
-
         const translateX: number = taskLabelsWidth + margin.left + Gantt.SubtasksLeftMargin;
-        this.chartGroup.attr("transform", SVGManipulations.translate(translateX, margin.top));
+        const shiftX: number = !taskLabelShow && this.viewModel.isParentFilled
+            ? Gantt.GroupLabelSize
+            : 0;
 
+        this.chartGroup.attr("transform", SVGManipulations.translate(translateX + shiftX, margin.top));
+
+        const ganttDiv = this.ganttDiv.node();
         const translateY: number = Gantt.TaskLabelsMarginTop + ganttDiv.scrollTop;
 
         this.axisGroup
-            .attr("transform", SVGManipulations.translate(translateX + (taskLabelShow ? 0 : Gantt.CollapsedAllBackgroundWidthHidden), translateY));
+            .attr("transform", SVGManipulations.translate(translateX + shiftX, translateY));
         this.collapseAllGroup
             .attr("transform", SVGManipulations.translate(ganttDiv.scrollLeft, ganttDiv.scrollTop));
         this.lineGroup
