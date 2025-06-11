@@ -130,9 +130,6 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 
-import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
-
-
 import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 
 import IColorPalette = powerbi.extensibility.IColorPalette;

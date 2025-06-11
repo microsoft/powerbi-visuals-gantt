@@ -1,6 +1,5 @@
 import powerbi from "powerbi-visuals-api";
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
-import ISelectionId = powerbi.visuals.ISelectionId;
 import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
 
 import { ColorHelper } from "powerbi-visuals-utils-colorutils";

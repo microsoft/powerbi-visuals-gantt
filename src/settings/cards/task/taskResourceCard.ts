@@ -1,6 +1,5 @@
 import powerbi from "powerbi-visuals-api";
 import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
-import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import ItemDropdown = formattingSettings.ItemDropdown;
