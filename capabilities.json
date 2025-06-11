@@ -572,6 +572,92 @@
                     "type": {
                         "numeric": true
                     }
+                },
+                "customizeExpandCollapse":{
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "fillExpandCollapse": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontSizeExpandCollapse": {
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "fontFamilyExpandCollapse": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "boldExpandCollapse": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "italicExpandCollapse": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underlineExpandCollapse": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "fillNestedLabel": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontSizeNestedLabel": {
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "fontFamilyNestedLabel": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "boldNestedLabel": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "italicNestedLabel": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underlineNestedLabel": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "customizeNestedLabel":{
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         },
