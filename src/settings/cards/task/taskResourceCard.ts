@@ -1,5 +1,6 @@
 import powerbi from "powerbi-visuals-api";
 import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import ItemDropdown = formattingSettings.ItemDropdown;
@@ -50,4 +51,9 @@ export class TaskResourceCardSettings extends FontSettings {
     public name: string = "taskResource";
     public displayNameKey: string = "Visual_DataLabels";
     public slices: Slice[] = [this.matchLegendColors, this.fill, this.font, this.position, this.fullText, this.widthByTask];
+
+    constructor(){
+        super();
+        this.bold.value = true;
+    }
 }

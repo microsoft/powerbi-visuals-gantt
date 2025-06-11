@@ -14,51 +14,45 @@ class BaseLabelsItem extends FontSettings {
     constructor(name: string, displayNameKey: string, postfix: string = "") {
         super(postfix);
         this.name = name;
-        this.displayNameKey = displayNameKey;        
+        this.displayNameKey = displayNameKey;
     }
 }
 
-export class ExpandCollapseGroup extends BaseLabelsItem {
-    public customizeExpandCollapse = new ToggleSwitch({
-        name: "customizeExpandCollapse",
-        displayNameKey: "Visual_Customize",
-        value: true
-    });
+class CustomizeLabelsItem extends BaseLabelsItem {
+    public customize: ToggleSwitch;
 
+    constructor(name: string, displayNameKey: string, postfix: string = "") {
+        super(name, displayNameKey, postfix);
+        this.fill.visible = true;
+        this.customize = new ToggleSwitch({
+            name: `customize${postfix}`,
+            displayNameKey: "Visual_Customize",
+            value: true
+        });
+        this.slices = [this.customize, this.fill, this.font];
+    }
+
+    public onPreProcess(): void {
+        if (this.customize.value) {
+            this.slices = [this.customize, this.fill, this.font];
+        } else {
+            this.slices = [this.customize];
+        }
+    }
+}
+
+export class ExpandCollapseGroup extends CustomizeLabelsItem {
     constructor(name: string, displayNameKey: string, postfix: string = "") {
         super(name, displayNameKey, postfix);
         this.fill.value = { value: "rgb(170, 170, 170)" };
-        this.slices = [this.customizeExpandCollapse, this.font, this.fill];
-    }
-
-    public setVisibility() {
-        if (this.customizeExpandCollapse.value) {
-            this.slices = [this.customizeExpandCollapse, this.fill, this.font];
-        } else {
-            this.slices = [this.customizeExpandCollapse];
-        }
     }
 }
 
-export class NestedLabelsGroup extends BaseLabelsItem {
-    public customizeNestedLabel = new ToggleSwitch({
-        name: "customizeNestedLabel",
-        displayNameKey: "Visual_Customize",
-        value: false
-    });
-
+export class NestedLabelsGroup extends CustomizeLabelsItem {
     constructor(name: string, displayNameKey: string, postfix: string = "") {
         super(name, displayNameKey, postfix);
+        this.customize.value = false;
         this.italic.value = true;
-        this.slices = [this.fill, this.font, this.customizeNestedLabel];
-    }
-
-    public setVisibility() {
-        if (this.customizeNestedLabel.value) {
-            this.slices = [this.customizeNestedLabel, this.fill, this.font];
-        } else {
-            this.slices = [this.customizeNestedLabel];
-        }
     }
 }
 
@@ -91,12 +85,12 @@ export class TaskLabelsCardSettings extends Card {
         value: true
     });
 
-    public general = new GeneralLabelsGroup("taskLabelsGeneralGroup", "Visual_General");
+    public general = new GeneralLabelsGroup("taskLabelsGeneralGroup", "Visual_CategoryLabels");
     public expandCollapse = new ExpandCollapseGroup("expandCollapseGroup", "Visual_ExpandCollapse", "ExpandCollapse");
     public nestedLabels = new NestedLabelsGroup("nestedLabelsGroup", "Visual_NestedLabels", "NestedLabel");
 
     public container?: Container = new Container({
-        displayNameKey: "Visual_Labels",
+        displayNameKey: "Visual_ApplySettingsTo",
         containerItems: [
             this.general,
             this.nestedLabels,
@@ -114,8 +108,12 @@ export class TaskLabelsCardSettings extends Card {
             item.fill.visible = !colorHelper.isHighContrast;
         });
     }
-    public setVisibility() {
-        this.expandCollapse.setVisibility();
-        this.nestedLabels.setVisibility();
+
+    public onPreProcess(): void {
+        this.container.containerItems?.forEach((item: BaseLabelsItem) => {
+            if (item.onPreProcess){
+                item.onPreProcess();
+            }
+        });
     }
 }

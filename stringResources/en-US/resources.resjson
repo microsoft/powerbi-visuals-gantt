@@ -114,5 +114,6 @@
 	"Visual_ExpandCollapse": "Expand/Collapse button",
 	"Visual_NestedLabels": "Nested labels",
 	"Visual_Customize": "Customize",
-	"Visual_Labels": "Labels"
+	"Visual_Labels": "Labels",
+	"Visual_ApplySettingsTo": "Apply settings to"
 }

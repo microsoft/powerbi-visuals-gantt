@@ -42,7 +42,7 @@ import ISelectionId = powerbi.visuals.ISelectionId;
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
 import IMargin = SVGUtil.IMargin;
 
-import { GanttChartSettingsModel } from "./ganttChartSettingsModels";
+import { GanttChartSettingsModel } from "./settings/ganttChartSettingsModels";
 import { SelectableDataPoint } from "./behavior";
 
 export type DayOffData = [Date, number];
@@ -98,7 +98,6 @@ export interface GanttChartFormatters {
 
 export interface GanttViewModel {
     dataView: DataView;
-    settings: GanttChartSettingsModel;
     tasks: Task[];
     legendData: LegendData;
     milestoneData: MilestoneData;

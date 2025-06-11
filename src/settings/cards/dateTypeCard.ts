@@ -12,6 +12,7 @@ import NumUpDown = formattingSettings.NumUpDown;
 
 import { dateTypeOptions } from "../enumOptions";
 import { ISetHighContrastMode } from "./interfaces/ISetHighContrastMode";
+import { FontSizeSettings } from "./baseFontCard";
 
 export class DateTypeCardSettings extends CompositeCard implements ISetHighContrastMode {
     public type = new ItemDropdown({
@@ -50,9 +51,10 @@ export class DateTypeCardSettings extends CompositeCard implements ISetHighContr
         name: "axisFontSize",
         displayName: "Font Size",
         displayNameKey: "Visual_FontSize",
-        value: 10,
+        value: FontSizeSettings.MinFontSize,
         options: {
-            minValue: { value: 0, type: ValidatorType.Min },
+            minValue: { value: FontSizeSettings.MinFontSize, type: ValidatorType.Min },
+            maxValue: { value: FontSizeSettings.MaxFontSize, type: ValidatorType.Max },
         },
     });
 

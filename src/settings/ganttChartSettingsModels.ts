@@ -56,33 +56,29 @@ export class GanttChartSettingsModel extends Model {
     ];
 
     public populateDynamicDataPoints(viewModel: GanttViewModel, localizationManager: ILocalizationManager): void {
+        const isMissingRequiredFields = viewModel && !viewModel.isDurationFilled && !viewModel.isEndDateFilled;
+
         this.cards.forEach(element => {
             switch (element.name) {
                 case MilestonesPropertyIdentifier.objectName: {
-                    if (viewModel && !viewModel.isDurationFilled && !viewModel.isEndDateFilled) {
-                        return;
-                    }
+                    const dataPoints: MilestoneDataPoint[] | undefined = viewModel?.milestoneData?.dataPoints;
 
-                    const dataPoints: MilestoneDataPoint[] = viewModel && viewModel.milestoneData.dataPoints;
-                    if (!dataPoints || !dataPoints.length) {
+                    if (isMissingRequiredFields || !dataPoints?.length) {
                         this.milestones.visible = false;
                         return;
                     }
 
                     const uniqueMilestones = Gantt.GetUniqueMilestones(dataPoints);
-
-                    this.milestones.populateMilestones(Object.values(uniqueMilestones));
+                    this.milestones.populateMilestones(Object.values(uniqueMilestones), localizationManager);
 
                     break;
                 }
 
                 case LegendPropertyIdentifier.objectName: {
-                    if (viewModel && !viewModel.isDurationFilled && !viewModel.isEndDateFilled) {
-                        return;
-                    }
+                    const dataPoints: LegendDataPoint[] | undefined = viewModel?.legendData?.dataPoints;
 
-                    const dataPoints: LegendDataPoint[] = viewModel && viewModel.legendData.dataPoints;
-                    if (!dataPoints || !dataPoints.length) {
+                    if (isMissingRequiredFields || !dataPoints?.length) {
+                        this.legend.visible = false;
                         return;
                     }
 
@@ -90,19 +86,21 @@ export class GanttChartSettingsModel extends Model {
                     break;
                 }
 
-                case TaskResourcePropertyIdentifier.objectName:
-                    this.taskResource.visible = viewModel.isResourcesFilled;
+                case TaskResourcePropertyIdentifier.objectName: {
+                    if (!viewModel.isResourcesFilled) {
+                        this.taskResource.visible = false;
+                    }
 
                     if (viewModel.isResourcesFilled && this.taskResource.matchLegendColors.value) {
                         this.taskResource.fill.visible = false;
                     }
                     break;
+                }
             }
         });
     }
 
     public parse() {
-        this.taskLabels.setVisibility();
         this.taskCompletion.parse();
     }
 

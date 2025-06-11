@@ -12,7 +12,7 @@ import ToggleSwitch = formattingSettings.ToggleSwitch;
 import ColorPicker = formattingSettings.ColorPicker;
 import { ISetHighContrastMode } from "./interfaces/ISetHighContrastMode";
 
-class FontSizeSettings {
+export class FontSizeSettings {
     public static readonly DefaultFontSize: number = 9;
     public static readonly MinTaskLabelFontSize: number = 8;
     public static readonly LegendDefaultFontSize: number = 8;
