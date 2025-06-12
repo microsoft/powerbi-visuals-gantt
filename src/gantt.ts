@@ -3077,7 +3077,7 @@ export class Gantt implements IVisual {
                 .text((task: Task) => lodashIsEmpty(task.Milestones) && task.resource || "")
                 .style("fill", (task: Task) =>
                     taskResourceSettings.matchLegendColors.value
-                        ? task.color
+                        ? this.colorHelper.getHighContrastColor("foreground", task.color)
                         : taskResourceSettings.fill.value.value)
                 .style("font-size", PixelConverter.fromPoint(taskResourceFontSize))
                 .style("font-family", taskResourceSettings.fontFamily.value)
@@ -3468,7 +3468,7 @@ export class Gantt implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-        this.formattingSettings.populateDynamicDataPoints(this.viewModel, this.localizationManager);
+        this.formattingSettings.populateDynamicDataPoints(this.viewModel, this.localizationManager, this.colorHelper);
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 }

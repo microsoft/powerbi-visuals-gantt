@@ -28,17 +28,18 @@ export class MilestoneContainerItem extends Card {
     public color: ColorPicker;
     public shape: ItemDropdown;
 
-    constructor(milestone: MilestoneDataPoint, localizationManager: ILocalizationManager) {
+    constructor(milestone: MilestoneDataPoint, localizationManager: ILocalizationManager, colorHelper: ColorHelper) {
         super();
         this.color = new ColorPicker({
             name: "fill",
-            displayNameKey: `${milestone.name} ${localizationManager.getDisplayName("Visual_Color")}`,
+            displayNameKey: localizationManager.getDisplayName("Visual_Color"),
             value: { value: milestone.color },
+            visible: !colorHelper.isHighContrast,
             selector: ColorHelper.normalizeSelector(milestone.identity.getSelector(), false),
         });
         this.shape = new ItemDropdown({
             name: "shapeType",
-            displayNameKey: `${milestone.name} ${localizationManager.getDisplayName("Visual_Shape")}`,
+            displayNameKey: localizationManager.getDisplayName("Visual_Shape"),
             items: shapesOptions,
             value: shapesOptions.find(el => el.value === milestone.shapeType),
             selector: ColorHelper.normalizeSelector(milestone.identity.getSelector(), false),
@@ -102,18 +103,21 @@ export class MilestonesCardSettings extends CompositeCard implements ISetHighCon
     public milestoneGroup: MilestoneGroup = new MilestoneGroup();
     public groups: Card[] = [this.lineGroup, this.milestoneGroup];
 
-    public populateMilestones(milestones: MilestoneDataPoint[], localizationManager: ILocalizationManager): void {
+    public populateMilestones(milestones: MilestoneDataPoint[], localizationManager: ILocalizationManager, colorHelper: ColorHelper): void {
         if (!milestones || milestones.length === 0) {
             return;
         }
 
-        const milestoneGroups: Card[] = milestones.map(milestone => new MilestoneContainerItem(milestone, localizationManager));
+        const milestoneGroups: Card[] = milestones.map(milestone => new MilestoneContainerItem(milestone, localizationManager, colorHelper));
         this.milestoneGroup.container.containerItems = [...milestoneGroups];
     }
 
 
     public setHighContrastMode(colorHelper: ColorHelper): void {
         const isHighContrast = colorHelper.isHighContrast;
+
+        this.lineGroup.lineColor.value.value = colorHelper.getHighContrastColor("foreground", this.lineGroup.lineColor.value.value);
+        this.lineGroup.lineColor.visible = !isHighContrast;
 
         this.milestoneGroup.container.containerItems.forEach((item) => {
             item.slices.forEach((slice) => {

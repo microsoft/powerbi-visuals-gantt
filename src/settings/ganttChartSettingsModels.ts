@@ -57,7 +57,7 @@ export class GanttChartSettingsModel extends Model {
         this.background,
     ];
 
-    public populateDynamicDataPoints(viewModel: GanttViewModel, localizationManager: ILocalizationManager): void {
+    public populateDynamicDataPoints(viewModel: GanttViewModel, localizationManager: ILocalizationManager, colorHelper: ColorHelper): void {
         const isMissingRequiredFields = viewModel && !viewModel.isDurationFilled && !viewModel.isEndDateFilled;
 
         this.cards.forEach(element => {
@@ -71,7 +71,7 @@ export class GanttChartSettingsModel extends Model {
                     }
 
                     const uniqueMilestones = Gantt.GetUniqueMilestones(dataPoints);
-                    this.milestones.populateMilestones(Object.values(uniqueMilestones), localizationManager);
+                    this.milestones.populateMilestones(Object.values(uniqueMilestones), localizationManager, colorHelper);
 
                     break;
                 }
@@ -84,7 +84,7 @@ export class GanttChartSettingsModel extends Model {
                         return;
                     }
 
-                    this.legend.populateColors(dataPoints, localizationManager);
+                    this.legend.populateColors(dataPoints, localizationManager, colorHelper);
                     break;
                 }
 

@@ -80,8 +80,8 @@ export class LegendCardSettings extends CompositeCard implements ISetHighContras
     public displayNameKey: string = "Visual_Legend";
     public groups: Card[] = [this.general];
 
-    public populateColors(dataPoints: LegendDataPoint[], localizationManager: ILocalizationManager): void {
-        if (!dataPoints || dataPoints.length === 0) {
+    public populateColors(dataPoints: LegendDataPoint[], localizationManager: ILocalizationManager, colorHelper: ColorHelper): void {
+        if (!dataPoints || dataPoints.length === 0 || colorHelper.isHighContrast) {
             return;
         }
 
