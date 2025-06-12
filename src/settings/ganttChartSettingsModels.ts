@@ -17,6 +17,7 @@ import { TaskCompletionCardSettings } from "./cards/task/taskCompletionCard";
 import { TooltipConfigCardSettings } from "./cards/tooltipCard";
 import { TaskConfigCardSettings } from "./cards/task/taskConfigCard";
 import { TaskResourceCardSettings, TaskResourcePropertyIdentifier } from "./cards/task/taskResourceCard";
+import { SubTasksCardSettings } from "./cards/task/subTasksCard";
 import { DateTypeCardSettings } from "./cards/dateTypeCard";
 import { BackgroundCardSettings } from "./cards/backgroundCard";
 
@@ -38,6 +39,7 @@ export class GanttChartSettingsModel extends Model {
     taskResource = new TaskResourceCardSettings();
     dateType = new DateTypeCardSettings();
     background = new BackgroundCardSettings();
+    subtasks = new SubTasksCardSettings();
 
     cards = [
         this.general,

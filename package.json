@@ -15,7 +15,8 @@
     "package": "pbiviz package",
     "eslint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "karma start",
-    "cert": "pbiviz --install-cert"
+    "cert": "pbiviz --install-cert",
+    "debug": "karma start --browsers=Chrome --single-run=false"
   },
   "author": {
     "name": "Microsoft",

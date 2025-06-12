@@ -17,7 +17,7 @@ import ColorPicker = formattingSettings.ColorPicker;
 import ItemDropdown = formattingSettings.ItemDropdown;
 import TextInput = formattingSettings.TextInput;
 
-import { FontSettings } from "./baseFontCard";
+import { FontSettings, FontSizeSettings } from "./baseFontCard";
 import { positionOptions } from "../enumOptions";
 import { ISetHighContrastMode } from "./interfaces/ISetHighContrastMode";
 
@@ -61,6 +61,7 @@ export class LegendGeneralGroup extends FontSettings {
     constructor() {
         super();
         this.fontFamily.value = "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif";
+        this.fontSize.value = FontSizeSettings.MinFontSize;
     }
 }
 
