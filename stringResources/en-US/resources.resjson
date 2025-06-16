@@ -115,5 +115,8 @@
 	"Visual_NestedLabels": "Nested labels",
 	"Visual_Customize": "Customize",
 	"Visual_Labels": "Labels",
-	"Visual_ApplySettingsTo": "Apply settings to"
+	"Visual_ApplySettingsTo": "Apply settings to",
+	"Visual_LegendDisabledReason": "Disabled due to missing Legend data",
+	"Visual_MilestonesDisabledReason": "Disabled due to missing Milestones data",
+	"Visual_ResourceDisabledReason": "Disabled due to missing Resource data"
 }

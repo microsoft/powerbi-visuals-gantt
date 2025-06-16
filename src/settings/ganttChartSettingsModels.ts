@@ -66,7 +66,7 @@ export class GanttChartSettingsModel extends Model {
                     const dataPoints: MilestoneDataPoint[] | undefined = viewModel?.milestoneData?.dataPoints;
 
                     if (isMissingRequiredFields || !dataPoints?.length) {
-                        this.milestones.visible = false;
+                        this.milestones.disable(localizationManager);
                         return;
                     }
 
@@ -80,7 +80,7 @@ export class GanttChartSettingsModel extends Model {
                     const dataPoints: LegendDataPoint[] | undefined = viewModel?.legendData?.dataPoints;
 
                     if (isMissingRequiredFields || !dataPoints?.length) {
-                        this.legend.visible = false;
+                        this.legend.disable(localizationManager);
                         return;
                     }
 
@@ -90,7 +90,8 @@ export class GanttChartSettingsModel extends Model {
 
                 case TaskResourcePropertyIdentifier.objectName: {
                     if (!viewModel.isResourcesFilled) {
-                        this.taskResource.visible = false;
+                        this.taskResource.disable(localizationManager);
+                        return;
                     }
 
                     if (viewModel.isResourcesFilled && this.taskResource.matchLegendColors.value) {

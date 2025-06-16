@@ -112,7 +112,6 @@ export class MilestonesCardSettings extends CompositeCard implements ISetHighCon
         this.milestoneGroup.container.containerItems = [...milestoneGroups];
     }
 
-
     public setHighContrastMode(colorHelper: ColorHelper): void {
         const isHighContrast = colorHelper.isHighContrast;
 
@@ -127,5 +126,13 @@ export class MilestonesCardSettings extends CompositeCard implements ISetHighCon
                 }
             });
         });
+    }
+
+    public disable(localizationManager: ILocalizationManager): void {
+        this.groups.forEach((group) => {
+            group.disabled = true;
+            group.disabledReason = localizationManager.getDisplayName("Visual_MilestonesDisabledReason");
+        });
+        this.topLevelSlice = null;
     }
 }
