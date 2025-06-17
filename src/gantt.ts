@@ -1740,12 +1740,12 @@ export class Gantt implements IVisual {
 
         this.eventService.renderingStarted(options);
 
-        this.render();
+        this.render(options.dataViews[0].metadata.objects);
 
         this.eventService.renderingFinished(options);
     }
 
-    private render(): void {
+    private render(objects: powerbi.DataViewObjects): void {
         const settings = this.formattingSettings;
 
         this.renderLegend();
@@ -1808,7 +1808,7 @@ export class Gantt implements IVisual {
         this.setDimension(groupedTasks, axisLength, settings);
 
         this.updateSvgBackgroundColor();
-        this.renderTasks(groupedTasks);
+        this.renderTasks(groupedTasks, objects);
         this.updateTaskLabels(groupedTasks, settings.taskLabels.general.width.value);
         this.updateElementsPositions(this.margin);
         this.createMilestoneLine(groupedTasks);
@@ -2531,7 +2531,7 @@ export class Gantt implements IVisual {
      * Render tasks
      * @param groupedTasks Grouped tasks
      */
-    private renderTasks(groupedTasks: GroupedTask[]): void {
+    private renderTasks(groupedTasks: GroupedTask[], objects: powerbi.DataViewObjects): void {
         const taskConfigHeight: number = this.formattingSettings.taskConfig.height.value || DefaultChartLineHeight;
         const generalBarsRoundedCorners: boolean = this.formattingSettings.general.barsRoundedCorners.value;
         const taskGroupSelection = this.taskGroup
@@ -2555,7 +2555,7 @@ export class Gantt implements IVisual {
         this.MilestonesRender(taskSelection, taskConfigHeight);
         this.taskProgressRender(taskSelection);
         this.taskDaysOffRender(taskSelection, taskConfigHeight);
-        this.taskResourceRender(taskSelection, taskConfigHeight);
+        this.taskResourceRender(taskSelection, taskConfigHeight, objects);
 
         this.renderTooltip(taskSelection);
     }
@@ -3021,29 +3021,24 @@ export class Gantt implements IVisual {
      */
     private taskResourceRender(
         taskSelection: d3Selection<SVGGElement, Task, SVGGElement, GroupedTask>,
-        taskConfigHeight: number): void {
+        taskConfigHeight: number,
+        objects: powerbi.DataViewObjects): void {
 
         const groupTasks: boolean = this.formattingSettings.general.groupTasks.value;
+        const positionFromObjects: powerbi.DataViewPropertyValue = objects?.taskResource?.position;
+
         let newLabelPosition: ResourceLabelPosition | null = null;
-        if (groupTasks && !this.groupTasksPrevValue) {
+        if (groupTasks && !this.groupTasksPrevValue && !positionFromObjects) {
             newLabelPosition = ResourceLabelPosition.Inside;
         }
 
-        if (!groupTasks && this.groupTasksPrevValue) {
+        if (!groupTasks && this.groupTasksPrevValue && !positionFromObjects) {
             newLabelPosition = ResourceLabelPosition.Right;
         }
 
         const taskResourceSettings: TaskResourceCardSettings = this.formattingSettings.taskResource;
         if (newLabelPosition) {
-            this.host.persistProperties(<VisualObjectInstancesToPersist>{
-                merge: [{
-                    objectName: "taskResource",
-                    selector: null,
-                    properties: { position: newLabelPosition }
-                }]
-            });
-
-            taskResourceSettings.position.value.value = newLabelPosition;
+            taskResourceSettings.position.setValue(newLabelPosition);
             newLabelPosition = null;
         }
 

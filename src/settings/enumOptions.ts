@@ -56,9 +56,13 @@ export const positionOptions: ILocalizedItemMember[] = [
 ];
 
 export const resourcePositionOptions: ILocalizedItemMember[] = [
-    { displayNameKey: "Visual_Position_Top", value: ResourceLabelPosition.Top },
+    { displayNameKey: "Visual_Position_TopLeft", value: ResourceLabelPosition.Top },
     { displayNameKey: "Visual_Position_Right", value: ResourceLabelPosition.Right },
-    { displayNameKey: "Visual_Position_Inside", value: ResourceLabelPosition.Inside }
+    { displayNameKey: "Visual_Position_TopRight", value: ResourceLabelPosition.TopRight },
+    { displayNameKey: "Visual_Position_TopCenter", value: ResourceLabelPosition.TopCenter },
+    { displayNameKey: "Visual_Position_InsideLeft", value: ResourceLabelPosition.Inside },
+    { displayNameKey: "Visual_Position_InsideRight", value: ResourceLabelPosition.InsideRight },
+    { displayNameKey: "Visual_Position_InsideCenter", value: ResourceLabelPosition.InsideCenter }
 ];
 
 export const milestoneLineTypes: ILocalizedItemMember[] = [
