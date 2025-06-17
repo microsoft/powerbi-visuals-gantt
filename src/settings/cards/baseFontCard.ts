@@ -14,9 +14,7 @@ import { ISetHighContrastMode } from "./interfaces/ISetHighContrastMode";
 
 export class FontSizeSettings {
     public static readonly DefaultFontSize: number = 9;
-    public static readonly MinTaskLabelFontSize: number = 8;
-    public static readonly LegendDefaultFontSize: number = 8;
-    public static readonly LegendMinFontSize: number = 5;
+    public static readonly AxisMinFontSize: number = 7;
     public static readonly MinFontSize: number = 8;
     public static readonly MaxFontSize: number = 60;
 }

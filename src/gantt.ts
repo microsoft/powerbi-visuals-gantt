@@ -2931,10 +2931,6 @@ export class Gantt implements IVisual {
                     radius: number = this.formattingSettings.general.barsRoundedCorners.value ? Gantt.RectRound : 0,
                     width: number = getTaskRectDaysOffWidth(task);
 
-                if (width < radius) {
-                    x = x - width / 2;
-                }
-
                 if (this.formattingSettings.general.barsRoundedCorners.value && width >= 2 * radius) {
                     return drawRoundedRectByPath(x, y, width, height, radius);
                 }
@@ -3054,6 +3050,10 @@ export class Gantt implements IVisual {
         const isInsidePosition: boolean = [ ResourceLabelPosition.Inside, ResourceLabelPosition.InsideCenter, ResourceLabelPosition.InsideRight].includes(taskResourcePosition);
         const isTopPosition: boolean = [ ResourceLabelPosition.Top, ResourceLabelPosition.TopCenter, ResourceLabelPosition.TopRight].includes(taskResourcePosition);
 
+        taskSelection
+            .selectAll(Gantt.TaskResource.selectorName)
+            .remove();
+
         if (isResourcesFilled && taskResourceShow) {
             const taskResource = taskSelection
                 .selectAll<SVGTextElement, Task>(Gantt.TaskResource.selectorName)
@@ -3120,10 +3120,6 @@ export class Gantt implements IVisual {
 
             taskResource
                 .exit()
-                .remove();
-        } else {
-            taskSelection
-                .selectAll(Gantt.TaskResource.selectorName)
                 .remove();
         }
     }
