@@ -31,7 +31,7 @@ export class TaskResourceCardSettings extends FontSettings {
         name: "position",
         displayNameKey: "Visual_Position",
         items: resourcePositionOptions,
-        value: resourcePositionOptions[1]
+        value: resourcePositionOptions[3]
     });
 
     public fullText = new ToggleSwitch({

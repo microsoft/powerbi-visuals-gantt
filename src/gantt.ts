@@ -2205,7 +2205,7 @@ export class Gantt implements IVisual {
             .classed(Gantt.ClickableArea.className, true)
             .merge(axisLabelGroup);
 
-        const { general, nestedLabels} = this.formattingSettings.taskLabels;
+        const { general, nestedLabels } = this.formattingSettings.taskLabels;
         const useCustom: boolean = nestedLabels.customize.value;
 
         clickableArea
@@ -2246,7 +2246,7 @@ export class Gantt implements IVisual {
                 const isChild: boolean = !!task.tasks[0].parent;
 
                 if (isChild) {
-                    return useCustom 
+                    return useCustom
                         ? nestedLabels.italic.value ? "italic" : "normal"
                         : "italic";
                 }
@@ -2413,7 +2413,7 @@ export class Gantt implements IVisual {
                     ? this.formattingSettings.taskLabels.expandCollapse
                     : this.formattingSettings.taskLabels.general;
 
-                const text: string = this.collapsedTasks.length 
+                const text: string = this.collapsedTasks.length
                     ? this.localizationManager.getDisplayName("Visual_Expand_All")
                     : this.localizationManager.getDisplayName("Visual_Collapse_All");
 
@@ -3047,10 +3047,12 @@ export class Gantt implements IVisual {
         const isResourcesFilled: boolean = this.viewModel.isResourcesFilled;
         const taskResourceShow: boolean = taskResourceSettings.show.value;
         const taskResourceFontSize: number = taskResourceSettings.fontSize.value;
-        const taskResourcePosition: ResourceLabelPosition = ResourceLabelPosition[taskResourceSettings.position.value.value];
+        const taskResourcePosition: ResourceLabelPosition = <ResourceLabelPosition>taskResourceSettings.position.value.value;
         const taskResourceFullText: boolean = taskResourceSettings.fullText.value;
         const taskResourceWidthByTask: boolean = taskResourceSettings.widthByTask.value;
         const isGroupedByTaskName: boolean = this.formattingSettings.general.groupTasks.value;
+        const isInsidePosition: boolean = [ ResourceLabelPosition.Inside, ResourceLabelPosition.InsideCenter, ResourceLabelPosition.InsideRight].includes(taskResourcePosition);
+        const isTopPosition: boolean = [ ResourceLabelPosition.Top, ResourceLabelPosition.TopCenter, ResourceLabelPosition.TopRight].includes(taskResourcePosition);
 
         if (isResourcesFilled && taskResourceShow) {
             const taskResource = taskSelection
@@ -3065,7 +3067,7 @@ export class Gantt implements IVisual {
             taskResourceMerged.classed(Gantt.TaskResource.className, true);
 
             taskResourceMerged
-                .attr("x", (task: Task) => this.getResourceLabelXCoordinate(task, taskConfigHeight, taskResourceFontSize, taskResourcePosition))
+                .attr("x", (task: Task) => this.getResourceLabelXCoordinate(task, taskResourceFontSize, taskResourcePosition))
                 .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.index, taskConfigHeight)
                     + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition)
                     + (task.index + 1) * this.getResourceLabelTopMargin())
@@ -3079,7 +3081,7 @@ export class Gantt implements IVisual {
                 .style("font-weight", taskResourceSettings.bold.value ? "bold" : "normal")
                 .style("font-style", taskResourceSettings.italic.value ? "italic" : "normal")
                 .style("text-decoration", taskResourceSettings.underline.value ? "underline" : "none")
-                .style("alignment-baseline", taskResourcePosition === ResourceLabelPosition.Inside ? "central" : "auto");
+                .style("alignment-baseline", isInsidePosition ? "central" : "auto");
 
             const hasNotNullableDates: boolean = this.hasNotNullableDates;
             const defaultWidth: number = Gantt.DefaultValues.ResourceWidth - Gantt.ResourceWidthPadding;
@@ -3088,7 +3090,7 @@ export class Gantt implements IVisual {
                 taskResourceMerged
                     .each(function (task: Task) {
                         const width: number = hasNotNullableDates ? Gantt.taskDurationToWidth(task.start, task.end) : 0;
-                        AxisHelper.LabelLayoutStrategy.clip(d3Select(this), width, textMeasurementService.svgEllipsis);
+                        AxisHelper.LabelLayoutStrategy.clip(d3Select(this), width - Gantt.RectRound * 2, textMeasurementService.svgEllipsis);
                     });
             } else if (isGroupedByTaskName) {
                 taskResourceMerged
@@ -3098,7 +3100,7 @@ export class Gantt implements IVisual {
                         if (sameRowNextTaskStart) {
                             let width: number = 0;
                             if (hasNotNullableDates) {
-                                const startDate: Date = taskResourcePosition === ResourceLabelPosition.Top ? task.start : task.end;
+                                const startDate: Date = isTopPosition ? task.start : task.end;
                                 width = Gantt.taskDurationToWidth(startDate, sameRowNextTaskStart);
                             }
 
@@ -3152,29 +3154,58 @@ export class Gantt implements IVisual {
             case ResourceLabelPosition.Right:
                 return (barHeight / Gantt.DividerForCalculatingCenter) + (taskResourceFontSize / Gantt.DividerForCalculatingCenter);
             case ResourceLabelPosition.Top:
+            case ResourceLabelPosition.TopCenter:
+            case ResourceLabelPosition.TopRight:
                 return -(taskResourceFontSize / Gantt.DividerForCalculatingPadding) + Gantt.LabelTopOffsetForPadding;
             case ResourceLabelPosition.Inside:
+            case ResourceLabelPosition.InsideCenter:
+            case ResourceLabelPosition.InsideRight:
                 return -(taskResourceFontSize / Gantt.DividerForCalculatingPadding) + Gantt.LabelTopOffsetForPadding + barHeight / Gantt.ResourceLabelDefaultDivisionCoefficient;
         }
     }
 
     private getResourceLabelXCoordinate(
         task: Task,
-        taskConfigHeight: number,
         taskResourceFontSize: number,
         taskResourcePosition: ResourceLabelPosition): number {
         if (!this.hasNotNullableDates) {
             return 0;
         }
 
-        const barHeight: number = Gantt.getBarHeight(taskConfigHeight);
+        const width = this.getTaskRectWidth(task);
+        const xStart: number = Gantt.TimeScale(task.start) || 0;
+        const xEnd: number = Gantt.TimeScale(task.end) || 0;
+        const textWidth: number = textMeasurementService.measureSvgTextWidth({
+            text: task.resource || "",
+            fontFamily: this.formattingSettings.taskResource.fontFamily.value,
+            fontSize: PixelConverter.fromPoint(taskResourceFontSize),
+            fontWeight: this.formattingSettings.taskResource.bold.value ? "bold" : "normal",
+            fontStyle: this.formattingSettings.taskResource.italic.value ? "italic" : "normal"
+        });
+
         switch (taskResourcePosition) {
             case ResourceLabelPosition.Right:
-                return (Gantt.TimeScale(task.end) + (taskResourceFontSize / 2) + Gantt.RectRound) || 0;
-            case ResourceLabelPosition.Top:
-                return (Gantt.TimeScale(task.start) + Gantt.RectRound) || 0;
+                return Gantt.RectRound + xEnd;
             case ResourceLabelPosition.Inside:
-                return (Gantt.TimeScale(task.start) + barHeight / (2 * Gantt.ResourceLabelDefaultDivisionCoefficient) + Gantt.RectRound) || 0;
+            case ResourceLabelPosition.Top: {
+                return xStart + Gantt.RectRound;
+            }
+            case ResourceLabelPosition.InsideCenter:
+            case ResourceLabelPosition.TopCenter: {
+                const result: number = xStart + (width - textWidth) / 2;
+                if (result < xStart + Gantt.RectRound) {
+                    return xStart + Gantt.RectRound;
+                }
+                return result;
+            }
+            case ResourceLabelPosition.InsideRight:
+            case ResourceLabelPosition.TopRight: {
+                const result: number = xEnd - textWidth - Gantt.RectRound;
+                if (result < xStart + Gantt.RectRound) {
+                    return xStart + Gantt.RectRound;
+                }
+                return result;
+            }
         }
     }
 
@@ -3247,10 +3278,11 @@ export class Gantt implements IVisual {
         const taskResourceSettings: TaskResourceCardSettings = this.formattingSettings.taskResource;
         const taskResourceShow: boolean = taskResourceSettings.show.value;
         const taskResourceFontSize: number = taskResourceSettings.fontSize.value;
-        const taskResourcePosition: ResourceLabelPosition = ResourceLabelPosition[taskResourceSettings.position.value.value];
+        const taskResourcePosition: ResourceLabelPosition = <ResourceLabelPosition>taskResourceSettings.position.value.value;
+        const isTopPosition: boolean = [ ResourceLabelPosition.Top, ResourceLabelPosition.TopCenter, ResourceLabelPosition.TopRight].includes(taskResourcePosition);
 
         let margin: number = 0;
-        if (isResourcesFilled && taskResourceShow && taskResourcePosition === ResourceLabelPosition.Top) {
+        if (isResourcesFilled && taskResourceShow && isTopPosition) {
             margin = Number(taskResourceFontSize) + Gantt.LabelTopOffsetForPadding;
         }
 
