@@ -2063,7 +2063,7 @@ export class Gantt implements IVisual {
 
         const axisColor: string = dateTypeSettings.axisColor.value.value;
         const axisTextColor: string = dateTypeSettings.axisTextColor.value.value;
-        const axisFontSize: string = PixelConverter.fromPoint(dateTypeSettings.axisFontSize.value);
+        const axisFontSize: number = dateTypeSettings.axisFontSize.value;
         const axisBackgroundEnable: boolean = backgroundSettings.enable.value;
         const axisBackgroundColor: string = backgroundSettings.color.value.value;
         const axisBackgroundOpacity: number = backgroundSettings.opacity.value;

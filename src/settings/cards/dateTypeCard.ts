@@ -51,9 +51,9 @@ export class DateTypeCardSettings extends CompositeCard implements ISetHighContr
         name: "axisFontSize",
         displayName: "Font Size",
         displayNameKey: "Visual_FontSize",
-        value: FontSizeSettings.AxisMinFontSize,
+        value: FontSizeSettings.AxisDefaultFontSize,
         options: {
-            minValue: { value: FontSizeSettings.AxisMinFontSize, type: ValidatorType.Min },
+            minValue: { value: FontSizeSettings.MinFontSize, type: ValidatorType.Min },
             maxValue: { value: FontSizeSettings.MaxFontSize, type: ValidatorType.Max },
         },
     });

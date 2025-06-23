@@ -85,7 +85,7 @@ export class TaskLabelsCardSettings extends Card {
         value: true
     });
 
-    public general = new GeneralLabelsGroup("taskLabelsGeneralGroup", "Visual_CategoryLabels");
+    public general = new GeneralLabelsGroup("taskLabelsGeneralGroup", "Visual_All");
     public expandCollapse = new ExpandCollapseGroup("expandCollapseGroup", "Visual_ExpandCollapse", "ExpandCollapse");
     public nestedLabels = new NestedLabelsGroup("nestedLabelsGroup", "Visual_NestedLabels", "NestedLabel");
 
