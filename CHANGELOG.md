@@ -1,4 +1,4 @@
-## 3.1.2
+## 3.2.0
 ### Visual changes
 * Add new card settings for nested category labels
 * Add new card settings for collapse/expand labels
