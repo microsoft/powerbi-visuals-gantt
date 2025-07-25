@@ -90,7 +90,6 @@ export class TaskLabelsCardSettings extends Card {
     public nestedLabels = new NestedLabelsGroup("nestedLabelsGroup", "Visual_NestedLabels", "NestedLabel");
 
     public container?: Container = new Container({
-        displayNameKey: "Visual_ApplySettingsTo",
         containerItems: [
             this.general,
             this.nestedLabels,

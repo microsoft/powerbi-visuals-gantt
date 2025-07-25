@@ -59,6 +59,5 @@ export class TaskResourceCardSettings extends FontSettings {
     public disable(localizationManager: powerbi.extensibility.ILocalizationManager): void {
         this.disabled = true;
         this.disabledReason = localizationManager.getDisplayName("Visual_ResourceDisabledReason");
-        this.topLevelSlice = null;
     }
 }

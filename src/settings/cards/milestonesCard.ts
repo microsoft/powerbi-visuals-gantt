@@ -91,7 +91,7 @@ export class MilestoneGroup extends Card {
     public name: string = "milestoneGroup";
     public displayNameKey: string = "Visual_Milestones";
     public container: Container = new Container({
-        displayNameKey: "Visual_ApplySettingsTo",
+        displayNameKey: "Visual_Milestones",
         containerItems: []
     });
 }
@@ -129,10 +129,7 @@ export class MilestonesCardSettings extends CompositeCard implements ISetHighCon
     }
 
     public disable(localizationManager: ILocalizationManager): void {
-        this.groups.forEach((group) => {
-            group.disabled = true;
-            group.disabledReason = localizationManager.getDisplayName("Visual_MilestonesDisabledReason");
-        });
-        this.topLevelSlice = null;
+        this.disabled = true;
+        this.disabledReason = localizationManager.getDisplayName("Visual_MilestonesDisabledReason");
     }
 }

@@ -95,7 +95,7 @@ export class GanttChartSettingsModel extends Model {
                     }
 
                     if (viewModel.isResourcesFilled && this.taskResource.matchLegendColors.value) {
-                        this.taskResource.fill.visible = false;
+                        this.taskResource.fill.disabled = true;
                     }
                     break;
                 }

@@ -117,10 +117,7 @@ export class LegendCardSettings extends CompositeCard implements ISetHighContras
     }
 
     public disable(localizationManager: ILocalizationManager): void {
-        this.groups.forEach((group) => {
-            group.disabled = true;
-            group.disabledReason = localizationManager.getDisplayName("Visual_LegendDisabledReason");
-        })
-        this.topLevelSlice = null;
+        this.disabled = true;
+        this.disabledReason = localizationManager.getDisplayName("Visual_LegendDisabledReason");
     }
 }
