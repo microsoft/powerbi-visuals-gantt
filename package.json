@@ -13,7 +13,7 @@
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "package": "pbiviz package",
-    "eslint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "npx eslint .",
     "test": "karma start",
     "cert": "pbiviz --install-cert",
     "debug": "karma start --browsers=Chrome --single-run=false"
@@ -76,11 +76,11 @@
     "@types/lodash.uniq": "^4.5.9",
     "@types/lodash.uniqby": "^4.7.9",
     "@types/webpack": "^5.28.5",
-    "@typescript-eslint/eslint-plugin": "^8.8.0",
-    "@typescript-eslint/parser": "^8.8.0",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "@typescript-eslint/parser": "^8.26.0",
     "css-loader": "^7.1.2",
-    "eslint": "^8.57.1",
-    "eslint-plugin-powerbi-visuals": "^0.8.1",
+    "eslint": "^9.21.0",
+    "eslint-plugin-powerbi-visuals": "^1.0.0",
     "jasmine": "^5.3.0",
     "karma": "^6.4.4",
     "karma-chrome-launcher": "^3.2.0",
@@ -98,7 +98,8 @@
     "powerbi-visuals-utils-testutils": "^6.1.1",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.7.2",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.0",
     "webpack": "^5.95.0"
   }
 }

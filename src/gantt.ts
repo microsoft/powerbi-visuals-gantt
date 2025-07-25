@@ -2925,7 +2925,7 @@ export class Gantt implements IVisual {
             };
 
             const drawTaskRectDaysOff = (task: TaskDaysOff) => {
-                let x = this.hasNotNullableDates ? Gantt.TimeScale(task.daysOff[0]) : 0;
+                const x = this.hasNotNullableDates ? Gantt.TimeScale(task.daysOff[0]) : 0;
                 const y: number = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
                     height: number = Gantt.getBarHeight(taskConfigHeight),
                     radius: number = this.formattingSettings.general.barsRoundedCorners.value ? Gantt.RectRound : 0,
