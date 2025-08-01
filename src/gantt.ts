@@ -1331,6 +1331,30 @@ export class Gantt implements IVisual {
         return extraInformation;
     }
 
+    public static SortTasks(groupedTasks: lodashDictionary<Task[]>): void {
+        const taskKeys: string[] = Object.keys(groupedTasks);
+
+        const sortingFunction = (a: Task, b: Task) => {
+            if (a.start.getTime() === b.start.getTime()) {
+                return b.end.getTime() - a.end.getTime();
+            }
+            return a.start.getTime() - b.start.getTime();
+        };
+
+        taskKeys.forEach((key: string) => {
+            const tasks: Task[] = groupedTasks[key];
+            if (!tasks[0].children?.length) {
+                tasks.sort(sortingFunction);
+                return;
+            }
+            tasks.forEach((task: Task) => {
+                if (task.children && task.children.length) {
+                    task.children = task.children.sort(sortingFunction);
+                }
+            });
+        });
+    }
+
     public static sortTasksWithParents(tasks: Task[], sortingOptions: SortingOptions): Task[] {
         const sortingFunction = ((a: Task, b: Task) => {
             const sortingDirection = sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1;
@@ -1365,6 +1389,11 @@ export class Gantt implements IVisual {
         });
 
         return resultTasks;
+    }
+
+    private getTaskYCoordinateWithLayer(task: Task, taskConfigHeight: number): number {
+        return Gantt.getBarYCoordinate(task.index, taskConfigHeight) +
+            (task.index + 1) * this.getResourceLabelTopMargin();
     }
 
     /**
@@ -1765,7 +1794,8 @@ export class Gantt implements IVisual {
 
         this.collapsedTasks = JSON.parse(settings.collapsedTasks.list.value);
         const groupTasks = settings.general.groupTasks.value;
-        const groupedTasks: GroupedTask[] = this.getGroupTasks(tasks, groupTasks, this.collapsedTasks);
+        const layerOverlappingTasks = settings.general.layerOverlappingTasks.value;
+        const groupedTasks: GroupedTask[] = this.getGroupTasks(tasks, groupTasks, this.collapsedTasks, layerOverlappingTasks);
         // do something with task ids
         this.updateCommonTasks(groupedTasks);
         this.updateCommonMilestones(groupedTasks);
@@ -1811,7 +1841,7 @@ export class Gantt implements IVisual {
         this.renderTasks(groupedTasks, objects);
         this.updateTaskLabels(groupedTasks, settings.taskLabels.general.width.value);
         this.updateElementsPositions(this.margin);
-        this.createMilestoneLine(groupedTasks);
+        this.createMilestoneLine(groupedTasks, settings.general.layerOverlappingTasks.value);
 
         if (this.formattingSettings.general.scrollToCurrentTime.value && this.hasNotNullableDates) {
             this.scrollToMilestoneLine(axisLength);
@@ -1961,7 +1991,17 @@ export class Gantt implements IVisual {
         axisLength: number,
         settings: GanttChartSettingsModel): void {
 
-        const fullResourceLabelMargin = groupedTasks.length * this.getResourceLabelTopMargin();
+        let totalRows = 0;
+        groupedTasks.forEach(group => {
+            if (settings.general.groupTasks.value) {
+                const maxLayer = Math.max(...group.tasks.map(t => t.layer ?? 0));
+                totalRows += maxLayer + 1;
+            } else {
+                totalRows++;
+            }
+        });
+
+        const fullResourceLabelMargin = totalRows * this.getResourceLabelTopMargin();
         let widthBeforeConversion = this.margin.left + settings.taskLabels.general.width.value + axisLength;
 
         if (settings.taskResource.show.value && settings.taskResource.position.value.value === ResourceLabelPosition.Right) {
@@ -1970,7 +2010,7 @@ export class Gantt implements IVisual {
             widthBeforeConversion += Gantt.DefaultValues.ResourceWidth / 2;
         }
 
-        const height = PixelConverter.toString(groupedTasks.length * (settings.taskConfig.height.value || DefaultChartLineHeight) + this.margin.top + fullResourceLabelMargin);
+        const height = PixelConverter.toString(totalRows * (settings.taskConfig.height.value || DefaultChartLineHeight) + this.margin.top + fullResourceLabelMargin);
         const width = PixelConverter.toString(widthBeforeConversion);
 
         this.ganttSvg
@@ -1978,7 +2018,7 @@ export class Gantt implements IVisual {
             .attr("width", width);
     }
 
-    private getGroupTasks(tasks: Task[], groupTasks: boolean, collapsedTasks: string[]): GroupedTask[] {
+    private getGroupTasks(tasks: Task[], groupTasks: boolean, collapsedTasks: string[], layerOverlappingTasks: boolean): GroupedTask[] {
         if (groupTasks) {
             const groupedTasks: lodashDictionary<Task[]> = lodashGroupBy(tasks,
                 x => (x.parent ? `${x.parent}.${x.name}` : x.name));
@@ -1994,6 +2034,8 @@ export class Gantt implements IVisual {
                 });
                 taskKeys.sort(sortingFunction);
             }
+
+            Gantt.SortTasks(groupedTasks);
 
             for (const key of taskKeys) {
                 const isKeyAlreadyReviewed = alreadyReviewedKeys.includes(key);
@@ -2045,7 +2087,12 @@ export class Gantt implements IVisual {
             // https://dev.azure.com/powerbi/PowerBICustomVisuals/_workitems/edit/1421305
             result.forEach((group: GroupedTask) => {
                 group.tasks.sort((a, b) => (b.children?.length || 0) - (a.children?.length || 0));
-            })
+            });
+
+            if (layerOverlappingTasks) {
+                this.calculateTaskLayers(result);
+                this.reassignTaskIndicesWithLayers(result);
+            }
 
             return result;
         }
@@ -2054,6 +2101,62 @@ export class Gantt implements IVisual {
             name: x.name,
             index: x.index,
             tasks: [x]
+        });
+    }
+
+    private calculateTaskLayers(groupedTasks: GroupedTask[]): void {
+        groupedTasks.forEach(groupedTask => {
+            const tasks = groupedTask.tasks;
+            if (tasks.length <= 1) {
+                groupedTask.tasks.forEach(task => task.layer = 0);
+                groupedTask.totalLayers = 1;
+                return;
+            }
+
+            tasks[0].layer = 0;
+            const layerEndTimes: Date[] = [tasks[0].end];
+
+            for (let i = 1; i < tasks.length; i++) {
+                const task = tasks[i];
+                let assignedLayer = -1;
+
+                for (let layerIndex = 0; layerIndex < layerEndTimes.length; layerIndex++) {
+                    if (task.start >= layerEndTimes[layerIndex]) {
+                        assignedLayer = layerIndex;
+                        layerEndTimes[layerIndex] = task.end;
+                        break;
+                    }
+                }
+
+                if (assignedLayer === -1) {
+                    assignedLayer = layerEndTimes.length;
+                    layerEndTimes.push(task.end);
+                }
+
+                task.layer = assignedLayer;
+            }
+            groupedTask.totalLayers = layerEndTimes.length;
+        });
+    }
+
+    private reassignTaskIndicesWithLayers(groupedTasks: GroupedTask[]): void {
+        let currentIndex = 0;
+
+        groupedTasks.forEach(groupedTask => {
+            const maxLayer = Math.max(...groupedTask.tasks.map(t => t.layer || 0));
+
+            groupedTask.index = currentIndex;
+
+            for (let layer = 0; layer <= maxLayer; layer++) {
+                const tasksInLayer = groupedTask.tasks.filter(t => (t.layer || 0) === layer);
+
+                if (tasksInLayer.length > 0) {
+                    tasksInLayer.forEach(task => {
+                        task.index = currentIndex;
+                    });
+                    currentIndex++;
+                }
+            }
         });
     }
 
@@ -2164,13 +2267,16 @@ export class Gantt implements IVisual {
 
         axisLabelGroup
             .classed(Gantt.Label.className, true)
-            .attr("transform", (task: GroupedTask) => SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.index)));
+            .attr("transform", (task: GroupedTask) => {
+                return SVGManipulations.translate(0, this.margin.top + this.getTaskLabelCoordinateY(task.index));
+            });
 
-        this.renderClickableAreas(axisLabelGroup, width);
+        this.renderClickableAreas(axisLabelGroup, width, taskConfigHeight);
 
         let parentTask: string = "";
         let childrenCount = 0;
         let currentChildrenIndex = 0;
+
         axisLabelGroup
             .append("rect")
             .attr("x", (task: GroupedTask) => {
@@ -2189,7 +2295,12 @@ export class Gantt implements IVisual {
                 const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
                 return drawStandardMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
             })
-            .attr("y", (task: GroupedTask) => (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.formattingSettings.taskLabels.general.fontSize.value) / 2)
+            .attr("y", (task: GroupedTask) => { 
+                const groupHeight = ((task.totalLayers || 1) - 1) * taskConfigHeight;//mb + padding
+                const res = (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.formattingSettings.taskLabels.general.fontSize.value)/ 2 + groupHeight;
+
+                return res;
+            })
             .attr("width", () => displayGridLines ? this.viewport.width : 0)
             .attr("height", 1)
             .attr("fill", this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor));
@@ -2199,7 +2310,7 @@ export class Gantt implements IVisual {
             .remove();
     }
 
-    private renderClickableAreas(axisLabelGroup: d3Selection<SVGGElement, GroupedTask, any, any>, width: number) {
+    private renderClickableAreas(axisLabelGroup: d3Selection<SVGGElement, GroupedTask, any, any>, width: number, taskConfigHeight: number) {
         const clickableArea = axisLabelGroup
             .append("g")
             .classed(Gantt.ClickableArea.className, true)
@@ -2259,7 +2370,10 @@ export class Gantt implements IVisual {
                     : general.underline.value ? "underline" : "none";
             })
             .attr("stroke-width", Gantt.AxisLabelStrokeWidth)
-            .attr("y", (task: GroupedTask) => (task.index + 0.5) * this.getResourceLabelTopMargin())
+            .attr("y", (task: GroupedTask) => {
+                const groupHeight: number = taskConfigHeight * (task.totalLayers - 1);
+                return (task.index + (task.totalLayers || 0) + 0.5) * this.getResourceLabelTopMargin() + groupHeight / 2;
+            })
             .attr("fill", (task: GroupedTask) => {
                 const isChild: boolean = !!task.tasks[0].parent;
 
@@ -2623,8 +2737,15 @@ export class Gantt implements IVisual {
      */
     private taskSelectionRectRender(taskGroupSelection: d3Selection<SVGGElement, GroupedTask, SVGGElement, null>) {
         const taskSelection = taskGroupSelection
-            .selectAll<SVGGElement, GroupedTask>(Gantt.SingleTask.selectorName)
-            .data((d: GroupedTask) => d.tasks);
+            .selectAll<SVGGElement, Task>(Gantt.SingleTask.selectorName)
+            .data((d: GroupedTask) => {
+                const hasLayer = d.tasks.some(task => task.layer !== undefined && task.layer !== null);
+
+                return hasLayer
+                    ? d.tasks.sort((a, b) => (a.layer || 0) - (b.layer || 0))
+                    : d.tasks;
+
+            });
 
         taskSelection
             .exit()
@@ -2665,7 +2786,7 @@ export class Gantt implements IVisual {
      */
     private drawTaskRect(task: Task, taskConfigHeight: number, barsRoundedCorners: boolean): string {
         const x = this.hasNotNullableDates ? Gantt.TimeScale(task.start) : 0,
-            y = Gantt.getBarYCoordinate(task.index, taskConfigHeight) + (task.index + 1) * this.getResourceLabelTopMargin(),
+            y = this.getTaskYCoordinateWithLayer(task, taskConfigHeight),
             width = this.getTaskRectWidth(task),
             height = Gantt.getBarHeight(taskConfigHeight),
             radius = Gantt.RectRound;
@@ -2790,6 +2911,7 @@ export class Gantt implements IVisual {
             .selectAll<SVGGElement, {
                 key: number;
                 values: MilestonePath[];
+                task: Task;
             }>(Gantt.TaskMilestone.selectorName)
             .data((d: Task) => {
                 const nestedByDate: {
@@ -2814,7 +2936,9 @@ export class Gantt implements IVisual {
                 });
 
                 return [{
-                    key: d.index, values: <MilestonePath[]>updatedMilestones
+                    key: d.index,
+                    values: <MilestonePath[]>updatedMilestones,
+                    task: d
                 }];
             });
 
@@ -2832,8 +2956,9 @@ export class Gantt implements IVisual {
 
         taskMilestonesMerged.classed(Gantt.TaskMilestone.className, true);
 
-        const transformForMilestone = (id: number, start: Date) => {
-            return SVGManipulations.translate(Gantt.TimeScale(start) - Gantt.getBarHeight(taskConfigHeight) / 4, Gantt.getBarYCoordinate(id, taskConfigHeight) + (id + 1) * this.getResourceLabelTopMargin());
+        const transformForMilestone = (task: Task, start: Date) => {
+            const yCoordinate = this.getTaskYCoordinateWithLayer(task, taskConfigHeight);
+            return SVGManipulations.translate(Gantt.TimeScale(start) - Gantt.getBarHeight(taskConfigHeight) / 4, yCoordinate);
         };
 
         const taskMilestonesSelection = taskMilestonesMerged.selectAll("path");
@@ -2853,7 +2978,10 @@ export class Gantt implements IVisual {
         if (this.hasNotNullableDates) {
             taskMilestonesSelectionMerged
                 .attr("d", (data: MilestonePath) => this.getMilestonePath(data.type, taskConfigHeight))
-                .attr("transform", (data: MilestonePath) => transformForMilestone(data.taskID, data.start))
+                .attr("transform", (data: MilestonePath, i: number, nodes: any[]) => {
+                    const parentData = d3Select(nodes[i].parentNode).datum() as { task: Task };
+                    return transformForMilestone(parentData.task, data.start);
+                })
                 .attr("fill", (data: MilestonePath) => this.getMilestoneColor(data.type))
                 .attr("focusable", true)
                 .attr("tabindex", 2)
@@ -2882,9 +3010,9 @@ export class Gantt implements IVisual {
 
         if (taskDaysOffShow) {
             const tasksDaysOff = taskSelection
-                .selectAll<SVGPathElement, TaskDaysOff>(Gantt.TaskDaysOff.selectorName)
+                .selectAll<SVGPathElement, TaskDaysOff & { parentTask: Task }>(Gantt.TaskDaysOff.selectorName)
                 .data((d: Task) => {
-                    const tasksDaysOff: TaskDaysOff[] = [];
+                    const tasksDaysOff: (TaskDaysOff & { parentTask: Task })[] = [];
 
                     if (!d.children && d.daysOffList) {
                         for (let i = 0; i < d.daysOffList.length; i++) {
@@ -2894,7 +3022,8 @@ export class Gantt implements IVisual {
                             if (currentDaysOffItem[0].getTime() < startOfLastDay.getTime()) {
                                 tasksDaysOff.push({
                                     id: d.index,
-                                    daysOff: d.daysOffList[i]
+                                    daysOff: d.daysOffList[i],
+                                    parentTask: d
                                 });
                             }
                         }
@@ -2924,9 +3053,9 @@ export class Gantt implements IVisual {
                 return width;
             };
 
-            const drawTaskRectDaysOff = (task: TaskDaysOff) => {
+            const drawTaskRectDaysOff = (task: TaskDaysOff & { parentTask: Task }) => {
                 const x = this.hasNotNullableDates ? Gantt.TimeScale(task.daysOff[0]) : 0;
-                const y: number = Gantt.getBarYCoordinate(task.id, taskConfigHeight) + (task.id + 1) * this.getResourceLabelTopMargin(),
+                const y: number = this.getTaskYCoordinateWithLayer(task.parentTask, taskConfigHeight),
                     height: number = Gantt.getBarHeight(taskConfigHeight),
                     radius: number = this.formattingSettings.general.barsRoundedCorners.value ? Gantt.RectRound : 0,
                     width: number = getTaskRectDaysOffWidth(task);
@@ -2939,9 +3068,9 @@ export class Gantt implements IVisual {
             };
 
             tasksDaysOffMerged
-                .attr("d", (task: TaskDaysOff) => drawTaskRectDaysOff(task))
+                .attr("d", (task: TaskDaysOff & { parentTask: Task }) => drawTaskRectDaysOff(task))
                 .style("fill", taskDaysOffColor)
-                .attr("width", (task: TaskDaysOff) => getTaskRectDaysOffWidth(task));
+                .attr("width", (task: TaskDaysOff & { parentTask: Task }) => getTaskRectDaysOffWidth(task));
 
             tasksDaysOff
                 .exit()
@@ -3047,8 +3176,8 @@ export class Gantt implements IVisual {
         const taskResourceFullText: boolean = taskResourceSettings.fullText.value;
         const taskResourceWidthByTask: boolean = taskResourceSettings.widthByTask.value;
         const isGroupedByTaskName: boolean = this.formattingSettings.general.groupTasks.value;
-        const isInsidePosition: boolean = [ ResourceLabelPosition.Inside, ResourceLabelPosition.InsideCenter, ResourceLabelPosition.InsideRight].includes(taskResourcePosition);
-        const isTopPosition: boolean = [ ResourceLabelPosition.Top, ResourceLabelPosition.TopCenter, ResourceLabelPosition.TopRight].includes(taskResourcePosition);
+        const isInsidePosition: boolean = [ResourceLabelPosition.Inside, ResourceLabelPosition.InsideCenter, ResourceLabelPosition.InsideRight].includes(taskResourcePosition);
+        const isTopPosition: boolean = [ResourceLabelPosition.Top, ResourceLabelPosition.TopCenter, ResourceLabelPosition.TopRight].includes(taskResourcePosition);
 
         taskSelection
             .selectAll(Gantt.TaskResource.selectorName)
@@ -3068,9 +3197,8 @@ export class Gantt implements IVisual {
 
             taskResourceMerged
                 .attr("x", (task: Task) => this.getResourceLabelXCoordinate(task, taskResourceFontSize, taskResourcePosition))
-                .attr("y", (task: Task) => Gantt.getBarYCoordinate(task.index, taskConfigHeight)
-                    + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition)
-                    + (task.index + 1) * this.getResourceLabelTopMargin())
+                .attr("y", (task: Task) => this.getTaskYCoordinateWithLayer(task, taskConfigHeight)
+                    + Gantt.getResourceLabelYOffset(taskConfigHeight, taskResourceFontSize, taskResourcePosition))
                 .text((task: Task) => lodashIsEmpty(task.Milestones) && task.resource || "")
                 .style("fill", (task: Task) =>
                     taskResourceSettings.matchLegendColors.value
@@ -3275,7 +3403,7 @@ export class Gantt implements IVisual {
         const taskResourceShow: boolean = taskResourceSettings.show.value;
         const taskResourceFontSize: number = taskResourceSettings.fontSize.value;
         const taskResourcePosition: ResourceLabelPosition = <ResourceLabelPosition>taskResourceSettings.position.value.value;
-        const isTopPosition: boolean = [ ResourceLabelPosition.Top, ResourceLabelPosition.TopCenter, ResourceLabelPosition.TopRight].includes(taskResourcePosition);
+        const isTopPosition: boolean = [ResourceLabelPosition.Top, ResourceLabelPosition.TopCenter, ResourceLabelPosition.TopRight].includes(taskResourcePosition);
 
         let margin: number = 0;
         if (isResourcesFilled && taskResourceShow && isTopPosition) {
@@ -3339,6 +3467,7 @@ export class Gantt implements IVisual {
     */
     private createMilestoneLine(
         tasks: GroupedTask[],
+        layerOverlappingTasks: boolean,
         timestamp: number = Date.now(),
         milestoneTitle?: string): void {
         if (!this.hasNotNullableDates) {
@@ -3361,6 +3490,11 @@ export class Gantt implements IVisual {
             });
         });
 
+        const lastTaskGroup: GroupedTask = tasks[tasks.length - 1];
+        const tasksTotal: number = layerOverlappingTasks && lastTaskGroup.totalLayers
+            ? lastTaskGroup.index + lastTaskGroup.totalLayers
+            : tasks.length;
+
         const line: Line[] = [];
         milestoneDates.forEach((date: Date) => {
             const title = date === Gantt.TimeScale(timestamp) ? milestoneTitle : "Milestone";
@@ -3368,7 +3502,7 @@ export class Gantt implements IVisual {
                 x1: Gantt.TimeScale(date),
                 y1: Gantt.MilestoneTop,
                 x2: Gantt.TimeScale(date),
-                y2: this.getMilestoneLineLength(tasks.length),
+                y2: this.getMilestoneLineLength(tasksTotal),
                 tooltipInfo: this.getTooltipForMilestoneLine(date.toLocaleDateString(), dateTypeSettings, [title])
             };
             line.push(lineOptions);

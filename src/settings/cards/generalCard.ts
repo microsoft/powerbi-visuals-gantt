@@ -20,6 +20,12 @@ export class GeneralCardSettings extends Card {
         value: false
     });
 
+    public layerOverlappingTasks = new ToggleSwitch({
+        name: "layerOverlappingTasks",
+        displayNameKey: "Visual_LayerOverlappingTasks",
+        value: false
+    });
+
     public scrollToCurrentTime = new ToggleSwitch({
         name: "scrollToCurrentTime",
         displayNameKey: "Visual_ScrollToCurrentTime",
@@ -60,5 +66,5 @@ export class GeneralCardSettings extends Card {
 
     public name: string = "general";
     public displayNameKey: string = "Visual_General";
-    public slices: Slice[] = [this.groupTasks, this.scrollToCurrentTime, this.displayGridLines, this.durationUnit, this.durationMin, this.barsRoundedCorners];
+    public slices: Slice[] = [this.groupTasks, this.layerOverlappingTasks, this.scrollToCurrentTime, this.displayGridLines, this.durationUnit, this.durationMin, this.barsRoundedCorners];
 }

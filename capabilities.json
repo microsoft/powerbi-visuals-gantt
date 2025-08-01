@@ -317,6 +317,11 @@
                         "bool": true
                     }
                 },
+                "layerOverlappingTasks":{
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "scrollToCurrentTime": {
                     "type": {
                         "bool": true
