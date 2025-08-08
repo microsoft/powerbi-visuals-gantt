@@ -122,5 +122,8 @@
 	"Visual_LegendDisabledReason": "Disabled due to missing Legend data",
 	"Visual_MilestonesDisabledReason": "Disabled due to missing Milestones data",
 	"Visual_ResourceDisabledReason": "Disabled due to missing Resource data",
-	"Visual_All": "All"
+	"Visual_All": "All",
+	"Visual_Task": "Task",
+	"Visual_Border": "Border",
+	"Visual_Width": "Width"
 }

@@ -704,6 +704,11 @@
                     "type": {
                         "numeric": true
                     }
+                },
+                "borderWidth": {
+                    "type": {
+                        "numeric": true
+                    }
                 }
             }
         },

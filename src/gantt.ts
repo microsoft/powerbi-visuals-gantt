@@ -67,7 +67,7 @@ import {
 } from "powerbi-visuals-utils-tooltiputils";
 
 // powerbi.extensibility.utils.color
-import { ColorHelper } from "powerbi-visuals-utils-colorutils";
+import { ColorHelper, darken, parseColorString, rgbString } from "powerbi-visuals-utils-colorutils";
 
 // powerbi.extensibility.utils.chart.legend
 import {
@@ -169,6 +169,7 @@ import { DaysOffCardSettings } from "./settings/cards/daysOffCard";
 import { TaskResourceCardSettings } from "./settings/cards/task/taskResourceCard";
 import { LineContainerItem } from "./settings/cards/milestonesCard";
 import { TaskLabelsCardSettings } from "./settings/cards/task/taskLabelsCard";
+import { TaskConfigCardSettings } from "./settings/cards/task/taskConfigCard";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -2295,9 +2296,9 @@ export class Gantt implements IVisual {
                 const isLastChild = childrenCount && childrenCount === currentChildrenIndex;
                 return drawStandardMargin || isLastChild ? Gantt.DefaultValues.ParentTaskLeftMargin : Gantt.DefaultValues.ChildTaskLeftMargin;
             })
-            .attr("y", (task: GroupedTask) => { 
-                const groupHeight = ((task.totalLayers || 1) - 1) * taskConfigHeight;//mb + padding
-                const res = (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.formattingSettings.taskLabels.general.fontSize.value)/ 2 + groupHeight;
+            .attr("y", (task: GroupedTask) => {
+                const groupHeight = ((task.totalLayers || 1) - 1) * taskConfigHeight;
+                const res = (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.formattingSettings.taskLabels.general.fontSize.value) / 2 + groupHeight;
 
                 return res;
             })
@@ -2665,7 +2666,7 @@ export class Gantt implements IVisual {
         taskGroupSelectionMerged.classed(Gantt.TaskGroup.className, true);
 
         const taskSelection = this.taskSelectionRectRender(taskGroupSelectionMerged);
-        this.taskMainRectRender(taskSelection, taskConfigHeight, generalBarsRoundedCorners);
+        this.taskMainRectRender(taskSelection, taskConfigHeight, generalBarsRoundedCorners, this.formattingSettings.taskConfig);
         this.MilestonesRender(taskSelection, taskConfigHeight);
         this.taskProgressRender(taskSelection);
         this.taskDaysOffRender(taskSelection, taskConfigHeight);
@@ -2808,7 +2809,9 @@ export class Gantt implements IVisual {
     private taskMainRectRender(
         taskSelection: d3Selection<SVGGElement, Task, SVGGElement, GroupedTask>,
         taskConfigHeight: number,
-        barsRoundedCorners: boolean): void {
+        barsRoundedCorners: boolean,
+        taskSettings: TaskConfigCardSettings
+    ): void {
         const highContrastModeTaskRectStroke: number = 1;
 
         const taskRect = taskSelection
@@ -2840,60 +2843,67 @@ export class Gantt implements IVisual {
 
                 return `url(#${encodedUrl})`;
             })
-            // stroke width is 0, so it will be invisible, but you'll be able to know the actual color
-            // instead of selecting <linearGradient> element and getting it's color
-            .style("stroke", (task: Task) => task.color);
+            .style("stroke", (task: Task) => {
+                if (!task.color) {
+                    return task.color
+                }
 
-        if (this.colorHelper.isHighContrast) {
-            taskRectMerged
-                .style("stroke", (task: Task) => this.colorHelper.getHighContrastColor("foreground", task.color))
-                .style("stroke-width", highContrastModeTaskRectStroke);
-        }
+                const parsedColor = parseColorString(task.color);
+                const darkenedColor = darken(parsedColor, 50);
+                return rgbString(darkenedColor);
+            })
+            .style("stroke-width", taskSettings.border.width.value);
 
-        taskRectMerged.each(function (d: Task) {
-            const node = d3Select(this);
-            const width = Number(node.attr("width"));
-            if (isNaN(width) || width === 0) {
-                node.attr("focusable", null);
-                node.attr("tabindex", null)
-                node.attr("role", null);
-                node.attr("aria-label", null);
-            } else {
-                node.attr("focusable", true);
-                node.attr("tabindex", 2);
-                node.attr("role", "option");
-                node.attr("aria-label", d.name);
+                if (this.colorHelper.isHighContrast) {
+                    taskRectMerged
+                        .style("stroke", (task: Task) => this.colorHelper.getHighContrastColor("background", task.color))
+                        .style("stroke-width", taskSettings.border.width.value || highContrastModeTaskRectStroke);
+                }
+
+                taskRectMerged.each(function (d: Task) {
+                    const node = d3Select(this);
+                    const width = Number(node.attr("width"));
+                    if (isNaN(width) || width === 0) {
+                        node.attr("focusable", null);
+                        node.attr("tabindex", null)
+                        node.attr("role", null);
+                        node.attr("aria-label", null);
+                    } else {
+                        node.attr("focusable", true);
+                        node.attr("tabindex", 2);
+                        node.attr("role", "option");
+                        node.attr("aria-label", d.name);
+                    }
+                });
+
+                taskRect
+                    .exit()
+                    .remove();
             }
-        });
-
-        taskRect
-            .exit()
-            .remove();
-    }
 
     /**
      *
      * @param milestoneType milestone type
      */
     private getMilestoneColor(milestoneType: string): string {
-        const milestone: MilestoneDataPoint = this.viewModel.milestoneData.dataPoints.find((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType);
+                const milestone: MilestoneDataPoint = this.viewModel.milestoneData.dataPoints.find((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType);
 
-        return this.colorHelper.getHighContrastColor("foreground", milestone.color);
-    }
+                return this.colorHelper.getHighContrastColor("foreground", milestone.color);
+            }
 
     private getMilestonePath(milestoneType: string, taskConfigHeight: number): string {
-        let shape: string;
-        const convertedHeight: number = Gantt.getBarHeight(taskConfigHeight);
-        const milestone: MilestoneDataPoint = this.viewModel.milestoneData.dataPoints.find((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType);
-        switch (milestone.shapeType) {
+                let shape: string;
+                const convertedHeight: number = Gantt.getBarHeight(taskConfigHeight);
+                const milestone: MilestoneDataPoint = this.viewModel.milestoneData.dataPoints.find((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType);
+                switch(milestone.shapeType) {
             case MilestoneShape.Rhombus:
-                shape = drawDiamond(convertedHeight);
-                break;
+            shape = drawDiamond(convertedHeight);
+            break;
             case MilestoneShape.Square:
-                shape = drawRectangle(convertedHeight);
-                break;
+            shape = drawRectangle(convertedHeight);
+            break;
             case MilestoneShape.Circle:
-                shape = drawCircle(convertedHeight);
+            shape = drawCircle(convertedHeight);
         }
 
         return shape;
