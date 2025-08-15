@@ -42,7 +42,8 @@ import {
     createVisualHost,
     getRandomNumber,
     MockISelectionId,
-    MockISelectionIdBuilder
+    MockISelectionIdBuilder,
+    parseColorString
 } from "powerbi-visuals-utils-testutils";
 
 import {pixelConverter as PixelConverter} from "powerbi-visuals-utils-typeutils";
@@ -62,6 +63,7 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import IValueFormatter = valueFormatter.IValueFormatter;
+import { darken, rgbString } from "powerbi-visuals-utils-colorutils";
 
 
 const defaultTaskDuration: number = 1;
@@ -842,11 +844,10 @@ describe("Gantt", () => {
 
                 expect(values?.length).toBeGreaterThan(lodashUniq(values).length);
                 expect(taskLinesText.length).toEqual(lodashUniq(values).length);
-
                 taskGroups.forEach((taskGroup: SVGGElement, index: number) => {
                     const taskName: string | null = taskLinesText[index].children[0].textContent;
                     const tasksWithSameName = tasks.filter((task) => task.name === taskName);
-                    expect(taskGroup.children.length).toBe(tasksWithSameName.length);
+                    expect(taskGroup.querySelectorAll(".task").length).toBe(tasksWithSameName.length);
                 });
                 done();
             });
@@ -1880,17 +1881,20 @@ describe("Gantt", () => {
                 fixDataViewDateValuesAggregation(dataView);
 
                 let color: string = getRandomHexColor();
+                const parsedColor = parseColorString(color);
+                const darkenedColor = darken(parsedColor, 50);
+                const rgbStr = rgbString(darkenedColor);
+
                 dataView.metadata.objects = {
                     taskConfig: {
                         fill: VisualBuilder.getSolidColorStructuralObject(color)
                     }
                 };
-
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     visualBuilder.taskRect.forEach(e =>
                         {
                             expect(e).toBeTruthy();
-                            assertColorsMatch(e!.style.stroke, color);
+                            assertColorsMatch(e!.style.stroke, rgbStr);
                         });
 
                     done();

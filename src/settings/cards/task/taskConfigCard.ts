@@ -4,7 +4,6 @@ import ValidatorType = powerbi.visuals.ValidatorType;
 import { ColorHelper } from "powerbi-visuals-utils-colorutils";
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
-import ConpositeCard = formattingSettings.CompositeCard;
 import Card = formattingSettings.SimpleCard;
 import Group = formattingSettings.Group;
 import ColorPicker = formattingSettings.ColorPicker;

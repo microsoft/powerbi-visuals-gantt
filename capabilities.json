@@ -317,7 +317,12 @@
                         "bool": true
                     }
                 },
-                "layerOverlappingTasks":{
+                "displayTasks": {
+                    "type": {
+                        "enumeration": []
+                    }
+                },
+                "displayGroupedTaskGridLines": {
                     "type": {
                         "bool": true
                     }
