@@ -40,7 +40,11 @@ export enum MilestoneShape {
 export enum ResourceLabelPosition {
     Top = "Top",
     Right = "Right",
-    Inside = "Inside"
+    Inside = "Inside",
+    TopRight = "Top right",
+    TopCenter = "Top center",
+    InsideRight = "Inside right",
+    InsideCenter = "Inside center"
 }
 
 export enum GanttRole {

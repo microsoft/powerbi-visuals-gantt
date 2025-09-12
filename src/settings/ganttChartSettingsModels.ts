@@ -1,0 +1,121 @@
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import { LegendDataPoint } from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
+import { ColorHelper } from "powerbi-visuals-utils-colorutils";
+
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
+import Model = formattingSettings.Model;
+
+import { GeneralCardSettings } from "./cards/generalCard";
+import { CollapsedTasksCardSettings } from "./cards/task/collapsedTasksCard";
+import { CollapsedTasksUpdateIdCardSettings } from "./cards/task/collapsedTasksUpdateIdCard";
+import { DaysOffCardSettings } from "./cards/daysOffCard";
+import { LegendCardSettings, LegendPropertyIdentifier } from "./cards/legendCard";
+import { MilestonesCardSettings, MilestonesPropertyIdentifier } from "./cards/milestonesCard";
+import { TaskLabelsCardSettings } from "./cards/task/taskLabelsCard";
+import { TaskCompletionCardSettings } from "./cards/task/taskCompletionCard";
+import { TooltipConfigCardSettings } from "./cards/tooltipCard";
+import { TaskConfigCardSettings } from "./cards/task/taskConfigCard";
+import { TaskResourceCardSettings, TaskResourcePropertyIdentifier } from "./cards/task/taskResourceCard";
+import { SubTasksCardSettings } from "./cards/task/subTasksCard";
+import { DateTypeCardSettings } from "./cards/dateTypeCard";
+import { BackgroundCardSettings } from "./cards/backgroundCard";
+
+import { GanttViewModel, MilestoneDataPoint } from "../interfaces";
+import { Gantt } from "../gantt";
+import { ISetHighContrastMode } from "./cards/interfaces/ISetHighContrastMode";
+
+export class GanttChartSettingsModel extends Model {
+    general = new GeneralCardSettings();
+    collapsedTasks = new CollapsedTasksCardSettings();
+    collapsedTasksUpdateId = new CollapsedTasksUpdateIdCardSettings();
+    daysOff = new DaysOffCardSettings();
+    legend = new LegendCardSettings();
+    milestones = new MilestonesCardSettings();
+    taskLabels = new TaskLabelsCardSettings();
+    taskCompletion = new TaskCompletionCardSettings();
+    tooltipConfig = new TooltipConfigCardSettings();
+    taskConfig = new TaskConfigCardSettings();
+    taskResource = new TaskResourceCardSettings();
+    dateType = new DateTypeCardSettings();
+    background = new BackgroundCardSettings();
+    subtasks = new SubTasksCardSettings();
+
+    cards = [
+        this.general,
+        this.collapsedTasks,
+        this.collapsedTasksUpdateId,
+        this.daysOff,
+        this.legend,
+        this.milestones,
+        this.taskLabels,
+        this.taskCompletion,
+        this.tooltipConfig,
+        this.taskConfig,
+        this.taskResource,
+        this.dateType,
+        this.background,
+    ];
+
+    public populateDynamicDataPoints(viewModel: GanttViewModel, localizationManager: ILocalizationManager, colorHelper: ColorHelper): void {
+        const isMissingRequiredFields = viewModel && !viewModel.isDurationFilled && !viewModel.isEndDateFilled;
+
+        this.cards.forEach(element => {
+            switch (element.name) {
+                case MilestonesPropertyIdentifier.objectName: {
+                    const dataPoints: MilestoneDataPoint[] | undefined = viewModel?.milestoneData?.dataPoints;
+
+                    if (isMissingRequiredFields || !dataPoints?.length) {
+                        this.milestones.disable(localizationManager);
+                        return;
+                    }
+
+                    const uniqueMilestones = Gantt.GetUniqueMilestones(dataPoints);
+                    this.milestones.populateMilestones(Object.values(uniqueMilestones), localizationManager, colorHelper);
+
+                    break;
+                }
+
+                case LegendPropertyIdentifier.objectName: {
+                    const dataPoints: LegendDataPoint[] | undefined = viewModel?.legendData?.dataPoints;
+
+                    if (isMissingRequiredFields || !dataPoints?.length) {
+                        this.legend.disable(localizationManager);
+                        return;
+                    }
+
+                    this.legend.populateColors(dataPoints, localizationManager, colorHelper);
+                    break;
+                }
+
+                case TaskResourcePropertyIdentifier.objectName: {
+                    if (!viewModel.isResourcesFilled) {
+                        this.taskResource.disable(localizationManager);
+                        return;
+                    }
+
+                    if (viewModel.isResourcesFilled && this.taskResource.matchLegendColors.value) {
+                        this.taskResource.fill.disabled = true;
+                    }
+                    break;
+                }
+            }
+        });
+    }
+
+    public parse() {
+        this.taskCompletion.parse();
+    }
+
+    public setHighContrastColors(colorHelper: ColorHelper): void {
+        if (!colorHelper) {
+            return;
+        }
+
+        this.cards.forEach((card) => {
+            if ((card as ISetHighContrastMode)?.setHighContrastMode) {
+                (card as ISetHighContrastMode).setHighContrastMode(colorHelper);
+            }
+        });
+    }
+}

@@ -1,3 +1,19 @@
+## 3.2.0
+### Visual changes
+* Add new card settings for nested category labels
+* Add new card settings for collapse/expand labels
+
+### Code improvements
+* Split formattingSettings file
+
+### Bug fixes
+* Fix legend styles
+* Fix resizing of categry labels
+* Fix Expand/Collapse button overlap
+* Fix settings in high contrast mode
+* Fix clearSelection
+* Fix report page tooltips
+
 ## 3.1.1
 * Set category labels background to enabled by default for consistency with previous versions
 * Fix npm vulnerabilities

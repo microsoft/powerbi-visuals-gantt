@@ -90,6 +90,9 @@ export class Behavior {
 
     constructor(selectionManager: ISelectionManager) {
         this.selectionManager = selectionManager;
+        this.selectionManager.registerOnSelectCallback((selectionIds?: ISelectionId[]) => {
+            this.onSelectCallback(selectionIds);
+        });
     }
 
     public get isInitialized(): boolean {
