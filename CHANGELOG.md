@@ -1,3 +1,10 @@
+## 3.3.0
+### Visual changes
+* Change grouped tasks default sorting
+* Add new "grouped tasks" settings
+* Add different options to display overlapping tasks
+* Add border settings to tasks
+
 ## 3.2.0
 ### Visual changes
 * Add new card settings for nested category labels

@@ -317,6 +317,16 @@
                         "bool": true
                     }
                 },
+                "displayTasks": {
+                    "type": {
+                        "enumeration": []
+                    }
+                },
+                "displayGroupedTaskGridLines": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "scrollToCurrentTime": {
                     "type": {
                         "bool": true
@@ -696,6 +706,11 @@
                     }
                 },
                 "height": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "borderWidth": {
                     "type": {
                         "numeric": true
                     }

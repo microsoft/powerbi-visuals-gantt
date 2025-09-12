@@ -82,12 +82,19 @@ export interface Task extends SelectableDataPoint {
     stepDurationTransformation?: number;
     highlight?: boolean;
     Milestones?: Milestone[];
+    layer?: number;
+}
+
+export interface Layer {
+    index: number;
+    tasks: Task[];
 }
 
 export interface GroupedTask {
     index: number;
     name: string;
     tasks: Task[];
+    layers: Map<number, Task[]>;
 }
 
 export interface GanttChartFormatters {
