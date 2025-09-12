@@ -149,8 +149,13 @@ export class MilestonesCardSettings extends CompositeCard implements ISetHighCon
         });
     }
 
-    public disable(localizationManager: ILocalizationManager): void {
+    public disable(): void {
         this.disabled = true;
-        this.disabledReason = localizationManager.getDisplayName("Visual_MilestonesDisabledReason");
+        this.disabledReasonKey = "Visual_MilestonesDisabledReason";
+    }
+
+    public onPreProcess(): void {
+        this.milestoneGroup.disabled = this.generalGroup.keepSettingsOnFiltering.value;
+        this.milestoneGroup.disabledReasonKey = "Visual_Milestone_DisabledReason";
     }
 }
