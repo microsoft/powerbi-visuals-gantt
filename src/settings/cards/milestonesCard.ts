@@ -14,6 +14,7 @@ import ToggleSwitch = formattingSettings.ToggleSwitch;
 import ColorPicker = formattingSettings.ColorPicker;
 import Slider = formattingSettings.Slider;
 import ItemDropdown = formattingSettings.ItemDropdown;
+import ReadOnlyText = formattingSettings.ReadOnlyText;
 
 import { milestoneLineTypes, shapesOptions } from "../enumOptions";
 import { MilestoneDataPoint } from "../../interfaces";
@@ -23,6 +24,18 @@ export const MilestonesPropertyIdentifier: DataViewObjectPropertyIdentifier = {
     objectName: "milestones",
     propertyName: "fill"
 };
+
+export class GeneralGroup extends Card {
+    public keepSettingsOnFiltering: ToggleSwitch = new ToggleSwitch({
+        name: "keepMilestoneSettingsOnFilteringInEditMode",
+        displayNameKey: "Visual_KeepSettingsOnFiltering",
+        value: false
+    });
+
+    public name: string = "generalGroup";
+    public displayNameKey: string = "Visual_General";
+    public slices: Slice[] = [this.keepSettingsOnFiltering];
+}
 
 export class MilestoneContainerItem extends Card {
     public color: ColorPicker;
@@ -94,14 +107,22 @@ export class MilestoneGroup extends Card {
         displayNameKey: "Visual_Milestones",
         containerItems: []
     });
+    public persistSettings: ReadOnlyText = new ReadOnlyText({
+        name: "persistSettings",
+        displayNameKey: "Visual_PersistSettings",
+        value: "",
+        visible: false
+    });
+    public slices: Slice[] = [this.persistSettings];
 }
 
 export class MilestonesCardSettings extends CompositeCard implements ISetHighContrastMode {
     public name: string = "milestones";
     public displayNameKey: string = "Visual_Milestones";
+    public generalGroup: GeneralGroup = new GeneralGroup();
     public lineGroup: LineContainerItem = new LineContainerItem();
     public milestoneGroup: MilestoneGroup = new MilestoneGroup();
-    public groups: Card[] = [this.lineGroup, this.milestoneGroup];
+    public groups: Card[] = [this.generalGroup, this.lineGroup, this.milestoneGroup];
 
     public populateMilestones(milestones: MilestoneDataPoint[], localizationManager: ILocalizationManager, colorHelper: ColorHelper): void {
         if (!milestones || milestones.length === 0) {

@@ -98,7 +98,8 @@ import {
     TaskDaysOff,
     LegendGroup,
     LegendType,
-    Layer
+    Layer,
+    UniqueMilestones
 } from "./interfaces";
 import { DurationHelper } from "./durationHelper";
 import { GanttColumns } from "./columns";
@@ -172,6 +173,8 @@ import { LineContainerItem } from "./settings/cards/milestonesCard";
 import { TaskLabelsCardSettings } from "./settings/cards/task/taskLabelsCard";
 import { TaskConfigCardSettings } from "./settings/cards/task/taskConfigCard";
 import { OverlappingLayeringStrategyOptions, OverlappingTasks } from "./settings/cards/generalCard";
+import { SettingsService } from "./services/settingsService";
+import { SettingsState } from "./services/settingsState";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -200,8 +203,6 @@ export class SortingOptions {
     isCustomSortingNeeded: boolean;
     sortingDirection: SortDirection;
 }
-
-
 
 interface CreateTaskDto {
     values: GanttColumns<any>;
@@ -379,6 +380,7 @@ export class Gantt implements IVisual {
 
     private collapsedTasksUpdateIDs: string[] = [];
     private sortingOptions: SortingOptions;
+    private settingsService: SettingsService;
 
     constructor(options: VisualConstructorOptions) {
         this.init(options);
@@ -395,6 +397,7 @@ export class Gantt implements IVisual {
         this.tooltipServiceWrapper = createTooltipServiceWrapper(this.host.tooltipService, options.element);
         this.behavior = new Behavior(this.selectionManager);
         this.eventService = options.host.eventService;
+        this.settingsService = new SettingsService(this.host, new SettingsState());
 
         this.createViewport(options.element);
     }
@@ -871,10 +874,8 @@ export class Gantt implements IVisual {
         }
     }
 
-    public static GetUniqueMilestones(milestonesDataPoints: MilestoneDataPoint[]) {
-        const milestonesWithoutDuplicates: {
-            [name: string]: MilestoneDataPoint
-        } = {};
+   public static GetUniqueMilestones(milestonesDataPoints: MilestoneDataPoint[]): UniqueMilestones {
+        const milestonesWithoutDuplicates: UniqueMilestones = {};
         milestonesDataPoints.forEach((milestone: MilestoneDataPoint) => {
             if (milestone.name) {
                 milestonesWithoutDuplicates[milestone.name] = milestone;
@@ -887,7 +888,10 @@ export class Gantt implements IVisual {
 
     private static createMilestones(
         dataView: DataView,
-        host: IVisualHost): MilestoneData {
+        host: IVisualHost,
+        viewMode: powerbi.ViewMode,
+        settingsState: SettingsState,
+        keepSettingsOnFiltering: boolean): MilestoneData {
         let milestonesIndex = -1;
         for (const index in dataView.categorical.categories) {
             const category = dataView.categorical.categories[index];
@@ -901,11 +905,15 @@ export class Gantt implements IVisual {
         };
         const milestonesCategory = dataView.categorical.categories[milestonesIndex];
         const milestones: { value: PrimitiveValue, index: number }[] = [];
+        const shouldUseSettingsFromPersistProps: boolean = viewMode === powerbi.ViewMode.View || keepSettingsOnFiltering;
 
         if (milestonesCategory && milestonesCategory.values) {
             milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
             milestones.forEach((milestone) => {
-                const milestoneObjects = milestonesCategory.objects?.[milestone.index];
+                const milestoneObjects = shouldUseSettingsFromPersistProps
+                    ? settingsState.getMilestoneSettings(milestone.value as string)
+                    : milestonesCategory.objects?.[milestone.index];
+
                 const selectionBuilder: ISelectionIdBuilder = host
                     .createSelectionIdBuilder()
                     .withCategory(milestonesCategory, milestone.index);
@@ -1565,7 +1573,7 @@ export class Gantt implements IVisual {
      * @param colorHelper powerbi color helper
      * @param localizationManager localization manager returns localized strings
      */
-    public converter(dataView: DataView, sortingOptions: SortingOptions): GanttViewModel {
+    public converter(dataView: DataView, sortingOptions: SortingOptions, viewMode: powerbi.ViewMode): GanttViewModel {
         if (dataView?.categorical?.categories?.length === 0 || !Gantt.isChartHasTask(dataView)) {
             return null;
         }
@@ -1582,7 +1590,7 @@ export class Gantt implements IVisual {
             isResourcesFilled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRole.Resource)) !== -1;
 
         const legendData: LegendData = this.createLegend(legendTypes, !isDurationFilled && !isEndDateFilled);
-        const milestoneData: MilestoneData = Gantt.createMilestones(dataView, this.host);
+        const milestoneData: MilestoneData = Gantt.createMilestones(dataView, this.host, viewMode, this.settingsService.state, this.formattingSettings.milestones.generalGroup.keepSettingsOnFiltering.value);
 
         const taskColor: string = (legendData.dataPoints?.length <= 1) || !isDurationFilled
             ? this.formattingSettings.taskConfig.fill.value.value
@@ -1742,14 +1750,17 @@ export class Gantt implements IVisual {
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(GanttChartSettingsModel, options.dataViews[0]);
         this.formattingSettings.setHighContrastColors(this.colorHelper);
         this.formattingSettings.parse();
+        this.settingsService.state.parse(this.formattingSettings.milestones.milestoneGroup.persistSettings.value);
 
         this.sortingOptions = Gantt.getSortingOptions(options.dataViews[0]);
-        this.viewModel = this.converter(options.dataViews[0], this.sortingOptions);
+        this.viewModel = this.converter(options.dataViews[0], this.sortingOptions, options.viewMode);
 
         // for duplicated milestone types
         if (this.viewModel && this.viewModel.milestoneData) {
             const newMilestoneData: MilestoneData = this.viewModel.milestoneData;
             const milestonesWithoutDuplicates = Gantt.GetUniqueMilestones(newMilestoneData.dataPoints);
+
+            this.settingsService.state.setMilestonesSettings(milestonesWithoutDuplicates);
 
             newMilestoneData.dataPoints.forEach((dataPoint: MilestoneDataPoint) => {
                 if (dataPoint.name) {
@@ -1760,6 +1771,12 @@ export class Gantt implements IVisual {
             });
 
             this.viewModel.milestoneData = newMilestoneData;
+            if (this.settingsService.state.hasBeenUpdated
+                && (options.viewMode === powerbi.ViewMode.Edit || options.viewMode === powerbi.ViewMode.InFocusEdit)
+            ) {
+                // We save state once rendering is done to save current milestones settings because they might be lost after filtering.
+                this.settingsService.save();
+            }
         }
 
         if (!this.viewModel || !this.viewModel.tasks || this.viewModel.tasks.length <= 0) {

@@ -179,3 +179,7 @@ export interface MilestoneDataPoint {
 export interface MilestoneData {
     dataPoints: MilestoneDataPoint[];
 }
+
+export interface UniqueMilestones {
+    [name: string]: MilestoneDataPoint;
+}

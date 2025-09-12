@@ -133,5 +133,6 @@
 	"Visual_LayerByLegend": "Layer by legend",
 	"Visual_DisplayTasks": "Display tasks",
 	"Visual_GroupedTasks_DisabledReason": "Disabled because \"Group Tasks\" is turned off",
-	"Visual_DisplayTasksGridLines": "Display tasks grid lines"
+	"Visual_DisplayTasksGridLines": "Display tasks grid lines",
+	"Visual_KeepSettingsOnFiltering": "Keep milestone settings on filtering in edit mode"
 }
