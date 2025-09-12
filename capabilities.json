@@ -525,6 +525,16 @@
                     "type": {
                         "text": true
                     }
+                },
+                "persistSettings": {
+                    "type": {
+                        "text": true
+                    }
+                },
+                "keepMilestoneSettingsOnFilteringInEditMode": {
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         },

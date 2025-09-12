@@ -116,8 +116,8 @@ export class LegendCardSettings extends CompositeCard implements ISetHighContras
         });
     }
 
-    public disable(localizationManager: ILocalizationManager): void {
+    public disable(): void {
         this.disabled = true;
-        this.disabledReason = localizationManager.getDisplayName("Visual_LegendDisabledReason");
+        this.disabledReasonKey = "Visual_LegendDisabledReason";
     }
 }

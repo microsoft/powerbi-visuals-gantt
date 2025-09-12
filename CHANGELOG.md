@@ -1,3 +1,7 @@
+## 3.4.0
+### Visual changes
+* Add persist settings for milestones
+
 ## 3.3.0
 ### Visual changes
 * Change grouped tasks default sorting
