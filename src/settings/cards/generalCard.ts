@@ -96,7 +96,7 @@ export class GeneralCardSettings extends CompositeCard {
     });
 
     public generalGroup: Group = new Group({
-        name: "generalGroup",
+        name: "generalSettingsGroup",
         displayNameKey: "Visual_Options",
         slices: [
             this.groupTasks,
