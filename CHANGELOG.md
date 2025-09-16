@@ -1,3 +1,7 @@
+## 3.4.1
+### Fixes
+* Fix general settings
+
 ## 3.4.0
 ### Visual changes
 * Add persist settings for milestones
