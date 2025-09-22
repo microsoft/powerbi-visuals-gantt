@@ -1,3 +1,7 @@
+## 3.4.2
+### Translations
+* New settings translations
+
 ## 3.4.1
 ### Fixes
 * Fix general settings
