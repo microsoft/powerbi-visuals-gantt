@@ -437,6 +437,11 @@
                     },
                     "suppressFormatPainterCopy": true
                 },
+                "emptyLabelFallback": {
+                    "type": {
+                        "text": true
+                    }
+                },
                 "labelColor": {
                     "type": {
                         "fill": {

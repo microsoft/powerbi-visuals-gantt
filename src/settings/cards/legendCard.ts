@@ -54,9 +54,16 @@ export class LegendGeneralGroup extends FontSettings {
         value: { value: "#000000" }
     });
 
+    public emptyLabelFallback = new TextInput({
+        name: "emptyLabelFallback",
+        displayNameKey: "Visual_EmptyLabelFallback",
+        placeholder: "",
+        value: ""
+    });
+
     public name: string = "legendGeneralGroup";
     public displayNameKey: string = "Visual_General";
-    public slices: Slice[] = [this.showTitle, this.position, this.titleText, this.labelColor, this.font];
+    public slices: Slice[] = [this.showTitle, this.position, this.titleText, this.labelColor, this.font, this.emptyLabelFallback];
 
     constructor() {
         super();
@@ -111,7 +118,7 @@ export class LegendCardSettings extends CompositeCard implements ISetHighContras
                 if (slice instanceof ColorPicker) {
                     slice.value.value = colorHelper.getHighContrastColor("foreground", slice.value.value);
                     slice.visible = !isHighContrast;
-                } 
+                }
             });
         });
     }
