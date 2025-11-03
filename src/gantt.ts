@@ -874,7 +874,7 @@ export class Gantt implements IVisual {
         }
     }
 
-   public static GetUniqueMilestones(milestonesDataPoints: MilestoneDataPoint[]): UniqueMilestones {
+    public static GetUniqueMilestones(milestonesDataPoints: MilestoneDataPoint[]): UniqueMilestones {
         const milestonesWithoutDuplicates: UniqueMilestones = {};
         milestonesDataPoints.forEach((milestone: MilestoneDataPoint) => {
             if (milestone.name) {
@@ -1598,10 +1598,6 @@ export class Gantt implements IVisual {
 
         const tasks: Task[] = this.createTasks({ dataView, taskTypes: legendTypes, formatters, taskColor, isEndDateFilled, hasHighlights: this.hasHighlights, sortingOptions });
 
-        // Remove empty legend if tasks isn't exist
-        const types = lodashGroupBy(tasks, x => x.taskType);
-        legendData.dataPoints = legendData.dataPoints?.filter(x => types[x.label]);
-
         return {
             dataView,
             taskTypes: legendTypes,
@@ -1754,6 +1750,7 @@ export class Gantt implements IVisual {
 
         this.sortingOptions = Gantt.getSortingOptions(options.dataViews[0]);
         this.viewModel = this.converter(options.dataViews[0], this.sortingOptions, options.viewMode);
+
 
         // for duplicated milestone types
         if (this.viewModel && this.viewModel.milestoneData) {
