@@ -1,3 +1,8 @@
+## 3.4.3
+### Translations
+* Added setting for empty label text
+* Removed filter for empty data in legend
+
 ## 3.4.2
 ### Translations
 * New settings translations
