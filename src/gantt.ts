@@ -1599,9 +1599,9 @@ export class Gantt implements IVisual {
         const tasks: Task[] = this.createTasks({ dataView, taskTypes: legendTypes, formatters, taskColor, isEndDateFilled, hasHighlights: this.hasHighlights, sortingOptions });
 
         legendData.dataPoints = legendData.dataPoints.map((legendItem) => {
-            legendItem.label = legendItem.label || this.formattingSettings.legend.general.emptyLabelFallback.value;
+            legendItem.label = legendItem.label || this.formattingSettings.legend.general.emptyLabelText.value;
             return legendItem;
-        })
+        });
         return {
             dataView,
             taskTypes: legendTypes,

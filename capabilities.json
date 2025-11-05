@@ -437,7 +437,7 @@
                     },
                     "suppressFormatPainterCopy": true
                 },
-                "emptyLabelFallback": {
+                "emptyLabelText": {
                     "type": {
                         "text": true
                     }

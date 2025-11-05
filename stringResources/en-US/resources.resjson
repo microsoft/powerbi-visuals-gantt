@@ -136,5 +136,5 @@
 	"Visual_DisplayTasksGridLines": "Display tasks grid lines",
 	"Visual_KeepSettingsOnFiltering": "Keep milestone settings on filtering in edit mode",
 	"Visual_Milestone_DisabledReason": "Disabled if 'Keep milestone settings on filtering in edit mode' is on",
-	"Visual_EmptyLabelFallback": "Empty label text"
+	"Visual_EmptyLabelText": "Empty label text"
 }
