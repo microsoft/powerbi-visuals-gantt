@@ -1,7 +1,7 @@
 ## 3.4.3
 ### Visual changes
+* Added setting for empty label text
 * Removed the exclusion of empty data from the legend, allowing users to leverage the native "Show items with no data" functionality.
-* Removed filter for empty data in legend
 
 ## 3.4.2
 ### Translations
