@@ -27,8 +27,6 @@
 import powerbi from "powerbi-visuals-api";
 
 import { MilestoneDataPoint, UniqueMilestones } from "../interfaces";
-import { Gantt } from "../gantt";
-import { MilestoneShape } from "../enums";
 
 export interface SettingsToPersist {
     fill: powerbi.Fill;
@@ -61,10 +59,10 @@ export class SettingsState {
             }
 
             this.tempState[milestone.name] = {
-                fill: { solid: { color: milestone.color} },
+                fill: { solid: { color: milestone.color } },
                 shapeType: milestone.shapeType
             };
-        });        
+        });
     }
 
     public getMilestoneSettings(name: string): powerbi.DataViewObjects {
@@ -107,7 +105,8 @@ export class SettingsState {
     private areStatesEqual(oldState: ISettingsState, newState: ISettingsState): boolean {
         try {
             return JSON.stringify(oldState) === JSON.stringify(newState);
-        } catch (_) {
+        } catch (e) {
+            console.warn("Error comparing states:", e);
             return false;
         }
     }

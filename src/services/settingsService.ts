@@ -25,7 +25,7 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import { SettingsState, SettingsToPersist } from "./settingsState";
+import { SettingsState } from "./settingsState";
 
 export class SettingsService {
     private hostServices: powerbi.extensibility.visual.IVisualHost;
