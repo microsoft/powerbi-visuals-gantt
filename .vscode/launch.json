@@ -2,12 +2,15 @@
     "version": "0.1.0",
     "configurations": [
         {
-            "name": "Debugger",
             "type": "chrome",
             "request": "attach",
-            "port": 9222,
-            "sourceMaps": true,
-            "webRoot": "${cwd}/"
+            "name": "Karma Attach",
+            "address": "localhost",
+            "port": 9333,
+            "pathMapping": {
+                "/": "${workspaceRoot}/",
+                "/base/": "${workspaceRoot}/"
+            }
         }
     ]
 }

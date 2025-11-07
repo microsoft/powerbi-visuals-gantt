@@ -25,15 +25,15 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import {valueType as vt} from "powerbi-visuals-utils-typeutils";
+import { valueType as vt } from "powerbi-visuals-utils-typeutils";
 
-import {getRandomNumber, getRandomNumbers, testDataViewBuilder} from "powerbi-visuals-utils-testutils";
+import { getRandomNumber, getRandomNumbers, testDataViewBuilder } from "powerbi-visuals-utils-testutils";
 import {
     TestDataViewBuilderCategoryColumnOptions,
     TestDataViewBuilderColumnOptions
 } from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/testDataViewBuilder";
-import {GanttRole} from "../src/enums";
-import {DataViewBuilderValuesColumnOptions} from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/dataViewBuilder";
+import { GanttRole } from "../src/enums";
+import { DataViewBuilderValuesColumnOptions } from "powerbi-visuals-utils-testutils/lib/dataViewBuilder/dataViewBuilder";
 import DataView = powerbi.DataView;
 import ValueType = vt.ValueType;
 import TestDataViewBuilder = testDataViewBuilder.TestDataViewBuilder;
@@ -123,7 +123,7 @@ export class VisualData extends TestDataViewBuilder {
         return array;
     }
 
-    public getDataView(columnNames?: string[], withMilestones?: boolean, withHighlights?: boolean): DataView {    
+    public getDataView(columnNames?: string[], withMilestones?: boolean, withHighlights?: boolean): DataView {
         let categoriesColumns = this.getCategoryColumns();
 
         if (withMilestones) {
@@ -140,8 +140,7 @@ export class VisualData extends TestDataViewBuilder {
         }
 
         let highlights: number[] = [];
-        if (withHighlights)
-        {
+        if (withHighlights) {
             let highLightedElementNumber: number = Math.round(getRandomNumber(0, this.valuesDuration.length - 1));
             let highlightedValuesCount: number = this.valuesDuration.length;
             highlights = this.generateHighLightedValues(highlightedValuesCount, highLightedElementNumber);
@@ -157,8 +156,8 @@ export class VisualData extends TestDataViewBuilder {
             {
                 source: {
                     displayName: VisualData.ColumnDuration,
-                    type: ValueType.fromDescriptor({numeric: true}),
-                    roles: {[GanttRole.Duration]: true}
+                    type: ValueType.fromDescriptor({ numeric: true }),
+                    roles: { [GanttRole.Duration]: true }
                 },
                 values: this.valuesDuration,
                 highlights: highlights.length > 0 ? highlights : undefined
@@ -166,8 +165,8 @@ export class VisualData extends TestDataViewBuilder {
             {
                 source: {
                     displayName: VisualData.ColumnCompletePercentage,
-                    type: ValueType.fromDescriptor({numeric: true}),
-                    roles: {[GanttRole.Completion]: true}
+                    type: ValueType.fromDescriptor({ numeric: true }),
+                    roles: { [GanttRole.Completion]: true }
                 },
                 values: this.valuesCompletePrecntege,
                 highlights: highlights.length > 0 ? highlights : undefined
@@ -181,32 +180,32 @@ export class VisualData extends TestDataViewBuilder {
             {
                 source: {
                     displayName: VisualData.ColumnType,
-                    type: ValueType.fromDescriptor({text: true}),
-                    roles: {[GanttRole.Legend]: true}
+                    type: ValueType.fromDescriptor({ text: true }),
+                    roles: { [GanttRole.Legend]: true }
                 },
                 values: this.valuesTaskTypeResource.map(x => x[0])
             },
             {
                 source: {
                     displayName: VisualData.ColumnTask,
-                    type: ValueType.fromDescriptor({text: true}),
-                    roles: {[GanttRole.Task]: true}
+                    type: ValueType.fromDescriptor({ text: true }),
+                    roles: { [GanttRole.Task]: true }
                 },
                 values: this.valuesTaskTypeResource.map(x => x[1]),
             },
             {
                 source: {
                     displayName: VisualData.ColumnResource,
-                    type: ValueType.fromDescriptor({text: true}),
-                    roles: {[GanttRole.Resource]: true}
+                    type: ValueType.fromDescriptor({ text: true }),
+                    roles: { [GanttRole.Resource]: true }
                 },
                 values: this.valuesTaskTypeResource.map(x => x[2])
             },
             {
                 source: {
                     displayName: VisualData.ColumnExtraInformation,
-                    type: ValueType.fromDescriptor({text: true}),
-                    roles: {[GanttRole.ExtraInformation]: true}
+                    type: ValueType.fromDescriptor({ text: true }),
+                    roles: { [GanttRole.ExtraInformation]: true }
                 },
                 values: this.valuesExtraInformation
             },
@@ -214,24 +213,24 @@ export class VisualData extends TestDataViewBuilder {
             {
                 source: {
                     displayName: VisualData.ColumnExtraInformationDates,
-                    type: ValueType.fromDescriptor({text: true}),
-                    roles: {[GanttRole.ExtraInformation]: true}
+                    type: ValueType.fromDescriptor({ text: true }),
+                    roles: { [GanttRole.ExtraInformation]: true }
                 },
                 values: this.valuesExtraInformationDates
             },
             {
                 source: {
                     displayName: VisualData.ColumnParent,
-                    type: ValueType.fromDescriptor({text: true}),
-                    roles: {[GanttRole.Parent]: true}
+                    type: ValueType.fromDescriptor({ text: true }),
+                    roles: { [GanttRole.Parent]: true }
                 },
                 values: this.valuesTaskTypeResource.map(x => x[3] ? x[3] : null)
             },
             {
                 source: {
                     displayName: VisualData.ColumnStartDate,
-                    type: ValueType.fromDescriptor({dateTime: true}),
-                    roles: {[GanttRole.StartDate]: true}
+                    type: ValueType.fromDescriptor({ dateTime: true }),
+                    roles: { [GanttRole.StartDate]: true }
                 },
                 values: this.valuesStartDate
             }
@@ -242,14 +241,14 @@ export class VisualData extends TestDataViewBuilder {
     public getDataViewWithHighlights(): DataView {
         const categoriesColumns: TestDataViewBuilderCategoryColumnOptions[] = this.getCategoryColumns();
 
-        let highlightedElementIndex: number = Math.round(getRandomNumber(0, this.valuesDuration.length - 1));
+        const highlightedElementIndex: number = 0;
 
         const valuesColumns: DataViewBuilderValuesColumnOptions[] = [
             {
                 source: {
                     displayName: VisualData.ColumnDuration,
-                    type: ValueType.fromDescriptor({numeric: true}),
-                    roles: {[GanttRole.Duration]: true}
+                    type: ValueType.fromDescriptor({ numeric: true }),
+                    roles: { [GanttRole.Duration]: true }
                 },
                 values: this.valuesDuration,
                 highlights: this.valuesDuration.map((value, index) => index === highlightedElementIndex ? value : null)
@@ -257,8 +256,8 @@ export class VisualData extends TestDataViewBuilder {
             {
                 source: {
                     displayName: VisualData.ColumnCompletePercentage,
-                    type: ValueType.fromDescriptor({numeric: true}),
-                    roles: {[GanttRole.Completion]: true}
+                    type: ValueType.fromDescriptor({ numeric: true }),
+                    roles: { [GanttRole.Completion]: true }
                 },
                 values: this.valuesCompletePrecntege,
                 highlights: this.valuesCompletePrecntege.map((value, index) => index === highlightedElementIndex ? value : null)

@@ -24,75 +24,96 @@
  *  THE SOFTWARE.
  */
 
-/**
- * Imports external styles.
- * We compile it as a less file in order to wrap the external CSS rules.
- */
+@focus-color: rgb(94, 158, 214);
 
- @import (less) "../node_modules/powerbi-visuals-utils-interactivityutils/lib/index.css";
- @import (less) "../node_modules/powerbi-visuals-utils-chartutils/lib/index.css";
+@keyframes pulse {
+    0% {
+        stroke-width: 0px;
+    }
+    50% {
+        stroke-width: 2px;
+    }
+    100% {
+        stroke-width: 0px;
+    }
+}
 
 .visual {
     .gantt-body {
         overflow: auto;
         position: absolute;
     }
-    
+
     .gantt {
         position: absolute;
+
         .axis {
-            path, line {
+
+            path,
+            line {
                 stroke: #000;
             }
-    
+
             path {
                 fill: none;
                 stroke-width: 1.5;
             }
-    
+
             line {
                 stroke-width: 1;
             }
-    
-            font-size: 10px;
         }
-    
+
         .tasks {
             .task {
                 .task-resource {
                     font-size: medium;
-                    font-weight: bold;
-                    font-family: 'Roboto',-apple-system,BlinkMacSystemFont,sans-serif;
+                    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
                     letter-spacing: .22px;
                 }
-    
-                .task-progress {    
+
+                .task-progress {
                     opacity: 1;
                 }
-                .task-pseudo-gradient{
+
+                .task-pseudo-gradient {
                     opacity: .4;
-                    fill: white!important;
+                    fill: white !important;
+                }
+
+                .task-rect, .task-milestone > path {
+                    & {
+                        stroke-width: 0;
+                        cursor: pointer;
+                    }
+
+                    &:focus, &:focus-visible {
+                        outline: none;
+                    }
+
+                    &:focus-visible {
+                        animation: pulse 1s infinite;
+                    }
                 }
             }
         }
-    
+
         .chart-line {
             stroke-width: 2px;
-            stroke-dasharray: 3, 3;
             stroke: #000;
         }
-    
+
         .task-labels {
             width: 110px;
         }
-    
-        .task-lines{
+
+        .task-lines {
             .label {
-                font-family: 'Roboto',-apple-system,BlinkMacSystemFont,sans-serif;
+                font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
                 font-weight: 400;
                 letter-spacing: .22px;
-                
-                .parent{
+
+                .parent {
                     font-weight: 700;
                 }
 
@@ -100,6 +121,48 @@
                     font-style: oblique
                 }
             }
+
+            g.clickableArea.pointerCursor,
+            g.collapse-all
+            {
+                cursor: pointer;
+            }
         }
     }
+
+    .clearCatcher {
+        fill-opacity: 0;
+    }
+
+    .data-labels {
+        font-size: 12px;
+        text-anchor: middle;
+        font-family: helvetica, arial, sans-serif;
+        pointer-events: none;
+    }
+
+    .legend .navArrow {
+        fill: #333333;
+        cursor: pointer;
+        /* stroke enabled for a bigger click target, but smaller visible arrow size */
+        stroke: #FFF;
+        stroke-width: 2px;
+    }
+
+    g.legendItem {
+        cursor: pointer;
+    }
+
+    g.collapse-all {
+        cursor: pointer;
+    }
+
+    .collapse-all-arrow:focus-visible {
+        outline: @focus-color solid 2px;
+        outline-offset: -12px;
+    }
+}
+
+body.visual-sandbox {
+    cursor: default;
 }

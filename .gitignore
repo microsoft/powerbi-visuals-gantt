@@ -12,3 +12,6 @@ webpack.statistics.prod.html
 
 # JetBrains
 .idea/
+
+## VSCode
+.vscode/

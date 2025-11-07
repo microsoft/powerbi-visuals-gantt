@@ -30,22 +30,19 @@ import DataView = powerbi.DataView;
 import IViewport = powerbi.IViewport;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import DataViewValueColumnGroup = powerbi.DataViewValueColumnGroup;
-import ISelectionId = powerbi.visuals.ISelectionId;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-
-import { interactivitySelectionService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
-import SelectableDataPoint = interactivityService.SelectableDataPoint;
 
 import { valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
 import IValueFormatter = vf.IValueFormatter;
 
 import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
 import LegendData = legendInterfaces.LegendData;
+import ISelectionId = powerbi.visuals.ISelectionId;
 
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
 import IMargin = SVGUtil.IMargin;
 
-import { GanttChartSettingsModel } from "./ganttChartSettingsModels";
+import { SelectableDataPoint } from "./behavior";
 
 export type DayOffData = [Date, number];
 
@@ -85,12 +82,19 @@ export interface Task extends SelectableDataPoint {
     stepDurationTransformation?: number;
     highlight?: boolean;
     Milestones?: Milestone[];
+    layer?: number;
+}
+
+export interface Layer {
+    index: number;
+    tasks: Task[];
 }
 
 export interface GroupedTask {
     index: number;
     name: string;
     tasks: Task[];
+    layers: Map<number, Task[]>;
 }
 
 export interface GanttChartFormatters {
@@ -100,24 +104,23 @@ export interface GanttChartFormatters {
 
 export interface GanttViewModel {
     dataView: DataView;
-    settings: GanttChartSettingsModel;
     tasks: Task[];
     legendData: LegendData;
-    milestonesData: MilestoneData;
-    taskTypes: TaskTypes;
+    milestoneData: MilestoneData;
+    taskTypes: LegendType;
     isDurationFilled: boolean;
     isEndDateFilled: boolean;
     isParentFilled: boolean;
     isResourcesFilled: boolean;
 }
 
-export interface TaskTypes { /*TODO: change to more proper name*/
-    typeName: string;
-    types: TaskTypeMetadata[];
+export interface LegendType {
+    legendColumnName: string;
+    types: LegendGroup[];
 }
 
-export interface TaskTypeMetadata {
-    name: string;
+export interface LegendGroup {
+    legendName: string;
     columnGroup: DataViewValueColumnGroup;
     selectionColumn: DataViewCategoryColumn;
 }
@@ -175,4 +178,8 @@ export interface MilestoneDataPoint {
 
 export interface MilestoneData {
     dataPoints: MilestoneDataPoint[];
+}
+
+export interface UniqueMilestones {
+    [name: string]: MilestoneDataPoint;
 }

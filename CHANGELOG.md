@@ -1,3 +1,91 @@
+## 3.4.3
+### Visual changes
+* Added setting for empty label text
+* Removed the exclusion of empty data from the legend, allowing users to leverage the native "Show items with no data" functionality.
+
+## 3.4.2
+### Translations
+* New settings translations
+
+## 3.4.1
+### Fixes
+* Fix general settings
+
+## 3.4.0
+### Visual changes
+* Add persist settings for milestones
+
+## 3.3.0
+### Visual changes
+* Change grouped tasks default sorting
+* Add new "grouped tasks" settings
+* Add different options to display overlapping tasks
+* Add border settings to tasks
+
+## 3.2.0
+### Visual changes
+* Add new card settings for nested category labels
+* Add new card settings for collapse/expand labels
+
+### Code improvements
+* Split formattingSettings file
+
+### Bug fixes
+* Fix legend styles
+* Fix resizing of categry labels
+* Fix Expand/Collapse button overlap
+* Fix settings in high contrast mode
+* Fix clearSelection
+* Fix report page tooltips
+
+## 3.1.1
+* Set category labels background to enabled by default for consistency with previous versions
+* Fix npm vulnerabilities
+
+## 3.1.0
+### Visual changes
+* Add new card settings for background colors
+
+### Code improvements
+* Update outdated packages
+
+## 3.0.14
+### Visual changes
+* Add keyboard focus animation to better visualize focus
+* Add settings to control milestone line type / organize milestones in groups
+* Add report page tooltips support
+* Make clickable elements have "pointer" cursor
+* Make task column draggable
+* Add legend/task labels/data labels font settings
+* Add toggle switch to match data labels colors with legend colors
+* Add axis/task labels background color
+* Make sticky header with axis and "Collapse all" button
+* Make draggable column bigger
+* Add font settings for axis text
+
+### Code improvements
+* Fix task fill gradient and keyboard focus styles
+* Fix sorting tasks when "Group tasks" is enabled
+* Fix the bug with task labels background opacity resetting to 100 when specifying 0 opacity
+* Remove interactivity-utils
+* Apply font settings to "Collapse All/Expand All" button
+* Rename all "Fill" properties to "Color"
+* Enable the support multiple visual selection feature
+* Fix bug when "Days off" were not rendered
+
+
+# 3.0.13
+### Visual changes
+* Add all font settings (italic, bold, etc.) for the "Expand All" button, also make the default value satisfy the contrast ration of 4.6:1
+* Fix visual background color not applying to axis, collapse all button, task labels
+* Add toggle to enable/disable milestones dotted lines and color picker for it's color
+
+### Code improvements
+* Update API to 5.11.0, tools to 5.5.1 and other packages"
+
+## 3.0.12
+* Fix not showing collapse button for parent tasks
+
 ## 3.0.11
 # Remove restrictions on legend width
 
@@ -36,7 +124,6 @@
 ## 3.0.2
 * Fix tests
 * Fix label name
-
 
 ## 3.0.1
 * Upgraded to API 5.8.0

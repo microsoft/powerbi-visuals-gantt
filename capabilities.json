@@ -317,6 +317,16 @@
                         "bool": true
                     }
                 },
+                "displayTasks": {
+                    "type": {
+                        "enumeration": []
+                    }
+                },
+                "displayGroupedTaskGridLines": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "scrollToCurrentTime": {
                     "type": {
                         "bool": true
@@ -427,6 +437,11 @@
                     },
                     "suppressFormatPainterCopy": true
                 },
+                "emptyLabelText": {
+                    "type": {
+                        "text": true
+                    }
+                },
                 "labelColor": {
                     "type": {
                         "fill": {
@@ -443,6 +458,28 @@
                         }
                     }
                 },
+                "fontFamily": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "bold": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "italic": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underline": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "fill": {
                     "type": {
                         "fill": {
@@ -456,6 +493,30 @@
         },
         "milestones": {
             "properties": {
+                "showLines": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "lineColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "lineOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "lineType": {
+                    "type": {
+                        "enumeration": []
+                    }
+                },
                 "fill": {
                     "type": {
                         "fill": {
@@ -468,6 +529,16 @@
                 "shapeType": {
                     "type": {
                         "text": true
+                    }
+                },
+                "persistSettings": {
+                    "type": {
+                        "text": true
+                    }
+                },
+                "keepMilestoneSettingsOnFilteringInEditMode": {
+                    "type": {
+                        "bool": true
                     }
                 }
             }
@@ -488,6 +559,11 @@
                         }
                     }
                 },
+                "enableBackground": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "fontSize": {
                     "type": {
                         "formatting": {
@@ -495,9 +571,117 @@
                         }
                     }
                 },
+                "fontFamily": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "bold": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "italic": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underline": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "width": {
                     "type": {
                         "numeric": true
+                    }
+                },
+                "customizeExpandCollapse":{
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "fillExpandCollapse": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontSizeExpandCollapse": {
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "fontFamilyExpandCollapse": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "boldExpandCollapse": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "italicExpandCollapse": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underlineExpandCollapse": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "fillNestedLabel": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontSizeNestedLabel": {
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "fontFamilyNestedLabel": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "boldNestedLabel": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "italicNestedLabel": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underlineNestedLabel": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "customizeNestedLabel":{
+                    "type": {
+                        "bool": true
                     }
                 }
             }
@@ -540,12 +724,22 @@
                     "type": {
                         "numeric": true
                     }
+                },
+                "borderWidth": {
+                    "type": {
+                        "numeric": true
+                    }
                 }
             }
         },
         "taskResource": {
             "properties": {
                 "show": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "matchLegendColors": {
                     "type": {
                         "bool": true
                     }
@@ -564,6 +758,28 @@
                         "formatting": {
                             "fontSize": true
                         }
+                    }
+                },
+                "fontFamily": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "bold": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "italic": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underline": {
+                    "type": {
+                        "bool": true
                     }
                 },
                 "position": {
@@ -616,6 +832,79 @@
                             }
                         }
                     }
+                },
+                "axisFontSize": {
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "enableBackground": {
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
+        "background": {
+            "properties": {
+                "generalBackgroundEnable": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "generalBackgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "generalBackgroundOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "categoryLabelsBackgroundEnable": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "categoryLabelsBackgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "categoryLabelsBackgroundOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "dateTypeBackgroundEnable": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "dateTypeBackgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "dateTypeBackgroundOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
                 }
             }
         }
@@ -623,6 +912,17 @@
     "sorting": {
         "default": {}
     },
+    "tooltips": {
+        "supportedTypes": {
+            "default": true,
+            "canvas": true
+        },
+        "roles": [
+            "tooltips"
+        ]
+    },
     "privileges": [],
-    "supportsHighlight": true
+    "supportsHighlight": true,
+    "supportsKeyboardFocus": true,
+	"supportsMultiVisualSelection": true
 }
