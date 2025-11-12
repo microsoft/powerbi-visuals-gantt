@@ -29,6 +29,7 @@ export class GeneralGroup extends Card {
     public keepSettingsOnFiltering: ToggleSwitch = new ToggleSwitch({
         name: "keepMilestoneSettingsOnFilteringInEditMode",
         displayNameKey: "Visual_KeepSettingsOnFiltering",
+        descriptionKey: "Visual_KeepSettingsOnFiltering_Description",
         value: false
     });
 

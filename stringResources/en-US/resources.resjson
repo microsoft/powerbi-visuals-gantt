@@ -134,7 +134,8 @@
 	"Visual_DisplayTasks": "Display tasks",
 	"Visual_GroupedTasks_DisabledReason": "Disabled because \"Group Tasks\" is turned off",
 	"Visual_DisplayTasksGridLines": "Display tasks grid lines",
-	"Visual_KeepSettingsOnFiltering": "Keep milestone settings on filtering in edit mode",
+	"Visual_KeepSettingsOnFiltering": "Preserve Milestone Settings",
+	"Visual_KeepSettingsOnFiltering_Description": "Keep milestone settings on filtering in edit mode",
 	"Visual_Milestone_DisabledReason": "Disabled if 'Keep milestone settings on filtering in edit mode' is on",
 	"Visual_EmptyLabelText": "Empty label text"
 }
