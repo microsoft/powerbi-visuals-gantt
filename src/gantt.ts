@@ -1577,9 +1577,7 @@ export class Gantt implements IVisual {
         if (dataView?.categorical?.categories?.length === 0 || !Gantt.isChartHasTask(dataView)) {
             return null;
         }
-
         const legendTypes: LegendType = Gantt.getAllLegendTypes(dataView);
-
         this.hasHighlights = Gantt.hasHighlights(dataView);
 
         const formatters: GanttChartFormatters = this.getFormatters(dataView, this.host.locale || null);
@@ -1598,7 +1596,7 @@ export class Gantt implements IVisual {
 
         const tasks: Task[] = this.createTasks({ dataView, taskTypes: legendTypes, formatters, taskColor, isEndDateFilled, hasHighlights: this.hasHighlights, sortingOptions });
 
-        legendData.dataPoints = legendData.dataPoints.map((legendItem) => {
+        legendData.dataPoints = legendData?.dataPoints?.map((legendItem) => {
             legendItem.label = legendItem.label || this.formattingSettings.legend.general.emptyLabelText.value;
             return legendItem;
         });
@@ -1632,7 +1630,7 @@ export class Gantt implements IVisual {
             types: []
         };
         const index: number = dataView.metadata.columns.findIndex(col => GanttRole.Legend in col.roles);
-
+        
         if (index !== -1) {
             const legendMetaCategoryColumn: DataViewMetadataColumn = dataView.metadata.columns[index];
             legendTypes.legendColumnName = legendMetaCategoryColumn.displayName;
