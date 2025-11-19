@@ -3733,7 +3733,7 @@ export class Gantt implements IVisual {
                 })
                 .style("stroke-opacity", lineSettings.lineOpacity.value / 100)
                 .style("display", (line: Line) => {
-                    return line.x1 === Gantt.TimeScale(timestamp) && shouldRenderTodayLine
+                    return line.x1 === Gantt.TimeScale(timestamp) ? shouldRenderTodayLine ? "block" : "none" : "none"
                 });
 
             switch (<MilestoneLineType>lineSettings.lineType.value.value) {
