@@ -69,6 +69,12 @@ export class GeneralCardSettings extends CompositeCard {
         value: true
     });
 
+    public shouldWrapText = new ToggleSwitch({
+        name: "shouldWrapText",
+        displayNameKey: "Visual_TextWrap",
+        value: false
+    });
+
     public durationUnit = new ItemDropdown({
         name: "durationUnit",
         displayNameKey: "Visual_DurationUnit",
@@ -102,6 +108,7 @@ export class GeneralCardSettings extends CompositeCard {
             this.groupTasks,
             this.scrollToCurrentTime,
             this.displayGridLines,
+            this.shouldWrapText,
             this.durationUnit,
             this.durationMin,
             this.barsRoundedCorners

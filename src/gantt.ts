@@ -2398,6 +2398,75 @@ export class Gantt implements IVisual {
             .remove();
     }
 
+    static wrapText(
+        selection: d3Selection<SVGTextElement, GroupedTask, any, any>,
+        maxWidth: number,
+        maxLines: number = 2
+    ): void {
+        selection.each(function (task: GroupedTask) {
+            const textElement = d3Select(this);
+            const text = task.name;
+            const computedStyle = window.getComputedStyle(this);
+            const fontSize = parseFloat(computedStyle.fontSize);
+            const fontFamily = computedStyle.fontFamily;
+
+            // Clear existing tspans before adding new ones
+            textElement.selectAll('tspan').remove();
+            textElement.text(''); // Clear the original text
+            const textProps: TextProperties = {
+                fontFamily: fontFamily,
+                fontSize: computedStyle.fontSize,
+                text: text
+            };
+
+            const words = text.split(/\s+/);
+            const lineHeight = fontSize * 1.2;
+            let line: string[] = [];
+            let lineNumber = 0;
+
+            for (let i = 0; i < words.length; i++) {
+                line.push(words[i]);
+                textProps.text = line.join(' ');
+                const lineWidth = textMeasurementService.measureSvgTextWidth(textProps);
+
+                if (lineWidth > maxWidth && line.length > 1) {
+                    line.pop();
+                    const lineText = line.join(' ');
+
+                    if (lineNumber < maxLines - 1) {
+                        textElement.append('tspan')
+                            .attr('x', textElement.attr('x'))
+                            .attr('dy', lineNumber === 0 ? 0 : lineHeight)
+                            .text(lineText);
+
+                        line = [words[i]];
+                        lineNumber++;
+                    } else {
+                        textProps.text = lineText + ' ' + words.slice(i).join(' ');
+                        const truncatedText = textMeasurementService.getTailoredTextOrDefault(textProps, maxWidth);
+                        textElement.append('tspan')
+                            .attr('x', textElement.attr('x'))
+                            .attr('dy', lineNumber === 0 ? 0 : lineHeight)
+                            .text(truncatedText);
+                        return;
+                    }
+                }
+            }
+
+            if (lineNumber < maxLines && line.length > 0) {
+                textProps.text = line.join(' ');
+                const finalWidth = textMeasurementService.measureSvgTextWidth(textProps);
+                const finalText = finalWidth > maxWidth
+                    ? textMeasurementService.getTailoredTextOrDefault(textProps, maxWidth)
+                    : textProps.text;
+                textElement.append('tspan')
+                    .attr('x', textElement.attr('x'))
+                    .attr('dy', lineNumber === 0 ? 0 : lineHeight)
+                    .text(finalText);
+            }
+        });
+    }
+
     private renderClickableAreas(axisLabelGroup: d3Selection<SVGGElement, GroupedTask, any, any>, width: number, taskConfigHeight: number) {
         const clickableArea = axisLabelGroup
             .append("g")
@@ -2470,7 +2539,13 @@ export class Gantt implements IVisual {
                     : general.fill.value.value;
             })
             .text((task: GroupedTask) => task.name)
-            .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis)
+            .call((selection) => {
+                if (this.formattingSettings.general.shouldWrapText.value) {
+                    Gantt.wrapText(selection, width - Gantt.AxisLabelClip, 2);
+                } else {
+                    AxisHelper.LabelLayoutStrategy.clip(selection, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis);
+                }
+            })
             .append("title")
             .text((task: GroupedTask) => task.name);
 
@@ -3658,7 +3733,7 @@ export class Gantt implements IVisual {
                 })
                 .style("stroke-opacity", lineSettings.lineOpacity.value / 100)
                 .style("display", (line: Line) => {
-                    return line.x1 === Gantt.TimeScale(timestamp) ? shouldRenderTodayLine ? "block" : "none" : "block";
+                    return line.x1 === Gantt.TimeScale(timestamp) && shouldRenderTodayLine
                 });
 
             switch (<MilestoneLineType>lineSettings.lineType.value.value) {

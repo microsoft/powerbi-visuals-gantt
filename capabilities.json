@@ -337,6 +337,11 @@
                         "bool": true
                     }
                 },
+                "shouldWrapText": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "durationUnit": {
                     "type": {
                         "text": true
