@@ -806,6 +806,11 @@
                         "text": true
                     }
                 },
+                "showTodayLine": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "todayColor": {
                     "type": {
                         "fill": {

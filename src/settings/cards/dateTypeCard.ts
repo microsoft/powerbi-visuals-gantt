@@ -9,6 +9,7 @@ import CompositeCard = formattingSettings.CompositeCard;
 import ItemDropdown = formattingSettings.ItemDropdown;
 import ColorPicker = formattingSettings.ColorPicker;
 import NumUpDown = formattingSettings.NumUpDown;
+import ToggleSwitch = formattingSettings.ToggleSwitch;
 
 import { dateTypeOptions } from "../enumOptions";
 import { ISetHighContrastMode } from "./interfaces/ISetHighContrastMode";
@@ -21,6 +22,12 @@ export class DateTypeCardSettings extends CompositeCard implements ISetHighContr
         items: dateTypeOptions,
         value: dateTypeOptions[4]
     });
+
+    public showTodayLine = new ToggleSwitch({
+        name: "showTodayLine",
+        displayNameKey: "Visual_DateType_ShowTodayLine",
+        value: true,
+    })
 
     public todayColor = new ColorPicker({
         name: "todayColor",
@@ -44,7 +51,7 @@ export class DateTypeCardSettings extends CompositeCard implements ISetHighContr
         name: "dateTypeGeneralGroup",
         displayName: "General",
         displayNameKey: "Visual_General",
-        slices: [this.type, this.todayColor, this.axisColor, this.axisTextColor],
+        slices: [this.type, this.showTodayLine, this.todayColor, this.axisColor, this.axisTextColor],
     });
 
     public axisFontSize = new NumUpDown({
@@ -65,9 +72,10 @@ export class DateTypeCardSettings extends CompositeCard implements ISetHighContr
         slices: [this.axisFontSize],
     });
 
+
     public name: string = "dateType";
     public displayNameKey: string = "Visual_DateType";
-    public groups: Group[] = [ this.dateTypeGeneralGroup, this.fontGroup ];
+    public groups: Group[] = [this.dateTypeGeneralGroup, this.fontGroup];
 
     public setHighContrastMode(colorHelper: ColorHelper): void {
         const isHighContrast = colorHelper.isHighContrast;

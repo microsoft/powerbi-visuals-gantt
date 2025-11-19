@@ -137,5 +137,6 @@
 	"Visual_KeepSettingsOnFiltering": "Preserve Milestone Settings",
 	"Visual_KeepSettingsOnFiltering_Description": "Keep milestone settings on filtering in edit mode",
 	"Visual_Milestone_DisabledReason": "Disabled if 'Keep milestone settings on filtering in edit mode' is on",
-	"Visual_EmptyLabelText": "Empty label text"
+	"Visual_EmptyLabelText": "Empty label text",
+	"Visual_DateType_ShowTodayLine": "Show today line"
 }

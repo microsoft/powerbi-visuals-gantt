@@ -1630,7 +1630,7 @@ export class Gantt implements IVisual {
             types: []
         };
         const index: number = dataView.metadata.columns.findIndex(col => GanttRole.Legend in col.roles);
-        
+
         if (index !== -1) {
             const legendMetaCategoryColumn: DataViewMetadataColumn = dataView.metadata.columns[index];
             legendTypes.legendColumnName = legendMetaCategoryColumn.displayName;
@@ -3628,12 +3628,12 @@ export class Gantt implements IVisual {
             };
             line.push(lineOptions);
         });
-
         this.renderMilestoneDottedLines(line, timestamp, todayColor);
     }
 
     private renderMilestoneDottedLines(line: Line[], timestamp: number, todayColor: string) {
         const lineSettings: LineContainerItem = this.formattingSettings.milestones.lineGroup;
+        const shouldRenderTodayLine: boolean = this.formattingSettings.dateType.showTodayLine.value;
         if (lineSettings.showLines.value) {
             const chartLineSelection = this.chartGroup
                 .selectAll<SVGLineElement, Line>(Gantt.ChartLine.selectorName)
@@ -3656,7 +3656,10 @@ export class Gantt implements IVisual {
                     const color: string = line.x1 === Gantt.TimeScale(timestamp) ? todayColor : lineSettings.lineColor.value.value;
                     return this.colorHelper.getHighContrastColor("foreground", color);
                 })
-                .style("stroke-opacity", lineSettings.lineOpacity.value / 100);
+                .style("stroke-opacity", lineSettings.lineOpacity.value / 100)
+                .style("display", (line: Line) => {
+                    return line.x1 === Gantt.TimeScale(timestamp) ? shouldRenderTodayLine ? "block" : "none" : "block";
+                });
 
             switch (<MilestoneLineType>lineSettings.lineType.value.value) {
                 case MilestoneLineType.Solid:
