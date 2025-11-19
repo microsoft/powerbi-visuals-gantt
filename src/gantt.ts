@@ -2401,7 +2401,7 @@ export class Gantt implements IVisual {
     static wrapText(
         selection: d3Selection<SVGTextElement, GroupedTask, any, any>,
         maxWidth: number,
-        maxLines: number = 2
+        maxHeight: number = 2
     ): void {
         selection.each(function (task: GroupedTask) {
             const textElement = d3Select(this);
@@ -2409,10 +2409,11 @@ export class Gantt implements IVisual {
             const computedStyle = window.getComputedStyle(this);
             const fontSize = parseFloat(computedStyle.fontSize);
             const fontFamily = computedStyle.fontFamily;
+            const maxLines = Math.floor(maxHeight * 0.8 / (fontSize * 1.2)) || 1;
 
-            // Clear existing tspans before adding new ones
             textElement.selectAll('tspan').remove();
-            textElement.text(''); // Clear the original text
+            textElement.text('');
+
             const textProps: TextProperties = {
                 fontFamily: fontFamily,
                 fontSize: computedStyle.fontSize,
@@ -2434,10 +2435,12 @@ export class Gantt implements IVisual {
                     const lineText = line.join(' ');
 
                     if (lineNumber < maxLines - 1) {
+                        textProps.text = lineText;
+                        const truncatedText = textMeasurementService.getTailoredTextOrDefault(textProps, maxWidth);
                         textElement.append('tspan')
                             .attr('x', textElement.attr('x'))
                             .attr('dy', lineNumber === 0 ? 0 : lineHeight)
-                            .text(lineText);
+                            .text(truncatedText);
 
                         line = [words[i]];
                         lineNumber++;
@@ -2448,6 +2451,7 @@ export class Gantt implements IVisual {
                             .attr('x', textElement.attr('x'))
                             .attr('dy', lineNumber === 0 ? 0 : lineHeight)
                             .text(truncatedText);
+                        textElement.selectChild("tspan").attr('dy', -((lineNumber) * lineHeight) / 2);
                         return;
                     }
                 }
@@ -2463,6 +2467,7 @@ export class Gantt implements IVisual {
                     .attr('x', textElement.attr('x'))
                     .attr('dy', lineNumber === 0 ? 0 : lineHeight)
                     .text(finalText);
+                textElement.selectChild("tspan").attr('dy', -((lineNumber) * lineHeight) / 2);
             }
         });
     }
@@ -2475,6 +2480,7 @@ export class Gantt implements IVisual {
 
         const { general, nestedLabels } = this.formattingSettings.taskLabels;
         const useCustom: boolean = nestedLabels.customize.value;
+        const height = this.formattingSettings.taskConfig.height.value || DefaultChartLineHeight;
 
         clickableArea
             .append("text")
@@ -2541,7 +2547,7 @@ export class Gantt implements IVisual {
             .text((task: GroupedTask) => task.name)
             .call((selection) => {
                 if (this.formattingSettings.general.shouldWrapText.value) {
-                    Gantt.wrapText(selection, width - Gantt.AxisLabelClip, 2);
+                    Gantt.wrapText(selection, width - Gantt.AxisLabelClip, height);
                 } else {
                     AxisHelper.LabelLayoutStrategy.clip(selection, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis);
                 }
