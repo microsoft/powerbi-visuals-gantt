@@ -27,7 +27,7 @@ export class DateTypeCardSettings extends CompositeCard implements ISetHighContr
         name: "showTodayLine",
         displayNameKey: "Visual_DateType_ShowTodayLine",
         value: true,
-    })
+    });
 
     public todayColor = new ColorPicker({
         name: "todayColor",
