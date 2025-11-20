@@ -109,6 +109,7 @@ import {
     drawNotRoundedRectByPath,
     drawRectangle,
     drawRoundedRectByPath,
+    getRandomInteger,
     hashCode,
     isStringNotNullEmptyOrUndefined,
     isValidDate
@@ -175,6 +176,7 @@ import { TaskConfigCardSettings } from "./settings/cards/task/taskConfigCard";
 import { OverlappingLayeringStrategyOptions, OverlappingTasks } from "./settings/cards/generalCard";
 import { SettingsService } from "./services/settingsService";
 import { SettingsState } from "./services/settingsState";
+import { shapesOptions } from "./settings/enumOptions";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -3778,7 +3780,7 @@ export class Gantt implements IVisual {
                 })
                 .style("stroke-opacity", lineSettings.lineOpacity.value / 100)
                 .style("display", (line: Line) => {
-                    return line.x1 === Gantt.TimeScale(timestamp) ? shouldRenderTodayLine ? "block" : "none" : "none"
+                    return line.x1 === Gantt.TimeScale(timestamp) ? shouldRenderTodayLine ? "block" : "none" : "block"
                 });
 
             switch (<MilestoneLineType>lineSettings.lineType.value.value) {
