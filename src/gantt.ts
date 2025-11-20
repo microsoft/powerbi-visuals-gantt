@@ -975,7 +975,7 @@ export class Gantt implements IVisual {
             });
 
         }
-        
+
         return milestoneData;
     }
 
@@ -1406,6 +1406,14 @@ export class Gantt implements IVisual {
         const taskKeys: string[] = Object.keys(groupedTasks);
 
         const sortingFunction = (a: Task, b: Task) => {
+            if (!a.start || !a.end) {
+                // so nulls are pushed to the end
+                return -1;
+            }
+            if (!b.start || !b.end) {
+                // so nulls are pushed to the end
+                return 1;
+            }
             if (a.start.getTime() === b.start.getTime()) {
                 return b.end.getTime() - a.end.getTime();
             }
@@ -1789,7 +1797,6 @@ export class Gantt implements IVisual {
                 this.clearViewport();
                 return;
             }
-            console.log('Gantt update called');
 
             const collapsedTasksUpdateId: any = options.dataViews[0].metadata?.objects?.collapsedTasksUpdateId?.value;
 
