@@ -26,16 +26,16 @@
 
 import powerbi from "powerbi-visuals-api";
 import { select as d3Select, selectAll as d3SelectAll, Selection as d3Selection } from 'd3-selection';
-import {timeDay as d3TimeDay} from "d3-time";
+import { timeDay as d3TimeDay } from "d3-time";
 
 import lodashMinBy from "lodash.minby";
 import lodashMaxBy from "lodash.maxby";
 import lodashUniq from "lodash.uniq";
 import lodashUniqBy from "lodash.uniqby";
 
-import {VisualData} from "./visualData";
-import {VisualBuilder} from "./visualBuilder";
-import {getEndDate, isColorAppliedToElements} from "./helpers/helpers";
+import { VisualData } from "./visualData";
+import { VisualBuilder } from "./visualBuilder";
+import { getEndDate, isColorAppliedToElements } from "./helpers/helpers";
 import {
     assertColorsMatch,
     clickElement,
@@ -46,17 +46,17 @@ import {
     parseColorString
 } from "powerbi-visuals-utils-testutils";
 
-import {pixelConverter as PixelConverter} from "powerbi-visuals-utils-typeutils";
-import {legendPosition as LegendPosition} from "powerbi-visuals-utils-chartutils";
-import {valueFormatter} from "powerbi-visuals-utils-formattingutils";
+import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
+import { legendPosition as LegendPosition } from "powerbi-visuals-utils-chartutils";
+import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
-import {Milestone, Task, TaskDaysOff} from "../src/interfaces";
-import {DurationHelper} from "../src/durationHelper";
-import {Gantt, Gantt as VisualClass} from "../src/gantt";
-import {getRandomHexColor, isValidDate} from "../src/utils";
+import { Milestone, Task, TaskDaysOff } from "../src/interfaces";
+import { DurationHelper } from "../src/durationHelper";
+import { Gantt, Gantt as VisualClass } from "../src/gantt";
+import { getRandomHexColor, isValidDate } from "../src/utils";
 
-import {DefaultOpacity, DimmedOpacity} from "../src/behavior";
-import {DateType, Day, DurationUnit, MilestoneShape, ResourceLabelPosition} from "../src/enums";
+import { DefaultOpacity, DimmedOpacity } from "../src/behavior";
+import { DateType, Day, DurationUnit, MilestoneShape, ResourceLabelPosition } from "../src/enums";
 import DataView = powerbi.DataView;
 import PrimitiveValue = powerbi.PrimitiveValue;
 
@@ -64,6 +64,7 @@ import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import IValueFormatter = valueFormatter.IValueFormatter;
 import { darken, rgbString } from "powerbi-visuals-utils-colorutils";
+import { electron } from "webpack";
 
 
 const defaultTaskDuration: number = 1;
@@ -482,7 +483,7 @@ describe("Gantt", () => {
             };
             const localizationManager = visualBuilder.visualHost.createLocalizationManager();
 
-            const tooltips = VisualClass.getTooltipInfo({task, formatters, durationUnit, localizationManager, isEndDateFilled: false, roleLegendText: undefined});
+            const tooltips = VisualClass.getTooltipInfo({ task, formatters, durationUnit, localizationManager, isEndDateFilled: false, roleLegendText: undefined });
             tooltips
                 .filter(t => t.value !== null && t.value !== undefined)
                 .forEach(t => {
@@ -1213,13 +1214,13 @@ describe("Gantt", () => {
             });
 
             it("data point are selected on 'Enter' with modifier keys", () => {
-                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Enter"}), new KeyboardEvent("keydown", { code: "Enter", ctrlKey: true }));
-                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Enter"}), new KeyboardEvent("keydown", { code: "Enter", shiftKey: true }));
-                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Enter"}), new KeyboardEvent("keydown", { code: "Enter", metaKey: true }));
+                testKeyboardEvent(new KeyboardEvent("keydown", { code: "Enter" }), new KeyboardEvent("keydown", { code: "Enter", ctrlKey: true }));
+                testKeyboardEvent(new KeyboardEvent("keydown", { code: "Enter" }), new KeyboardEvent("keydown", { code: "Enter", shiftKey: true }));
+                testKeyboardEvent(new KeyboardEvent("keydown", { code: "Enter" }), new KeyboardEvent("keydown", { code: "Enter", metaKey: true }));
 
-                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Space"}), new KeyboardEvent("keydown", { code: "Space", ctrlKey: true }));
-                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Space"}), new KeyboardEvent("keydown", { code: "Space", shiftKey: true }));
-                testKeyboardEvent(new KeyboardEvent("keydown", {code: "Space"}), new KeyboardEvent("keydown", { code: "Space", metaKey: true }));
+                testKeyboardEvent(new KeyboardEvent("keydown", { code: "Space" }), new KeyboardEvent("keydown", { code: "Space", ctrlKey: true }));
+                testKeyboardEvent(new KeyboardEvent("keydown", { code: "Space" }), new KeyboardEvent("keydown", { code: "Space", shiftKey: true }));
+                testKeyboardEvent(new KeyboardEvent("keydown", { code: "Space" }), new KeyboardEvent("keydown", { code: "Space", metaKey: true }));
             });
 
             function testKeyboardEvent(firstKeyboardEvent: KeyboardEvent, secondKeyboardEvent: KeyboardEvent) {
@@ -1266,6 +1267,80 @@ describe("Gantt", () => {
                     expect(visualBuilder.body).toBeDefined();
                     expect(visualBuilder.body!.scrollLeft).not.toEqual(0);
                     done();
+                });
+            });
+
+            describe("Text wrapping", () => {
+                it("Should wrap text when shouldWrapText is true", (done) => {
+                    // Create data with long task names that will need wrapping
+                    const longTaskName = "This is a very long task name that should be wrapped across multiple lines to test the text wrapping functionality properly";
+                    defaultDataViewBuilder.valuesTaskTypeResource = [
+                        [longTaskName, longTaskName, "Parent1"],
+                        [longTaskName, longTaskName, "Parent2"],
+                        [longTaskName, longTaskName, "Parent3"]
+                    ];
+                    dataView = defaultDataViewBuilder.getDataView([
+                        VisualData.ColumnTask,
+                        VisualData.ColumnStartDate,
+                        VisualData.ColumnDuration]);
+
+                    fixDataViewDateValuesAggregation(dataView);
+
+                    dataView.metadata.objects = {
+                        general: {
+                            shouldWrapText: true
+                        },
+                        taskConfig: {
+                            height: 90
+                        },
+                        taskLabels: {
+                            show: true,
+                            width: 200
+                        }
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        const taskLabelsText = visualBuilder.taskLabelsText.filter(
+                            (el: SVGTextElement) => el.textContent && el.textContent.trim() !== ""
+                        );
+
+                        expect(taskLabelsText.length).toBeGreaterThan(0);
+
+                        let hasWrappedText = false;
+                        taskLabelsText.forEach((textElement: SVGTextElement) => {
+                            const tspans = textElement.querySelectorAll("tspan");
+                            if (tspans.length > 1) {
+                                hasWrappedText = true;
+                                // Verify tspans have different dy values (stacked vertically)
+                                const secondDy = parseFloat(tspans[1].getAttribute("dy") || "0");
+                                expect(secondDy).toBeGreaterThan(0);
+                            }
+                        });
+
+                        expect(hasWrappedText).toBe(true);
+                        done();
+                    });
+                });
+
+                it("Should use default wrapping behavior when setting is undefined", (done) => {
+                    dataView = defaultDataViewBuilder.getDataView([
+                        VisualData.ColumnTask,
+                        VisualData.ColumnStartDate,
+                        VisualData.ColumnDuration]);
+
+                    fixDataViewDateValuesAggregation(dataView);
+
+                    // No wrapping setting specified - should use default (false)
+                    dataView.metadata.objects = {
+                        general: {}
+                    };
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        const taskLabelsText = visualBuilder.taskLabelsText;
+                        expect(taskLabelsText.length).toBeGreaterThan(0);
+                        // Should complete without error
+                        done();
+                    });
                 });
             });
 
@@ -1728,7 +1803,7 @@ describe("Gantt", () => {
                         let fontSizePoint: string = PixelConverter.fromPoint(fontSize);
                         fontSizePoint = (+(fontSizePoint.substring(0, fontSizePoint.length - 2))).toFixed(4);
 
-                       expect(fontSizeEl).toEqual(fontSizePoint);
+                        expect(fontSizeEl).toEqual(fontSizePoint);
                     });
 
                     done();
@@ -1769,11 +1844,10 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    visualBuilder.taskResources.forEach(e =>
-                        {
-                            expect(e).toBeDefined();
-                            expect(e!.textContent!.indexOf("...")).toEqual(-1);
-                        });
+                    visualBuilder.taskResources.forEach(e => {
+                        expect(e).toBeDefined();
+                        expect(e!.textContent!.indexOf("...")).toEqual(-1);
+                    });
 
                     done();
                 });
@@ -1891,11 +1965,10 @@ describe("Gantt", () => {
                     }
                 };
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    visualBuilder.taskRect.forEach(e =>
-                        {
-                            expect(e).toBeTruthy();
-                            assertColorsMatch(e!.style.stroke, rgbStr);
-                        });
+                    visualBuilder.taskRect.forEach(e => {
+                        expect(e).toBeTruthy();
+                        assertColorsMatch(e!.style.stroke, rgbStr);
+                    });
 
                     done();
                 });
@@ -1913,13 +1986,13 @@ describe("Gantt", () => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     visualBuilder.taskRect
-                    // collapsed parent tasks are not rendered so we need to filter them
-                    .filter((rect) => rect!.getAttribute("tabindex") === "0")
-                    .forEach((taskRect) => {
-                        expect(taskRect).toBeTruthy()
-                        const rectHeight = taskRect?.getBBox().height;
-                        expect(rectHeight).toBeCloseTo(expectedHeight, 1);
-                    });
+                        // collapsed parent tasks are not rendered so we need to filter them
+                        .filter((rect) => rect!.getAttribute("tabindex") === "0")
+                        .forEach((taskRect) => {
+                            expect(taskRect).toBeTruthy()
+                            const rectHeight = taskRect?.getBBox().height;
+                            expect(rectHeight).toBeCloseTo(expectedHeight, 1);
+                        });
 
                     done();
                 });
@@ -1976,12 +2049,11 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    visualBuilder.taskLabelsText.forEach(e =>
-                        {
-                            const fill = e.getAttribute("fill");
-                            expect(fill).not.toBeNull();
-                            assertColorsMatch(fill!, color);
-                        });
+                    visualBuilder.taskLabelsText.forEach(e => {
+                        const fill = e.getAttribute("fill");
+                        expect(fill).not.toBeNull();
+                        assertColorsMatch(fill!, color);
+                    });
 
                     done();
                 });
@@ -2029,6 +2101,38 @@ describe("Gantt", () => {
         });
 
         describe("Gantt date types", () => {
+            it("Show today line", (done) => {
+                dataView.metadata.objects = {
+                    dateType: {
+                        showTodayLine: true
+                    }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    const todayLine = visualBuilder.chartLine;
+                    todayLine.forEach(el => {
+                        expect(el.style.display).not.toBe("none");
+                    });
+                    done();
+                });
+            });
+
+            it("Hide today line when showTodayLine is false", (done) => {
+                dataView.metadata.objects = {
+                    dateType: {
+                        showTodayLine: false
+                    }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    const todayLine = visualBuilder.chartLine;
+                    todayLine.forEach(el => {
+                        expect(el.style.display).toBe("none");
+                    })
+                    done();
+                });
+            });
+
             it("Today color", (done) => {
                 let color: string = getRandomHexColor();
                 dataView.metadata.objects = {
@@ -2274,7 +2378,7 @@ describe("Gantt", () => {
         });
 
         it("Synchronous multiple tasks", (done) => {
-            const collapsedTasksUpdateIDsRandom : string[] = []
+            const collapsedTasksUpdateIDsRandom: string[] = []
 
             for (let count = 0; count < 3; count++) {
                 const newId = crypto?.randomUUID() || Math.random().toString();
@@ -2320,7 +2424,7 @@ describe("Gantt", () => {
         });
 
         it("Asynchronous multiple tasks", async () => {
-            const collapsedTasksUpdateIDsRandom : string[] = []
+            const collapsedTasksUpdateIDsRandom: string[] = []
 
             for (let count = 0; count < 3; count++) {
                 const newId = crypto?.randomUUID() || Math.random().toString();
@@ -2348,16 +2452,16 @@ describe("Gantt", () => {
             };
 
 
-            const promise1 = new Promise((resolve)=> {
+            const promise1 = new Promise((resolve) => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects1;
                     visualBuilder.update(dataView);
                     resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[0]));
                 },
-                1_000);
+                    1_000);
             });
 
-            const promise2 = new Promise((resolve)=> {
+            const promise2 = new Promise((resolve) => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects2;
                     visualBuilder.update(dataView);
@@ -2366,7 +2470,7 @@ describe("Gantt", () => {
                     2_000);
             });
 
-            const promise3 = new Promise((resolve)=> {
+            const promise3 = new Promise((resolve) => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects3;
                     visualBuilder.update(dataView);
