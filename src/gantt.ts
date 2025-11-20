@@ -664,7 +664,8 @@ export class Gantt implements IVisual {
         durationUnit,
         localizationManager,
         isEndDateFilled,
-        roleLegendText
+        roleLegendText,
+        tooltipSettings
     }: {
         task: Task,
         formatters: GanttChartFormatters,
@@ -672,53 +673,83 @@ export class Gantt implements IVisual {
         localizationManager: ILocalizationManager,
         isEndDateFilled: boolean,
         roleLegendText?: string;
+        tooltipSettings?: any;
     }): VisualTooltipDataItem[] {
 
         const tooltipDataArray: VisualTooltipDataItem[] = [];
-        if (task.taskType) {
+
+        // Helper function to get custom display name or default
+        const getDisplayName = (customName: string, defaultKey: string): string => {
+            return (customName && customName.trim()) || localizationManager.getDisplayName(defaultKey);
+        };
+
+        if (task.taskType && (!tooltipSettings || tooltipSettings.showLegend.value)) {
             tooltipDataArray.push({
-                displayName: roleLegendText || localizationManager.getDisplayName("Role_Legend"),
+                displayName: roleLegendText || getDisplayName(
+                    tooltipSettings?.legendDisplayName?.value,
+                    "Role_Legend"
+                ),
                 value: task.taskType
             });
         }
 
-        tooltipDataArray.push({
-            displayName: localizationManager.getDisplayName("Role_Task"),
-            value: task.name
-        });
-
-        if (task.start && !isNaN(task.start.getDate())) {
+        if (!tooltipSettings || tooltipSettings.showTask.value) {
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_StartDate"),
+                displayName: getDisplayName(
+                    tooltipSettings?.taskDisplayName?.value,
+                    "Role_Task"
+                ),
+                value: task.name
+            });
+        }
+
+        if (task.start && !isNaN(task.start.getDate()) && (!tooltipSettings || tooltipSettings.showStartDate.value)) {
+            tooltipDataArray.push({
+                displayName: getDisplayName(
+                    tooltipSettings?.startDateDisplayName?.value,
+                    "Role_StartDate"
+                ),
                 value: formatters.startDateFormatter.format(task.start)
             });
         }
 
-        if (lodashIsEmpty(task.Milestones) && task.end && !isNaN(task.end.getDate())) {
+        if (lodashIsEmpty(task.Milestones) && task.end && !isNaN(task.end.getDate()) && (!tooltipSettings || tooltipSettings.showEndDate.value)) {
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_EndDate"),
+                displayName: getDisplayName(
+                    tooltipSettings?.endDateDisplayName?.value,
+                    "Role_EndDate"
+                ),
                 value: formatters.startDateFormatter.format(task.end)
             });
         }
 
-        if (lodashIsEmpty(task.Milestones) && task.duration && !isEndDateFilled) {
+        if (lodashIsEmpty(task.Milestones) && task.duration && !isEndDateFilled && (!tooltipSettings || tooltipSettings.showDuration.value)) {
             const durationLabel: string = DurationHelper.generateLabelForDuration(task.duration, durationUnit, localizationManager);
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_Duration"),
+                displayName: getDisplayName(
+                    tooltipSettings?.durationDisplayName?.value,
+                    "Role_Duration"
+                ),
                 value: durationLabel
             });
         }
 
-        if (task.completion) {
+        if (task.completion && (!tooltipSettings || tooltipSettings.showCompletion.value)) {
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_Completion"),
+                displayName: getDisplayName(
+                    tooltipSettings?.completionDisplayName?.value,
+                    "Role_Completion"
+                ),
                 value: formatters.completionFormatter.format(task.completion)
             });
         }
 
-        if (task.resource) {
+        if (task.resource && (!tooltipSettings || tooltipSettings.showResource.value)) {
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_Resource"),
+                displayName: getDisplayName(
+                    tooltipSettings?.resourceDisplayName?.value,
+                    "Role_Resource"
+                ),
                 value: task.resource
             });
         }
@@ -1097,7 +1128,15 @@ export class Gantt implements IVisual {
     private addTooltipInfoForCollapsedTasks(tasks: Task[], collapsedTasks: string[], formatters: GanttChartFormatters, durationUnit: DurationUnit, isEndDateFilled: boolean) {
         tasks.forEach((task: Task) => {
             if (!task.children || collapsedTasks.includes(task.name)) {
-                task.tooltipInfo = Gantt.getTooltipInfo({ task, formatters, durationUnit, localizationManager: this.localizationManager, isEndDateFilled, roleLegendText: this.formattingSettings.legend.general.titleText.value });
+                task.tooltipInfo = Gantt.getTooltipInfo({
+                    task,
+                    formatters,
+                    durationUnit,
+                    localizationManager: this.localizationManager,
+                    isEndDateFilled,
+                    roleLegendText: this.formattingSettings.legend.general.titleText.value,
+                    tooltipSettings: this.formattingSettings.tooltipConfig
+                });
                 if (task.Milestones) {
                     task.Milestones.forEach((milestone) => {
                         const dateFormatted = formatters.startDateFormatter.format(task.start);
