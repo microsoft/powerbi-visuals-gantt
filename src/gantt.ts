@@ -940,27 +940,44 @@ export class Gantt implements IVisual {
         const milestones: { value: PrimitiveValue, index: number }[] = [];
         const shouldUseSettingsFromPersistProps: boolean = viewMode === powerbi.ViewMode.View || keepSettingsOnFiltering;
 
+        const cachedShapes: { [key: string]: MilestoneShape } = {}
+        const cachedColors: { [key: string]: string } = {}
+        
         if (milestonesCategory && milestonesCategory.values) {
             milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
             milestones.forEach((milestone) => {
+                const value = milestone.value as string;
                 const milestoneObjects = shouldUseSettingsFromPersistProps
-                    ? settingsState.getMilestoneSettings(milestone.value as string)
+                    ? settingsState.getMilestoneSettings(value)
                     : milestonesCategory.objects?.[milestone.index];
 
                 const selectionBuilder: ISelectionIdBuilder = host
                     .createSelectionIdBuilder()
                     .withCategory(milestonesCategory, milestone.index);
 
+                if (!cachedShapes[value]) {
+                    const allShapes = [MilestoneShape.Circle, MilestoneShape.Square, MilestoneShape.Rhombus]
+                    const randomShape = allShapes[Math.floor(Math.random() * allShapes.length)];
+                    const prevShape = settingsState.getMilestoneSettings(value)?.milestones?.shapeType as (MilestoneShape | undefined);
+                    cachedShapes[value] = prevShape ?? randomShape;
+                }
+                if (!cachedColors[value]) {
+                    const randomKey = Math.random().toString(36).substring(2, 15);
+                    const randomColor = host.colorPalette.getColor(randomKey);
+                    const prevColor = (settingsState.getMilestoneSettings(value)?.milestones as any)?.fill?.solid?.color;
+                    cachedColors[value] = prevColor ?? randomColor.value;
+                }
                 const milestoneDataPoint: MilestoneDataPoint = {
-                    name: milestone.value as string,
+                    name: value,
                     identity: selectionBuilder.createSelectionId(),
                     shapeType: milestoneObjects?.milestones?.shapeType ?
-                        milestoneObjects.milestones.shapeType as string : MilestoneShape.Rhombus,
+                        milestoneObjects.milestones.shapeType as string : cachedShapes[value],
                     color: milestoneObjects?.milestones?.fill ?
-                        (milestoneObjects.milestones as any).fill.solid.color : Gantt.DefaultValues.TaskColor
+                        (milestoneObjects.milestones as any).fill.solid.color : cachedColors[value],
                 };
                 milestoneData.dataPoints.push(milestoneDataPoint);
             });
+
         }
 
         return milestoneData;
@@ -1770,6 +1787,7 @@ export class Gantt implements IVisual {
                 this.clearViewport();
                 return;
             }
+            console.log('Gantt update called');
 
             const collapsedTasksUpdateId: any = options.dataViews[0].metadata?.objects?.collapsedTasksUpdateId?.value;
 
