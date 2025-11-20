@@ -109,6 +109,7 @@ import {
     drawNotRoundedRectByPath,
     drawRectangle,
     drawRoundedRectByPath,
+    getRandomHexColor,
     getRandomInteger,
     hashCode,
     isStringNotNullEmptyOrUndefined,
@@ -176,7 +177,6 @@ import { TaskConfigCardSettings } from "./settings/cards/task/taskConfigCard";
 import { OverlappingLayeringStrategyOptions, OverlappingTasks } from "./settings/cards/generalCard";
 import { SettingsService } from "./services/settingsService";
 import { SettingsState } from "./services/settingsState";
-import { shapesOptions } from "./settings/enumOptions";
 
 const PercentFormat: string = "0.00 %;-0.00 %;0.00 %";
 const ScrollMargin: number = 100;
@@ -942,7 +942,7 @@ export class Gantt implements IVisual {
 
         const cachedShapes: { [key: string]: MilestoneShape } = {}
         const cachedColors: { [key: string]: string } = {}
-        
+
         if (milestonesCategory && milestonesCategory.values) {
             milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
             milestones.forEach((milestone) => {
@@ -956,16 +956,12 @@ export class Gantt implements IVisual {
                     .withCategory(milestonesCategory, milestone.index);
 
                 if (!cachedShapes[value]) {
-                    const allShapes = [MilestoneShape.Circle, MilestoneShape.Square, MilestoneShape.Rhombus]
-                    const randomShape = allShapes[Math.floor(Math.random() * allShapes.length)];
                     const prevShape = settingsState.getMilestoneSettings(value)?.milestones?.shapeType as (MilestoneShape | undefined);
-                    cachedShapes[value] = prevShape ?? randomShape;
+                    cachedShapes[value] = prevShape ?? this.getRandomShape();
                 }
                 if (!cachedColors[value]) {
-                    const randomKey = Math.random().toString(36).substring(2, 15);
-                    const randomColor = host.colorPalette.getColor(randomKey);
                     const prevColor = (settingsState.getMilestoneSettings(value)?.milestones as any)?.fill?.solid?.color;
-                    cachedColors[value] = prevColor ?? randomColor.value;
+                    cachedColors[value] = prevColor ?? getRandomHexColor();
                 }
                 const milestoneDataPoint: MilestoneDataPoint = {
                     name: value,
@@ -979,8 +975,14 @@ export class Gantt implements IVisual {
             });
 
         }
-
+        
         return milestoneData;
+    }
+
+    private static getRandomShape(): MilestoneShape {
+        const allShapes = [MilestoneShape.Circle, MilestoneShape.Square, MilestoneShape.Rhombus]
+        const randomShape = allShapes[Math.floor(getRandomInteger(0, allShapes.length))];
+        return randomShape;
     }
 
     /**
