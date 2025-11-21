@@ -1630,7 +1630,7 @@ export class Gantt implements IVisual {
             types: []
         };
         const index: number = dataView.metadata.columns.findIndex(col => GanttRole.Legend in col.roles);
-        
+
         if (index !== -1) {
             const legendMetaCategoryColumn: DataViewMetadataColumn = dataView.metadata.columns[index];
             legendTypes.legendColumnName = legendMetaCategoryColumn.displayName;
@@ -2047,9 +2047,9 @@ export class Gantt implements IVisual {
             const alreadyReviewedKeys: string[] = [];
 
             if (this.sortingOptions.isCustomSortingNeeded) {
-                const sortingFunction = (a: string, b: string) =>
-                    a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }) *
-                    (this.sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1);
+                const collator = new Intl.Collator(this.host?.locale ?? undefined, { numeric: true, sensitivity: "base" });
+                const dir = this.sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1;
+                const sortingFunction = (a: string, b: string) => collator.compare(a ?? "", b ?? "") * dir;
                 taskKeys.sort(sortingFunction);
             }
 
