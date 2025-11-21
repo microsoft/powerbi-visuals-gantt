@@ -1577,9 +1577,7 @@ export class Gantt implements IVisual {
         if (dataView?.categorical?.categories?.length === 0 || !Gantt.isChartHasTask(dataView)) {
             return null;
         }
-
         const legendTypes: LegendType = Gantt.getAllLegendTypes(dataView);
-
         this.hasHighlights = Gantt.hasHighlights(dataView);
 
         const formatters: GanttChartFormatters = this.getFormatters(dataView, this.host.locale || null);
@@ -1598,7 +1596,7 @@ export class Gantt implements IVisual {
 
         const tasks: Task[] = this.createTasks({ dataView, taskTypes: legendTypes, formatters, taskColor, isEndDateFilled, hasHighlights: this.hasHighlights, sortingOptions });
 
-        legendData.dataPoints = legendData.dataPoints.map((legendItem) => {
+        legendData.dataPoints = legendData?.dataPoints?.map((legendItem) => {
             legendItem.label = legendItem.label || this.formattingSettings.legend.general.emptyLabelText.value;
             return legendItem;
         });
@@ -2049,10 +2047,9 @@ export class Gantt implements IVisual {
             const alreadyReviewedKeys: string[] = [];
 
             if (this.sortingOptions.isCustomSortingNeeded) {
-                const sortingFunction = ((a: string, b: string) => {
-                    const sortValue = (a < b ? -1 : a > b ? 1 : 0)
-                    return sortValue * (this.sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1);
-                });
+                const collator = new Intl.Collator(this.host?.locale ?? undefined, { numeric: true, sensitivity: "base" });
+                const dir = this.sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1;
+                const sortingFunction = (a: string, b: string) => collator.compare(a ?? "", b ?? "") * dir;
                 taskKeys.sort(sortingFunction);
             }
 
