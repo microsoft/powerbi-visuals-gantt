@@ -2115,9 +2115,9 @@ export class Gantt implements IVisual {
             const alreadyReviewedKeys: string[] = [];
 
             if (this.sortingOptions.isCustomSortingNeeded) {
-                const sortingFunction = (a: string, b: string) =>
-                    a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }) *
-                    (this.sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1);
+                const collator = new Intl.Collator(this.host?.locale ?? undefined, { numeric: true, sensitivity: "base" });
+                const dir = this.sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1;
+                const sortingFunction = (a: string, b: string) => collator.compare(a ?? "", b ?? "") * dir;
                 taskKeys.sort(sortingFunction);
             }
 
