@@ -2486,7 +2486,7 @@ describe("Gantt", () => {
         });
     });
 
-    fdescribe("Task sorting test", () => {
+    describe("Task sorting test", () => {
         let visualBuilder: VisualBuilder;
         let defaultDataViewBuilder: VisualData;
         let dataView: DataView;
