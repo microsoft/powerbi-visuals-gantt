@@ -63,6 +63,7 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import IValueFormatter = valueFormatter.IValueFormatter;
+import SortDirection = powerbi.SortDirection;
 import { darken, rgbString } from "powerbi-visuals-utils-colorutils";
 import { electron } from "webpack";
 
@@ -2482,6 +2483,152 @@ describe("Gantt", () => {
             const result = await Promise.all([promise1, promise2, promise3]);
 
             expect(result.filter(result => result === true).length).toBe(0);
+        });
+    });
+
+    fdescribe("Task sorting test", () => {
+        let visualBuilder: VisualBuilder;
+        let defaultDataViewBuilder: VisualData;
+        let dataView: DataView;
+
+        const sortedTaskNamesAsc = [
+            "Task 1",
+            "Task 2",
+            "Task 3",
+            "Task 4",
+            "Task 10",
+            "Task 20",
+            "Task 30",
+            "Task 40",
+            "Task 50",
+            "Task 60",
+            "Task A",
+            "Task B",
+            "Task Z"
+        ];
+
+        beforeEach(() => {
+            visualBuilder = new VisualBuilder(1000, 500);
+            defaultDataViewBuilder = new VisualData();
+            defaultDataViewBuilder.valuesTaskTypeResource = [
+                ["Spec", "Task 1", "Mey"],
+                ["Dev", "Task 10", "Sheng"],
+                ["", "Task 2", "ConnectionWithChildren"],
+                ["", "Task 3", "ConnectionWithChildren"],
+                ["Spec", "Task 20", "Mini"],
+                ["Dev", "Task 4", "Shay"],
+                ["Dev", "Task Z", "Ehren"],
+                ["Dev", "Task 30", "James"],
+                ["Dev", "Task 40", "Matt"],
+                ["Design", "Task 50", "John"],
+                ["Dev", "Task 60", "JohnV"],
+                ["Dev", "Task 10", "John"],
+                ["Dev", "Task A", "Gentiana"],
+                ["Dev", "Task 2"],
+                ["Spec", "Task 3"],
+                ["Spec", "Task 20", "Min"],
+                ["Dev", "Task 4", "Sean"],
+                ["Dev", "Task Z", "Iri"],
+                ["Dev", "Task 30", "Jimmy"],
+                ["Dev", "Task 40", "Tom"],
+                ["Dev", "Task B", "John"],
+                ["Spec", "Task 20", "Mall"],
+                ["Dev", "Task 4", "Sou"],
+                ["Dev", "Task 30", "Jamie"],
+                ["Dev", "Task 40", "Last Name"]
+            ];
+            dataView = defaultDataViewBuilder.getDataView();
+            fixDataViewDateValuesAggregation(dataView);
+        });
+
+        describe("Custom sorting with sortingOptions", () => {
+            it("Should sort tasks in ascending order when custom sorting is enabled", (done) => {
+                // Create tasks with specific names that can be sorted
+                dataView = defaultDataViewBuilder.getDataView([
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration
+                ]);
+
+                fixDataViewDateValuesAggregation(dataView);
+
+                // Enable custom sorting in ascending order
+                dataView.metadata.columns[0].sort = SortDirection.Ascending;
+
+                dataView.metadata.objects = {
+                    general: { groupTasks: true }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    const taskNames = visualBuilder.taskLabelTextContent
+
+                    // Verify tasks are sorted: Task 1, Task 2, Task 3, Task 4, Task 5, Task 10, Task 20, Task 30, Task 40, Task 50
+                    for (let i = 0; i < sortedTaskNamesAsc.length; i++) {
+                        expect(taskNames[i]).toBe(sortedTaskNamesAsc[i]);
+                    }
+                    done();
+                });
+            });
+
+            it("Should sort tasks in descending order when custom sorting is enabled", (done) => {
+                const sortedTaskNamesDesc = [...sortedTaskNamesAsc].reverse();
+
+                dataView = defaultDataViewBuilder.getDataView([
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration
+                ]);
+
+                fixDataViewDateValuesAggregation(dataView);
+
+                // Enable custom sorting in descending order
+                dataView.metadata.columns[0].sort = SortDirection.Descending;
+
+                dataView.metadata.objects = {
+                    general: { groupTasks: true }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    const taskNames = visualBuilder.taskLabelTextContent;
+
+                    // Verify tasks are sorted in descending order
+                    for (let i = 0; i < sortedTaskNamesDesc.length; i++) {
+                        expect(taskNames[i]).toBe(sortedTaskNamesDesc[i]);
+                    }
+                    done();
+                });
+            });
+
+            it("Should not apply custom sorting when sortingOptions.isCustomSortingNeeded is false", (done) => {
+
+                const finalResultTaskNames = Array.from(new Set(defaultDataViewBuilder.valuesTaskTypeResource.map(item => item[1])));
+
+                dataView = defaultDataViewBuilder.getDataView([
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration
+                ]);
+
+                fixDataViewDateValuesAggregation(dataView);
+
+                // No sort property means no custom sorting
+                dataView.metadata.columns[0].sort = undefined;
+
+                dataView.metadata.objects = {
+                    general: { groupTasks: true }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    const taskNames = visualBuilder.taskLabelTextContent;
+
+                    // Tasks should maintain their original order or default sorting
+                    for (let i = 0; i < finalResultTaskNames.length; i++) {
+                        expect(taskNames[i]).toBe(finalResultTaskNames[i]);
+                    }
+                    done();
+                });
+            });
+
         });
     });
 });
