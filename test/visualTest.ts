@@ -65,8 +65,6 @@ import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import IValueFormatter = valueFormatter.IValueFormatter;
 import SortDirection = powerbi.SortDirection;
 import { darken, rgbString } from "powerbi-visuals-utils-colorutils";
-import { electron } from "webpack";
-
 
 const defaultTaskDuration: number = 1;
 const datesAmountForScroll: number = 90;
@@ -2379,7 +2377,7 @@ describe("Gantt", () => {
         });
 
         it("Synchronous multiple tasks", (done) => {
-            const collapsedTasksUpdateIDsRandom: string[] = []
+            const collapsedTasksUpdateIDsRandom: string[] = [];
 
             for (let count = 0; count < 3; count++) {
                 const newId = crypto?.randomUUID() || Math.random().toString();
@@ -2560,7 +2558,7 @@ describe("Gantt", () => {
                 };
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    const taskNames = visualBuilder.taskLabelTextContent
+                    const taskNames = visualBuilder.taskLabelTextContent;
 
                     // Verify tasks are sorted: Task 1, Task 2, Task 3, Task 4, Task 5, Task 10, Task 20, Task 30, Task 40, Task 50
                     for (let i = 0; i < sortedTaskNamesAsc.length; i++) {

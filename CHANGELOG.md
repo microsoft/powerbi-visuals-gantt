@@ -3,7 +3,7 @@
 * Added setting for empty label text
 * Added setting to toggle today line visibility
 * Added setting to wrap label text
-* Added setting for tootltip data
+* Added setting for tooltip data
 * Added random milestone style on initial render
 * Removed the exclusion of empty data from the legend, allowing users to leverage the native "Show items with no data" functionality.
 ### Fixes

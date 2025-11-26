@@ -938,10 +938,11 @@ export class Gantt implements IVisual {
         const milestones: { value: PrimitiveValue, index: number }[] = [];
         const shouldUseSettingsFromPersistProps: boolean = viewMode === powerbi.ViewMode.View || keepSettingsOnFiltering;
 
-        const cachedShapes: { [key: string]: MilestoneShape } = {}
-        const cachedColors: { [key: string]: string } = {}
+        const cachedShapes: { [key: string]: MilestoneShape } = {};
+        const cachedColors: { [key: string]: string } = {};
+        const allShapes = [MilestoneShape.Circle, MilestoneShape.Square, MilestoneShape.Rhombus];
 
-        let prevShape: MilestoneShape | undefined;
+        let prevShapeIndex = -1;
         if (milestonesCategory && milestonesCategory.values) {
             milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
             milestones.forEach((milestone) => {
@@ -956,8 +957,8 @@ export class Gantt implements IVisual {
 
                 if (!cachedShapes[value]) {
                     const savedShape = settingsState.getMilestoneSettings(value)?.milestones?.shapeType as (MilestoneShape | undefined);
-                    cachedShapes[value] = savedShape ?? this.getRandomShape(prevShape);
-                    prevShape = cachedShapes[value];
+                    cachedShapes[value] = savedShape ?? allShapes[(prevShapeIndex + 1) % allShapes.length];
+                    prevShapeIndex++
                 }
                 if (!cachedColors[value]) {
                     const savedColor = (settingsState.getMilestoneSettings(value)?.milestones as any)?.fill?.solid?.color;
@@ -977,12 +978,6 @@ export class Gantt implements IVisual {
         }
 
         return milestoneData;
-    }
-
-    private static getRandomShape(prevShape: MilestoneShape | undefined): MilestoneShape {
-        const allShapes = [MilestoneShape.Circle, MilestoneShape.Square, MilestoneShape.Rhombus]
-        const prevIndex = prevShape ? allShapes.indexOf(prevShape) : -1;
-        return allShapes[(prevIndex + 1) % allShapes.length];
     }
 
     /**
@@ -3807,7 +3802,11 @@ export class Gantt implements IVisual {
                 })
                 .style("stroke-opacity", lineSettings.lineOpacity.value / 100)
                 .style("display", (line: Line) => {
-                    return line.x1 === Gantt.TimeScale(timestamp) ? shouldRenderTodayLine ? "block" : "none" : "block"
+                    if (line.x1 == Gantt.TimeScale(timestamp) && !shouldRenderTodayLine) {
+                        return "none";
+                    } else {
+                        return "block";
+                    }
                 });
 
             switch (<MilestoneLineType>lineSettings.lineType.value.value) {
