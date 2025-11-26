@@ -109,8 +109,6 @@ import {
     drawNotRoundedRectByPath,
     drawRectangle,
     drawRoundedRectByPath,
-    getRandomHexColor,
-    getRandomInteger,
     hashCode,
     isStringNotNullEmptyOrUndefined,
     isValidDate
@@ -943,6 +941,7 @@ export class Gantt implements IVisual {
         const cachedShapes: { [key: string]: MilestoneShape } = {}
         const cachedColors: { [key: string]: string } = {}
 
+        let prevShape: MilestoneShape | undefined;
         if (milestonesCategory && milestonesCategory.values) {
             milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
             milestones.forEach((milestone) => {
@@ -956,12 +955,13 @@ export class Gantt implements IVisual {
                     .withCategory(milestonesCategory, milestone.index);
 
                 if (!cachedShapes[value]) {
-                    const prevShape = settingsState.getMilestoneSettings(value)?.milestones?.shapeType as (MilestoneShape | undefined);
-                    cachedShapes[value] = prevShape ?? this.getRandomShape();
+                    const savedShape = settingsState.getMilestoneSettings(value)?.milestones?.shapeType as (MilestoneShape | undefined);
+                    cachedShapes[value] = savedShape ?? this.getRandomShape(prevShape);
+                    prevShape = cachedShapes[value];
                 }
                 if (!cachedColors[value]) {
-                    const prevColor = (settingsState.getMilestoneSettings(value)?.milestones as any)?.fill?.solid?.color;
-                    cachedColors[value] = prevColor ?? getRandomHexColor();
+                    const savedColor = (settingsState.getMilestoneSettings(value)?.milestones as any)?.fill?.solid?.color;
+                    cachedColors[value] = savedColor ?? host.colorPalette.getColor(value).value;
                 }
                 const milestoneDataPoint: MilestoneDataPoint = {
                     name: value,
@@ -979,10 +979,10 @@ export class Gantt implements IVisual {
         return milestoneData;
     }
 
-    private static getRandomShape(): MilestoneShape {
+    private static getRandomShape(prevShape: MilestoneShape | undefined): MilestoneShape {
         const allShapes = [MilestoneShape.Circle, MilestoneShape.Square, MilestoneShape.Rhombus]
-        const randomShape = allShapes[Math.floor(getRandomInteger(0, allShapes.length))];
-        return randomShape;
+        const prevIndex = prevShape ? allShapes.indexOf(prevShape) : -1;
+        return allShapes[(prevIndex + 1) % allShapes.length];
     }
 
     /**
