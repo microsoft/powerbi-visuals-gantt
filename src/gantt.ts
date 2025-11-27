@@ -494,7 +494,7 @@ export class Gantt implements IVisual {
                 const taskLabelSetting = this.formattingSettings.taskLabels;
                 const taskLabelShow: boolean = taskLabelSetting.show.value;
                 const taskLabelsWidth: number = taskLabelShow
-                    ? taskLabelSetting.general.width.value
+                    ? taskLabelSetting.taskLabelsGroup.general.width.value
                     : 0;
 
                 const scrollTop: number = <number>event.target.scrollTop;
@@ -525,7 +525,7 @@ export class Gantt implements IVisual {
                 .on("drag", function (event: D3DragEvent<SVGRectElement, unknown, d3SubjectPosition>, datum: { initialX: number; initialY: number; }) {
                     const initialX = datum.initialX;
                     const dx = event.x - initialX;
-                    const currentWidth = self.formattingSettings.taskLabels.general.width.value;
+                    const currentWidth = self.formattingSettings.taskLabels.taskLabelsGroup.general.width.value;
                     const newWidth = Math.max(currentWidth + dx, TaskLabelsCardSettings.MinWidth);
 
                     const ganttDiv = self.ganttDiv.node();
@@ -562,7 +562,7 @@ export class Gantt implements IVisual {
                 })
                 .on("end", (event: D3DragEvent<SVGRectElement, unknown, d3SubjectPosition>, datum: { initialX: number; initialY: number; }) => {
                     const dx = event.x - datum.initialX;
-                    const currentWidth = this.formattingSettings.taskLabels.general.width.value;
+                    const currentWidth = this.formattingSettings.taskLabels.taskLabelsGroup.general.width.value;
                     const newWidth = Math.max(currentWidth + dx, TaskLabelsCardSettings.MinWidth);
 
                     this.host.persistProperties({
@@ -664,7 +664,8 @@ export class Gantt implements IVisual {
         durationUnit,
         localizationManager,
         isEndDateFilled,
-        roleLegendText
+        roleLegendText,
+        tooltipSettings
     }: {
         task: Task,
         formatters: GanttChartFormatters,
@@ -672,53 +673,83 @@ export class Gantt implements IVisual {
         localizationManager: ILocalizationManager,
         isEndDateFilled: boolean,
         roleLegendText?: string;
+        tooltipSettings?: any;
     }): VisualTooltipDataItem[] {
 
         const tooltipDataArray: VisualTooltipDataItem[] = [];
-        if (task.taskType) {
+
+        // Helper function to get custom display name or default
+        const getDisplayName = (customName: string, defaultKey: string): string => {
+            return (customName && customName.trim()) || localizationManager.getDisplayName(defaultKey);
+        };
+
+        if (task.taskType && (!tooltipSettings || tooltipSettings.showLegend.value)) {
             tooltipDataArray.push({
-                displayName: roleLegendText || localizationManager.getDisplayName("Role_Legend"),
+                displayName: roleLegendText || getDisplayName(
+                    tooltipSettings?.legendDisplayName?.value,
+                    "Role_Legend"
+                ),
                 value: task.taskType
             });
         }
 
-        tooltipDataArray.push({
-            displayName: localizationManager.getDisplayName("Role_Task"),
-            value: task.name
-        });
-
-        if (task.start && !isNaN(task.start.getDate())) {
+        if (!tooltipSettings || tooltipSettings.showTask.value) {
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_StartDate"),
+                displayName: getDisplayName(
+                    tooltipSettings?.taskDisplayName?.value,
+                    "Role_Task"
+                ),
+                value: task.name
+            });
+        }
+
+        if (task.start && !isNaN(task.start.getDate()) && (!tooltipSettings || tooltipSettings.showStartDate.value)) {
+            tooltipDataArray.push({
+                displayName: getDisplayName(
+                    tooltipSettings?.startDateDisplayName?.value,
+                    "Role_StartDate"
+                ),
                 value: formatters.startDateFormatter.format(task.start)
             });
         }
 
-        if (lodashIsEmpty(task.Milestones) && task.end && !isNaN(task.end.getDate())) {
+        if (lodashIsEmpty(task.Milestones) && task.end && !isNaN(task.end.getDate()) && (!tooltipSettings || tooltipSettings.showEndDate.value)) {
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_EndDate"),
+                displayName: getDisplayName(
+                    tooltipSettings?.endDateDisplayName?.value,
+                    "Role_EndDate"
+                ),
                 value: formatters.startDateFormatter.format(task.end)
             });
         }
 
-        if (lodashIsEmpty(task.Milestones) && task.duration && !isEndDateFilled) {
+        if (lodashIsEmpty(task.Milestones) && task.duration && !isEndDateFilled && (!tooltipSettings || tooltipSettings.showDuration.value)) {
             const durationLabel: string = DurationHelper.generateLabelForDuration(task.duration, durationUnit, localizationManager);
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_Duration"),
+                displayName: getDisplayName(
+                    tooltipSettings?.durationDisplayName?.value,
+                    "Role_Duration"
+                ),
                 value: durationLabel
             });
         }
 
-        if (task.completion) {
+        if (task.completion && (!tooltipSettings || tooltipSettings.showCompletion.value)) {
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_Completion"),
+                displayName: getDisplayName(
+                    tooltipSettings?.completionDisplayName?.value,
+                    "Role_Completion"
+                ),
                 value: formatters.completionFormatter.format(task.completion)
             });
         }
 
-        if (task.resource) {
+        if (task.resource && (!tooltipSettings || tooltipSettings.showResource.value)) {
             tooltipDataArray.push({
-                displayName: localizationManager.getDisplayName("Role_Resource"),
+                displayName: getDisplayName(
+                    tooltipSettings?.resourceDisplayName?.value,
+                    "Role_Resource"
+                ),
                 value: task.resource
             });
         }
@@ -907,27 +938,43 @@ export class Gantt implements IVisual {
         const milestones: { value: PrimitiveValue, index: number }[] = [];
         const shouldUseSettingsFromPersistProps: boolean = viewMode === powerbi.ViewMode.View || keepSettingsOnFiltering;
 
+        const cachedShapes: { [key: string]: MilestoneShape } = {};
+        const cachedColors: { [key: string]: string } = {};
+        const allShapes = [MilestoneShape.Circle, MilestoneShape.Square, MilestoneShape.Rhombus];
+
+        let prevShapeIndex = -1;
         if (milestonesCategory && milestonesCategory.values) {
             milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
             milestones.forEach((milestone) => {
+                const value = milestone.value as string;
                 const milestoneObjects = shouldUseSettingsFromPersistProps
-                    ? settingsState.getMilestoneSettings(milestone.value as string)
+                    ? settingsState.getMilestoneSettings(value)
                     : milestonesCategory.objects?.[milestone.index];
 
                 const selectionBuilder: ISelectionIdBuilder = host
                     .createSelectionIdBuilder()
                     .withCategory(milestonesCategory, milestone.index);
 
+                if (!cachedShapes[value]) {
+                    const savedShape = settingsState.getMilestoneSettings(value)?.milestones?.shapeType as (MilestoneShape | undefined);
+                    cachedShapes[value] = savedShape ?? allShapes[(prevShapeIndex + 1) % allShapes.length];
+                    prevShapeIndex++
+                }
+                if (!cachedColors[value]) {
+                    const savedColor = (settingsState.getMilestoneSettings(value)?.milestones as any)?.fill?.solid?.color;
+                    cachedColors[value] = savedColor ?? host.colorPalette.getColor(value).value;
+                }
                 const milestoneDataPoint: MilestoneDataPoint = {
-                    name: milestone.value as string,
+                    name: value,
                     identity: selectionBuilder.createSelectionId(),
                     shapeType: milestoneObjects?.milestones?.shapeType ?
-                        milestoneObjects.milestones.shapeType as string : MilestoneShape.Rhombus,
+                        milestoneObjects.milestones.shapeType as string : cachedShapes[value],
                     color: milestoneObjects?.milestones?.fill ?
-                        (milestoneObjects.milestones as any).fill.solid.color : Gantt.DefaultValues.TaskColor
+                        (milestoneObjects.milestones as any).fill.solid.color : cachedColors[value],
                 };
                 milestoneData.dataPoints.push(milestoneDataPoint);
             });
+
         }
 
         return milestoneData;
@@ -1097,7 +1144,15 @@ export class Gantt implements IVisual {
     private addTooltipInfoForCollapsedTasks(tasks: Task[], collapsedTasks: string[], formatters: GanttChartFormatters, durationUnit: DurationUnit, isEndDateFilled: boolean) {
         tasks.forEach((task: Task) => {
             if (!task.children || collapsedTasks.includes(task.name)) {
-                task.tooltipInfo = Gantt.getTooltipInfo({ task, formatters, durationUnit, localizationManager: this.localizationManager, isEndDateFilled, roleLegendText: this.formattingSettings.legend.general.titleText.value });
+                task.tooltipInfo = Gantt.getTooltipInfo({
+                    task,
+                    formatters,
+                    durationUnit,
+                    localizationManager: this.localizationManager,
+                    isEndDateFilled,
+                    roleLegendText: this.formattingSettings.legend.general.titleText.value,
+                    tooltipSettings: this.formattingSettings.tooltipConfig
+                });
                 if (task.Milestones) {
                     task.Milestones.forEach((milestone) => {
                         const dateFormatted = formatters.startDateFormatter.format(task.start);
@@ -1346,6 +1401,14 @@ export class Gantt implements IVisual {
         const taskKeys: string[] = Object.keys(groupedTasks);
 
         const sortingFunction = (a: Task, b: Task) => {
+            if (!a.start || !a.end) {
+                // so nulls are pushed to the end
+                return -1;
+            }
+            if (!b.start || !b.end) {
+                // so nulls are pushed to the end
+                return 1;
+            }
             if (a.start.getTime() === b.start.getTime()) {
                 return b.end.getTime() - a.end.getTime();
             }
@@ -1858,7 +1921,7 @@ export class Gantt implements IVisual {
 
         this.updateSvgBackgroundColor();
         this.renderTasks(groupedTasks, objects);
-        this.updateTaskLabels(groupedTasks, settings.taskLabels.general.width.value);
+        this.updateTaskLabels(groupedTasks, settings.taskLabels.taskLabelsGroup.general.width.value);
         this.updateElementsPositions(this.margin);
         this.createMilestoneLine(groupedTasks);
 
@@ -2021,7 +2084,7 @@ export class Gantt implements IVisual {
         });
 
         const fullResourceLabelMargin = totalRows * this.getResourceLabelTopMargin();
-        let widthBeforeConversion = this.margin.left + settings.taskLabels.general.width.value + axisLength;
+        let widthBeforeConversion = this.margin.left + settings.taskLabels.taskLabelsGroup.general.width.value + axisLength;
 
         if (settings.taskResource.show.value && settings.taskResource.position.value.value === ResourceLabelPosition.Right) {
             widthBeforeConversion += Gantt.DefaultValues.ResourceWidth;
@@ -2385,7 +2448,7 @@ export class Gantt implements IVisual {
             })
             .attr("y", (task: GroupedTask) => {
                 const groupHeight = ((task.layers.size || 1) - 1) * taskConfigHeight;
-                const res = (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.formattingSettings.taskLabels.general.fontSize.value) / 2 + groupHeight;
+                const res = (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.formattingSettings.taskLabels.taskLabelsGroup.general.fontSize.value) / 2 + groupHeight;
 
                 return res;
             })
@@ -2398,14 +2461,89 @@ export class Gantt implements IVisual {
             .remove();
     }
 
+    static wrapText(
+        selection: d3Selection<SVGTextElement, GroupedTask, any, any>,
+        maxWidth: number,
+        maxHeight: number = 2
+    ): void {
+        selection.each(function (task: GroupedTask) {
+            const textElement = d3Select(this);
+            const text = task.name;
+            const computedStyle = window.getComputedStyle(this);
+            const fontSize = parseFloat(computedStyle.fontSize);
+            const fontFamily = computedStyle.fontFamily;
+            const maxLines = Math.floor(maxHeight * 0.8 / (fontSize * 1.2)) || 1;
+
+            textElement.selectAll('tspan').remove();
+            textElement.text('');
+
+            const textProps: TextProperties = {
+                fontFamily: fontFamily,
+                fontSize: computedStyle.fontSize,
+                text: text
+            };
+
+            const words = text.split(/\s+/);
+            const lineHeight = fontSize * 1.2;
+            let line: string[] = [];
+            let lineNumber = 0;
+
+            for (let i = 0; i < words.length; i++) {
+                line.push(words[i]);
+                textProps.text = line.join(' ');
+                const lineWidth = textMeasurementService.measureSvgTextWidth(textProps);
+
+                if (lineWidth > maxWidth && line.length > 1) {
+                    line.pop();
+                    const lineText = line.join(' ');
+
+                    if (lineNumber < maxLines - 1) {
+                        textProps.text = lineText;
+                        const truncatedText = textMeasurementService.getTailoredTextOrDefault(textProps, maxWidth);
+                        textElement.append('tspan')
+                            .attr('x', textElement.attr('x'))
+                            .attr('dy', lineNumber === 0 ? 0 : lineHeight)
+                            .text(truncatedText);
+
+                        line = [words[i]];
+                        lineNumber++;
+                    } else {
+                        textProps.text = lineText + ' ' + words.slice(i).join(' ');
+                        const truncatedText = textMeasurementService.getTailoredTextOrDefault(textProps, maxWidth);
+                        textElement.append('tspan')
+                            .attr('x', textElement.attr('x'))
+                            .attr('dy', lineNumber === 0 ? 0 : lineHeight)
+                            .text(truncatedText);
+                        textElement.selectChild("tspan").attr('dy', -((lineNumber) * lineHeight) / 2);
+                        return;
+                    }
+                }
+            }
+
+            if (lineNumber < maxLines && line.length > 0) {
+                textProps.text = line.join(' ');
+                const finalWidth = textMeasurementService.measureSvgTextWidth(textProps);
+                const finalText = finalWidth > maxWidth
+                    ? textMeasurementService.getTailoredTextOrDefault(textProps, maxWidth)
+                    : textProps.text;
+                textElement.append('tspan')
+                    .attr('x', textElement.attr('x'))
+                    .attr('dy', lineNumber === 0 ? 0 : lineHeight)
+                    .text(finalText);
+                textElement.selectChild("tspan").attr('dy', -((lineNumber) * lineHeight) / 2);
+            }
+        });
+    }
+
     private renderClickableAreas(axisLabelGroup: d3Selection<SVGGElement, GroupedTask, any, any>, width: number, taskConfigHeight: number) {
         const clickableArea = axisLabelGroup
             .append("g")
             .classed(Gantt.ClickableArea.className, true)
             .merge(axisLabelGroup);
 
-        const { general, nestedLabels } = this.formattingSettings.taskLabels;
+        const { general, nestedLabels } = this.formattingSettings.taskLabels.taskLabelsGroup;
         const useCustom: boolean = nestedLabels.customize.value;
+        const height = this.formattingSettings.taskConfig.height.value || DefaultChartLineHeight;
 
         clickableArea
             .append("text")
@@ -2470,7 +2608,13 @@ export class Gantt implements IVisual {
                     : general.fill.value.value;
             })
             .text((task: GroupedTask) => task.name)
-            .call(AxisHelper.LabelLayoutStrategy.clip, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis)
+            .call((selection) => {
+                if (this.formattingSettings.taskLabels.generalLabelGroup.shouldWrapText.value) {
+                    Gantt.wrapText(selection, width - Gantt.AxisLabelClip, height);
+                } else {
+                    AxisHelper.LabelLayoutStrategy.clip(selection, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis);
+                }
+            })
             .append("title")
             .text((task: GroupedTask) => task.name);
 
@@ -2510,7 +2654,7 @@ export class Gantt implements IVisual {
     }
 
     private renderTaskColumnsRightLine() {
-        const taskLabelsWidth: number = this.formattingSettings.taskLabels.general.width.value;
+        const taskLabelsWidth: number = this.formattingSettings.taskLabels.taskLabelsGroup.general.width.value;
         const backgroundSettings: BaseBackroundSettings = this.formattingSettings.background.categoryLabels;
 
         const getGanttSVGRectHeight = (element: SVGRectElement): number => {
@@ -2561,7 +2705,7 @@ export class Gantt implements IVisual {
 
         if (this.viewModel.isParentFilled) {
             const categoryLabelsWidth: number = Gantt.CollapseAllBackgroundWidthPadding + (taskLabelShow
-                ? this.formattingSettings.taskLabels.general.width.value
+                ? this.formattingSettings.taskLabels.taskLabelsGroup.general.width.value
                 : Gantt.GroupLabelSize);
 
             const backgroundSettings: BaseBackroundSettings = this.formattingSettings.background.dateType;
@@ -2611,9 +2755,9 @@ export class Gantt implements IVisual {
             }
 
             if (taskLabelShow) {
-                const settings = this.formattingSettings.taskLabels.expandCollapse.customize.value
-                    ? this.formattingSettings.taskLabels.expandCollapse
-                    : this.formattingSettings.taskLabels.general;
+                const settings = this.formattingSettings.taskLabels.taskLabelsGroup.expandCollapse.customize.value
+                    ? this.formattingSettings.taskLabels.taskLabelsGroup.expandCollapse
+                    : this.formattingSettings.taskLabels.taskLabelsGroup.general;
 
                 const text: string = this.collapsedTasks.length
                     ? this.localizationManager.getDisplayName("Visual_Expand_All")
@@ -2630,7 +2774,7 @@ export class Gantt implements IVisual {
                     .style("text-decoration", settings.underline.value ? "underline" : "none")
                     .style("fill", this.colorHelper.getHighContrastColor("foreground", settings.fill.value.value))
                     .text(text)
-                    .call(AxisHelper.LabelLayoutStrategy.clip, this.formattingSettings.taskLabels.general.width.value - Gantt.GroupLabelSize - Gantt.CollapseAllBackgroundWidthPadding, textMeasurementService.svgEllipsis)
+                    .call(AxisHelper.LabelLayoutStrategy.clip, this.formattingSettings.taskLabels.taskLabelsGroup.general.width.value - Gantt.GroupLabelSize - Gantt.CollapseAllBackgroundWidthPadding, textMeasurementService.svgEllipsis)
                     .attr("aria-label", this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
             }
         }
@@ -3461,7 +3605,7 @@ export class Gantt implements IVisual {
      */
     private getTaskLabelCoordinateY(taskIndex: number): number {
         const settings = this.formattingSettings;
-        const fontSize: number = + settings.taskLabels.general.fontSize.value;
+        const fontSize: number = + settings.taskLabels.taskLabelsGroup.general.fontSize.value;
         const taskConfigHeight = settings.taskConfig.height.value || DefaultChartLineHeight;
         const taskYCoordinate = taskConfigHeight * taskIndex;
         const barHeight = Gantt.getBarHeight(taskConfigHeight);
@@ -3628,12 +3772,12 @@ export class Gantt implements IVisual {
             };
             line.push(lineOptions);
         });
-
         this.renderMilestoneDottedLines(line, timestamp, todayColor);
     }
 
     private renderMilestoneDottedLines(line: Line[], timestamp: number, todayColor: string) {
         const lineSettings: LineContainerItem = this.formattingSettings.milestones.lineGroup;
+        const shouldRenderTodayLine: boolean = this.formattingSettings.dateType.showTodayLine.value;
         if (lineSettings.showLines.value) {
             const chartLineSelection = this.chartGroup
                 .selectAll<SVGLineElement, Line>(Gantt.ChartLine.selectorName)
@@ -3656,7 +3800,14 @@ export class Gantt implements IVisual {
                     const color: string = line.x1 === Gantt.TimeScale(timestamp) ? todayColor : lineSettings.lineColor.value.value;
                     return this.colorHelper.getHighContrastColor("foreground", color);
                 })
-                .style("stroke-opacity", lineSettings.lineOpacity.value / 100);
+                .style("stroke-opacity", lineSettings.lineOpacity.value / 100)
+                .style("display", (line: Line) => {
+                    if (line.x1 == Gantt.TimeScale(timestamp) && !shouldRenderTodayLine) {
+                        return "none";
+                    } else {
+                        return "block";
+                    }
+                });
 
             switch (<MilestoneLineType>lineSettings.lineType.value.value) {
                 case MilestoneLineType.Solid:
@@ -3705,7 +3856,7 @@ export class Gantt implements IVisual {
         const taskSettings: TaskLabelsCardSettings = this.formattingSettings.taskLabels;
         const taskLabelShow: boolean = taskSettings.show.value;
         const taskLabelsWidth: number = taskLabelShow
-            ? taskSettings.general.width.value
+            ? taskSettings.taskLabelsGroup.general.width.value
             : 0;
 
         const translateX: number = taskLabelsWidth + margin.left + Gantt.SubtasksLeftMargin;

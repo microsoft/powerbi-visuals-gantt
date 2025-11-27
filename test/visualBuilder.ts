@@ -116,6 +116,14 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
         return Array.from(this.taskLines.querySelectorAll("g.label"));
     }
 
+    public get taskLabelTextContent(): string[] {
+        return this.taskLabels
+            .map(label => {
+                const title = label.querySelector("title");
+                return title?.textContent || "";
+            });
+    }
+
     public get taskLabelsText(): SVGTextElement[] {
         return this.taskLabels.map((element) => element.querySelector("text")!);
     }

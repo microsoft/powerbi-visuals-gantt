@@ -101,6 +101,8 @@ export class GanttChartSettingsModel extends Model {
                 }
             }
         });
+
+        this.dateType.todayColor.visible = this.dateType.showTodayLine.value;
     }
 
     public parse() {

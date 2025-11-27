@@ -550,6 +550,11 @@
                         "bool": true
                     }
                 },
+                "shouldWrapText": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "fill": {
                     "type": {
                         "fill": {
@@ -706,6 +711,76 @@
                     "type": {
                         "text": true
                     }
+                },
+                "showLegend": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "legendDisplayName": {
+                    "type": {
+                        "text": true
+                    }
+                },
+                "showTask": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "taskDisplayName": {
+                    "type": {
+                        "text": true
+                    }
+                },
+                "showStartDate": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "startDateDisplayName": {
+                    "type": {
+                        "text": true
+                    }
+                },
+                "showEndDate": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "endDateDisplayName": {
+                    "type": {
+                        "text": true
+                    }
+                },
+                "showDuration": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "durationDisplayName": {
+                    "type": {
+                        "text": true
+                    }
+                },
+                "showCompletion": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "completionDisplayName": {
+                    "type": {
+                        "text": true
+                    }
+                },
+                "showResource": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "resourceDisplayName": {
+                    "type": {
+                        "text": true
+                    }
                 }
             }
         },
@@ -804,6 +879,11 @@
                 "type": {
                     "type": {
                         "text": true
+                    }
+                },
+                "showTodayLine": {
+                    "type": {
+                        "bool": true
                     }
                 },
                 "todayColor": {
