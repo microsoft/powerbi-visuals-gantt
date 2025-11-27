@@ -1,6 +1,6 @@
 ## 3.4.3
 ### Visual changes
-* Added setting for empty label text
+* Added setting to customize legend names for unnamed categories
 * Added setting to toggle today line visibility
 * Added setting to wrap label text
 * Added setting for tooltip data
