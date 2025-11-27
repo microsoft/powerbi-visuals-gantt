@@ -337,11 +337,6 @@
                         "bool": true
                     }
                 },
-                "shouldWrapText": {
-                    "type": {
-                        "bool": true
-                    }
-                },
                 "durationUnit": {
                     "type": {
                         "text": true
@@ -551,6 +546,11 @@
         "taskLabels": {
             "properties": {
                 "show": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "shouldWrapText": {
                     "type": {
                         "bool": true
                     }

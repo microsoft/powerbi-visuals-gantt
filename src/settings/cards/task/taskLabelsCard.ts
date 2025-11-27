@@ -69,9 +69,18 @@ export class GeneralLabelsGroup extends BaseLabelsItem {
         }
     });
 
-    constructor(name: string, displayNameKey: string,){
+    public shouldWrapText = new ToggleSwitch({
+        name: "shouldWrapText",
+        displayNameKey: "Visual_TextWrap",
+        value: false
+    });
+
+
+
+    constructor(name: string, displayNameKey: string,) {
         super(name, displayNameKey);
-        this.slices = [this.fill, this.font, this.width];
+
+        this.slices = [this.shouldWrapText , this.fill, this.font, this.width];
     }
 }
 
@@ -101,6 +110,7 @@ export class TaskLabelsCardSettings extends Card {
     public name: string = "taskLabels";
     public displayNameKey: string = "Visual_CategoryLabels";
 
+
     public setHighContrastMode(colorHelper: ColorHelper): void {
         this.container.containerItems.forEach((item: BaseLabelsItem) => {
             item.fill.value.value = colorHelper.getHighContrastColor("foreground", item.fill.value.value);
@@ -110,7 +120,7 @@ export class TaskLabelsCardSettings extends Card {
 
     public onPreProcess(): void {
         this.container.containerItems?.forEach((item: BaseLabelsItem) => {
-            if (item.onPreProcess){
+            if (item.onPreProcess) {
                 item.onPreProcess();
             }
         });

@@ -2609,7 +2609,7 @@ export class Gantt implements IVisual {
             })
             .text((task: GroupedTask) => task.name)
             .call((selection) => {
-                if (this.formattingSettings.general.shouldWrapText.value) {
+                if (this.formattingSettings.taskLabels.general.shouldWrapText.value) {
                     Gantt.wrapText(selection, width - Gantt.AxisLabelClip, height);
                 } else {
                     AxisHelper.LabelLayoutStrategy.clip(selection, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis);
