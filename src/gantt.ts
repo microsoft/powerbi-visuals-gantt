@@ -494,7 +494,7 @@ export class Gantt implements IVisual {
                 const taskLabelSetting = this.formattingSettings.taskLabels;
                 const taskLabelShow: boolean = taskLabelSetting.show.value;
                 const taskLabelsWidth: number = taskLabelShow
-                    ? taskLabelSetting.general.width.value
+                    ? taskLabelSetting.taskLabelsGroup.general.width.value
                     : 0;
 
                 const scrollTop: number = <number>event.target.scrollTop;
@@ -525,7 +525,7 @@ export class Gantt implements IVisual {
                 .on("drag", function (event: D3DragEvent<SVGRectElement, unknown, d3SubjectPosition>, datum: { initialX: number; initialY: number; }) {
                     const initialX = datum.initialX;
                     const dx = event.x - initialX;
-                    const currentWidth = self.formattingSettings.taskLabels.general.width.value;
+                    const currentWidth = self.formattingSettings.taskLabels.taskLabelsGroup.general.width.value;
                     const newWidth = Math.max(currentWidth + dx, TaskLabelsCardSettings.MinWidth);
 
                     const ganttDiv = self.ganttDiv.node();
@@ -562,7 +562,7 @@ export class Gantt implements IVisual {
                 })
                 .on("end", (event: D3DragEvent<SVGRectElement, unknown, d3SubjectPosition>, datum: { initialX: number; initialY: number; }) => {
                     const dx = event.x - datum.initialX;
-                    const currentWidth = this.formattingSettings.taskLabels.general.width.value;
+                    const currentWidth = this.formattingSettings.taskLabels.taskLabelsGroup.general.width.value;
                     const newWidth = Math.max(currentWidth + dx, TaskLabelsCardSettings.MinWidth);
 
                     this.host.persistProperties({
@@ -1921,7 +1921,7 @@ export class Gantt implements IVisual {
 
         this.updateSvgBackgroundColor();
         this.renderTasks(groupedTasks, objects);
-        this.updateTaskLabels(groupedTasks, settings.taskLabels.general.width.value);
+        this.updateTaskLabels(groupedTasks, settings.taskLabels.taskLabelsGroup.general.width.value);
         this.updateElementsPositions(this.margin);
         this.createMilestoneLine(groupedTasks);
 
@@ -2084,7 +2084,7 @@ export class Gantt implements IVisual {
         });
 
         const fullResourceLabelMargin = totalRows * this.getResourceLabelTopMargin();
-        let widthBeforeConversion = this.margin.left + settings.taskLabels.general.width.value + axisLength;
+        let widthBeforeConversion = this.margin.left + settings.taskLabels.taskLabelsGroup.general.width.value + axisLength;
 
         if (settings.taskResource.show.value && settings.taskResource.position.value.value === ResourceLabelPosition.Right) {
             widthBeforeConversion += Gantt.DefaultValues.ResourceWidth;
@@ -2448,7 +2448,7 @@ export class Gantt implements IVisual {
             })
             .attr("y", (task: GroupedTask) => {
                 const groupHeight = ((task.layers.size || 1) - 1) * taskConfigHeight;
-                const res = (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.formattingSettings.taskLabels.general.fontSize.value) / 2 + groupHeight;
+                const res = (task.index + 1) * this.getResourceLabelTopMargin() + (taskConfigHeight - this.formattingSettings.taskLabels.taskLabelsGroup.general.fontSize.value) / 2 + groupHeight;
 
                 return res;
             })
@@ -2541,7 +2541,7 @@ export class Gantt implements IVisual {
             .classed(Gantt.ClickableArea.className, true)
             .merge(axisLabelGroup);
 
-        const { general, nestedLabels } = this.formattingSettings.taskLabels;
+        const { general, nestedLabels } = this.formattingSettings.taskLabels.taskLabelsGroup;
         const useCustom: boolean = nestedLabels.customize.value;
         const height = this.formattingSettings.taskConfig.height.value || DefaultChartLineHeight;
 
@@ -2609,7 +2609,7 @@ export class Gantt implements IVisual {
             })
             .text((task: GroupedTask) => task.name)
             .call((selection) => {
-                if (this.formattingSettings.taskLabels.general.shouldWrapText.value) {
+                if (this.formattingSettings.taskLabels.generalLabelGroup.shouldWrapText.value) {
                     Gantt.wrapText(selection, width - Gantt.AxisLabelClip, height);
                 } else {
                     AxisHelper.LabelLayoutStrategy.clip(selection, width - Gantt.AxisLabelClip, textMeasurementService.svgEllipsis);
@@ -2654,7 +2654,7 @@ export class Gantt implements IVisual {
     }
 
     private renderTaskColumnsRightLine() {
-        const taskLabelsWidth: number = this.formattingSettings.taskLabels.general.width.value;
+        const taskLabelsWidth: number = this.formattingSettings.taskLabels.taskLabelsGroup.general.width.value;
         const backgroundSettings: BaseBackroundSettings = this.formattingSettings.background.categoryLabels;
 
         const getGanttSVGRectHeight = (element: SVGRectElement): number => {
@@ -2705,7 +2705,7 @@ export class Gantt implements IVisual {
 
         if (this.viewModel.isParentFilled) {
             const categoryLabelsWidth: number = Gantt.CollapseAllBackgroundWidthPadding + (taskLabelShow
-                ? this.formattingSettings.taskLabels.general.width.value
+                ? this.formattingSettings.taskLabels.taskLabelsGroup.general.width.value
                 : Gantt.GroupLabelSize);
 
             const backgroundSettings: BaseBackroundSettings = this.formattingSettings.background.dateType;
@@ -2755,9 +2755,9 @@ export class Gantt implements IVisual {
             }
 
             if (taskLabelShow) {
-                const settings = this.formattingSettings.taskLabels.expandCollapse.customize.value
-                    ? this.formattingSettings.taskLabels.expandCollapse
-                    : this.formattingSettings.taskLabels.general;
+                const settings = this.formattingSettings.taskLabels.taskLabelsGroup.expandCollapse.customize.value
+                    ? this.formattingSettings.taskLabels.taskLabelsGroup.expandCollapse
+                    : this.formattingSettings.taskLabels.taskLabelsGroup.general;
 
                 const text: string = this.collapsedTasks.length
                     ? this.localizationManager.getDisplayName("Visual_Expand_All")
@@ -2774,7 +2774,7 @@ export class Gantt implements IVisual {
                     .style("text-decoration", settings.underline.value ? "underline" : "none")
                     .style("fill", this.colorHelper.getHighContrastColor("foreground", settings.fill.value.value))
                     .text(text)
-                    .call(AxisHelper.LabelLayoutStrategy.clip, this.formattingSettings.taskLabels.general.width.value - Gantt.GroupLabelSize - Gantt.CollapseAllBackgroundWidthPadding, textMeasurementService.svgEllipsis)
+                    .call(AxisHelper.LabelLayoutStrategy.clip, this.formattingSettings.taskLabels.taskLabelsGroup.general.width.value - Gantt.GroupLabelSize - Gantt.CollapseAllBackgroundWidthPadding, textMeasurementService.svgEllipsis)
                     .attr("aria-label", this.collapsedTasks.length ? this.localizationManager.getDisplayName("Visual_Expand_All") : this.localizationManager.getDisplayName("Visual_Collapse_All"));
             }
         }
@@ -3605,7 +3605,7 @@ export class Gantt implements IVisual {
      */
     private getTaskLabelCoordinateY(taskIndex: number): number {
         const settings = this.formattingSettings;
-        const fontSize: number = + settings.taskLabels.general.fontSize.value;
+        const fontSize: number = + settings.taskLabels.taskLabelsGroup.general.fontSize.value;
         const taskConfigHeight = settings.taskConfig.height.value || DefaultChartLineHeight;
         const taskYCoordinate = taskConfigHeight * taskIndex;
         const barHeight = Gantt.getBarHeight(taskConfigHeight);
@@ -3856,7 +3856,7 @@ export class Gantt implements IVisual {
         const taskSettings: TaskLabelsCardSettings = this.formattingSettings.taskLabels;
         const taskLabelShow: boolean = taskSettings.show.value;
         const taskLabelsWidth: number = taskLabelShow
-            ? taskSettings.general.width.value
+            ? taskSettings.taskLabelsGroup.general.width.value
             : 0;
 
         const translateX: number = taskLabelsWidth + margin.left + Gantt.SubtasksLeftMargin;

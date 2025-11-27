@@ -3,6 +3,7 @@ import ValidatorType = powerbi.visuals.ValidatorType;
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import Card = formattingSettings.SimpleCard;
+import CompositeCard = formattingSettings.CompositeCard
 import Container = formattingSettings.Container;
 import ToggleSwitch = formattingSettings.ToggleSwitch;
 import NumUpDown = formattingSettings.NumUpDown;
@@ -69,22 +70,14 @@ export class GeneralLabelsGroup extends BaseLabelsItem {
         }
     });
 
-    public shouldWrapText = new ToggleSwitch({
-        name: "shouldWrapText",
-        displayNameKey: "Visual_TextWrap",
-        value: false
-    });
-
-
-
     constructor(name: string, displayNameKey: string,) {
         super(name, displayNameKey);
 
-        this.slices = [this.shouldWrapText , this.fill, this.font, this.width];
+        this.slices = [this.fill, this.font, this.width];
     }
 }
 
-export class TaskLabelsCardSettings extends Card {
+export class TaskLabelsCardSettings extends CompositeCard {
     public static DefaultWidth: number = 110;
     public static MinWidth: number = 45;
 
@@ -93,10 +86,41 @@ export class TaskLabelsCardSettings extends Card {
         displayNameKey: "Visual_Show",
         value: true
     });
+    public generalLabelGroup = new GeneralLabelGroup();
+    public taskLabelsGroup = new TaskLabelSettings();
+
+    public topLevelSlice = this.show;
+    public name: string = "taskLabels";
+    public displayNameKey: string = "Visual_CategoryLabels";
+
+    public groups: formattingSettings.Group[] = [
+        this.generalLabelGroup,
+        this.taskLabelsGroup,
+    ];
+
+}
+
+export class GeneralLabelGroup extends Card {
+    public name = "generalLabelGroup"
+    public displayNameKey: string = "Visual_General";
+    public shouldWrapText = new ToggleSwitch({
+        name: "shouldWrapText",
+        displayNameKey: "Visual_TextWrap",
+        value: false
+    });
+
+    public slices = [this.shouldWrapText];
+}
+
+export class TaskLabelSettings extends Card {
+    public name: string = "taskLabelsGroup";
+    public displayNameKey: string = "Visual_CategoryLabels";
 
     public general = new GeneralLabelsGroup("taskLabelsGeneralGroup", "Visual_All");
     public expandCollapse = new ExpandCollapseGroup("expandCollapseGroup", "Visual_ExpandCollapse", "ExpandCollapse");
     public nestedLabels = new NestedLabelsGroup("nestedLabelsGroup", "Visual_NestedLabels", "NestedLabel");
+
+
 
     public container?: Container = new Container({
         containerItems: [
@@ -105,11 +129,6 @@ export class TaskLabelsCardSettings extends Card {
             this.expandCollapse,
         ]
     });
-
-    public topLevelSlice = this.show;
-    public name: string = "taskLabels";
-    public displayNameKey: string = "Visual_CategoryLabels";
-
 
     public setHighContrastMode(colorHelper: ColorHelper): void {
         this.container.containerItems.forEach((item: BaseLabelsItem) => {
@@ -125,4 +144,5 @@ export class TaskLabelsCardSettings extends Card {
             }
         });
     }
+
 }
