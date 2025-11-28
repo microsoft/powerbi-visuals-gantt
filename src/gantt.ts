@@ -940,6 +940,7 @@ export class Gantt implements IVisual {
 
         const cachedShapes: { [key: string]: MilestoneShape } = {};
         const cachedColors: { [key: string]: string } = {};
+
         const allShapes = [MilestoneShape.Circle, MilestoneShape.Square, MilestoneShape.Rhombus];
 
         let prevShapeIndex = -1;
@@ -1651,14 +1652,15 @@ export class Gantt implements IVisual {
             isResourcesFilled: boolean = dataView.metadata.columns.findIndex(col => Gantt.hasRole(col, GanttRole.Resource)) !== -1;
 
         const legendData: LegendData = this.createLegend(legendTypes, !isDurationFilled && !isEndDateFilled);
-        const milestoneData: MilestoneData = Gantt.createMilestones(dataView, this.host, viewMode, this.settingsService.state, this.formattingSettings.milestones.generalGroup.keepSettingsOnFiltering.value);
-
         const taskColor: string = (legendData.dataPoints?.length <= 1) || !isDurationFilled
             ? this.formattingSettings.taskConfig.fill.value.value
             : null;
 
         const tasks: Task[] = this.createTasks({ dataView, taskTypes: legendTypes, formatters, taskColor, isEndDateFilled, hasHighlights: this.hasHighlights, sortingOptions });
 
+        // resetting color palette to initial state
+        this.host.colorPalette.reset();
+        const milestoneData: MilestoneData = Gantt.createMilestones(dataView, this.host, viewMode, this.settingsService.state, this.formattingSettings.milestones.generalGroup.keepSettingsOnFiltering.value);
         legendData.dataPoints = legendData?.dataPoints?.map((legendItem) => {
             legendItem.label = legendItem.label || this.formattingSettings.legend.general.emptyLabelText.value;
             return legendItem;
