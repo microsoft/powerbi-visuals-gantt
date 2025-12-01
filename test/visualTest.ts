@@ -1286,13 +1286,12 @@ describe("Gantt", () => {
                     fixDataViewDateValuesAggregation(dataView);
 
                     dataView.metadata.objects = {
-                        general: {
-                            shouldWrapText: true
-                        },
+
                         taskConfig: {
                             height: 90
                         },
                         taskLabels: {
+                            shouldWrapText: true,
                             show: true,
                             width: 200
                         }
@@ -1302,9 +1301,7 @@ describe("Gantt", () => {
                         const taskLabelsText = visualBuilder.taskLabelsText.filter(
                             (el: SVGTextElement) => el.textContent && el.textContent.trim() !== ""
                         );
-
                         expect(taskLabelsText.length).toBeGreaterThan(0);
-
                         let hasWrappedText = false;
                         taskLabelsText.forEach((textElement: SVGTextElement) => {
                             const tspans = textElement.querySelectorAll("tspan");
@@ -2627,6 +2624,355 @@ describe("Gantt", () => {
                 });
             });
 
+        });
+
+        describe("SortTasks", () => {
+            describe("null start date handling", () => {
+                it("should push tasks with null start dates to the end", () => {
+                    const task1: Task = {
+                        name: "Task 1",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-05"),
+                        duration: 5,
+                    } as Task;
+
+                    const task2: Task = {
+                        name: "Task 2",
+                        start: new Date("2024-01-15"),
+                        end: null as any,
+                        duration: 5,
+                    } as Task;
+
+                    const task3: Task = {
+                        name: "Task 3",
+                        start: new Date("2024-01-15"),
+                        end: new Date("2024-01-20"),
+                        duration: 5,
+                    } as Task;
+
+                    const groupedTasks = {
+                        "group1": [task2, task3, task1]
+                    };
+
+                    Gantt.SortTasks(groupedTasks);
+
+                    expect(groupedTasks["group1"][0].name).toBe("Task 1");
+                    expect(groupedTasks["group1"][1].name).toBe("Task 3");
+                    expect(groupedTasks["group1"][2].name).toBe("Task 2");
+                });
+
+                it("should treat tasks with both null start dates as equal", () => {
+                    const task1: Task = {
+                        name: "Task 1",
+                        start: null as any,
+                        end: new Date("2024-01-05"),
+                        duration: 5,
+                    } as Task;
+
+                    const task2: Task = {
+                        name: "Task 2",
+                        start: null as any,
+                        end: new Date("2024-01-10"),
+                        duration: 5,
+                    } as Task;
+
+                    const groupedTasks = {
+                        "group1": [task1, task2]
+                    };
+
+                    Gantt.SortTasks(groupedTasks);
+
+                    // Order should remain unchanged when both are null
+                    expect(groupedTasks["group1"][0].name).toBe("Task 1");
+                    expect(groupedTasks["group1"][1].name).toBe("Task 2");
+                });
+            });
+
+            describe("start date sorting", () => {
+                it("should sort tasks by start date in ascending order", () => {
+                    const task1: Task = {
+                        name: "Task 1",
+                        start: new Date("2024-01-15"),
+                        end: new Date("2024-01-20"),
+                        duration: 5,
+                    } as Task;
+
+                    const task2: Task = {
+                        name: "Task 2",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-05"),
+                        duration: 5,
+                    } as Task;
+
+                    const task3: Task = {
+                        name: "Task 3",
+                        start: new Date("2024-01-10"),
+                        end: new Date("2024-01-15"),
+                        duration: 5,
+                    } as Task;
+
+                    const groupedTasks = {
+                        "group1": [task1, task2, task3]
+                    };
+
+                    Gantt.SortTasks(groupedTasks);
+
+                    expect(groupedTasks["group1"][0].name).toBe("Task 2");
+                    expect(groupedTasks["group1"][1].name).toBe("Task 3");
+                    expect(groupedTasks["group1"][2].name).toBe("Task 1");
+                });
+            });
+
+            describe("end date sorting when start dates are equal", () => {
+                it("should sort by end date descending (longer tasks first) when start dates are equal", () => {
+                    const task1: Task = {
+                        name: "Task 1 (short)",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-03"),
+                        duration: 2,
+                    } as Task;
+
+                    const task2: Task = {
+                        name: "Task 2 (long)",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-10"),
+                        duration: 9,
+                    } as Task;
+
+                    const task3: Task = {
+                        name: "Task 3 (medium)",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-05"),
+                        duration: 4,
+                    } as Task;
+
+                    const groupedTasks = {
+                        "group1": [task1, task2, task3]
+                    };
+
+                    Gantt.SortTasks(groupedTasks);
+
+                    expect(groupedTasks["group1"][0].name).toBe("Task 2 (long)");
+                    expect(groupedTasks["group1"][1].name).toBe("Task 3 (medium)");
+                    expect(groupedTasks["group1"][2].name).toBe("Task 1 (short)");
+                });
+
+                it("should push tasks with null end dates to the end when start dates are equal", () => {
+                    const task1: Task = {
+                        name: "Task 1",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-05"),
+                        duration: 5,
+                    } as Task;
+
+                    const task2: Task = {
+                        name: "Task 2",
+                        start: new Date("2024-01-01"),
+                        end: null as any,
+                        duration: 5,
+                    } as Task;
+
+                    const task3: Task = {
+                        name: "Task 3",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-10"),
+                        duration: 10,
+                    } as Task;
+
+                    const groupedTasks = {
+                        "group1": [task2, task1, task3]
+                    };
+
+                    Gantt.SortTasks(groupedTasks);
+
+                    expect(groupedTasks["group1"][0].name).toBe("Task 3");
+                    expect(groupedTasks["group1"][1].name).toBe("Task 1");
+                    expect(groupedTasks["group1"][2].name).toBe("Task 2");
+                });
+
+                it("should treat tasks with both null end dates as equal when start dates are equal", () => {
+                    const task1: Task = {
+                        name: "Task 1",
+                        start: new Date("2024-01-01"),
+                        end: null as any,
+                        duration: 5,
+                    } as Task;
+
+                    const task2: Task = {
+                        name: "Task 2",
+                        start: new Date("2024-01-01"),
+                        end: null as any,
+                        duration: 5,
+                    } as Task;
+
+                    const groupedTasks = {
+                        "group1": [task1, task2]
+                    };
+
+                    Gantt.SortTasks(groupedTasks);
+
+                    // Order should remain unchanged when both are null
+                    expect(groupedTasks["group1"][0].name).toBe("Task 1");
+                    expect(groupedTasks["group1"][1].name).toBe("Task 2");
+                });
+            });
+
+            describe("complex sorting scenarios", () => {
+                it("should handle mixed null and non-null dates correctly", () => {
+                    const task1: Task = {
+                        name: "Task 1 (null start)",
+                        start: null as any,
+                        end: new Date("2024-01-05"),
+                        duration: 5,
+                    } as Task;
+
+                    const task2: Task = {
+                        name: "Task 2 (early)",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-03"),
+                        duration: 2,
+                    } as Task;
+
+                    const task3: Task = {
+                        name: "Task 3 (late, long)",
+                        start: new Date("2024-01-10"),
+                        end: new Date("2024-01-20"),
+                        duration: 10,
+                    } as Task;
+
+                    const task4: Task = {
+                        name: "Task 4 (same as 2, longer)",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-10"),
+                        duration: 9,
+                    } as Task;
+
+                    const groupedTasks = {
+                        "group1": [task1, task3, task2, task4]
+                    };
+
+                    Gantt.SortTasks(groupedTasks);
+
+                    expect(groupedTasks["group1"][0].name).toBe("Task 4 (same as 2, longer)");
+                    expect(groupedTasks["group1"][1].name).toBe("Task 2 (early)");
+                    expect(groupedTasks["group1"][2].name).toBe("Task 3 (late, long)");
+                    expect(groupedTasks["group1"][3].name).toBe("Task 1 (null start)");
+                });
+            });
+
+            describe("children sorting", () => {
+                it("should sort children tasks when parent has children", () => {
+                    const child1: Task = {
+                        name: "Child 1",
+                        start: new Date("2024-01-15"),
+                        end: new Date("2024-01-20"),
+                        duration: 5,
+                    } as Task;
+
+                    const child2: Task = {
+                        name: "Child 2",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-05"),
+                        duration: 5,
+                    } as Task;
+
+                    const parent: Task = {
+                        name: "Parent",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-20"),
+                        duration: 20,
+                        children: [child1, child2],
+                    } as Task;
+
+                    const groupedTasks = {
+                        "group1": [parent]
+                    };
+
+                    Gantt.SortTasks(groupedTasks);
+
+                    expect(parent.children[0].name).toBe("Child 2");
+                    expect(parent.children[1].name).toBe("Child 1");
+                });
+
+                it("should not sort parent array when it has children", () => {
+                    const child1: Task = {
+                        name: "Child 1",
+                        start: new Date("2024-01-15"),
+                        end: new Date("2024-01-20"),
+                        duration: 5,
+                    } as Task;
+
+                    const parent1: Task = {
+                        name: "Parent 1",
+                        start: new Date("2024-01-10"),
+                        end: new Date("2024-01-20"),
+                        duration: 10,
+                        children: [child1],
+                    } as Task;
+
+                    const parent2: Task = {
+                        name: "Parent 2",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-05"),
+                        duration: 5,
+                        children: [] as any,
+                    } as Task;
+
+                    const groupedTasks = {
+                        "group1": [parent1, parent2]
+                    };
+
+                    Gantt.SortTasks(groupedTasks);
+
+                    // Parent order should remain unchanged when first task has children
+                    expect(groupedTasks["group1"][0].name).toBe("Parent 1");
+                    expect(groupedTasks["group1"][1].name).toBe("Parent 2");
+                });
+            });
+
+            describe("multiple groups", () => {
+                it("should sort tasks in multiple groups independently", () => {
+                    const group1Task1: Task = {
+                        name: "G1 Task 1",
+                        start: new Date("2024-01-15"),
+                        end: new Date("2024-01-20"),
+                        duration: 5,
+                    } as Task;
+
+                    const group1Task2: Task = {
+                        name: "G1 Task 2",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-05"),
+                        duration: 5,
+                    } as Task;
+
+                    const group2Task1: Task = {
+                        name: "G2 Task 1",
+                        start: new Date("2024-02-15"),
+                        end: new Date("2024-02-20"),
+                        duration: 5,
+                    } as Task;
+
+                    const group2Task2: Task = {
+                        name: "G2 Task 2",
+                        start: new Date("2024-02-01"),
+                        end: new Date("2024-02-05"),
+                        duration: 5,
+                    } as Task;
+
+                    const groupedTasks = {
+                        "group1": [group1Task1, group1Task2],
+                        "group2": [group2Task1, group2Task2]
+                    };
+
+                    Gantt.SortTasks(groupedTasks);
+
+                    expect(groupedTasks["group1"][0].name).toBe("G1 Task 2");
+                    expect(groupedTasks["group1"][1].name).toBe("G1 Task 1");
+                    expect(groupedTasks["group2"][0].name).toBe("G2 Task 2");
+                    expect(groupedTasks["group2"][1].name).toBe("G2 Task 1");
+                });
+            });
         });
     });
 });
