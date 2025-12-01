@@ -1,3 +1,7 @@
+## 3.4.4
+### Fixes
+* Fixed label color in High contrast mode
+
 ## 3.4.3
 ### Visual changes
 * Added setting to customize legend names for unnamed categories

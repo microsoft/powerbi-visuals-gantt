@@ -2604,8 +2604,8 @@ export class Gantt implements IVisual {
                 const isChild: boolean = !!task.tasks[0].parent;
 
                 return isChild && useCustom
-                    ? nestedLabels.fill.value.value
-                    : general.fill.value.value;
+                    ? this.colorHelper.getHighContrastColor("foreground", nestedLabels.fill.value.value)
+                    : this.colorHelper.getHighContrastColor("foreground", general.fill.value.value);
             })
             .text((task: GroupedTask) => task.name)
             .call((selection) => {
