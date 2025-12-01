@@ -1403,8 +1403,8 @@ export class Gantt implements IVisual {
         const sortingFunction = (a: Task, b: Task) => {
             // Handle null start dates - push to end
             if (!a.start && !b.start) return 0;
-            if (!a.start) return 1;
-            if (!b.start) return -1;
+            if (!a.start || !isValidDate(a.start)) return 1;
+            if (!b.start || !isValidDate(b.start)) return -1;
 
             // Compare start times
             const startDiff = a.start.getTime() - b.start.getTime();
@@ -1412,8 +1412,8 @@ export class Gantt implements IVisual {
 
             // Start times equal - sort by end date (longer tasks first)
             if (!a.end && !b.end) return 0;
-            if (!a.end) return 1;
-            if (!b.end) return -1;
+            if (!a.end || !isValidDate(a.end)) return 1;
+            if (!b.end || !isValidDate(b.end)) return -1;
             return b.end.getTime() - a.end.getTime();
         };
 
