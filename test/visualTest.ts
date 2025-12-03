@@ -2638,8 +2638,8 @@ describe("Gantt", () => {
 
                     const task2: Task = {
                         name: "Task 2",
-                        start: new Date("2024-01-15"),
-                        end: null as any,
+                        start: null as any,
+                        end: new Date("2024-01-15"),
                         duration: 5,
                     } as Task;
 
