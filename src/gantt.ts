@@ -1402,18 +1402,20 @@ export class Gantt implements IVisual {
         const taskKeys: string[] = Object.keys(groupedTasks);
 
         const sortingFunction = (a: Task, b: Task) => {
-            if (!a.start || !a.end) {
-                // so nulls are pushed to the end
-                return -1;
-            }
-            if (!b.start || !b.end) {
-                // so nulls are pushed to the end
-                return 1;
-            }
-            if (a.start.getTime() === b.start.getTime()) {
-                return b.end.getTime() - a.end.getTime();
-            }
-            return a.start.getTime() - b.start.getTime();
+            // Handle null start dates - push to end
+            if (!a.start && !b.start) return 0;
+            if (!a.start || !isValidDate(a.start)) return 1;
+            if (!b.start || !isValidDate(b.start)) return -1;
+
+            // Compare start times
+            const startDiff = a.start.getTime() - b.start.getTime();
+            if (startDiff !== 0) return startDiff;
+
+            // Start times equal - sort by end date (longer tasks first)
+            if (!a.end && !b.end) return 0;
+            if (!a.end || !isValidDate(a.end)) return 1;
+            if (!b.end || !isValidDate(b.end)) return -1;
+            return b.end.getTime() - a.end.getTime();
         };
 
         taskKeys.forEach((key: string) => {
@@ -2606,8 +2608,8 @@ export class Gantt implements IVisual {
                 const isChild: boolean = !!task.tasks[0].parent;
 
                 return isChild && useCustom
-                    ? nestedLabels.fill.value.value
-                    : general.fill.value.value;
+                    ? this.colorHelper.getHighContrastColor("foreground", nestedLabels.fill.value.value)
+                    : this.colorHelper.getHighContrastColor("foreground", general.fill.value.value);
             })
             .text((task: GroupedTask) => task.name)
             .call((selection) => {

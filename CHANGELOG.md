@@ -1,3 +1,8 @@
+## 3.4.4
+### Fixes
+* Fixed label color in High contrast mode
+* Refactored sorting logic in `sortingFunction` to properly handle null `start` and `end` dates separately. This is a behavior change that may affect task ordering.
+
 ## 3.4.3
 ### Visual changes
 * Added setting to customize legend names for unnamed categories
