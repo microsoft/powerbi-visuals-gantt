@@ -1,3 +1,7 @@
+## 3.4.5
+### Fixes
+* Fixed TypeError crash (localeCompare is not a function) when non-string columns (numeric, date) are used in Task or Parent data roles
+
 ## 3.4.4
 ### Fixes
 * Fixed label color in High contrast mode
