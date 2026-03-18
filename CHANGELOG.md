@@ -1,6 +1,7 @@
 ## 3.4.5
 ### Fixes
-* Fixed TypeError crash (localeCompare is not a function) when non-string columns (numeric, date) are used in Task or Parent data roles
+* Fixed TypeError crash (`localeCompare is not a function`) that occurred when sorting was applied (Sort axis) and a numeric column was used in the Task or Parent data role. Numeric values are now properly converted to strings before sorting.
+* Removed redundant `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` direct devDependencies to resolve npm peer dependency conflict with `typescript-eslint`.
 
 ## 3.4.4
 ### Fixes
