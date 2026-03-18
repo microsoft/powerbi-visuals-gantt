@@ -1181,8 +1181,8 @@ export class Gantt implements IVisual {
             stepDurationTransformation,
         } = taskCreationDetails;
 
-        const resource: string = values.Resource && values.Resource[index] != null ? String(values.Resource[index]) : "";
-        const taskParentName: string | null = values.Parent && values.Parent[index] != null ? String(values.Parent[index]) : null;
+        const resource: string = String(values?.Resource?.[index] ?? "");
+        const taskParentName: string | null = values?.Parent?.[index] != null ? String(values.Parent[index]) : null;
         const milestoneType: string | null = (values.Milestones && !lodashIsEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
 
         const startDate: Date = (values.StartDate && values.StartDate[index]
@@ -1197,7 +1197,7 @@ export class Gantt implements IVisual {
             if (notNullIndex != -1) highlight = <number>categoricalValues[notNullIndex].highlights[index];
         }
 
-        const taskName: string = categoryValue != null ? String(categoryValue) : "";
+        const taskName: string = String(categoryValue ?? "");
 
         const task: Task = {
             color,
@@ -1372,7 +1372,7 @@ export class Gantt implements IVisual {
                 wasDowngradeDurationUnit: null,
                 selected: null,
                 identity: selectionBuilder.createSelectionId(),
-                Milestones: milestone && startDate ? [{ type: milestone, start: startDate, tooltipInfo: null, category: categoryValue != null ? String(categoryValue) : "" }] : [],
+                Milestones: milestone && startDate ? [{ type: milestone, start: startDate, tooltipInfo: null, category: String(categoryValue ?? "") }] : [],
                 highlight: highlight !== null
             };
 
@@ -1436,8 +1436,8 @@ export class Gantt implements IVisual {
     public static sortTasksWithParents(tasks: Task[], sortingOptions: SortingOptions): Task[] {
         const sortingFunction = ((a: Task, b: Task) => {
             const sortingDirection = sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1;
-            const nameA = a.name != null ? String(a.name) : "";
-            const nameB = b.name != null ? String(b.name) : "";
+            const nameA = String(a.name ?? "");
+            const nameB = String(b.name ?? "");
             return nameA.localeCompare(nameB, undefined, { numeric: true }) * sortingDirection;
         });
 
