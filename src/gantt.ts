@@ -1182,8 +1182,8 @@ export class Gantt implements IVisual {
         } = taskCreationDetails;
 
         const resource: string = values.Resource && values.Resource[index] != null ? String(values.Resource[index]) : "";
-        const taskParentName: string = values.Parent && values.Parent[index] != null ? String(values.Parent[index]) : null;
-        const milestoneType: string = (values.Milestones && !lodashIsEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
+        const taskParentName: string | null = values.Parent && values.Parent[index] != null ? String(values.Parent[index]) : null;
+        const milestoneType: string | null = (values.Milestones && !lodashIsEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
 
         const startDate: Date = (values.StartDate && values.StartDate[index]
             && isValidDate(new Date(values.StartDate[index])) && new Date(values.StartDate[index]))
@@ -1191,7 +1191,7 @@ export class Gantt implements IVisual {
 
         const extraInformation: ExtraInformation[] = this.getExtraInformationFromValues(values, index);
 
-        let highlight: number = null;
+        let highlight: number | null = null;
         if (hasHighlights && categoricalValues) {
             const notNullIndex = categoricalValues.findIndex(value => value.highlights && value.values[index] != null);
             if (notNullIndex != -1) highlight = <number>categoricalValues[notNullIndex].highlights[index];

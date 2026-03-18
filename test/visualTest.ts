@@ -60,6 +60,10 @@ import { DateType, Day, DurationUnit, MilestoneShape, ResourceLabelPosition } fr
 import DataView = powerbi.DataView;
 import PrimitiveValue = powerbi.PrimitiveValue;
 
+interface TransformDurationStatic {
+    transformDuration(duration: number, unit: DurationUnit, precision: number): number;
+}
+
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import IValueFormatter = valueFormatter.IValueFormatter;
@@ -391,7 +395,7 @@ describe("Gantt", () => {
                 for (let i in tasks) {
                     let newDuration: number = tasks[i].duration;
                     if (tasks[i].duration % 1 !== 0) {
-                        newDuration = (VisualClass as any)["transformDuration"](
+                        newDuration = (VisualClass as unknown as TransformDurationStatic).transformDuration(
                             defaultDataViewBuilder.valuesDuration[i],
                             DurationUnit.Minute,
                             2
@@ -681,7 +685,7 @@ describe("Gantt", () => {
             });
         });
 
-        for (let dateType in DateType) {
+        for (const dateType of Object.values(DateType)) {
             it(`Verify date format (${dateType})`, ((dateType) => (done) => {
                 switch (dateType) {
                     case DateType.Second:
@@ -702,7 +706,7 @@ describe("Gantt", () => {
                 host.locale = host.locale || (<any>window.navigator).userLanguage || window.navigator["language"];
 
                 let xAxisDateFormatter: IValueFormatter = valueFormatter.create({
-                    format: (VisualClass.DefaultValues.DateFormatStrings as Record<string, string>)[dateType],
+                    format: VisualClass.DefaultValues.DateFormatStrings[dateType],
                     cultureSelector: host.locale
                 });
 
