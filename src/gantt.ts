@@ -1258,7 +1258,7 @@ export class Gantt implements IVisual {
 
                 if (group.Duration && group.Duration.values[index] !== null) {
                     taskType =
-                        taskTypes.types.find((typeMeta: LegendGroup) => typeMeta.legendName === group.Duration.source.groupName);
+                        taskTypes.types.find((typeMeta: LegendGroup) => typeMeta.legendName === group.Duration.source.groupName?.toString());
 
                     if (taskType) {
                         selectionBuilder.withCategory(taskType.selectionColumn, 0);
@@ -1292,7 +1292,7 @@ export class Gantt implements IVisual {
 
                 } else if (group.EndDate && group.EndDate.values[index] !== null) {
                     taskType =
-                        taskTypes.types.find((typeMeta: LegendGroup) => typeMeta.legendName === group.EndDate.source.groupName);
+                        taskTypes.types.find((typeMeta: LegendGroup) => typeMeta.legendName === group.EndDate.source.groupName?.toString());
 
                     if (taskType) {
                         selectionBuilder.withCategory(taskType.selectionColumn, 0);
