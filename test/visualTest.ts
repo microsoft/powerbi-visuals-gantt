@@ -50,7 +50,7 @@ import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutil
 import { legendPosition as LegendPosition } from "powerbi-visuals-utils-chartutils";
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
-import { Milestone, Task, TaskDaysOff } from "../src/interfaces";
+import { DayOffData, Milestone, Task, TaskDaysOff } from "../src/interfaces";
 import { DurationHelper } from "../src/durationHelper";
 import { Gantt, Gantt as VisualClass } from "../src/gantt";
 import { getRandomHexColor, isValidDate } from "../src/utils";
@@ -59,6 +59,10 @@ import { DefaultOpacity, DimmedOpacity } from "../src/behavior";
 import { DateType, Day, DurationUnit, MilestoneShape, ResourceLabelPosition } from "../src/enums";
 import DataView = powerbi.DataView;
 import PrimitiveValue = powerbi.PrimitiveValue;
+
+interface TransformDurationStatic {
+    transformDuration(duration: number, unit: DurationUnit, precision: number): number;
+}
 
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
@@ -391,7 +395,7 @@ describe("Gantt", () => {
                 for (let i in tasks) {
                     let newDuration: number = tasks[i].duration;
                     if (tasks[i].duration % 1 !== 0) {
-                        newDuration = VisualClass["transformDuration"](
+                        newDuration = (VisualClass as unknown as TransformDurationStatic).transformDuration(
                             defaultDataViewBuilder.valuesDuration[i],
                             DurationUnit.Minute,
                             2
@@ -681,7 +685,7 @@ describe("Gantt", () => {
             });
         });
 
-        for (let dateType in DateType) {
+        for (const dateType of Object.values(DateType)) {
             it(`Verify date format (${dateType})`, ((dateType) => (done) => {
                 switch (dateType) {
                     case DateType.Second:
@@ -1491,14 +1495,16 @@ describe("Gantt", () => {
                         }
 
                         const isParentTask: boolean = e!.hasChildNodes();
-                        let daysOff: TaskDaysOff = e!["__data__"].daysOff; // Takes data from an element
+                        const elementData = d3Select(e).datum() as TaskDaysOff & { parentTask: Task };
+                        const daysOff: DayOffData = elementData.daysOff;
 
                         if (!isParentTask) {
                             const amountOfWeekendDays: number = daysOff[1];
 
-                            const firstDayOfWeek: Date = new Date(
-                                daysOff[0].getTime() + (amountOfWeekendDays * millisecondsInADay)
-                            );
+                            // Use d3TimeDay.offset instead of raw millisecond arithmetic
+                            // to correctly handle DST (Daylight Saving Time) transitions (which can cause
+                            // date + N*86400000ms to land on the wrong calendar day)
+                            const firstDayOfWeek: Date = d3TimeDay.offset(daysOff[0], amountOfWeekendDays);
 
                             expect(firstDayOfWeek.getDay()).toEqual(+dayForCheck);
                         }
@@ -1514,13 +1520,13 @@ describe("Gantt", () => {
                     dataView.metadata.objects = {
                         daysOff: {
                             show: true,
-                            firstDayOfWeek: +Day[day]
+                            firstDayOfWeek: +Day[day as keyof typeof Day]
                         }
                     };
 
                     fixDataViewDateValuesAggregation(dataView);
 
-                    checkDaysOff(Day[day], done);
+                    checkDaysOff(Day[day as keyof typeof Day], done);
                 })(day));
             }
 
@@ -2354,12 +2360,14 @@ describe("Gantt", () => {
 
     describe("PersistProperties test", () => {
 
-        const collapsedTasksUpdateIDs: string = "collapsedTasksUpdateIDs";
+        const collapsedTasksUpdateIDs = "collapsedTasksUpdateIDs";
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const getVisualBuilderInstance = () => visualBuilder.instance as any;
 
         it("Synchronous one task", (done) => {
             const newId = crypto?.randomUUID() || Math.random().toString();
 
-            visualBuilder.instance[collapsedTasksUpdateIDs] = [newId];
+            getVisualBuilderInstance()[collapsedTasksUpdateIDs] = [newId];
 
             dataView.metadata.objects = {
                 collapsedTasksUpdateId: {
@@ -2368,7 +2376,7 @@ describe("Gantt", () => {
             };
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(0);
+                expect(getVisualBuilderInstance()[collapsedTasksUpdateIDs].length).toBe(0);
                 done();
             });
         });
@@ -2381,7 +2389,7 @@ describe("Gantt", () => {
                 collapsedTasksUpdateIDsRandom.push(newId);
             }
 
-            visualBuilder.instance[collapsedTasksUpdateIDs] = collapsedTasksUpdateIDsRandom;
+            getVisualBuilderInstance()[collapsedTasksUpdateIDs] = collapsedTasksUpdateIDsRandom;
 
             const objects1 = {
                 collapsedTasksUpdateId: {
@@ -2404,17 +2412,17 @@ describe("Gantt", () => {
 
             dataView.metadata.objects = objects1;
             visualBuilder.update(dataView);
-            expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(2);
+            expect(getVisualBuilderInstance()[collapsedTasksUpdateIDs].length).toBe(2);
 
 
             dataView.metadata.objects = objects2;
             visualBuilder.update(dataView);
-            expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(1);
+            expect(getVisualBuilderInstance()[collapsedTasksUpdateIDs].length).toBe(1);
 
 
             dataView.metadata.objects = objects3;
             visualBuilder.update(dataView);
-            expect(visualBuilder.instance[collapsedTasksUpdateIDs].length).toBe(0);
+            expect(getVisualBuilderInstance()[collapsedTasksUpdateIDs].length).toBe(0);
 
             done();
         });
@@ -2427,7 +2435,7 @@ describe("Gantt", () => {
                 collapsedTasksUpdateIDsRandom.push(newId);
             }
 
-            visualBuilder.instance[collapsedTasksUpdateIDs] = collapsedTasksUpdateIDsRandom;
+            getVisualBuilderInstance()[collapsedTasksUpdateIDs] = collapsedTasksUpdateIDsRandom;
 
             const objects1 = {
                 collapsedTasksUpdateId: {
@@ -2452,7 +2460,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects1;
                     visualBuilder.update(dataView);
-                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[0]));
+                    resolve(getVisualBuilderInstance()[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[0]));
                 },
                     1_000);
             });
@@ -2461,7 +2469,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects2;
                     visualBuilder.update(dataView);
-                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[1]));
+                    resolve(getVisualBuilderInstance()[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[1]));
                 },
                     2_000);
             });
@@ -2470,7 +2478,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects3;
                     visualBuilder.update(dataView);
-                    resolve(visualBuilder.instance[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[2]));
+                    resolve(getVisualBuilderInstance()[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[2]));
                 },
                     3_000);
             });
