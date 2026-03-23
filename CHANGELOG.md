@@ -1,8 +1,11 @@
 ## 3.4.5.0
 ### Fixes
 * Fixed TypeError crash (`localeCompare is not a function`) that occurred when sorting was applied (Sort axis) and a numeric column was used in the Task or Parent data role. Numeric values are now properly converted to strings before sorting.
+* Fixed legend colors not being applied to task bars. When a numeric column was used in the Legend data role, `groupName` (number) was compared to `legendName` (string) with strict equality, causing the match to always fail and all bars to render in the default color. Added `.toString()` to `groupName` in `computeTaskGroupAttributes` for consistent comparison.
 * Removed redundant `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` direct devDependencies to resolve npm peer dependency conflict with `typescript-eslint`.
 * Fixed flaky "Verify day off" unit tests caused by DST transitions. The `checkDaysOff` helper was computing the first workday after a weekend using raw millisecond arithmetic, which could land on the wrong calendar day when dates crossed a DST boundary. Replaced with `d3TimeDay.offset()` which correctly steps by calendar days regardless of DST.
+### GitHub workflow
+* Updated `build.yml`
 
 ## 3.4.4.0
 ### Fixes

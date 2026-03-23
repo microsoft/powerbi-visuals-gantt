@@ -40,8 +40,12 @@ module.exports = (config) => {
     config.set({
         mode: "development",
         browserNoActivityTimeout: 100000,
-        browsers: ["ChromeHeadless"],
+        browsers: ["ChromeHeadlessNoSandbox"],
         customLaunchers: {
+          ChromeHeadlessNoSandbox: {
+              base: "ChromeHeadless",
+              flags: ["--no-sandbox"]
+          },
           ChromeDebugging: {
               base: "ChromeHeadless",
               flags: ["--remote-debugging-port=9333"]
