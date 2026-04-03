@@ -454,6 +454,7 @@ export class Gantt implements IVisual {
             .classed(Gantt.AxisBackground.className, true)
             .attr("width", "100%")
             .attr("height", Gantt.AxisBackgroundHeight)
+            .attr("fill", "none")
             .attr("transform", SVGManipulations.translate(-Gantt.AxisBackgroundLeftShift, -Gantt.TaskLabelsMarginTop));
 
         this.lineGroupWrapper = this.lineGroup
@@ -1888,9 +1889,9 @@ export class Gantt implements IVisual {
         this.updateCommonTasks(groupedTasks);
         this.updateCommonMilestones(groupedTasks);
 
-        const tasksAfterGrouping: Task[] = groupedTasks.flatMap(t => t.tasks);
-        const minDateTask: Task = lodashMinBy(tasksAfterGrouping, (t) => t && t.start);
-        const maxDateTask: Task = lodashMaxBy(tasksAfterGrouping, (t) => t && t.end);
+        const allTasksWithDates: Task[] = this.viewModel.tasks.filter((t: Task) => t.start != null && t.end != null);
+        const minDateTask: Task = lodashMinBy(allTasksWithDates, (t) => t.start);
+        const maxDateTask: Task = lodashMaxBy(allTasksWithDates, (t) => t.end);
         this.hasNotNullableDates = !!minDateTask && !!maxDateTask;
 
         let axisLength: number = 0;

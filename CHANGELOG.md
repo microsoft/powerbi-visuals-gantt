@@ -1,3 +1,8 @@
+## 3.4.6.0
+* Fixed the black border appearing when switching pages with collapsed group tasks
+* Computing the axis date range from all tasks with dates instead of only visible grouped tasks, so the axis always renders even when all groups are collapsed.
+* Updated packages
+
 ## 3.4.5.0
 ### Fixes
 * Fixed TypeError crash (`localeCompare is not a function`) that occurred when sorting was applied (Sort axis) and a numeric column was used in the Task or Parent data role. Numeric values are now properly converted to strings before sorting.
