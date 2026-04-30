@@ -2634,7 +2634,7 @@ describe("Gantt", () => {
 
         });
 
-        describe("SortTasks", () => {
+        describe("sortTasksForLayering", () => {
             describe("null start date handling", () => {
                 it("should push tasks with null start dates to the end", () => {
                     const task1: Task = {
@@ -2662,7 +2662,7 @@ describe("Gantt", () => {
                         "group1": [task2, task3, task1]
                     };
 
-                    Gantt.SortTasks(groupedTasks);
+                    Gantt.sortTasksForLayering(groupedTasks);
 
                     expect(groupedTasks["group1"][0].name).toBe("Task 1");
                     expect(groupedTasks["group1"][1].name).toBe("Task 3");
@@ -2688,7 +2688,7 @@ describe("Gantt", () => {
                         "group1": [task1, task2]
                     };
 
-                    Gantt.SortTasks(groupedTasks);
+                    Gantt.sortTasksForLayering(groupedTasks);
 
                     // Order should remain unchanged when both are null
                     expect(groupedTasks["group1"][0].name).toBe("Task 1");
@@ -2723,7 +2723,7 @@ describe("Gantt", () => {
                         "group1": [task1, task2, task3]
                     };
 
-                    Gantt.SortTasks(groupedTasks);
+                    Gantt.sortTasksForLayering(groupedTasks);
 
                     expect(groupedTasks["group1"][0].name).toBe("Task 2");
                     expect(groupedTasks["group1"][1].name).toBe("Task 3");
@@ -2758,7 +2758,7 @@ describe("Gantt", () => {
                         "group1": [task1, task2, task3]
                     };
 
-                    Gantt.SortTasks(groupedTasks);
+                    Gantt.sortTasksForLayering(groupedTasks);
 
                     expect(groupedTasks["group1"][0].name).toBe("Task 2 (long)");
                     expect(groupedTasks["group1"][1].name).toBe("Task 3 (medium)");
@@ -2791,7 +2791,7 @@ describe("Gantt", () => {
                         "group1": [task2, task1, task3]
                     };
 
-                    Gantt.SortTasks(groupedTasks);
+                    Gantt.sortTasksForLayering(groupedTasks);
 
                     expect(groupedTasks["group1"][0].name).toBe("Task 3");
                     expect(groupedTasks["group1"][1].name).toBe("Task 1");
@@ -2817,7 +2817,7 @@ describe("Gantt", () => {
                         "group1": [task1, task2]
                     };
 
-                    Gantt.SortTasks(groupedTasks);
+                    Gantt.sortTasksForLayering(groupedTasks);
 
                     // Order should remain unchanged when both are null
                     expect(groupedTasks["group1"][0].name).toBe("Task 1");
@@ -2859,7 +2859,7 @@ describe("Gantt", () => {
                         "group1": [task1, task3, task2, task4]
                     };
 
-                    Gantt.SortTasks(groupedTasks);
+                    Gantt.sortTasksForLayering(groupedTasks);
 
                     expect(groupedTasks["group1"][0].name).toBe("Task 4 (same as 2, longer)");
                     expect(groupedTasks["group1"][1].name).toBe("Task 2 (early)");
@@ -2896,7 +2896,7 @@ describe("Gantt", () => {
                         "group1": [parent]
                     };
 
-                    Gantt.SortTasks(groupedTasks);
+                    Gantt.sortTasksForLayering(groupedTasks);
 
                     expect(parent.children[0].name).toBe("Child 2");
                     expect(parent.children[1].name).toBe("Child 1");
@@ -2930,7 +2930,7 @@ describe("Gantt", () => {
                         "group1": [parent1, parent2]
                     };
 
-                    Gantt.SortTasks(groupedTasks);
+                    Gantt.sortTasksForLayering(groupedTasks);
 
                     // Parent order should remain unchanged when first task has children
                     expect(groupedTasks["group1"][0].name).toBe("Parent 1");
@@ -2973,12 +2973,237 @@ describe("Gantt", () => {
                         "group2": [group2Task1, group2Task2]
                     };
 
-                    Gantt.SortTasks(groupedTasks);
+                    Gantt.sortTasksForLayering(groupedTasks);
 
                     expect(groupedTasks["group1"][0].name).toBe("G1 Task 2");
                     expect(groupedTasks["group1"][1].name).toBe("G1 Task 1");
                     expect(groupedTasks["group2"][0].name).toBe("G2 Task 2");
                     expect(groupedTasks["group2"][1].name).toBe("G2 Task 1");
+                });
+            });
+
+            describe("isCustomSortingNeeded parameter", () => {
+                it("should NOT re-sort children when isCustomSortingNeeded is true", () => {
+                    const child1: Task = {
+                        name: "Zebra",
+                        start: new Date("2024-01-10"),
+                        end: new Date("2024-01-15"),
+                        duration: 5,
+                        parent: "Parent1",
+                    } as Task;
+
+                    const child2: Task = {
+                        name: "Apple",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-05"),
+                        duration: 5,
+                        parent: "Parent1",
+                    } as Task;
+
+                    const parentTask: Task = {
+                        name: "Parent1",
+                        start: null,
+                        end: null,
+                        duration: null,
+                        parent: null,
+                        children: [child1, child2],
+                    } as Task;
+
+                    const groupedTasks = {
+                        "Parent1": [parentTask]
+                    };
+
+                    // With isCustomSortingNeeded=true, children order should be preserved
+                    Gantt.sortTasksForLayering(groupedTasks, true);
+
+                    expect(parentTask.children[0].name).toBe("Zebra");
+                    expect(parentTask.children[1].name).toBe("Apple");
+                });
+
+                it("should re-sort children by start date when isCustomSortingNeeded is false", () => {
+                    const child1: Task = {
+                        name: "Zebra",
+                        start: new Date("2024-01-10"),
+                        end: new Date("2024-01-15"),
+                        duration: 5,
+                        parent: "Parent1",
+                    } as Task;
+
+                    const child2: Task = {
+                        name: "Apple",
+                        start: new Date("2024-01-01"),
+                        end: new Date("2024-01-05"),
+                        duration: 5,
+                        parent: "Parent1",
+                    } as Task;
+
+                    const parentTask: Task = {
+                        name: "Parent1",
+                        start: null,
+                        end: null,
+                        duration: null,
+                        parent: null,
+                        children: [child1, child2],
+                    } as Task;
+
+                    const groupedTasks = {
+                        "Parent1": [parentTask]
+                    };
+
+                    // With isCustomSortingNeeded=false (default), children should be sorted by start date
+                    Gantt.sortTasksForLayering(groupedTasks, false);
+
+                    expect(parentTask.children[0].name).toBe("Apple");
+                    expect(parentTask.children[1].name).toBe("Zebra");
+                });
+            });
+        });
+
+        describe("Parent-child ordering with descending sort", () => {
+            it("should keep parent before children when sorting descending", (done) => {
+                visualBuilder = new VisualBuilder(1000, 500);
+                defaultDataViewBuilder = new VisualData();
+                defaultDataViewBuilder.valuesTaskTypeResource = [
+                    ["Dev", "Alpha", "R1", "Roof"],
+                    ["Dev", "Beta", "R2", "Roof"],
+                    ["Dev", "Gamma", "R3", "Roof"],
+                    ["Dev", "Delta", "R4", "Walls"],
+                    ["Dev", "Epsilon", "R5", "Walls"],
+                ];
+                defaultDataViewBuilder.valuesStartDate = [
+                    new Date("2024-01-01"),
+                    new Date("2024-01-05"),
+                    new Date("2024-01-10"),
+                    new Date("2024-02-01"),
+                    new Date("2024-02-05"),
+                ];
+                defaultDataViewBuilder.valuesDuration = [5, 5, 5, 5, 5];
+                defaultDataViewBuilder.valuesCompletePrecntege = [0.5, 0.5, 0.5, 0.5, 0.5];
+                defaultDataViewBuilder.valuesExtraInformation = ["d1", "d2", "d3", "d4", "d5"];
+                defaultDataViewBuilder.valuesExtraInformationDates = [
+                    new Date("2024-01-01"),
+                    new Date("2024-01-05"),
+                    new Date("2024-01-10"),
+                    new Date("2024-02-01"),
+                    new Date("2024-02-05"),
+                ];
+
+                dataView = defaultDataViewBuilder.getDataView([
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnParent,
+                ]);
+
+                fixDataViewDateValuesAggregation(dataView);
+
+                // Descending sort
+                dataView.metadata.columns.find(c => c.roles["Task"]).sort = SortDirection.Descending;
+
+                dataView.metadata.objects = {
+                    general: { groupTasks: true }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    const taskNames = visualBuilder.taskLabelTextContent;
+
+                    // In descending order: Walls before Roof, but each parent must come before its children
+                    const wallsIndex = taskNames.indexOf("Walls");
+                    const roofIndex = taskNames.indexOf("Roof");
+
+                    // Parents should exist
+                    expect(wallsIndex).toBeGreaterThanOrEqual(0);
+                    expect(roofIndex).toBeGreaterThanOrEqual(0);
+
+                    // Descending: Walls before Roof
+                    expect(wallsIndex).toBeLessThan(roofIndex);
+
+                    // Each child must come AFTER its parent
+                    const deltaIndex = taskNames.indexOf("Delta");
+                    const epsilonIndex = taskNames.indexOf("Epsilon");
+                    expect(deltaIndex).toBeGreaterThan(wallsIndex);
+                    expect(epsilonIndex).toBeGreaterThan(wallsIndex);
+
+                    const alphaIndex = taskNames.indexOf("Alpha");
+                    const betaIndex = taskNames.indexOf("Beta");
+                    const gammaIndex = taskNames.indexOf("Gamma");
+                    expect(alphaIndex).toBeGreaterThan(roofIndex);
+                    expect(betaIndex).toBeGreaterThan(roofIndex);
+                    expect(gammaIndex).toBeGreaterThan(roofIndex);
+
+                    done();
+                });
+            });
+
+            it("should keep parent before children when sorting ascending", (done) => {
+                visualBuilder = new VisualBuilder(1000, 500);
+                defaultDataViewBuilder = new VisualData();
+                defaultDataViewBuilder.valuesTaskTypeResource = [
+                    ["Dev", "Alpha", "R1", "Roof"],
+                    ["Dev", "Beta", "R2", "Roof"],
+                    ["Dev", "Gamma", "R3", "Roof"],
+                    ["Dev", "Delta", "R4", "Walls"],
+                    ["Dev", "Epsilon", "R5", "Walls"],
+                ];
+                defaultDataViewBuilder.valuesStartDate = [
+                    new Date("2024-01-01"),
+                    new Date("2024-01-05"),
+                    new Date("2024-01-10"),
+                    new Date("2024-02-01"),
+                    new Date("2024-02-05"),
+                ];
+                defaultDataViewBuilder.valuesDuration = [5, 5, 5, 5, 5];
+                defaultDataViewBuilder.valuesCompletePrecntege = [0.5, 0.5, 0.5, 0.5, 0.5];
+                defaultDataViewBuilder.valuesExtraInformation = ["d1", "d2", "d3", "d4", "d5"];
+                defaultDataViewBuilder.valuesExtraInformationDates = [
+                    new Date("2024-01-01"),
+                    new Date("2024-01-05"),
+                    new Date("2024-01-10"),
+                    new Date("2024-02-01"),
+                    new Date("2024-02-05"),
+                ];
+
+                dataView = defaultDataViewBuilder.getDataView([
+                    VisualData.ColumnTask,
+                    VisualData.ColumnStartDate,
+                    VisualData.ColumnDuration,
+                    VisualData.ColumnParent,
+                ]);
+
+                fixDataViewDateValuesAggregation(dataView);
+
+                // Ascending sort
+                dataView.metadata.columns.find(c => c.roles["Task"]).sort = SortDirection.Ascending;
+
+                dataView.metadata.objects = {
+                    general: { groupTasks: true }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    const taskNames = visualBuilder.taskLabelTextContent;
+
+                    // In ascending order: Roof before Walls
+                    const roofIndex = taskNames.indexOf("Roof");
+                    const wallsIndex = taskNames.indexOf("Walls");
+
+                    expect(roofIndex).toBeGreaterThanOrEqual(0);
+                    expect(wallsIndex).toBeGreaterThanOrEqual(0);
+                    expect(roofIndex).toBeLessThan(wallsIndex);
+
+                    // Each child must come AFTER its parent
+                    const alphaIndex = taskNames.indexOf("Alpha");
+                    const betaIndex = taskNames.indexOf("Beta");
+                    const gammaIndex = taskNames.indexOf("Gamma");
+                    expect(alphaIndex).toBeGreaterThan(roofIndex);
+                    expect(betaIndex).toBeGreaterThan(roofIndex);
+                    expect(gammaIndex).toBeGreaterThan(roofIndex);
+
+                    const deltaIndex = taskNames.indexOf("Delta");
+                    const epsilonIndex = taskNames.indexOf("Epsilon");
+                    expect(deltaIndex).toBeGreaterThan(wallsIndex);
+                    expect(epsilonIndex).toBeGreaterThan(wallsIndex);
+
+                    done();
                 });
             });
         });
