@@ -1,3 +1,15 @@
+## 3.4.6.0
+### Bug fixes
+* Fixed child tasks being sorted by date instead of alphabetically when user applies explicit sorting (Sort axis). The `sortTasksForLayering` method now respects user-defined sort order from `sortHierarchicalTasks`.
+* Fixed parent task appearing below its children when sorting in descending order. Child task keys are now skipped in the outer loop of `getGroupTasks` and added exclusively through the inner children loop, guaranteeing parent-first order regardless of sorting direction.
+
+### Code improvements
+* Renamed `SortTasks` → `sortTasksForLayering` and `sortTasksWithParents` → `sortHierarchicalTasks` for clarity
+* Removed dead code (unreachable parent-name extraction after child-key skip)
+* Simplified `subtask.index` assignment — removed defensive check that could mask index collisions
+* Simplified top-level task detection condition (`!task.parent` instead of `!task.index && !task.parent`)
+* Added JSDoc comments and version history annotations to sorting methods
+
 ## 3.4.5.0
 ### Fixes
 * Fixed TypeError crash (`localeCompare is not a function`) that occurred when sorting was applied (Sort axis) and a numeric column was used in the Task or Parent data role. Numeric values are now properly converted to strings before sorting.

@@ -1455,6 +1455,10 @@ export class Gantt implements IVisual {
      * @param sortingOptions Contains sorting direction and whether custom sorting is active
      */
     public static sortHierarchicalTasks(tasks: Task[], sortingOptions: SortingOptions): Task[] {
+        // TODO: Consider using host.locale and sensitivity: "base" here to match
+        // the Intl.Collator in getGroupTasks. Currently uses browser default locale
+        // and case-sensitive comparison, which may produce different order for
+        // locale-specific characters (e.g. Turkish i/I, German ß/ss).
         const sortingFunction = ((a: Task, b: Task) => {
             const sortingDirection = sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1;
             const nameA = String(a.name ?? "");
@@ -1468,7 +1472,7 @@ export class Gantt implements IVisual {
 
         let index: number = 0;
         tasks.forEach(task => {
-            if (!task.index && !task.parent) {
+            if (!task.parent) {
                 task.index = index++;
 
                 if (task.children) {
@@ -1477,7 +1481,7 @@ export class Gantt implements IVisual {
                     }
 
                     task.children.forEach(subtask => {
-                        subtask.index = subtask.index === null ? index++ : subtask.index;
+                        subtask.index = index++;
                     });
                 }
             }
@@ -2150,13 +2154,12 @@ export class Gantt implements IVisual {
                 if (isKeyAlreadyReviewed) continue;
 
                 // Skip child task keys — they are added through the inner children loop
-                // to guarantee parent-first order regardless of sorting direction
+                // to guarantee parent-first order regardless of sorting direction.
+                // Note: children of collapsed parents are already filtered out by visibility
+                // before getGroupTasks is called, so they won't be lost here.
                 if (groupedTasks[key]?.[0]?.parent) continue;
 
-                let name: string = key;
-                if (groupedTasks[key] && groupedTasks[key].length && groupedTasks[key][0].parent && key.indexOf(groupedTasks[key][0].parent) !== -1) {
-                    name = key.substr(groupedTasks[key][0].parent.length + 1, key.length);
-                }
+                const name: string = key;
 
                 // add current task
                 const taskRecord: GroupedTask = {
@@ -2168,8 +2171,8 @@ export class Gantt implements IVisual {
                 result.push(taskRecord);
                 alreadyReviewedKeys.push(key);
 
-                // see all the children and add them
-
+                // Add children in the order defined by task.children
+                // (set by sortHierarchicalTasks or sortTasksForLayering)
                 for (const task of groupedTasks[key]) {
                     if (task.children && !collapsedTasks.includes(task.name)) {
                         for (const childrenTask of task.children) {
