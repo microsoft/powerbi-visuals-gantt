@@ -89,14 +89,24 @@ describe("Gantt", () => {
     });
 
     function fixDataViewDateValuesAggregation(dataView: DataView) {
-        let values = dataView.categorical!.values![0].values;
+        const categoricalValues = dataView.categorical?.values;
+        if (!categoricalValues || categoricalValues.length === 0) {
+            return;
+        }
 
-        for (let i = 0; i < values.length; ++i) {
-            let stringValue: string = values[i].toString();
-            let index: number = stringValue.indexOf(")");
+        for (const column of categoricalValues) {
+            if (!column.source.type?.dateTime) {
+                continue;
+            }
 
-            if (stringValue.length - 1 !== index) {
-                values[i] = new Date(stringValue.substring(0, index + 1));
+            const values = column.values;
+            for (let i = 0; i < values.length; ++i) {
+                let stringValue: string = values[i].toString();
+                let index: number = stringValue.indexOf(")");
+
+                if (stringValue.length - 1 !== index) {
+                    values[i] = new Date(stringValue.substring(0, index + 1));
+                }
             }
         }
     }
@@ -3059,7 +3069,7 @@ describe("Gantt", () => {
             });
         });
 
-        describe("Parent-child ordering with descending sort", () => {
+        describe("Parent-child ordering with explicit sort direction", () => {
             it("should keep parent before children when sorting descending", (done) => {
                 visualBuilder = new VisualBuilder(1000, 500);
                 defaultDataViewBuilder = new VisualData();
