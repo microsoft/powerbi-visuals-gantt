@@ -947,21 +947,40 @@ export class Gantt implements IVisual {
             milestonesCategory.values.forEach((value: PrimitiveValue, index: number) => milestones.push({ value, index }));
             milestones.forEach((milestone) => {
                 const value = milestone.value as string;
+
+                // Legacy storage used by reports authored on v3.0.12.0 and earlier (before persistSettings was introduced in v3.4.0).
+                const legacyMilestoneObjects = milestonesCategory.objects?.[milestone.index];
+                const persistedMilestoneObjects = settingsState.getMilestoneSettings(value);
+                const hasPersistedSettings = !!persistedMilestoneObjects?.milestones;
+
+                // In Reading view (or when "keep settings on filtering" is on) we normally read from the persisted blob,
+                // but if it is empty for this milestone name (legacy report just upgraded), fall back to the per-instance
+                // objects so colors/shapes saved in the old version are preserved instead of being reset to defaults.
+                // BUG FIX: previously Reading view always used the persisted blob, which caused milestones from reports
+                // upgraded from v3.0.12.0 to render with default palette colors and rotated default shapes.
                 const milestoneObjects = shouldUseSettingsFromPersistProps
-                    ? settingsState.getMilestoneSettings(value)
-                    : milestonesCategory.objects?.[milestone.index];
+                    ? (hasPersistedSettings ? persistedMilestoneObjects : legacyMilestoneObjects)
+                    : legacyMilestoneObjects;
 
                 const selectionBuilder: ISelectionIdBuilder = host
                     .createSelectionIdBuilder()
                     .withCategory(milestonesCategory, milestone.index);
 
                 if (!cachedShapes[value]) {
-                    const savedShape = settingsState.getMilestoneSettings(value)?.milestones?.shapeType as (MilestoneShape | undefined);
+                    // Prefer the same source the primary read path picked (`milestoneObjects`),
+                    // then the *other* source as fallback. Keeping the cache aligned with the
+                    // primary path prevents inconsistencies when the same milestone name appears
+                    // at multiple indices and only some instances carry per-identity overrides.
+                    const savedShape = (milestoneObjects?.milestones?.shapeType
+                        ?? persistedMilestoneObjects?.milestones?.shapeType
+                        ?? legacyMilestoneObjects?.milestones?.shapeType) as (MilestoneShape | undefined);
                     cachedShapes[value] = savedShape ?? allShapes[(prevShapeIndex + 1) % allShapes.length];
                     prevShapeIndex++
                 }
                 if (!cachedColors[value]) {
-                    const savedColor = (settingsState.getMilestoneSettings(value)?.milestones as any)?.fill?.solid?.color;
+                    const savedColor = (milestoneObjects?.milestones as any)?.fill?.solid?.color
+                        ?? (persistedMilestoneObjects?.milestones as any)?.fill?.solid?.color
+                        ?? (legacyMilestoneObjects?.milestones as any)?.fill?.solid?.color;
                     cachedColors[value] = savedColor ?? host.colorPalette.getColor(value).value;
                 }
                 const milestoneDataPoint: MilestoneDataPoint = {
@@ -1844,6 +1863,12 @@ export class Gantt implements IVisual {
         this.formattingSettings.parse();
         this.settingsService.state.parse(this.formattingSettings.milestones.milestoneGroup.persistSettings.value);
 
+        // Capture this BEFORE setMilestonesSettings runs so we can detect the migration scenario
+        // (report authored on v3.0.12.0 — has no persistSettings yet) and persist the legacy
+        // per-instance values into the persisted blob on first render even in Reading view.
+        // Reading the parsed state (not the raw string) handles "", "{}" and "null" uniformly.
+        const persistSettingsWasEmpty: boolean = this.settingsService.state.hasNoPersistedSettings;
+
         this.sortingOptions = Gantt.getSortingOptions(options.dataViews[0]);
         this.viewModel = this.converter(options.dataViews[0], this.sortingOptions, options.viewMode);
 
@@ -1864,10 +1889,16 @@ export class Gantt implements IVisual {
             });
 
             this.viewModel.milestoneData = newMilestoneData;
-            if (this.settingsService.state.hasBeenUpdated
-                && (options.viewMode === powerbi.ViewMode.Edit || options.viewMode === powerbi.ViewMode.InFocusEdit)
-            ) {
-                // We save state once rendering is done to save current milestones settings because they might be lost after filtering.
+            const isEditMode: boolean = options.viewMode === powerbi.ViewMode.Edit
+                || options.viewMode === powerbi.ViewMode.InFocusEdit;
+            if (this.settingsService.state.hasBeenUpdated && (isEditMode || persistSettingsWasEmpty)) {
+                // Persist the resolved milestone settings:
+                //  - In Edit mode: regular save so values survive future filtering
+                //    (this is the original v3.4.0 behavior).
+                //  - In Reading view when persistSettings was empty: one-time migration from
+                //    the legacy per-instance `milestonesCategory.objects` storage used in
+                //    v3.0.12.0 and earlier, so the next render in any mode reads from the
+                //    stable persisted blob instead of relying on the legacy fallback.
                 this.settingsService.save();
             }
         }

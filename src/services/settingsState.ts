@@ -48,6 +48,17 @@ export class SettingsState {
         );
     }
 
+    /**
+     * Returns true when the persisted settings blob has no entries.
+     * Checked AFTER `parse()` has loaded the persisted blob and BEFORE any updates
+     * to detect the migration scenario from reports authored on v3.0.12.0 (no persistSettings).
+     * Looks at the parsed state map (not the raw string), so it correctly treats
+     * `""`, `"{}"` and `"null"` as empty.
+     */
+    public get hasNoPersistedSettings(): boolean {
+        return Object.keys(this.state).length === 0;
+    }
+
     public setMilestonesSettings(milestones: UniqueMilestones): void {
         if (Object.keys(milestones).length === 0) {
             return;
