@@ -1062,6 +1062,111 @@ describe("Gantt", () => {
             });
         });
 
+        // Regression test for the fix landed in v3.4.7.0.
+        // Scenario (technical): milestone customizations exist ONLY in the per-instance
+        // `milestonesCategory.objects[index]` structure, and `milestones.persistSettings`
+        // is absent on the dataView. This is the on-disk shape of any report authored
+        // before v3.4.0 (when persistSettings was introduced) — most notably reports
+        // upgraded from v3.0.12.0 — but the same fallback / migration must apply whenever
+        // the persisted blob is empty for a given milestone name.
+        // Expected behavior in Reading view:
+        //   1. Legacy per-instance values are honored when rendering (no fallback to default
+        //      palette colors / rotated default shapes).
+        //   2. The resolved values are persisted in a one-time migration save, so subsequent
+        //      renders read from the stable `persistSettings` blob.
+        it("Reading view: legacy per-instance milestone settings are honored and migrated when persistSettings is empty", (done) => {
+            dataView = defaultDataViewBuilder.getDataView([
+                VisualData.ColumnType,
+                VisualData.ColumnTask,
+                VisualData.ColumnStartDate,
+                VisualData.ColumnDuration,
+                VisualData.ColumnResource,
+                VisualData.ColumnParent,
+                VisualData.ColumnMilestones
+            ], true);
+
+            const milestoneColumnIndex = 5;
+            const categoriesColumn = dataView?.categorical?.categories?.[milestoneColumnIndex];
+            const uniqueMilestoneTypes = lodashUniq(categoriesColumn?.values).filter(x => !!x);
+
+            // Pre-pick deterministic colors/shapes so we can assert exact values.
+            const expectedColors = uniqueMilestoneTypes.map((_, i) => `#11${(i + 1).toString().padStart(2, "0")}99`);
+            const expectedShapes = uniqueMilestoneTypes.map((_, i) =>
+                [MilestoneShape.Rhombus, MilestoneShape.Circle, MilestoneShape.Square][i % 3]
+            );
+
+            // Populate ONLY the legacy per-instance `objects` storage and leave
+            // `metadata.objects.milestones.persistSettings` untouched — exactly the on-disk
+            // shape of a report authored before v3.4.0 (e.g. an upgrade from v3.0.12.0).
+            if (dataView.categorical?.categories && !dataView.categorical.categories[milestoneColumnIndex].objects) {
+                dataView.categorical.categories[milestoneColumnIndex].objects = [];
+            }
+            categoriesColumn?.values.forEach((value: PrimitiveValue) => {
+                let milestoneSettingsObject: { milestones: { fill: any; shapeType: string } } | null = null;
+                if (value) {
+                    const index = uniqueMilestoneTypes.indexOf(value);
+                    milestoneSettingsObject = {
+                        milestones: {
+                            fill: VisualBuilder.getSolidColorStructuralObject(expectedColors[index]),
+                            shapeType: expectedShapes[index]
+                        }
+                    };
+                }
+                // @ts-ignore: matches existing "Milestone test" shape
+                dataView?.categorical?.categories?.[milestoneColumnIndex]?.objects?.push(milestoneSettingsObject);
+            });
+
+            // Sanity check: persistSettings is genuinely absent — the precondition for migration.
+            expect(dataView.metadata?.objects?.milestones).toBeUndefined();
+
+            // Spy on the host so we can assert the one-time migration save fires in Reading view.
+            const persistSpy = spyOn(visualBuilder.visualHost, "persistProperties").and.callThrough();
+
+            // Drive update() directly so we can pass viewMode = View — `VisualBuilderBase.update()`
+            // does not surface a viewMode argument.
+            visualBuilder.instance.update({
+                dataViews: [dataView],
+                viewport: visualBuilder.viewport,
+                viewMode: powerbi.ViewMode.View
+            } as powerbi.extensibility.visual.VisualUpdateOptions);
+
+            setTimeout(() => {
+                // (1) Read path fix — milestones must render with the legacy color, NOT a palette default.
+                const tasks = d3SelectAll(visualBuilder.tasks).data() as Task[];
+                const taskWithMilestones = tasks.filter((task: Task) => task.Milestones?.length);
+                const milestones = visualBuilder.milestones;
+                expect(milestones.length).toBe(taskWithMilestones.length);
+
+                taskWithMilestones.forEach((task: Task) => {
+                    task.Milestones?.forEach((milestone: Milestone) => {
+                        const idx = uniqueMilestoneTypes.indexOf(milestone.type);
+                        const actualColor = milestones[idx]?.getAttribute("fill");
+                        expect(actualColor).toBe(expectedColors[idx]);
+                    });
+                });
+
+                // (2) Migration save — host.persistProperties must be called once with a non-empty
+                // persistSettings JSON containing the resolved legacy values keyed by milestone name.
+                const milestonesCalls = persistSpy.calls.allArgs()
+                    .map(args => (args[0] as powerbi.VisualObjectInstancesToPersist).merge ?? [])
+                    .reduce((acc, list) => acc.concat(list), [] as powerbi.VisualObjectInstance[])
+                    .filter(inst => inst.objectName === "milestones");
+
+                expect(milestonesCalls.length).toBeGreaterThan(0);
+
+                const persistSettingsJson = milestonesCalls[0].properties?.persistSettings as string;
+                expect(typeof persistSettingsJson).toBe("string");
+                const persisted = JSON.parse(persistSettingsJson);
+                uniqueMilestoneTypes.forEach((name, i) => {
+                    expect(persisted[name as string]).toBeDefined();
+                    expect(persisted[name as string].fill?.solid?.color).toBe(expectedColors[i]);
+                    expect(persisted[name as string].shapeType).toBe(expectedShapes[i]);
+                });
+
+                done();
+            }, 100);
+        });
+
         it("Common milestone test", (done) => {
             dataView = defaultDataViewBuilder.getDataView([
                 VisualData.ColumnType,
