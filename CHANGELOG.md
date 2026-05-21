@@ -1,12 +1,20 @@
+## 3.4.8.0
+### Bug fixes
+* Extra milestone marker no longer appears on expanded parent (summary) rows.
+* First child's milestone is no longer duplicated on the collapsed parent row.
+
+### Code improvements
+* Extracted synthetic parent task construction into a dedicated `createParentTask` factory and pruned dead parameters from `addTaskToParentTask`.
+
 ## 3.4.7.0
 ### Bug fixes
-* Fixed milestone colors and shapes being reset in Reading view after upgrading from v3.0.12.0. Reports authored before v3.4.0 store milestone customizations in the legacy per-instance `milestonesCategory.objects` structure (the persisted JSON blob `milestones.persistSettings` did not exist yet). Reading view was reading only from `persistSettings`, so it fell back to default palette colors and the rotated default shape sequence. Edit view kept working because it reads from the legacy per-instance objects. Fix combines two changes: (1) `createMilestones` now falls back to the legacy per-instance objects (and so do the per-name shape/color caches) when `persistSettings` has no entry for a milestone name, preserving customizations from older reports in Reading view as well; the Edit-mode read path is intentionally unchanged so live edits in the formatting pane continue to apply immediately. (2) The save trigger in `updateInternal` now also fires in Reading view when `persistSettings` was empty at the start of the update — a one-time migration that copies the resolved legacy values into the persisted blob so subsequent renders read from the stable storage and the legacy fallback is no longer needed. Emptiness is detected on the parsed `SettingsState` (new `hasNoPersistedSettings` getter), so `""`, `"{}"` and `"null"` are all treated uniformly.
-* Fixed milestone color/shape inconsistency when the same milestone name appears at multiple category indices and only some instances carry per-identity overrides. The per-name `cachedShapes` / `cachedColors` lookups in `createMilestones` now prefer the same source as the primary read path (then the other source as fallback), so the value picked on the first iteration is consistent with later iterations and survives the `GetUniqueMilestones` last-write-wins dedup.
-* Fixed the timeline axis disappearing when all groups are collapsed in `Group Tasks = ON` mode. The axis date range is now computed from the full task set instead of only the currently visible rows, so it always has valid min/max dates and renders.
-* Fixed black border appearing at the top of the visual on re-render (e.g. switching report pages) while all group tasks were collapsed. Same root cause as above: when the axis was not rendered, its background rect retained the default SVG black fill. The rect now has a transparent default fill as a safety net, and with the axis-rendering fix the background also gets its styled fill applied again.
+* Milestone colors and shapes are preserved in Reading view for reports authored before v3.4.0.
+* Milestone color and shape stay consistent when the same milestone name appears at multiple category indices.
+* Timeline axis no longer disappears when all groups are collapsed in `Group Tasks = ON` mode.
+* Black border no longer appears at the top of the visual on re-render while all group tasks are collapsed.
 
 ### Behavior changes
-* The timeline axis is now stable across collapse/expand actions and always reflects the full date range of the dataset. Previously, collapsing a group with `Group Tasks = ON` could shrink the axis to the remaining visible rows. Collapse is a view-only operation and no longer affects axis scale, matching how MS Project, Smartsheet and other Gantt tools behave.
+* Timeline axis now reflects the full date range of the dataset and is stable across collapse/expand actions (collapse is a view-only operation).
 
 ## 3.4.6.0
 ### Bug fixes

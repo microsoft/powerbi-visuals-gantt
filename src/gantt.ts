@@ -1078,24 +1078,17 @@ export class Gantt implements IVisual {
 
             const {
                 taskParentName,
-                milestone,
-                startDate,
                 extraInformation,
-                highlight,
                 task
             } = this.createTask(taskCreationDetails);
 
             if (taskParentName) {
                 Gantt.addTaskToParentTask(
-                    categoryValue,
                     task,
                     tasks,
                     taskParentName,
                     addedParents,
                     collapsedTasks,
-                    milestone,
-                    startDate,
-                    highlight,
                     extraInformation,
                     selectionBuilder,
                 );
@@ -1184,6 +1177,20 @@ export class Gantt implements IVisual {
         });
     }
 
+    /**
+     * Build a leaf Task from a single data row.
+     *
+     * Leaf tasks own their own data (start/end dates, duration, resource, color,
+     * completion, milestone) and never have children (`children: null`). They may
+     * declare a parent via the `Parent` data role; if they do, the caller wires
+     * them into a synthetic parent row via `addTaskToParentTask`, which in turn
+     * uses {@link Gantt.createParentTask}.
+     *
+     * Returns the constructed task plus a few intermediate values the caller
+     * needs to decide what to do next: the parent name (or `null`), the
+     * extra-information array (forwarded to the parent for tooltips when the
+     * parent ends up collapsed), and the task itself.
+     */
     private createTask(taskCreationDetails: CreateTaskDto) {
         const {
             values,
@@ -1249,7 +1256,7 @@ export class Gantt implements IVisual {
             highlight: highlight !== null
         };
 
-        return { taskParentName, milestone: milestoneType, startDate, extraInformation, highlight, task };
+        return { taskParentName, extraInformation, task };
     }
 
     private computeTaskGroupAttributes(
@@ -1353,51 +1360,103 @@ export class Gantt implements IVisual {
         };
     }
 
+    /**
+     * Wire a leaf task into the synthetic parent object that represents its
+     * parent group.
+     *
+     * In this visual a parent is identified purely by the string value in the
+     * `Parent` data role of a child row — there is no separate "parent" data
+     * role. The synthetic parent object created here exists so that children
+     * have a single entity to point to via `task.children` (used for rollup
+     * when the group is collapsed, for hierarchy sorting, for the
+     * expand/collapse button, etc.).
+     *
+     * If the user *also* supplies an explicit data row whose `Task` equals the
+     * parent name (with `Parent = null`), that row becomes a normal leaf task
+     * with its own start/end/color/milestone. In `getGroupTasks` it is grouped
+     * together with the synthetic parent under the same key (both have
+     * `parent === null` and the same `name`) and they render on the same Gantt
+     * row. The real parent row's data is preserved and rendered through its
+     * own leaf; the synthetic parent stays a pure container.
+     *
+     * If the parent's synthetic object was already created by a previous
+     * sibling, the leaf is appended to its `children`. Otherwise a new one is
+     * built via {@link Gantt.createParentTask} and pushed into `tasks`.
+     */
     private static addTaskToParentTask(
-        categoryValue: PrimitiveValue,
         task: Task,
         tasks: Task[],
         taskParentName: string,
         addedParents: string[],
         collapsedTasks: string[],
-        milestone: string,
-        startDate: Date,
-        highlight: number,
         extraInformation: ExtraInformation[],
         selectionBuilder: ISelectionIdBuilder,
     ) {
         if (addedParents.includes(taskParentName)) {
             const parentTask: Task = tasks.find(x => x.index === 0 && x.name === taskParentName);
             parentTask.children.push(task);
-        } else {
-            addedParents.push(taskParentName);
-
-            const parentTask: Task = {
-                index: 0,
-                name: taskParentName,
-                start: null,
-                duration: null,
-                completion: null,
-                resource: null,
-                end: null,
-                parent: null,
-                children: [task],
-                visibility: true,
-                taskType: null,
-                description: null,
-                color: null,
-                tooltipInfo: null,
-                extraInformation: collapsedTasks.includes(taskParentName) ? extraInformation : null,
-                daysOffList: null,
-                wasDowngradeDurationUnit: null,
-                selected: null,
-                identity: selectionBuilder.createSelectionId(),
-                Milestones: milestone && startDate ? [{ type: milestone, start: startDate, tooltipInfo: null, category: String(categoryValue ?? "") }] : [],
-                highlight: highlight !== null
-            };
-
-            tasks.push(parentTask);
+            return;
         }
+
+        addedParents.push(taskParentName);
+        const parentTask = Gantt.createParentTask(
+            taskParentName,
+            task,
+            collapsedTasks.includes(taskParentName) ? extraInformation : null,
+            selectionBuilder,
+        );
+        tasks.push(parentTask);
+    }
+
+    /**
+     * Build the synthetic parent (summary) row.
+     *
+     * A "parent" in this visual is only the string value of the `Parent` data
+     * role on child rows — there is no separate parent data row. This object
+     * exists purely as a container so children have a `task.children`-reachable
+     * owner for hierarchy sorting, the expand/collapse button, and rollup.
+     *
+     * All data fields are `null`: when collapsed, values appear via aggregation
+     * (`updateCommonTasks` rolls children's start/end onto the first task;
+     * `updateCommonMilestones` concatenates children's Milestones onto the last
+     * task). If the user also adds an explicit row with `Task = <parent name>`
+     * and `Parent = null`, it becomes its own leaf and shares the same Gantt
+     * row via grouping — this synthetic stays a container regardless.
+     *
+     * `Milestones` is `[]` so no milestone marker appears on an expanded parent row and
+     * the first child's milestone isn't duplicated when the parent is collapsed.
+     *
+     * `index: 0` is a placeholder — reassigned by `getGroupTasks`.
+     */
+    private static createParentTask(
+        name: string,
+        firstChild: Task,
+        extraInformation: ExtraInformation[] | null,
+        selectionBuilder: ISelectionIdBuilder,
+    ): Task {
+        return {
+            index: 0,
+            name,
+            start: null,
+            duration: null,
+            completion: null,
+            resource: null,
+            end: null,
+            parent: null,
+            children: [firstChild],
+            visibility: true,
+            taskType: null,
+            description: null,
+            color: null,
+            tooltipInfo: null,
+            extraInformation,
+            daysOffList: null,
+            wasDowngradeDurationUnit: null,
+            selected: null,
+            identity: selectionBuilder.createSelectionId(),
+            Milestones: [],
+            highlight: firstChild.highlight,
+        };
     }
 
     private getExtraInformationFromValues(values: GanttColumns<any>, taskIndex: number): ExtraInformation[] {

@@ -1308,6 +1308,116 @@ describe("Gantt", () => {
                 });
             });
         });
+
+        // Regression coverage for the synthetic parent row built in
+        // `addTaskToParentTask`. It is a pure container: when expanded its
+        // `Milestones` array stays empty, so no marker is rendered on the
+        // summary row, and on collapse `updateCommonMilestones` aggregates
+        // children's milestones without duplicating the first child.
+        // See `createParentTask` JSDoc for the full contract.
+        it("Expanded parent rows must not carry inherited milestones", (done) => {
+            dataView = defaultDataViewBuilder.getDataView([
+                VisualData.ColumnType,
+                VisualData.ColumnTask,
+                VisualData.ColumnStartDate,
+                VisualData.ColumnDuration,
+                VisualData.ColumnResource,
+                VisualData.ColumnParent,
+                VisualData.ColumnMilestones
+            ], true);
+
+            visualBuilder.updateRenderTimeout(dataView, () => {
+                const tasks: Task[] = d3SelectAll(visualBuilder.tasks).data() as Task[];
+                const parentTasks: Task[] = tasks.filter((task: Task) => task.children);
+                expect(parentTasks.length).toBeGreaterThan(0);
+
+                // Synthetic parent rows are pure containers — their Milestones
+                // array must stay empty while they are expanded. Aggregation
+                // onto the parent only happens on collapse, via
+                // `updateCommonMilestones`.
+                parentTasks.forEach((parent: Task) => {
+                    expect(parent.Milestones?.length ?? 0).toBe(0);
+                });
+
+                done();
+            });
+        });
+
+        it("Expanded parent rows render no milestone markers", (done) => {
+            dataView = defaultDataViewBuilder.getDataView([
+                VisualData.ColumnType,
+                VisualData.ColumnTask,
+                VisualData.ColumnStartDate,
+                VisualData.ColumnDuration,
+                VisualData.ColumnResource,
+                VisualData.ColumnParent,
+                VisualData.ColumnMilestones
+            ], true);
+
+            visualBuilder.updateRenderTimeout(dataView, () => {
+                const parentTaskGroups = visualBuilder.tasks.filter((g: SVGGElement) => {
+                    const datum = d3Select(g).datum() as Task;
+                    return !!datum?.children;
+                });
+                expect(parentTaskGroups.length).toBeGreaterThan(0);
+
+                // No <path> milestone marker should exist inside any parent
+                // task's <g.task-milestone>.
+                parentTaskGroups.forEach((g: SVGGElement) => {
+                    const markers = g.querySelectorAll<SVGPathElement>("g.task-milestone path");
+                    expect(markers.length).toBe(0);
+                });
+
+                done();
+            });
+        });
+
+        it("Collapsed parent rolls up only children's milestones — no first-child duplicate", (done) => {
+            dataView = defaultDataViewBuilder.getDataView([
+                VisualData.ColumnType,
+                VisualData.ColumnTask,
+                VisualData.ColumnStartDate,
+                VisualData.ColumnDuration,
+                VisualData.ColumnResource,
+                VisualData.ColumnParent,
+                VisualData.ColumnMilestones
+            ], true);
+
+            visualBuilder.updateRenderTimeout(dataView, () => {
+                const tasks: Task[] = d3SelectAll(visualBuilder.tasks).data() as Task[];
+                const parentTasks: Task[] = tasks.filter((task: Task) => task.children);
+
+                // Pick a parent whose first child has at least one milestone —
+                // this is the exact scenario the regression touches (the seeded
+                // milestone would have been a duplicate of the first child).
+                const parentTask = parentTasks.find((p: Task) => p.children?.[0]?.Milestones?.length);
+                expect(parentTask).toBeDefined();
+
+                const expectedChildMilestonesCount = (parentTask!.children || [])
+                    .reduce((sum: number, child: Task) => sum + (child.Milestones?.length ?? 0), 0);
+
+                const parentTaskLabel = visualBuilder.taskLabelsText[parentTask!.index];
+                clickElement(parentTaskLabel.parentNode);
+                const collapsedTasksList = visualBuilder.instance["collapsedTasks"];
+                dataView.metadata.objects = {
+                    collapsedTasks: {
+                        list: JSON.stringify(collapsedTasksList)
+                    }
+                };
+
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    const updatedTasks: Task[] = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
+                    const updatedParent = updatedTasks[parentTask!.index];
+
+                    // After collapse, parent.Milestones must equal exactly the
+                    // children's milestones — not children + 1 (duplicate of the
+                    // first child seeded by the old constructor).
+                    expect(updatedParent.Milestones?.length ?? 0).toBe(expectedChildMilestonesCount);
+
+                    done();
+                });
+            });
+        });
     });
 
     describe("Selection", () => {
