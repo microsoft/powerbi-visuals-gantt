@@ -1180,16 +1180,14 @@ export class Gantt implements IVisual {
     /**
      * Build a leaf Task from a single data row.
      *
-     * Leaf tasks own their own data (start/end dates, duration, resource, color,
-     * completion, milestone) and never have children (`children: null`). They may
-     * declare a parent via the `Parent` data role; if they do, the caller wires
-     * them into a synthetic parent row via `addTaskToParentTask`, which in turn
-     * uses {@link Gantt.createParentTask}.
+     * A leaf owns its data (start/end, duration, resource, color, completion,
+     * milestone) and never has children. If the row declares a `Parent`, the
+     * caller wires this leaf into the synthetic parent via
+     * {@link Gantt.addTaskToParentTask}.
      *
-     * Returns the constructed task plus a few intermediate values the caller
-     * needs to decide what to do next: the parent name (or `null`), the
-     * extra-information array (forwarded to the parent for tooltips when the
-     * parent ends up collapsed), and the task itself.
+     * Returns the task plus the values the caller needs to route it: the parent
+     * name (or `null`) and the `extraInformation` array (forwarded to the
+     * parent's tooltip when that parent ends up collapsed).
      */
     private createTask(taskCreationDetails: CreateTaskDto) {
         const {
@@ -1364,24 +1362,21 @@ export class Gantt implements IVisual {
      * Wire a leaf task into the synthetic parent object that represents its
      * parent group.
      *
-     * In this visual a parent is identified purely by the string value in the
-     * `Parent` data role of a child row — there is no separate "parent" data
-     * role. The synthetic parent object created here exists so that children
-     * have a single entity to point to via `task.children` (used for rollup
-     * when the group is collapsed, for hierarchy sorting, for the
-     * expand/collapse button, etc.).
+     * In this visual a parent is only the string value of a child's `Parent`
+     * data role — there is no parent data row. The synthetic parent is a Task
+     * built here purely to host `task.children` for rollup, hierarchy sorting,
+     * and the expand/collapse button.
      *
-     * If the user *also* supplies an explicit data row whose `Task` equals the
-     * parent name (with `Parent = null`), that row becomes a normal leaf task
-     * with its own start/end/color/milestone. In `getGroupTasks` it is grouped
-     * together with the synthetic parent under the same key (both have
-     * `parent === null` and the same `name`) and they render on the same Gantt
-     * row. The real parent row's data is preserved and rendered through its
-     * own leaf; the synthetic parent stays a pure container.
+     * Re-entrance: if a previous sibling already created the synthetic parent,
+     * the leaf is appended to its `children`. Otherwise a new one is built via
+     * {@link Gantt.createParentTask} and pushed into `tasks`.
      *
-     * If the parent's synthetic object was already created by a previous
-     * sibling, the leaf is appended to its `children`. Otherwise a new one is
-     * built via {@link Gantt.createParentTask} and pushed into `tasks`.
+     * Explicit-row corner case: if the user *also* supplies a data row whose
+     * `Task` equals the parent name with `Parent = null`, that row becomes a
+     * normal leaf. With `Group Tasks = ON`, `getGroupTasks` merges it onto the
+     * synthetic parent's Gantt row by name; with `Group Tasks = OFF`, it
+     * appears as its own row. The synthetic parent stays a pure container in
+     * either case — the explicit leaf carries the data.
      */
     private static addTaskToParentTask(
         task: Task,
@@ -1409,22 +1404,20 @@ export class Gantt implements IVisual {
     }
 
     /**
-     * Build the synthetic parent (summary) row.
+     * Build the synthetic parent (summary) row — a pure container that hosts
+     * `task.children` for rollup, hierarchy sorting, and the expand/collapse
+     * button. See {@link Gantt.addTaskToParentTask} for when it is created.
      *
-     * A "parent" in this visual is only the string value of the `Parent` data
-     * role on child rows — there is no separate parent data row. This object
-     * exists purely as a container so children have a `task.children`-reachable
-     * owner for hierarchy sorting, the expand/collapse button, and rollup.
+     * All data fields are `null` initially. On collapse,
+     * `updateCommonMilestones` always concatenates children's Milestones onto
+     * the last task; `updateCommonTasks` rolls children's start/end onto the
+     * first task only when `Group Tasks = OFF`. With `Group Tasks = ON` it is
+     * skipped, so the synthetic parent stays null-dated (the visible date
+     * range comes from children rendered on the same grouped row).
      *
-     * All data fields are `null`: when collapsed, values appear via aggregation
-     * (`updateCommonTasks` rolls children's start/end onto the first task;
-     * `updateCommonMilestones` concatenates children's Milestones onto the last
-     * task). If the user also adds an explicit row with `Task = <parent name>`
-     * and `Parent = null`, it becomes its own leaf and shares the same Gantt
-     * row via grouping — this synthetic stays a container regardless.
-     *
-     * `Milestones` is `[]` so no milestone marker appears on an expanded parent row and
-     * the first child's milestone isn't duplicated when the parent is collapsed.
+     * `Milestones: []` keeps the expanded parent row empty (no inherited
+     * marker) and prevents the first child's milestone from being duplicated
+     * after rollup.
      *
      * `index: 0` is a placeholder — reassigned by `getGroupTasks`.
      */
