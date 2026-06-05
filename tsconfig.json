@@ -14,7 +14,6 @@
     "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
-    "skipLibCheck": true
   },
   "files": [
     "src/gantt.ts",
