@@ -1,5 +1,15 @@
 import { getRandomNumber } from "powerbi-visuals-utils-testutils";
 import lodashRange from "lodash.range";
+import powerbi from "powerbi-visuals-api";
+
+/**
+ * The host treats a `null` selector as "applies to the whole object", but the
+ * powerbi-visuals-api types `VisualObjectInstance.selector` as a non-nullable
+ * `Selector`. This single, sanctioned helper-style cast bridges that gap so the
+ * rest of the codebase can stay free of placeholder `as unknown as` casts.
+ */
+export const NO_SELECTOR: powerbi.visuals.ISelectionId = null as unknown as powerbi.visuals.ISelectionId;
+
 
 export const drawRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
     if (!width || !height) {

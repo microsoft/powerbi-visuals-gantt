@@ -26,8 +26,7 @@
 
 import powerbi from "powerbi-visuals-api";
 import { SettingsState } from "./settingsState";
-
-const NO_SELECTOR = null as unknown as powerbi.visuals.ISelectionId;
+import { NO_SELECTOR } from "../utils";
 
 export class SettingsService {
     private hostServices: powerbi.extensibility.visual.IVisualHost;

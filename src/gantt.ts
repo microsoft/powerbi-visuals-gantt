@@ -36,7 +36,7 @@ import {
     timeSecond as d3TimeSecond
 } from "d3-time";
 import { nest as d3Nest } from "d3-collection";
-import { drag as d3Drag, DragBehavior, D3DragEvent, SubjectPosition as d3SubjectPosition } from "d3-drag";
+import { drag as d3Drag, D3DragEvent, SubjectPosition as d3SubjectPosition } from "d3-drag";
 
 
 //lodash
@@ -111,7 +111,8 @@ import {
     drawRoundedRectByPath,
     hashCode,
     isStringNotNullEmptyOrUndefined,
-    isValidDate
+    isValidDate,
+    NO_SELECTOR
 } from "./utils";
 import { drawCollapseButton, drawExpandButton, drawMinusButton, drawPlusButton } from "./drawButtons";
 import { TextProperties } from "powerbi-visuals-utils-formattingutils/lib/src/interfaces";
@@ -209,7 +210,7 @@ interface CreateTaskDto {
     color: string;
     completion: number | null;
     categoryValue: PrimitiveValue;
-    endDate: Date;
+    endDate: Date | null;
     duration: number;
     taskType: LegendGroup | null;
     selectionBuilder: powerbi.visuals.ISelectionIdBuilder;
@@ -312,7 +313,6 @@ export class Gantt implements IVisual {
     private static ChartLineHeightDivider: number = 4;
     private static ResourceWidthPadding: number = 10;
     private static TaskLabelsMarginTop: number = 15;
-    private static readonly NO_SELECTOR = null as unknown as powerbi.visuals.ISelectionId;
     public static CompletionDefault: number | null = null;
     private static CompletionMax: number = 1;
     public static CompletionMin: number = 0;
@@ -361,7 +361,7 @@ export class Gantt implements IVisual {
     private taskGroup!: d3Selection<SVGGElement, null, null, undefined>;
     private lineGroup!: d3Selection<SVGGElement, null, null, undefined>;
     private lineGroupWrapper!: d3Selection<SVGRectElement, null, null, undefined>;
-    private lineGroupWrapperRightBorder!: d3Selection<SVGRectElement, null, null, undefined>;
+    private lineGroupWrapperRightBorder!: d3Selection<SVGRectElement, { initialX: number; initialY: number; }, null, undefined>;
     private ganttDiv!: d3Selection<HTMLDivElement, null, null, undefined>;
     private behavior!: Behavior;
     private eventService!: IVisualEventService;
@@ -465,6 +465,7 @@ export class Gantt implements IVisual {
         // Used to make right border a little thicker and draggable
         this.lineGroupWrapperRightBorder = this.lineGroup
             .append("rect")
+            .datum<{ initialX: number; initialY: number; }>({ initialX: 0, initialY: 0 })
             .classed(Gantt.TaskLinesRectRightLine.className, true)
             .attr("height", 0)
             .attr("width", 0)
@@ -510,18 +511,11 @@ export class Gantt implements IVisual {
     private handleTaskLabelResize() {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
-        this.lineGroupWrapperRightBorder
-            .each(function () {
-                d3Select(this).datum({
-                    initialX: 0,
-                    initialY: 0,
-                });
+        const dragBehavior = d3Drag<SVGRectElement, { initialX: number; initialY: number; }, d3SubjectPosition>()
+            .on("start", (event: D3DragEvent<SVGRectElement, { initialX: number; initialY: number; }, d3SubjectPosition>, datum: { initialX: number; initialY: number; }) => {
+                datum.initialX = event.x;
             })
-            .call(d3Drag<SVGRectElement, { initialX: number; initialY: number; }>()
-                .on("start", (event: D3DragEvent<SVGRectElement, { initialX: number; initialY: number; }, d3SubjectPosition>, datum: { initialX: number; initialY: number; }) => {
-                    datum.initialX = event.x;
-                })
-                .on("drag", function (event: D3DragEvent<SVGRectElement, { initialX: number; initialY: number; }, d3SubjectPosition>, datum: { initialX: number; initialY: number; }) {
+            .on("drag", function (event: D3DragEvent<SVGRectElement, { initialX: number; initialY: number; }, d3SubjectPosition>, datum: { initialX: number; initialY: number; }) {
                     const initialX = datum.initialX;
                     const dx = event.x - initialX;
                     const currentWidth = self.formattingSettings.taskLabels.taskLabelsGroup.general.width.value;
@@ -569,13 +563,15 @@ export class Gantt implements IVisual {
                     this.host.persistProperties({
                         merge: [{
                             objectName: "taskLabels",
-                            selector: Gantt.NO_SELECTOR,
+                            selector: NO_SELECTOR,
                             properties: {
                                 width: newWidth
                             }
                         }]
                     });
-                }) as DragBehavior<SVGRectElement, null, d3SubjectPosition>);
+                });
+
+        this.lineGroupWrapperRightBorder.call(dragBehavior);
     }
 
     /**
@@ -1043,7 +1039,7 @@ export class Gantt implements IVisual {
         let durationUnit: DurationUnit = <DurationUnit>this.formattingSettings.general.durationUnit.value.value.toString();
         let duration: number = this.formattingSettings.general.durationMin.value;
 
-        let endDate: Date = null as unknown as Date;
+        let endDate: Date | null = null;
 
         const taskCategory = (dataView.categorical?.categories ?? []).find(category => Gantt.hasRole(category.source, GanttRole.Task));
 
@@ -1235,7 +1231,7 @@ export class Gantt implements IVisual {
             color,
             completion,
             resource,
-            index: null as unknown as number,
+            index: -1, // placeholder; must differ from the parent's 0 sentinel used by addTaskToParentTask, reassigned by getGroupTasks
             name: taskName,
             start: startDate,
             end: endDate,
@@ -1279,7 +1275,7 @@ export class Gantt implements IVisual {
         let taskType: LegendGroup | null = null;
         let wasDowngradeDurationUnit: boolean = false;
         let stepDurationTransformation: number = 0;
-        let endDate: Date = null as unknown as Date;
+        let endDate: Date | null = null;
 
         const taskProgressShow: boolean = this.formattingSettings.taskCompletion.show.value;
 
@@ -1333,7 +1329,7 @@ export class Gantt implements IVisual {
                         color = colorHelper.getColorForMeasure(taskType.columnGroup.objects || {}, taskType.legendName);
                     }
 
-                    endDate = group.EndDate.values[index] ? group.EndDate.values[index] as Date : null as unknown as Date;
+                    endDate = group.EndDate.values[index] ? group.EndDate.values[index] as Date : null;
                     if (typeof (endDate) === "string" || typeof (endDate) === "number") {
                         endDate = new Date(endDate);
                     }
@@ -1825,7 +1821,7 @@ export class Gantt implements IVisual {
                         displayName: "",
                         queryName: legendMetaCategoryColumn.queryName
                     },
-                    values: null as unknown as PrimitiveValue[]
+                    values: []
                 };
                 return {
                     legendName: group.name?.toString() || "",
@@ -1854,7 +1850,7 @@ export class Gantt implements IVisual {
 
         const settings = this.formattingSettings.legend.general;
         const position: string | LegendPosition = this.formattingSettings.legend.show.value
-            ? (LegendPosition as any)[settings.position.value.value]
+            ? LegendPosition[settings.position.value.value as keyof typeof LegendPosition]
             : LegendPosition.None;
 
         this.legend.changeOrientation(position as LegendPosition);
@@ -2026,7 +2022,7 @@ export class Gantt implements IVisual {
                 endDate = new Date(endDate.valueOf() + (24 * 60 * 60 * 1000));
             }
 
-            const dateTypeMilliseconds: number = Gantt.getDateType((DateType as any)[settings.dateType.type.value.value]);
+            const dateTypeMilliseconds: number = Gantt.getDateType(DateType[settings.dateType.type.value.value as keyof typeof DateType]);
             let ticks: number = Math.ceil(Math.round(endDate.valueOf() - startDate.valueOf()) / dateTypeMilliseconds);
             ticks = ticks < 2 ? 2 : ticks;
 
@@ -2142,7 +2138,7 @@ export class Gantt implements IVisual {
             showCategoryAxisLabel: false,
             showValueAxisLabel: false,
             categoryAxisScaleType: axisScale.linear,
-            valueAxisScaleType: null as unknown as string,
+            valueAxisScaleType: null,
             valueAxisDisplayUnits: 0,
             categoryAxisDisplayUnits: 0,
             trimOrdinalDataOnOverflow: false,
@@ -2170,7 +2166,7 @@ export class Gantt implements IVisual {
         viewportIn: IViewport,
         options: GanttCalculateScaleAndDomainOptions,
         metaDataColumn: DataViewMetadataColumn): IAxisProperties {
-        const dateType: DateType = (DateType as any)[this.formattingSettings.dateType.type.value.value];
+        const dateType: DateType = DateType[this.formattingSettings.dateType.type.value.value as keyof typeof DateType];
         const cultureSelector: string = this.host.locale || "";
         const xAxisDateFormatter: IValueFormatter = ValueFormatter.create({
             format: Gantt.DefaultValues.DateFormatStrings[dateType],
@@ -2985,13 +2981,13 @@ export class Gantt implements IVisual {
         this.host.persistProperties({
             merge: [{
                 objectName: "collapsedTasks",
-                selector: Gantt.NO_SELECTOR,
+                selector: NO_SELECTOR,
                 properties: {
                     list: JSON.stringify(collapsedValues)
                 }
             }, {
                 objectName: "collapsedTasksUpdateId",
-                selector: Gantt.NO_SELECTOR,
+                selector: NO_SELECTOR,
                 properties: {
                     value: JSON.stringify(collapsedTasksUpdateId)
                 }
@@ -3626,7 +3622,7 @@ export class Gantt implements IVisual {
             } else if (isGroupedByTaskName) {
                 taskResourceMerged
                     .each(function (task: Task, outerIndex: number) {
-                        const sameRowNextTaskStart: Date = Gantt.getSameRowNextTaskStartDate(task, outerIndex, taskResourceMerged);
+                        const sameRowNextTaskStart: Date | null = Gantt.getSameRowNextTaskStartDate(task, outerIndex, taskResourceMerged);
 
                         if (sameRowNextTaskStart) {
                             let width: number = 0;
@@ -3656,7 +3652,7 @@ export class Gantt implements IVisual {
     }
 
     private static getSameRowNextTaskStartDate(task: Task, index: number, selection: d3Selection<SVGTextElement, Task, SVGGElement, Task>) {
-        let sameRowNextTaskStart: Date = null as unknown as Date;
+        let sameRowNextTaskStart: Date | null = null;
 
         selection
             .each(function (x: Task, i: number) {

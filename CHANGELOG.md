@@ -1,5 +1,6 @@
 ## 3.4.9.0
 ### Code improvements
+* Enabled `strictNullChecks` and `noImplicitAny` in `tsconfig.json`. Reworked the remaining `null as unknown as X` placeholder casts into proper `T | null` signatures (`endDate`, `valueAxisScaleType`, `sameRowNextTaskStart`, synthetic legend column values, task `index` placeholder), replaced `(LegendPosition as any)[…]`/`(DateType as any)[…]` with `EnumType[keyof typeof EnumType]` indexing, typed the drag-resize behavior and the `onPreProcess` container guard, and centralized the single sanctioned "no selector" cast in `NO_SELECTOR`. Added `skipLibCheck` so the strict flags apply to first-party source only.
 * Improved type safety: nullable fields in domain interfaces, null-guards in handlers, and several real bugs fixed along the way (operator-precedence in `progressLength`, `layer` initialization for date-less tasks, `Date`/`number` comparison in milestone titles, `CompletionDefault` semantics).
 
 ## 3.4.8.0

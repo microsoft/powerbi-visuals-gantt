@@ -132,7 +132,7 @@ export interface GanttCalculateScaleAndDomainOptions {
     showValueAxisLabel: boolean;
     forceMerge: boolean;
     categoryAxisScaleType: string;
-    valueAxisScaleType: string;
+    valueAxisScaleType: string | null;
     trimOrdinalDataOnOverflow: boolean;
     forcedTickCount?: number;
     forcedYDomain?: any[];

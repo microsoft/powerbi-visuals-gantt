@@ -139,8 +139,9 @@ export class TaskLabelSettings extends Card {
 
     public onPreProcess(): void {
         this.container!.containerItems?.forEach((item) => {
-            if ((item as any).onPreProcess) {
-                (item as any).onPreProcess();
+            const preProcessable = item as { onPreProcess?: () => void };
+            if (typeof preProcessable.onPreProcess === "function") {
+                preProcessable.onPreProcess();
             }
         });
     }
