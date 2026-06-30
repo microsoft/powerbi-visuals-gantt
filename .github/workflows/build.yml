@@ -33,7 +33,9 @@ jobs:
         run: |
           set -o pipefail
           npm test 2>&1 | tee test-output.log
-          if grep -q "ERROR in" test-output.log; then
+          # Strip ANSI escape sequences so grep works reliably with colored output.
+          sed -E 's/\x1B\[[0-9;]*[mK]//g' test-output.log > test-output.clean.log
+          if grep -Eiq "ERROR in|compiled with [1-9][0-9]* errors" test-output.clean.log; then
             echo "Found TypeScript or webpack compilation errors in test output"
             exit 1
           fi
