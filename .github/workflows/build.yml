@@ -29,6 +29,13 @@ jobs:
       - run: npm run eslint --if-present
       - run: npm run lint --if-present
       - run: npm run package
-      - run: npm test
+      - name: Run tests and fail on TypeScript bundling errors
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee test-output.log
+          if grep -q "ERROR in" test-output.log; then
+            echo "Found TypeScript or webpack compilation errors in test output"
+            exit 1
+          fi
         env:
           CI: true
