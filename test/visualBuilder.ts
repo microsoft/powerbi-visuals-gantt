@@ -187,11 +187,11 @@ export class VisualBuilder extends VisualBuilderBase<VisualClass> {
         return { solid: { color: color } };
     }
 
-    public static getTaskMockData(mockArray: object, mockCaseName: string): Task[] {
+    public static getTaskMockData(mockArray: Record<string, { data: Task[]; expected: Task[] }>, mockCaseName: string): Task[] {
         return mockArray[mockCaseName]["data"];
     }
 
-    public static getTaskMockExpected(mockArray: object, mockCaseName: string): Task[] {
+    public static getTaskMockExpected(mockArray: Record<string, { data: Task[]; expected: Task[] }>, mockCaseName: string): Task[] {
         return mockArray[mockCaseName]["expected"];
     }
 
