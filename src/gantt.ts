@@ -1825,7 +1825,7 @@ export class Gantt implements IVisual {
             const groupValues = values.grouped();
             legendTypes.types = groupValues.map((group: DataViewValueColumnGroup): LegendGroup => {
                 const column: DataViewCategoryColumn = {
-                    identity: group.identity ? [group.identity] : [],
+                    identity: [group.identity!],
                     source: {
                         displayName: "",
                         queryName: legendMetaCategoryColumn.queryName
@@ -2787,8 +2787,7 @@ export class Gantt implements IVisual {
         buttonSelection
             .each(function (task: GroupedTask) {
                 const element = d3Select(this) as unknown as d3Selection<SVGElement, any, any, any>;
-                const firstChild = task.tasks[0].children?.[0];
-                if (firstChild && !firstChild.visibility) {
+                if (!task.tasks[0].children![0].visibility) {
                     drawPlusButton(element, buttonPlusMinusColor);
                 } else {
                     drawMinusButton(element, buttonPlusMinusColor);

@@ -2266,7 +2266,7 @@ describe("Gantt", () => {
                 fixDataViewDateValuesAggregation(dataView);
 
                 let color: string = getRandomHexColor();
-                const parsedColor = parseColorString(color);
+                const parsedColor = parseColorString(color)!;
                 const darkenedColor = darken(parsedColor, 50);
                 const rgbStr = rgbString(darkenedColor);
 
