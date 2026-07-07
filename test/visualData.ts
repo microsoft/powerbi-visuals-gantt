@@ -148,7 +148,7 @@ export class VisualData extends TestDataViewBuilder {
 
         const valuesColumns = this.getValuesColumns(highlights);
 
-        return this.createCategoricalDataViewBuilder(categoriesColumns, valuesColumns, columnNames as string[]).build();
+        return this.createCategoricalDataViewBuilder(categoriesColumns, valuesColumns, columnNames).build();
     }
 
     private getValuesColumns(highlights: number[]) {
@@ -264,6 +264,6 @@ export class VisualData extends TestDataViewBuilder {
             }
         ];
 
-        return this.createCategoricalDataViewBuilder(categoriesColumns, valuesColumns, undefined as unknown as string[]).build();
+        return this.createCategoricalDataViewBuilder(categoriesColumns, valuesColumns).build();
     }
 }

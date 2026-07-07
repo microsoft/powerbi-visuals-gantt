@@ -272,7 +272,10 @@ describe("Gantt", () => {
                 let tasks = d3Select(visualBuilder.element).selectAll(".task").data() as Task[];
 
                 for (let task of tasks) {
-                    expect(task.start!.toDateString()).toEqual(new Date(Date.now()).toDateString());
+                    expect(task.start).toBeDefined();
+                    if (task.start) {
+                        expect(task.start.toDateString()).toEqual(new Date(Date.now()).toDateString());
+                    }
                 }
 
                 done();

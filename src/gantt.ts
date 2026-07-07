@@ -979,9 +979,9 @@ export class Gantt implements IVisual {
                     prevShapeIndex++
                 }
                 if (!cachedColors[value]) {
-                    const savedColor = (milestoneObjects?.milestones as any)?.fill?.solid?.color
-                        ?? (persistedMilestoneObjects?.milestones as any)?.fill?.solid?.color
-                        ?? (legacyMilestoneObjects?.milestones as any)?.fill?.solid?.color;
+                    const savedColor = (milestoneObjects?.milestones?.fill as powerbi.Fill | undefined)?.solid?.color
+                        ?? (persistedMilestoneObjects?.milestones?.fill as powerbi.Fill | undefined)?.solid?.color
+                        ?? (legacyMilestoneObjects?.milestones?.fill as powerbi.Fill | undefined)?.solid?.color;
                     cachedColors[value] = savedColor ?? host.colorPalette.getColor(value).value;
                 }
                 const milestoneDataPoint: MilestoneDataPoint = {
@@ -989,8 +989,7 @@ export class Gantt implements IVisual {
                     identity: selectionBuilder.createSelectionId(),
                     shapeType: milestoneObjects?.milestones?.shapeType ?
                         milestoneObjects.milestones.shapeType as string : cachedShapes[value],
-                    color: milestoneObjects?.milestones?.fill ?
-                        (milestoneObjects.milestones as any).fill.solid.color : cachedColors[value],
+                    color: (milestoneObjects?.milestones?.fill as powerbi.Fill | undefined)?.solid?.color ?? cachedColors[value],
                 };
                 milestoneData.dataPoints.push(milestoneDataPoint);
             });
@@ -1226,8 +1225,10 @@ export class Gantt implements IVisual {
 
         let highlight: number | null = null;
         if (hasHighlights && categoricalValues) {
-            const notNullIndex = categoricalValues.findIndex(value => value.highlights && value.values[index] != null);
-            if (notNullIndex != -1) highlight = <number>categoricalValues[notNullIndex].highlights![index];
+            const notNullColumn = categoricalValues.find(value => value.highlights && value.values[index] != null);
+            if (notNullColumn?.highlights) {
+                highlight = <number>notNullColumn.highlights[index];
+            }
         }
 
         const taskName: string = String(categoryValue ?? "");
@@ -1824,7 +1825,7 @@ export class Gantt implements IVisual {
             const groupValues = values.grouped();
             legendTypes.types = groupValues.map((group: DataViewValueColumnGroup): LegendGroup => {
                 const column: DataViewCategoryColumn = {
-                    identity: [group.identity!],
+                    identity: group.identity ? [group.identity] : [],
                     source: {
                         displayName: "",
                         queryName: legendMetaCategoryColumn.queryName
@@ -2786,7 +2787,8 @@ export class Gantt implements IVisual {
         buttonSelection
             .each(function (task: GroupedTask) {
                 const element = d3Select(this) as unknown as d3Selection<SVGElement, any, any, any>;
-                if (!task.tasks[0].children![0].visibility) {
+                const firstChild = task.tasks[0].children?.[0];
+                if (firstChild && !firstChild.visibility) {
                     drawPlusButton(element, buttonPlusMinusColor);
                 } else {
                     drawMinusButton(element, buttonPlusMinusColor);
@@ -2890,9 +2892,9 @@ export class Gantt implements IVisual {
 
             const buttonExpandCollapseColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.CollapseAllColor);
             if (this.collapsedTasks.length) {
-                drawExpandButton(expandCollapseButton as any, buttonExpandCollapseColor);
+                drawExpandButton(expandCollapseButton, buttonExpandCollapseColor);
             } else {
-                drawCollapseButton(expandCollapseButton as any, buttonExpandCollapseColor);
+                drawCollapseButton(expandCollapseButton, buttonExpandCollapseColor);
             }
 
             if (taskLabelShow) {
@@ -3336,7 +3338,7 @@ export class Gantt implements IVisual {
                 const updatedMilestones: MilestonePath[] = nestedByDate.map((nestedObj) => {
                     const oneDateMilestones: Milestone[] = nestedObj.values;
                     // if there is 2 or more milestones for concrete date => draw only one milestone for concrete date, but with tooltip for all of them
-                    const currentMilestone = [...oneDateMilestones].pop()!;
+                    const currentMilestone = oneDateMilestones[oneDateMilestones.length - 1];
                     const allTooltipInfo = oneDateMilestones.map((milestone) => milestone.tooltipInfo);
                     currentMilestone.tooltipInfo = allTooltipInfo.reduce((a, b) => (a || []).concat(b || []), [] as VisualTooltipDataItem[] | null);
 
@@ -3766,7 +3768,7 @@ export class Gantt implements IVisual {
     */
     private getDaysOffTaskProgressPercent(task: Task) {
         if (this.formattingSettings.daysOff.show.value) {
-            if (task.daysOffList && task.daysOffList.length && task.duration && task.completion) {
+            if (task.daysOffList && task.daysOffList.length && task.duration && task.completion && task.start && task.end) {
                 let durationUnit: DurationUnit = <DurationUnit>this.formattingSettings.general.durationUnit.value.value.toString();
                 if (task.wasDowngradeDurationUnit) {
                     durationUnit = DurationHelper.downgradeDurationUnit(durationUnit, task.duration);
@@ -3779,7 +3781,7 @@ export class Gantt implements IVisual {
                 const daysOffFiltered: DayOffData[] = task.daysOffList
                     .filter((date) => startTime <= date[0].getTime() && date[0].getTime() <= currentProgressTime);
 
-                const extraDuration: number = Gantt.calculateExtraDurationDaysOff(daysOffFiltered, task.end!, task.start!, +this.formattingSettings.daysOff.firstDayOfWeek.value.value, durationUnit);
+                const extraDuration: number = Gantt.calculateExtraDurationDaysOff(daysOffFiltered, task.end, task.start, +this.formattingSettings.daysOff.firstDayOfWeek.value.value, durationUnit);
                 const extraDurationPercentage = extraDuration / task.duration;
                 return task.completion + extraDurationPercentage;
             }
