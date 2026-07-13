@@ -31,7 +31,7 @@ import ISelectionManager = powerbi.extensibility.ISelectionManager;
 
 import { Task, GroupedTask } from "./interfaces";
 import { LegendDataPoint } from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
-import { NO_SELECTOR } from "./utils";
+import { NO_SELECTOR } from "./constants";
 
 export const DimmedOpacity: number = 0.4;
 export const DefaultOpacity: number = 1.0;

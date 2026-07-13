@@ -111,9 +111,9 @@ import {
     drawRoundedRectByPath,
     hashCode,
     isStringNotNullEmptyOrUndefined,
-    isValidDate,
-    NO_SELECTOR
+    isValidDate
 } from "./utils";
+import { NO_SELECTOR } from "./constants";
 import { drawCollapseButton, drawExpandButton, drawMinusButton, drawPlusButton } from "./drawButtons";
 import { TextProperties } from "powerbi-visuals-utils-formattingutils/lib/src/interfaces";
 

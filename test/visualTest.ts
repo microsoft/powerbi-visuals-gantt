@@ -53,7 +53,8 @@ import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 import { DayOffData, Milestone, Task, TaskDaysOff } from "../src/interfaces";
 import { DurationHelper } from "../src/durationHelper";
 import { Gantt, Gantt as VisualClass } from "../src/gantt";
-import { getRandomHexColor, isValidDate } from "../src/utils";
+import { getRandomHexColor } from "./helpers/randomHelpers";
+import { isValidDate } from "../src/utils";
 
 import { DefaultOpacity, DimmedOpacity } from "../src/behavior";
 import { DateType, Day, DurationUnit, MilestoneShape, ResourceLabelPosition } from "../src/enums";
@@ -2266,7 +2267,11 @@ describe("Gantt", () => {
                 fixDataViewDateValuesAggregation(dataView);
 
                 let color: string = getRandomHexColor();
-                const parsedColor = parseColorString(color)!;
+                const parsedColor = parseColorString(color);
+                expect(parsedColor).toBeDefined();
+                if (!parsedColor) {
+                    throw new Error(`Failed to parse color: ${color}`);
+                }
                 const darkenedColor = darken(parsedColor, 50);
                 const rgbStr = rgbString(darkenedColor);
 
