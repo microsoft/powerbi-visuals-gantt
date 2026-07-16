@@ -92,16 +92,17 @@ export class LegendCardSettings extends CompositeCard implements ISetHighContras
             return;
         }
 
+        const legendColorSlices: Slice[] = [];
         const legendColorsGroup = new Group({
             name: "legendColorsGroup",
             displayNameKey: "Visual_Colors",
-            slices: []
+            slices: legendColorSlices
         });
 
         this.groups = [this.general, legendColorsGroup];
 
         for (const dataPoint of dataPoints) {
-            legendColorsGroup.slices!.push(new ColorPicker({
+            legendColorSlices.push(new ColorPicker({
                 name: "fill",
                 displayName: dataPoint.label || localizationManager.getDisplayName("Visual_LegendColor"),
                 selector: ColorHelper.normalizeSelector(dataPoint.identity.getSelector(), false),

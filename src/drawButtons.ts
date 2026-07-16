@@ -38,7 +38,7 @@ export const drawPlusButton = (selection: d3Selection<SVGElement, any, any, any>
         .attr("fill", color);
 };
 
-export const drawExpandButton = (selection: d3Selection<d3BaseType, any, any, any>, color: string) => {
+export const drawExpandButton = <GElement extends d3BaseType>(selection: d3Selection<GElement, any, any, any>, color: string) => {
     selection
         .append("path")
         .attr("d", "M33.17 17.17l-9.17 9.17-9.17-9.17-2.83 2.83 12 12 12-12z")
@@ -50,7 +50,7 @@ export const drawExpandButton = (selection: d3Selection<d3BaseType, any, any, an
         .attr("fill", "none");
 };
 
-export const drawCollapseButton = (selection: d3Selection<d3BaseType, any, any, any>, color: string) => {
+export const drawCollapseButton = <GElement extends d3BaseType>(selection: d3Selection<GElement, any, any, any>, color: string) => {
     selection
         .append("path")
         .attr("d", "M24 16l-12 12 2.83 2.83 9.17-9.17 9.17 9.17 2.83-2.83z")

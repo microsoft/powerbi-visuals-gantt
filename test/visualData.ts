@@ -251,7 +251,7 @@ export class VisualData extends TestDataViewBuilder {
                     roles: { [GanttRole.Duration]: true }
                 },
                 values: this.valuesDuration,
-                highlights: this.valuesDuration.map((value, index) => index === highlightedElementIndex ? value : null)
+                highlights: this.valuesDuration.map((value, index) => index === highlightedElementIndex ? value : null) as powerbi.PrimitiveValue[]
             },
             {
                 source: {
@@ -260,10 +260,10 @@ export class VisualData extends TestDataViewBuilder {
                     roles: { [GanttRole.Completion]: true }
                 },
                 values: this.valuesCompletePrecntege,
-                highlights: this.valuesCompletePrecntege.map((value, index) => index === highlightedElementIndex ? value : null)
+                highlights: this.valuesCompletePrecntege.map((value, index) => index === highlightedElementIndex ? value : null) as powerbi.PrimitiveValue[]
             }
         ];
 
-        return this.createCategoricalDataViewBuilder(categoriesColumns, valuesColumns, undefined).build();
+        return this.createCategoricalDataViewBuilder(categoriesColumns, valuesColumns).build();
     }
 }

@@ -94,7 +94,7 @@
     "less-loader": "^12.3.2",
     "playwright-chromium": "^1.58.2",
     "powerbi-visuals-tools": "^7.0.2",
-    "powerbi-visuals-utils-testutils": "^6.1.1",
+    "powerbi-visuals-utils-testutils": "^7.0.1",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.3",

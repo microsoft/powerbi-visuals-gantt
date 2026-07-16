@@ -31,6 +31,7 @@ import ISelectionManager = powerbi.extensibility.ISelectionManager;
 
 import { Task, GroupedTask } from "./interfaces";
 import { LegendDataPoint } from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
+import { NO_SELECTOR } from "./constants";
 
 export const DimmedOpacity: number = 0.4;
 export const DefaultOpacity: number = 1.0;
@@ -149,7 +150,7 @@ export class Behavior {
         this.options.taskSelection.on("contextmenu", (event: MouseEvent, dataPoint: Task) => {
             event.preventDefault();
             event.stopPropagation();
-            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : null as any, {
+            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : NO_SELECTOR, {
                 x: event.clientX,
                 y: event.clientY,
             });
@@ -158,7 +159,7 @@ export class Behavior {
         this.options.legendSelection.on("contextmenu", (event: MouseEvent, dataPoint: LegendDataPoint) => {
             event.preventDefault();
             event.stopPropagation();
-            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : null as any, {
+            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : NO_SELECTOR, {
                 x: event.clientX,
                 y: event.clientY,
             });
@@ -167,7 +168,7 @@ export class Behavior {
         this.options.clearCatcher.on("contextmenu", (event: MouseEvent) => {
             event.preventDefault();
             event.stopPropagation();
-            this.selectionManager.showContextMenu(null as any, {
+            this.selectionManager.showContextMenu(NO_SELECTOR, {
                 x: event.clientX,
                 y: event.clientY,
             });

@@ -1,6 +1,3 @@
-import { getRandomNumber } from "powerbi-visuals-utils-testutils";
-import lodashRange from "lodash.range";
-
 export const drawRoundedRectByPath = (x: number, y: number, width: number, height: number, radius: number) => {
     if (!width || !height) {
         return undefined;
@@ -46,19 +43,6 @@ export function drawCircle(taskConfigHeight: number): string {
 
 export function drawDiamond(taskConfigHeight: number): string {
     return `M ${taskConfigHeight / 4} 0 ${taskConfigHeight / 2} ${taskConfigHeight / 2} ${taskConfigHeight / 4} ${taskConfigHeight} 0 ${taskConfigHeight / 2} Z`;
-}
-
-export function getRandomHexColor(): string {
-    return getHexColorFromNumber(getRandomInteger(0, 16777215 + 1));
-}
-
-export function getHexColorFromNumber(value: number) {
-    const hex: string = value.toString(16).toUpperCase();
-    return "#" + (hex.length === 6 ? hex : lodashRange(0, 6 - hex.length, 0).join("") + hex);
-}
-
-export function getRandomInteger(min: number, max: number, exceptionList?: number[]): number {
-    return getRandomNumber(max, min, exceptionList, Math.floor);
 }
 
 export function isValidDate(date: Date | null | undefined): boolean {
