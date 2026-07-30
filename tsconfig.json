@@ -13,6 +13,8 @@
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
     "noImplicitAny": true,
     "skipLibCheck": true
   },
