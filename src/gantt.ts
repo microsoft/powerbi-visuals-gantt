@@ -1920,9 +1920,10 @@ export class Gantt implements IVisual {
             }
 
             this.updateInternal(options);
-        } catch (error) {
-            console.error(error);
-            this.eventService.renderingFailed(options, error as string);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error(errorMessage);
+            this.eventService.renderingFailed(options, errorMessage);
         }
     }
 
@@ -2608,7 +2609,7 @@ export class Gantt implements IVisual {
         maxWidth: number,
         maxHeight: number = 2
     ): void {
-        selection.each(function (task: GroupedTask) {
+        selection.each(function (this: SVGTextElement, task: GroupedTask) {
             const textElement = d3Select(this);
             const text = task.name;
             const computedStyle = window.getComputedStyle(this);
@@ -2785,7 +2786,7 @@ export class Gantt implements IVisual {
 
         const buttonPlusMinusColor = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.PlusMinusColor);
         buttonSelection
-            .each(function (task: GroupedTask) {
+            .each(function (this: SVGSVGElement, task: GroupedTask) {
                 const element = d3Select(this) as unknown as d3Selection<SVGElement, any, any, any>;
                 if (!task.tasks[0].children![0].visibility) {
                     drawPlusButton(element, buttonPlusMinusColor);
@@ -3258,7 +3259,7 @@ export class Gantt implements IVisual {
                 .style("stroke-width", taskSettings.border.width.value || highContrastModeTaskRectStroke);
         }
 
-        taskRectMerged.each(function (d: Task) {
+        taskRectMerged.each(function (this: SVGPathElement, d: Task) {
             const node = d3Select(this);
             const width = Number(node.attr("width"));
             if (isNaN(width) || width === 0) {
@@ -3630,13 +3631,13 @@ export class Gantt implements IVisual {
 
             if (taskResourceWidthByTask) {
                 taskResourceMerged
-                    .each(function (task: Task) {
+                    .each(function (this: SVGTextElement, task: Task) {
                         const width: number = hasNotNullableDates && task.start && task.end ? Gantt.taskDurationToWidth(task.start, task.end) : 0;
                         AxisHelper.LabelLayoutStrategy.clip(d3Select(this), width - Gantt.RectRound * 2, textMeasurementService.svgEllipsis);
                     });
             } else if (isGroupedByTaskName) {
                 taskResourceMerged
-                    .each(function (task: Task, outerIndex: number) {
+                    .each(function (this: SVGTextElement, task: Task, outerIndex: number) {
                         const sameRowNextTaskStart: Date | null = Gantt.getSameRowNextTaskStartDate(task, outerIndex, taskResourceMerged);
 
                         if (sameRowNextTaskStart) {
@@ -3655,7 +3656,7 @@ export class Gantt implements IVisual {
                     });
             } else if (!taskResourceFullText) {
                 taskResourceMerged
-                    .each(function () {
+                    .each(function (this: SVGTextElement) {
                         AxisHelper.LabelLayoutStrategy.clip(d3Select(this), defaultWidth, textMeasurementService.svgEllipsis);
                     });
             }
