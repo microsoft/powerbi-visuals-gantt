@@ -1915,6 +1915,7 @@ export class Gantt implements IVisual {
             // Without this, PBI only delivers the first ~1000-row segment and never calls update() with the rest.
             if (options.dataViews[0].metadata.segment) {
                 this.host.fetchMoreData(true);
+                return;
             }
 
             const collapsedTasksUpdateId: any = options.dataViews[0].metadata?.objects?.collapsedTasksUpdateId?.value;
