@@ -143,6 +143,7 @@ import ISelectionIdBuilder = powerbi.visuals.ISelectionIdBuilder;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import IVisual = powerbi.extensibility.visual.IVisual;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import VisualUpdateType = powerbi.VisualUpdateType;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 // powerbi.extensibility.utils.svg
 import SVGManipulations = SVGUtil.manipulation;
@@ -379,6 +380,18 @@ export class Gantt implements IVisual {
     private collapsedTasksUpdateIDs: string[] = [];
     private sortingOptions!: SortingOptions;
     private settingsService!: SettingsService;
+
+    // Accumulates data across segmented (multi-fetch) deliveries. Power BI streams large
+    // categorical data in ~1000-row segments; we merge each appended segment into this dataView
+    // so the visual renders the complete dataset instead of only the first segment.
+    private mergedDataView: DataView | null = null;
+
+    // Marks a categorical.values array that we have taken ownership of for cross-segment merging.
+    private static readonly managedValuesFlag: string = "__ganttManagedValues";
+
+    // Caches per-series group `objects` (persisted legend colors) and identity by series name, so
+    // they survive the cross-segment merge and rebuilt grouped() instead of resetting to default.
+    private static readonly groupObjectsCacheKey: string = "__ganttGroupObjects";
 
     constructor(options: VisualConstructorOptions | undefined) {
         // The tooling-generated visualPlugin.ts (powerbi-visuals-tools) calls the plugin's
@@ -874,6 +887,18 @@ export class Gantt implements IVisual {
             });
 
         return legendData;
+    }
+
+    private resolveSortingOptions(dataView: DataView, updateType: VisualUpdateType): SortingOptions {
+        const sortingOption: SortingOptions = Gantt.getSortingOptions(dataView);
+        const isDataUpdate: boolean = (updateType & VisualUpdateType.Data) === VisualUpdateType.Data;
+
+        // Preserve user sort on non-data updates (e.g. format pane changes) that arrive without sort metadata.
+        if (!sortingOption.isCustomSortingNeeded && !isDataUpdate && this.sortingOptions?.isCustomSortingNeeded) {
+            return this.sortingOptions;
+        }
+
+        return sortingOption;
     }
 
     private static getSortingOptions(dataView: DataView): SortingOptions {
@@ -1902,6 +1927,224 @@ export class Gantt implements IVisual {
     }
 
     /**
+     * Merge an appended data segment into the already-accumulated dataView, in place.
+     *
+     * Power BI streams large categorical data as multiple segments. Category rows are simply
+     * concatenated, but the grouped value columns cannot be merged by position: a given segment
+     * only contains the series (Legend groups) that actually occur within its row window, so the
+     * column set and column order differ between segments. We therefore align value columns by
+     * (series, measure) identity, null-pad any series missing from a segment so every column keeps
+     * the same length as the category axis, append brand-new series introduced later, and rebuild
+     * `grouped()` so downstream code sees the complete, consistent series structure.
+     * @param target The accumulated dataView (mutated in place).
+     * @param source The newly appended segment dataView.
+     */
+    private static appendSegment(target: DataView, source: DataView): void {
+        const targetCategorical = target.categorical;
+        const sourceCategorical = source.categorical;
+        if (!targetCategorical || !sourceCategorical) {
+            return;
+        }
+
+        const previousLength: number = targetCategorical.categories?.[0]?.values.length ?? 0;
+        const segmentLength: number = sourceCategorical.categories?.[0]?.values.length
+            ?? sourceCategorical.values?.[0]?.values.length ?? 0;
+
+        // 1) Concatenate category columns (values + identities) by role position.
+        const targetCategories = targetCategorical.categories;
+        const sourceCategories = sourceCategorical.categories;
+        if (targetCategories && sourceCategories) {
+            targetCategories.forEach((category, i) => {
+                const sourceCategory = sourceCategories[i];
+                if (!sourceCategory) {
+                    return;
+                }
+                for (const value of sourceCategory.values) {
+                    category.values.push(value);
+                }
+                if (category.identity && sourceCategory.identity) {
+                    for (const identity of sourceCategory.identity) {
+                        category.identity.push(identity);
+                    }
+                }
+            });
+        }
+
+        // 2) Merge grouped value columns by (series, measure) identity, keeping every column the
+        //    same length as the category axis by null-padding series absent from this segment.
+        const managedValues = Gantt.ensureManagedValues(target);
+        const sourceValues = (sourceCategorical.values ?? []) as unknown as DataViewValueColumn[];
+        const usedSourceColumns = new Set<number>();
+
+        for (const targetColumn of managedValues) {
+            const key: string = Gantt.valueColumnKey(targetColumn);
+            let matchIndex = -1;
+            for (let i = 0; i < sourceValues.length; i++) {
+                if (usedSourceColumns.has(i)) {
+                    continue;
+                }
+                if (Gantt.valueColumnKey(sourceValues[i]) === key) {
+                    matchIndex = i;
+                    break;
+                }
+            }
+
+            if (matchIndex >= 0) {
+                usedSourceColumns.add(matchIndex);
+                const sourceColumn = sourceValues[matchIndex];
+                for (const value of sourceColumn.values) {
+                    targetColumn.values.push(value);
+                }
+                if (targetColumn.highlights) {
+                    const sourceHighlights = sourceColumn.highlights;
+                    for (let k = 0; k < segmentLength; k++) {
+                        targetColumn.highlights.push(sourceHighlights ? sourceHighlights[k] : (null as unknown as PrimitiveValue));
+                    }
+                }
+            } else {
+                for (let k = 0; k < segmentLength; k++) {
+                    targetColumn.values.push(null as unknown as PrimitiveValue);
+                }
+                if (targetColumn.highlights) {
+                    for (let k = 0; k < segmentLength; k++) {
+                        targetColumn.highlights.push(null as unknown as PrimitiveValue);
+                    }
+                }
+            }
+        }
+
+        // 3) Append any series/measure columns this segment introduces for the first time,
+        //    back-filled with nulls for the rows that preceded them.
+        for (let i = 0; i < sourceValues.length; i++) {
+            if (usedSourceColumns.has(i)) {
+                continue;
+            }
+            const sourceColumn = sourceValues[i];
+            const newColumn: DataViewValueColumn = {
+                source: sourceColumn.source,
+                values: new Array(previousLength).fill(null).concat(sourceColumn.values),
+            } as DataViewValueColumn;
+            if (sourceColumn.highlights) {
+                (newColumn as { highlights: PrimitiveValue[] }).highlights =
+                    new Array(previousLength).fill(null).concat(sourceColumn.highlights);
+            }
+            managedValues.push(newColumn);
+        }
+
+        // 4) Cache any series' legend colors this segment introduces, then rebuild grouped() so it
+        //    reflects newly added series/columns (with their persisted colors preserved).
+        const managed = managedValues as DataViewValueColumn[] & { [flag: string]: unknown };
+        managed[Gantt.groupObjectsCacheKey] = Gantt.cacheGroupObjects(
+            (managed[Gantt.groupObjectsCacheKey] ?? {}) as { [seriesName: string]: { objects?: powerbi.DataViewObjects; identity?: unknown } },
+            sourceCategorical.values as unknown as (DataViewValueColumn[] & { grouped?: () => DataViewValueColumnGroup[] }),
+        );
+        Gantt.rebuildGroupedValues(managed);
+
+        // Carry forward the latest segment marker so the fetch loop knows whether more remains.
+        target.metadata.segment = source.metadata.segment;
+    }
+
+    /** Stable identity for a value column: its series (groupName) plus its measure. */
+    private static valueColumnKey(column: DataViewValueColumn): string {
+        const group = column.source.groupName === undefined || column.source.groupName === null
+            ? ""
+            : String(column.source.groupName);
+        const measure = column.source.queryName ?? column.source.displayName ?? "";
+        return `${group}||${measure}`;
+    }
+
+    /**
+     * Take ownership of `categorical.values` as a mutable array we can safely extend across
+     * segments. Clones each column's value/highlight arrays (so we don't mutate host-owned data)
+     * and attaches our own `grouped()` implementation. Idempotent — returns the existing managed
+     * array on subsequent calls.
+     */
+    private static ensureManagedValues(dataView: DataView): DataViewValueColumn[] {
+        const categorical = dataView.categorical;
+        const current = categorical?.values as (DataViewValueColumn[] & { [flag: string]: unknown }) | undefined;
+        if (current && current[Gantt.managedValuesFlag]) {
+            return current;
+        }
+
+        const managed = [] as unknown as DataViewValueColumn[] & { source?: DataViewMetadataColumn; grouped?: () => DataViewValueColumnGroup[]; [flag: string]: unknown };
+        if (current) {
+            for (const column of current) {
+                const clone: DataViewValueColumn = {
+                    source: column.source,
+                    values: column.values ? column.values.slice() : [],
+                } as DataViewValueColumn;
+                if (column.highlights) {
+                    (clone as { highlights: PrimitiveValue[] }).highlights = column.highlights.slice();
+                }
+                if (column.identity !== undefined) {
+                    (clone as { identity: unknown }).identity = column.identity;
+                }
+                managed.push(clone);
+            }
+            managed.source = (current as unknown as { source?: DataViewMetadataColumn }).source;
+        }
+        managed[Gantt.managedValuesFlag] = true;
+        managed[Gantt.groupObjectsCacheKey] = Gantt.cacheGroupObjects({}, current);
+        Gantt.rebuildGroupedValues(managed);
+
+        if (categorical) {
+            categorical.values = managed as unknown as DataViewValueColumns;
+        }
+        return managed;
+    }
+
+    /** Records each series' `objects` (legend color) and identity by series name into `cache`. */
+    private static cacheGroupObjects(
+        cache: { [seriesName: string]: { objects?: powerbi.DataViewObjects; identity?: unknown } },
+        values: (DataViewValueColumn[] & { grouped?: () => DataViewValueColumnGroup[] }) | undefined,
+    ): { [seriesName: string]: { objects?: powerbi.DataViewObjects; identity?: unknown } } {
+        if (values && typeof values.grouped === "function") {
+            for (const group of values.grouped()) {
+                const key = group.name === undefined || group.name === null ? "" : String(group.name);
+                if (cache[key] === undefined) {
+                    cache[key] = { objects: group.objects, identity: (group as unknown as { identity?: unknown }).identity };
+                }
+            }
+        }
+        return cache;
+    }
+
+    /** Groups value columns by series (groupName) and installs a matching `grouped()` method. */
+    private static rebuildGroupedValues(values: DataViewValueColumn[] & { grouped?: () => DataViewValueColumnGroup[]; [flag: string]: unknown }): void {
+        const cache = (values[Gantt.groupObjectsCacheKey] ?? {}) as { [seriesName: string]: { objects?: powerbi.DataViewObjects; identity?: unknown } };
+        const order: string[] = [];
+        const columnsByGroup = new Map<string, DataViewValueColumn[]>();
+        for (const column of values) {
+            const groupKey = column.source.groupName === undefined || column.source.groupName === null
+                ? ""
+                : String(column.source.groupName);
+            let bucket = columnsByGroup.get(groupKey);
+            if (!bucket) {
+                bucket = [];
+                columnsByGroup.set(groupKey, bucket);
+                order.push(groupKey);
+            }
+            bucket.push(column);
+        }
+
+        const groups: DataViewValueColumnGroup[] = order.map((groupKey) => {
+            const columns = columnsByGroup.get(groupKey) as DataViewValueColumn[];
+            const first = columns[0];
+            const cached = cache[groupKey];
+            return {
+                name: first.source.groupName,
+                values: columns,
+                objects: cached ? cached.objects : undefined,
+                identity: cached && cached.identity !== undefined
+                    ? cached.identity
+                    : (first as unknown as { identity?: unknown }).identity,
+            } as unknown as DataViewValueColumnGroup;
+        });
+
+        values.grouped = () => groups;
+    }
+
+    /**
     * Called on data change or resizing
     * @param options The visual option that contains the dataView and the viewport
     */
@@ -1927,7 +2170,32 @@ export class Gantt implements IVisual {
     }
 
     private updateInternal(options: VisualUpdateOptions): void {
-        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(GanttChartSettingsModel, options.dataViews[0]);
+        // --- Segment accumulation -------------------------------------------------------------
+        // Power BI delivers large categorical data in multiple ~1000-row segments. A fresh data
+        // change arrives as `Create`; each additional segment arrives as `Append`/`Segment`. We
+        // merge every appended segment into `this.mergedDataView` and drive all downstream logic
+        // from the merged dataView so the visual renders the full dataset (all rows), not just
+        // segment #1. `fetchMoreData(false)` keeps the segments streaming until none remain.
+        const incomingDataView: DataView = options.dataViews[0];
+        const operationKind: powerbi.VisualDataChangeOperationKind =
+            options.operationKind ?? powerbi.VisualDataChangeOperationKind.Create;
+        const isDataUpdate: boolean = (options.type & VisualUpdateType.Data) === VisualUpdateType.Data;
+
+        if (operationKind !== powerbi.VisualDataChangeOperationKind.Create && this.mergedDataView) {
+            Gantt.appendSegment(this.mergedDataView, incomingDataView);
+        } else if (isDataUpdate || !this.mergedDataView) {
+            this.mergedDataView = incomingDataView;
+        }
+        // else: non-data update (resize/scale/format) — keep the already-merged full dataset, since
+        // Power BI resends only the first segment on these and would otherwise regress to ~22 rows.
+        const dataView: DataView = this.mergedDataView ?? incomingDataView;
+
+        if (dataView.metadata.segment) {
+            this.host.fetchMoreData(false);
+        }
+        // --------------------------------------------------------------------------------------
+
+        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(GanttChartSettingsModel, dataView);
         this.formattingSettings.setHighContrastColors(this.colorHelper);
         this.formattingSettings.parse();
         this.settingsService.state.parse(this.formattingSettings.milestones.milestoneGroup.persistSettings.value);
@@ -1938,8 +2206,8 @@ export class Gantt implements IVisual {
         // Reading the parsed state (not the raw string) handles "", "{}" and "null" uniformly.
         const persistSettingsWasEmpty: boolean = this.settingsService.state.hasNoPersistedSettings;
 
-        this.sortingOptions = Gantt.getSortingOptions(options.dataViews[0]);
-        const viewModel = this.converter(options.dataViews[0], this.sortingOptions, options.viewMode ?? powerbi.ViewMode.View);
+        this.sortingOptions = this.resolveSortingOptions(dataView, options.type);
+        const viewModel = this.converter(dataView, this.sortingOptions, options.viewMode ?? powerbi.ViewMode.View);
         if (!viewModel) {
             return;
         }
@@ -1986,7 +2254,7 @@ export class Gantt implements IVisual {
 
         this.eventService.renderingStarted(options);
 
-        this.render(options.dataViews[0].metadata.objects || {});
+        this.render(dataView.metadata.objects || {});
 
         this.eventService.renderingFinished(options);
     }
