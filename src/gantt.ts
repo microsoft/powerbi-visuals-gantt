@@ -1922,7 +1922,7 @@ export class Gantt implements IVisual {
             this.updateInternal(options);
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : String(error);
-            console.error(errorMessage);
+            console.error("Gantt rendering failed", errorMessage, error);
             this.eventService.renderingFailed(options, errorMessage);
         }
     }
