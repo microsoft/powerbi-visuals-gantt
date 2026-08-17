@@ -116,8 +116,9 @@ export class SettingsState {
     private areStatesEqual(oldState: ISettingsState, newState: ISettingsState): boolean {
         try {
             return JSON.stringify(oldState) === JSON.stringify(newState);
-        } catch (e) {
-            console.warn("Could not compare settings states", e);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.warn("Could not compare settings states", errorMessage, error);
             return false;
         }
     }
