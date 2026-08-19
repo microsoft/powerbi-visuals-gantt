@@ -2531,6 +2531,31 @@ describe("Gantt", () => {
         });
     });
 
+    describe("Formatting model lifecycle", () => {
+        it("should build a formatting model before the first update", () => {
+            expect(() => visualBuilder.instance.getFormattingModel()).not.toThrow();
+        });
+
+        it("should build a formatting model after an update without data views", () => {
+            const options: powerbi.extensibility.visual.VisualUpdateOptions = {
+                dataViews: [],
+                viewport: visualBuilder.viewport,
+                type: powerbi.VisualUpdateType.Data
+            };
+
+            visualBuilder.instance.update(options);
+
+            expect(() => visualBuilder.instance.getFormattingModel()).not.toThrow();
+        });
+
+        it("should build a formatting model after a successful update", (done) => {
+            visualBuilder.updateRenderTimeout(dataView, () => {
+                expect(visualBuilder.instance.getFormattingModel().cards.length).toBeGreaterThan(0);
+                done();
+            });
+        });
+    });
+
     describe("Capabilities tests", () => {
         it("all items having displayName should have displayNameKey property", () => {
             const jsonData = require("../capabilities.json");

@@ -13,6 +13,7 @@
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
     "useUnknownInCatchVariables": true,

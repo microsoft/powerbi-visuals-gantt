@@ -199,7 +199,7 @@ const GanttDurationUnitType = [
 
 export class SortingOptions {
     isCustomSortingNeeded: boolean = false;
-    sortingDirection!: SortDirection;
+    sortingDirection?: SortDirection;
 }
 
 interface CreateTaskDto {
@@ -258,7 +258,7 @@ export class Gantt implements IVisual {
     private static LegendTitle: ClassAndSelector = createClassAndSelector("legendTitle");
     private static ClickableArea: ClassAndSelector = createClassAndSelector("clickableArea");
 
-    private viewport!: IViewport;
+    private viewport: IViewport = { width: 0, height: 0 };
     private colors!: IColorPalette;
     private colorHelper!: ColorHelper;
     private legend!: ILegend;
@@ -330,7 +330,6 @@ export class Gantt implements IVisual {
     public static RectRound: number = 7;
 
     private static TimeScale: d3TimeScale<any, any>;
-    private xAxisProperties!: IAxisProperties;
 
     private static get DefaultMargin(): IMargin {
         return {
@@ -341,20 +340,21 @@ export class Gantt implements IVisual {
         };
     }
 
-    private formattingSettings!: GanttChartSettingsModel;
+    private formattingSettings: GanttChartSettingsModel = new GanttChartSettingsModel();
     private formattingSettingsService!: FormattingSettingsService;
 
-    private hasHighlights!: boolean;
+    private hasHighlights: boolean = false;
 
     private margin: IMargin = Gantt.DefaultMargin;
 
-    private viewModel!: GanttViewModel;
+    // Stays undefined until the first update() that produces a view model succeeds.
+    private viewModel: GanttViewModel | undefined;
 
     private body!: d3Selection<HTMLElement, null, null, undefined>;
     private ganttSvg!: d3Selection<SVGSVGElement, null, null, undefined>;
     private ganttSvgBackground!: d3Selection<SVGRectElement, null, null, undefined>;
     private collapseAllGroup!: d3Selection<SVGGElement, null, null, undefined>;
-    private collapseAllBackground!: d3Selection<SVGRectElement, null, null, undefined>;
+    private collapseAllBackground: d3Selection<SVGRectElement, null, null, undefined> | undefined;
     private axisGroup!: d3Selection<SVGGElement, null, null, undefined>;
     private axisBackground!: d3Selection<SVGRectElement, null, null, undefined>;
     private chartGroup!: d3Selection<SVGGElement, null, null, undefined>;
@@ -377,7 +377,7 @@ export class Gantt implements IVisual {
     private hasNotNullableDates: boolean = false;
 
     private collapsedTasksUpdateIDs: string[] = [];
-    private sortingOptions!: SortingOptions;
+    private sortingOptions: SortingOptions = new SortingOptions();
     private settingsService!: SettingsService;
 
     constructor(options: VisualConstructorOptions | undefined) {
@@ -558,7 +558,7 @@ export class Gantt implements IVisual {
                     const scrollTop: number = ganttDiv.scrollTop;
                     this.axisGroup.attr("transform", SVGManipulations.translate(translateX, Gantt.TaskLabelsMarginTop + scrollTop));
                     this.chartGroup.attr("transform", SVGManipulations.translate(translateX, this.margin.top));
-                    this.collapseAllBackground.attr("width", newWidth + Gantt.CollapseAllBackgroundWidthPadding);
+                    this.collapseAllBackground?.attr("width", newWidth + Gantt.CollapseAllBackgroundWidthPadding);
                 })
                 .on("end", (event: D3DragEvent<SVGRectElement, { initialX: number; }, d3SubjectPosition>, datum: { initialX: number; }) => {
                     const dx = event.x - datum.initialX;
@@ -1853,7 +1853,8 @@ export class Gantt implements IVisual {
      * Get legend data, calculate position and draw it
      */
     private renderLegend(): void {
-        if (!this.viewModel.legendData?.dataPoints) {
+        const legendData = this.viewModel?.legendData;
+        if (!legendData?.dataPoints) {
             return;
         }
 
@@ -1863,7 +1864,7 @@ export class Gantt implements IVisual {
             : LegendPosition.None;
 
         this.legend.changeOrientation(position as LegendPosition);
-        this.legend.drawLegend(this.viewModel.legendData, structuredClone(this.viewport));
+        this.legend.drawLegend(legendData, structuredClone(this.viewport));
 
         this.body
             .selectAll(Gantt.LegendItems.selectorName)
@@ -1987,18 +1988,18 @@ export class Gantt implements IVisual {
 
         this.eventService.renderingStarted(options);
 
-        this.render(options.dataViews[0].metadata.objects || {});
+        this.render(viewModel, options.dataViews[0].metadata.objects || {});
 
         this.eventService.renderingFinished(options);
     }
 
-    private render(objects: powerbi.DataViewObjects): void {
+    private render(viewModel: GanttViewModel, objects: powerbi.DataViewObjects): void {
         const settings = this.formattingSettings;
 
         this.renderLegend();
         this.updateChartSize();
 
-        const visibleTasks = this.viewModel.tasks
+        const visibleTasks = viewModel.tasks
             .filter((task: Task) => task.visibility);
         const tasks: Task[] = visibleTasks
             .map((task: Task, i: number) => {
@@ -2018,7 +2019,7 @@ export class Gantt implements IVisual {
         this.updateCommonTasks(groupedTasks);
         this.updateCommonMilestones(groupedTasks);
 
-        const allTasksWithDates: Task[] = this.viewModel.tasks.filter((t: Task) => t.start != null && t.end != null);
+        const allTasksWithDates: Task[] = viewModel.tasks.filter((t: Task) => t.start != null && t.end != null);
         const minDateTask = lodashMinBy(allTasksWithDates, (t) => t.start);
         const maxDateTask = lodashMaxBy(allTasksWithDates, (t) => t.end);
         this.hasNotNullableDates = !!minDateTask && !!maxDateTask;
@@ -2045,7 +2046,6 @@ export class Gantt implements IVisual {
             };
 
             const xAxisProperties: IAxisProperties = this.calculateAxes(viewportIn, this.textProperties, startDate, endDate, ticks, false);
-            this.xAxisProperties = xAxisProperties;
             Gantt.TimeScale = <d3TimeScale<Date, Date>>xAxisProperties.scale;
 
             this.renderAxis(xAxisProperties);
@@ -2374,7 +2374,7 @@ export class Gantt implements IVisual {
     }
 
     private calculateTaskLayersByLegend(groupedTasks: GroupedTask[]): void {
-        const legendDataPoints = this.viewModel.legendData.dataPoints;
+        const legendDataPoints = this.viewModel?.legendData.dataPoints ?? [];
         const legendLabels = legendDataPoints.map(dp => dp.label);
 
         groupedTasks.forEach(groupedTask => {
@@ -2846,7 +2846,7 @@ export class Gantt implements IVisual {
             .selectAll("text")
             .remove();
 
-        if (this.viewModel.isParentFilled) {
+        if (this.viewModel?.isParentFilled) {
             const categoryLabelsWidth: number = Gantt.CollapseAllBackgroundWidthPadding + (taskLabelShow
                 ? this.formattingSettings.taskLabels.taskLabelsGroup.general.width.value
                 : Gantt.GroupLabelSize);
@@ -2935,7 +2935,7 @@ export class Gantt implements IVisual {
         }
 
         const taskClickedParent: string = taskClicked.tasks[0].parent || taskClicked.tasks[0].name;
-        this.viewModel.tasks.forEach((task: Task) => {
+        this.viewModel?.tasks.forEach((task: Task) => {
             if (task.parent === taskClickedParent &&
                 task.parent.length >= taskClickedParent.length) {
                 const index: number = this.collapsedTasks.indexOf(task.parent);
@@ -2972,7 +2972,7 @@ export class Gantt implements IVisual {
         } else {
             collapsedAllSelector.attr(this.collapseAllFlag, "1");
             drawExpandButton(collapsedAllSelector, buttonExpandCollapseColor);
-            this.viewModel.tasks.forEach((task: Task) => {
+            this.viewModel?.tasks.forEach((task: Task) => {
                 if (task.parent) {
                     if (task.visibility) {
                         this.collapsedTasks.push(task.parent);
@@ -3285,7 +3285,7 @@ export class Gantt implements IVisual {
      * @param milestoneType milestone type
      */
     private getMilestoneColor(milestoneType: string): string {
-        const milestone = this.viewModel.milestoneData.dataPoints.find((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType);
+        const milestone = this.viewModel?.milestoneData.dataPoints.find((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType);
         if (!milestone) {
             return this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskColor);
         }
@@ -3296,7 +3296,7 @@ export class Gantt implements IVisual {
     private getMilestonePath(milestoneType: string, taskConfigHeight: number): string {
         let shape: string = "";
         const convertedHeight: number = Gantt.getBarHeight(taskConfigHeight);
-        const milestone = this.viewModel.milestoneData.dataPoints.find((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType);
+        const milestone = this.viewModel?.milestoneData.dataPoints.find((dataPoint: MilestoneDataPoint) => dataPoint.name === milestoneType);
         if (!milestone) {
             return shape;
         }
@@ -3584,7 +3584,7 @@ export class Gantt implements IVisual {
 
         this.groupTasksPrevValue = groupTasks;
 
-        const isResourcesFilled: boolean = this.viewModel.isResourcesFilled;
+        const isResourcesFilled: boolean = this.viewModel?.isResourcesFilled ?? false;
         const taskResourceShow: boolean = taskResourceSettings.show.value;
         const taskResourceFontSize: number = taskResourceSettings.fontSize.value;
         const taskResourcePosition: ResourceLabelPosition = <ResourceLabelPosition>taskResourceSettings.position.value.value;
@@ -3815,7 +3815,7 @@ export class Gantt implements IVisual {
      * depends on resource label position and resource label font size
      */
     private getResourceLabelTopMargin(): number {
-        const isResourcesFilled: boolean = this.viewModel.isResourcesFilled;
+        const isResourcesFilled: boolean = this.viewModel?.isResourcesFilled ?? false;
         const taskResourceSettings: TaskResourceCardSettings = this.formattingSettings.taskResource;
         const taskResourceShow: boolean = taskResourceSettings.show.value;
         const taskResourceFontSize: number = taskResourceSettings.fontSize.value;
@@ -4016,7 +4016,7 @@ export class Gantt implements IVisual {
             : 0;
 
         const translateX: number = taskLabelsWidth + margin.left + Gantt.SubtasksLeftMargin;
-        const shiftX: number = !taskLabelShow && this.viewModel.isParentFilled
+        const shiftX: number = !taskLabelShow && this.viewModel?.isParentFilled
             ? Gantt.GroupLabelSize
             : 0;
 
