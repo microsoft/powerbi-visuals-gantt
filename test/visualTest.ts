@@ -2537,13 +2537,7 @@ describe("Gantt", () => {
         });
 
         it("should build a formatting model after an update without data views", () => {
-            const options: powerbi.extensibility.visual.VisualUpdateOptions = {
-                dataViews: [],
-                viewport: visualBuilder.viewport,
-                type: powerbi.VisualUpdateType.Data
-            };
-
-            visualBuilder.instance.update(options);
+            visualBuilder.instance.update(<powerbi.extensibility.visual.VisualUpdateOptions>{ dataViews: [] });
 
             expect(() => visualBuilder.instance.getFormattingModel()).not.toThrow();
         });

@@ -2846,6 +2846,9 @@ export class Gantt implements IVisual {
             .selectAll("text")
             .remove();
 
+        // The rect above was just detached, so drop the stale selection before it may be re-created.
+        this.collapseAllBackground = undefined;
+
         if (this.viewModel?.isParentFilled) {
             const categoryLabelsWidth: number = Gantt.CollapseAllBackgroundWidthPadding + (taskLabelShow
                 ? this.formattingSettings.taskLabels.taskLabelsGroup.general.width.value
