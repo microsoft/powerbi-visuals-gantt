@@ -2536,14 +2536,19 @@ describe("Gantt", () => {
             expect(() => visualBuilder.instance.getFormattingModel()).not.toThrow();
         });
 
-        it("should build a formatting model after an update without data views", () => {
-            visualBuilder.instance.update({
-                dataViews: [],
-                viewport: visualBuilder.viewport,
-                type: powerbi.VisualUpdateType.Data
-            });
+        it("should build a formatting model after an update without data views", (done) => {
+            // The empty-dataViews update must follow a successful one, otherwise the visual
+            // has no state and the assertion repeats the "before the first update" case.
+            visualBuilder.updateRenderTimeout(dataView, () => {
+                visualBuilder.instance.update({
+                    dataViews: [],
+                    viewport: visualBuilder.viewport,
+                    type: powerbi.VisualUpdateType.Data
+                });
 
-            expect(() => visualBuilder.instance.getFormattingModel()).not.toThrow();
+                expect(() => visualBuilder.instance.getFormattingModel()).not.toThrow();
+                done();
+            });
         });
 
         it("should build a formatting model after a successful update", (done) => {
