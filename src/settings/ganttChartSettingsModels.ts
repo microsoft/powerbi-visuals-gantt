@@ -57,8 +57,8 @@ export class GanttChartSettingsModel extends Model {
         this.background,
     ];
 
-    public populateDynamicDataPoints(viewModel: GanttViewModel, localizationManager: ILocalizationManager, colorHelper: ColorHelper): void {
-        const isMissingRequiredFields = viewModel && !viewModel.isDurationFilled && !viewModel.isEndDateFilled;
+    public populateDynamicDataPoints(viewModel: GanttViewModel | undefined, localizationManager: ILocalizationManager, colorHelper: ColorHelper): void {
+        const isMissingRequiredFields: boolean = !!viewModel && !viewModel.isDurationFilled && !viewModel.isEndDateFilled;
 
         this.cards.forEach(element => {
             switch (element.name) {
@@ -89,12 +89,12 @@ export class GanttChartSettingsModel extends Model {
                 }
 
                 case TaskResourcePropertyIdentifier.objectName: {
-                    if (!viewModel.isResourcesFilled) {
+                    if (!viewModel?.isResourcesFilled) {
                         this.taskResource.disable();
                         return;
                     }
 
-                    if (viewModel.isResourcesFilled && this.taskResource.matchLegendColors.value) {
+                    if (this.taskResource.matchLegendColors.value) {
                         this.taskResource.fill.disabled = true;
                     }
                     break;
