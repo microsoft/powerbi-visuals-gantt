@@ -2703,13 +2703,12 @@ describe("Gantt", () => {
     describe("PersistProperties test", () => {
 
         const collapsedTasksUpdateIDs = "collapsedTasksUpdateIDs";
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const getVisualBuilderInstance = () => visualBuilder.instance as any;
+        const getCollapsedTasksUpdateIDs = (): string[] => visualBuilder.instance[collapsedTasksUpdateIDs];
 
         it("Synchronous one task", (done) => {
             const newId = crypto?.randomUUID() || Math.random().toString();
 
-            getVisualBuilderInstance()[collapsedTasksUpdateIDs] = [newId];
+            visualBuilder.instance[collapsedTasksUpdateIDs] = [newId];
 
             dataView.metadata.objects = {
                 collapsedTasksUpdateId: {
@@ -2718,7 +2717,7 @@ describe("Gantt", () => {
             };
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                expect(getVisualBuilderInstance()[collapsedTasksUpdateIDs].length).toBe(0);
+                expect(getCollapsedTasksUpdateIDs().length).toBe(0);
                 done();
             });
         });
@@ -2731,7 +2730,7 @@ describe("Gantt", () => {
                 collapsedTasksUpdateIDsRandom.push(newId);
             }
 
-            getVisualBuilderInstance()[collapsedTasksUpdateIDs] = collapsedTasksUpdateIDsRandom;
+            visualBuilder.instance[collapsedTasksUpdateIDs] = collapsedTasksUpdateIDsRandom;
 
             const objects1 = {
                 collapsedTasksUpdateId: {
@@ -2754,17 +2753,17 @@ describe("Gantt", () => {
 
             dataView.metadata.objects = objects1;
             visualBuilder.update(dataView);
-            expect(getVisualBuilderInstance()[collapsedTasksUpdateIDs].length).toBe(2);
+            expect(getCollapsedTasksUpdateIDs().length).toBe(2);
 
 
             dataView.metadata.objects = objects2;
             visualBuilder.update(dataView);
-            expect(getVisualBuilderInstance()[collapsedTasksUpdateIDs].length).toBe(1);
+            expect(getCollapsedTasksUpdateIDs().length).toBe(1);
 
 
             dataView.metadata.objects = objects3;
             visualBuilder.update(dataView);
-            expect(getVisualBuilderInstance()[collapsedTasksUpdateIDs].length).toBe(0);
+            expect(getCollapsedTasksUpdateIDs().length).toBe(0);
 
             done();
         });
@@ -2777,7 +2776,7 @@ describe("Gantt", () => {
                 collapsedTasksUpdateIDsRandom.push(newId);
             }
 
-            getVisualBuilderInstance()[collapsedTasksUpdateIDs] = collapsedTasksUpdateIDsRandom;
+            visualBuilder.instance[collapsedTasksUpdateIDs] = collapsedTasksUpdateIDsRandom;
 
             const objects1 = {
                 collapsedTasksUpdateId: {
@@ -2802,7 +2801,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects1;
                     visualBuilder.update(dataView);
-                    resolve(getVisualBuilderInstance()[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[0]));
+                    resolve(getCollapsedTasksUpdateIDs().includes(collapsedTasksUpdateIDsRandom[0]));
                 },
                     1_000);
             });
@@ -2811,7 +2810,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects2;
                     visualBuilder.update(dataView);
-                    resolve(getVisualBuilderInstance()[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[1]));
+                    resolve(getCollapsedTasksUpdateIDs().includes(collapsedTasksUpdateIDsRandom[1]));
                 },
                     2_000);
             });
@@ -2820,7 +2819,7 @@ describe("Gantt", () => {
                 setTimeout(() => {
                     dataView.metadata.objects = objects3;
                     visualBuilder.update(dataView);
-                    resolve(getVisualBuilderInstance()[collapsedTasksUpdateIDs].includes(collapsedTasksUpdateIDsRandom[2]));
+                    resolve(getCollapsedTasksUpdateIDs().includes(collapsedTasksUpdateIDsRandom[2]));
                 },
                     3_000);
             });
@@ -2988,7 +2987,7 @@ describe("Gantt", () => {
 
                     const task2: Task = {
                         name: "Task 2",
-                        start: null as any,
+                        start: null,
                         end: new Date("2024-01-15"),
                         duration: 5,
                     } as Task;
@@ -3014,14 +3013,14 @@ describe("Gantt", () => {
                 it("should treat tasks with both null start dates as equal", () => {
                     const task1: Task = {
                         name: "Task 1",
-                        start: null as any,
+                        start: null,
                         end: new Date("2024-01-05"),
                         duration: 5,
                     } as Task;
 
                     const task2: Task = {
                         name: "Task 2",
-                        start: null as any,
+                        start: null,
                         end: new Date("2024-01-10"),
                         duration: 5,
                     } as Task;
@@ -3118,7 +3117,7 @@ describe("Gantt", () => {
                     const task2: Task = {
                         name: "Task 2",
                         start: new Date("2024-01-01"),
-                        end: null as any,
+                        end: null,
                         duration: 5,
                     } as Task;
 
@@ -3144,14 +3143,14 @@ describe("Gantt", () => {
                     const task1: Task = {
                         name: "Task 1",
                         start: new Date("2024-01-01"),
-                        end: null as any,
+                        end: null,
                         duration: 5,
                     } as Task;
 
                     const task2: Task = {
                         name: "Task 2",
                         start: new Date("2024-01-01"),
-                        end: null as any,
+                        end: null,
                         duration: 5,
                     } as Task;
 
@@ -3171,7 +3170,7 @@ describe("Gantt", () => {
                 it("should handle mixed null and non-null dates correctly", () => {
                     const task1: Task = {
                         name: "Task 1 (null start)",
-                        start: null as any,
+                        start: null,
                         end: new Date("2024-01-05"),
                         duration: 5,
                     } as Task;
@@ -3265,7 +3264,7 @@ describe("Gantt", () => {
                         start: new Date("2024-01-01"),
                         end: new Date("2024-01-05"),
                         duration: 5,
-                        children: [] as any,
+                        children: [] as Task[],
                     } as Task;
 
                     const groupedTasks = {

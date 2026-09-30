@@ -11,6 +11,9 @@
         "sourceRoot": "../../src/",
         "moduleResolution": "node",
         "declaration": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "skipLibCheck": true,
         "lib": [
             "es2015",
             "dom"
