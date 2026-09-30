@@ -12,14 +12,7 @@
     "moduleResolution": "bundler",
     "declaration": true,
     "allowSyntheticDefaultImports": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "useUnknownInCatchVariables": true,
-    "alwaysStrict": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
+    "strict": true,
     "skipLibCheck": true
   },
   "files": [
